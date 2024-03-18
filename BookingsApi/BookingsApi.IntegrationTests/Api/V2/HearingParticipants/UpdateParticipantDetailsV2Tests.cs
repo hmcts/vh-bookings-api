@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
+using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -294,6 +295,59 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         integrationEvent!.Participant.Representee.Should().BeEmpty();
         integrationEvent!.Participant.FirstName.Should().Be(request.FirstName);
         integrationEvent!.Participant.LastName.Should().Be(request.LastName);
+    }
+
+    [Test]
+    public async Task should_update_a_participant_contact_email_and_publish_event_when_hearing_is_confirmed_and_contact_email_already_exists_for_different_person()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created);
+        var hearingId = hearing.Id;
+        var participant = hearing.GetParticipants().First(x=> x is Individual);
+        var participantId = participant.Id;
+        
+        var hearing2 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created);
+        var hearing2Participant = hearing2.GetParticipants().First(x => x is Individual);
+        
+        var request = new UpdateParticipantRequestV2
+        {
+            ParticipantId = participantId,
+            DisplayName = "New Display Name",
+            ContactEmail = hearing2Participant.Person.ContactEmail,
+            OrganisationName = null,
+            Representee = null,
+            TelephoneNumber = "01526791027",
+            Title = participant.Person.Title,
+            FirstName = "New First Name",
+            MiddleNames = "New Middle Names",
+            LastName = "New Last Name",
+            LinkedParticipants = new List<LinkedParticipantRequestV2>()
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PatchAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateParticipantDetails(hearingId, participantId),
+                RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var participantResponse = await ApiClientResponse.GetResponses<ParticipantResponseV2>(result.Content);
+        participantResponse.Id.Should().Be(participantId);
+        participantResponse.ContactEmail.Should().Be(request.ContactEmail);
+        
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var message = serviceBusStub!.ReadAllMessagesFromQueue(hearingId)[0];
+        message.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
+        var integrationEvent = message.IntegrationEvent as ParticipantUpdatedIntegrationEvent;
+        integrationEvent!.Participant.ParticipantId.Should().Be(participantId);
+        integrationEvent!.Participant.ContactEmail.Should().Be(request.ContactEmail);
+        
+        await using var db = new BookingsDbContext(BookingsDbContextOptions);
+        var updatedHearing = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(hearingId));
+        var updatedParticipant = updatedHearing.GetParticipants().First(x => x.Id == participantId);
+        updatedParticipant.PersonId.Should().Be(hearing2Participant.PersonId);
     }
     
     [Test]
