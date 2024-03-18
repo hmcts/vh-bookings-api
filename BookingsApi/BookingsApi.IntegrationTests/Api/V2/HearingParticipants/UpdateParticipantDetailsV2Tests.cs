@@ -249,6 +249,64 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         {
             ParticipantId = participantId,
             DisplayName = "New Display Name",
+            ContactEmail = "contactEmailUpdated@email.com",
+            OrganisationName = null,
+            Representee = null,
+            TelephoneNumber = "01526791027",
+            Title = participant.Person.Title,
+            FirstName = "New First Name",
+            MiddleNames = "New Middle Names",
+            LastName = "New Last Name",
+            LinkedParticipants = new List<LinkedParticipantRequestV2>()
+        };
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PatchAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateParticipantDetails(hearingId, participantId),
+                RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var participantResponse = await ApiClientResponse.GetResponses<ParticipantResponseV2>(result.Content);
+        participantResponse.Id.Should().Be(participantId);
+        participantResponse.DisplayName.Should().Be(request.DisplayName);
+        participantResponse.ContactEmail.Should().Be(request.ContactEmail);
+        participantResponse.Username.Should().Be(participant.Person.Username);
+        participantResponse.TelephoneNumber.Should().Be(request.TelephoneNumber);
+        participantResponse.Title.Should().Be(request.Title);
+        participantResponse.Representee.Should().BeNull();
+        participantResponse.Organisation.Should().Be(participant.Person.Organisation?.Name);
+        participantResponse.FirstName.Should().Be(request.FirstName);
+        participantResponse.MiddleNames.Should().Be(request.MiddleNames);
+        participantResponse.LastName.Should().Be(request.LastName);
+        participantResponse.LinkedParticipants.Should().BeEmpty();
+        
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var message = serviceBusStub!.ReadAllMessagesFromQueue(hearingId)[0];
+        message.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
+        var integrationEvent = message.IntegrationEvent as ParticipantUpdatedIntegrationEvent;
+        integrationEvent!.Participant.ParticipantId.Should().Be(participantId);
+        integrationEvent!.Participant.DisplayName.Should().Be(request.DisplayName);
+        integrationEvent!.Participant.ContactEmail.Should().Be(request.ContactEmail);
+        integrationEvent!.Participant.ContactTelephone.Should().Be(request.TelephoneNumber);
+        integrationEvent!.Participant.Representee.Should().BeEmpty();
+        integrationEvent!.Participant.FirstName.Should().Be(request.FirstName);
+        integrationEvent!.Participant.LastName.Should().Be(request.LastName);
+    }
+    
+    [Test]
+    public async Task should_update_a_participant_and_publish_event_when_hearing_is_confirmed_and_optional_fields_are_null()
+    {
+        var hearing = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created);
+        var hearingId = hearing.Id;
+        var participant = hearing.GetParticipants().First(x=> x is Individual);
+        var participantId = participant.Id;
+        var request = new UpdateParticipantRequestV2()
+        {
+            ParticipantId = participantId,
+            DisplayName = "New Display Name",
             OrganisationName = null,
             Representee = null,
             TelephoneNumber = "01526791027",
@@ -283,7 +341,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         participantResponse.LinkedParticipants.Should().BeEmpty();
         
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        var message = serviceBusStub!.ReadMessageFromQueue();
+        var message = serviceBusStub!.ReadAllMessagesFromQueue(hearingId)[0];
         message.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
         var integrationEvent = message.IntegrationEvent as ParticipantUpdatedIntegrationEvent;
         integrationEvent!.Participant.ParticipantId.Should().Be(participantId);
@@ -340,6 +398,15 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         participantResponse.LinkedParticipants.Should().BeEmpty();
         
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        serviceBusStub!.Count.Should().Be(1);
+        var message = serviceBusStub!.ReadAllMessagesFromQueue(hearingId)[0];
+        message.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
+        var integrationEvent = message.IntegrationEvent as ParticipantUpdatedIntegrationEvent;
+        integrationEvent!.Participant.ParticipantId.Should().Be(participantId);
+        integrationEvent!.Participant.DisplayName.Should().Be(request.DisplayName);
+        integrationEvent!.Participant.ContactEmail.Should().Be(participant.Person.ContactEmail);
+        integrationEvent!.Participant.ContactTelephone.Should().Be(request.TelephoneNumber);
+        integrationEvent!.Participant.Representee.Should().BeEmpty();
+        integrationEvent!.Participant.FirstName.Should().Be(request.FirstName);
+        integrationEvent!.Participant.LastName.Should().Be(request.LastName);
     }
 }

@@ -146,7 +146,7 @@ namespace BookingsApi.Controllers.V2
             
             var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
                 request.DisplayName, request.TelephoneNumber, request.OrganisationName, representative, linkedParticipants,
-                additionalInformation: additionalInformation);
+                additionalInformation: additionalInformation, contactEmail: request.ContactEmail);
 
             var updatedParticipant = await _hearingParticipantService.UpdateParticipantAndPublishEventAsync(videoHearing, updateParticipantCommand);
             
