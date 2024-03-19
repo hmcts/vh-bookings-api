@@ -95,7 +95,7 @@ namespace BookingsApi.DAL.Commands
 
             if (!string.IsNullOrEmpty(command.ContactEmail))
             {
-                var existingPerson = await _context.Persons.FirstOrDefaultAsync(x => x.ContactEmail == command.ContactEmail);
+                var existingPerson = await _context.Persons.FirstOrDefaultAsync(x => x.ContactEmail.Trim() == command.ContactEmail.Trim());
                 if (existingPerson != null && existingPerson.Id != participant.PersonId)
                 {
                     participant.ChangePerson(existingPerson);

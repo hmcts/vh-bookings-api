@@ -365,6 +365,8 @@ namespace BookingsApi.Controllers.V1
             var linkedParticipants =
                 LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
 
+            request.ContactEmail = request.ContactEmail.Trim();
+            
             var updateParticipantCommand = new UpdateParticipantCommand(
                 hearingId, 
                 participantId, 

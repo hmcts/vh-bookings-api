@@ -192,9 +192,12 @@ public class UpdateParticipantDetailsTests : ApiTest
         participantResponse.LastName.Should().Be(participantPersonalDetails.LastName);
         participantResponse.MiddleNames.Should().Be(participantPersonalDetails.MiddleNames);
     }
-
-    [Test]
-    public async Task should_update_a_participant_contact_email_and_publish_event_when_hearing_is_confirmed_and_contact_email_already_exists_for_different_person()
+    
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    [TestCase(4)]
+    public async Task should_update_a_participant_contact_email_and_publish_event_when_hearing_is_confirmed_and_contact_email_already_exists_for_different_person(int testCase)
     {
         // arrange
         var hearing = await Hooks.SeedVideoHearing(status:BookingStatus.Created);
@@ -204,11 +207,31 @@ public class UpdateParticipantDetailsTests : ApiTest
 
         var hearing2 = await Hooks.SeedVideoHearing(status: BookingStatus.Created);
         var hearing2Participant = hearing2.GetParticipants().First(x => x is Individual);
+        var contactEmail = hearing2Participant.Person.ContactEmail;
+        
+        switch (testCase)
+        {
+            case 1:
+                // Identical contact emails
+                break;
+            case 2:
+                // Contains whitespace
+                contactEmail += " ";
+                break;
+            case 3:
+                // Upper case
+                contactEmail = contactEmail.ToUpper();
+                break;
+            case 4:
+                // Lower case
+                contactEmail = contactEmail.ToLower();
+                break;
+        }
         
         var request = new UpdateParticipantRequest
         {
             ParticipantId = participantId,
-            ContactEmail = hearing2Participant.Person.ContactEmail,
+            ContactEmail = contactEmail,
             DisplayName = "New Display Name",
             OrganisationName = null,
             Representee = null,
@@ -228,14 +251,14 @@ public class UpdateParticipantDetailsTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
         var participantResponse = await ApiClientResponse.GetResponses<ParticipantResponse>(result.Content);
         participantResponse.Id.Should().Be(participantId);
-        participantResponse.ContactEmail.Should().Be(request.ContactEmail);
+        participantResponse.ContactEmail.Should().Be(request.ContactEmail.Trim());
         
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var message = serviceBusStub!.ReadAllMessagesFromQueue(hearingId)[0];
         message.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
         var integrationEvent = message.IntegrationEvent as ParticipantUpdatedIntegrationEvent;
         integrationEvent!.Participant.ParticipantId.Should().Be(participantId);
-        integrationEvent!.Participant.ContactEmail.Should().Be(request.ContactEmail);
+        integrationEvent!.Participant.ContactEmail.Should().Be(request.ContactEmail.Trim());
         
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
         var updatedHearing = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(hearingId));
