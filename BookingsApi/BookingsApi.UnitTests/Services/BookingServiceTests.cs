@@ -53,10 +53,13 @@ namespace BookingsApi.UnitTests.Services
             var hearing = new VideoHearingBuilder().WithCase().Build();
             var createConfereceMessageCount = 1;
             var judgeAsExistingParticipant = 1;
+            var judicialOfficerAsNewParticipant = PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing).Count(x => x is JudicialOfficeHolder);
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not Judge && x is not JudicialOfficeHolder);
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count(x => x is not Judge);
+            
 
-            var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount + judgeAsExistingParticipant;
+            var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount + 
+                                judgeAsExistingParticipant + judicialOfficerAsNewParticipant;
             await _bookingService.PublishNewHearing(hearing, false);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
@@ -76,15 +79,16 @@ namespace BookingsApi.UnitTests.Services
             var createConfereceMessageCount = 1;
             var newParticipantMessageCount = hearing.Participants.Count(x => x is not Judge);
             var hearingNotificationMessageCount = hearing.Participants.Count;
+            var judicialOfficerAsNewParticipant = PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing).Count(x => x is JudicialOfficeHolder);
 
-            var totalMessages = newParticipantMessageCount + createConfereceMessageCount + hearingNotificationMessageCount;
+            var totalMessages = newParticipantMessageCount + createConfereceMessageCount + hearingNotificationMessageCount + judicialOfficerAsNewParticipant;
             await _bookingService.PublishNewHearing(hearing, false);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
             messages.Length.Should().Be(totalMessages);
 
             messages.Count(x => x.IntegrationEvent is CreateAndNotifyUserIntegrationEvent).Should().Be(newParticipantMessageCount);
-            messages.Count(x => x.IntegrationEvent is HearingNotificationIntegrationEvent).Should().Be(hearingNotificationMessageCount);
+            messages.Count(x => x.IntegrationEvent is HearingNotificationIntegrationEvent).Should().Be(hearingNotificationMessageCount + judicialOfficerAsNewParticipant);
             messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConfereceMessageCount);
         }
 
