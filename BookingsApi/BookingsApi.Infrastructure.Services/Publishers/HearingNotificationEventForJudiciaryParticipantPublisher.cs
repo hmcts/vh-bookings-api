@@ -20,10 +20,9 @@ namespace BookingsApi.Infrastructure.Services.Publishers
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var videoHearingUpdateDate = videoHearing.UpdatedDate.TrimSeconds();
             // we need to send a hearing confirmation for new Panel Member created for V1 and send new templates. A create email for those users
             // has been sent previously with login details and needs a second email for hearing confirmation
-            var newJudicialOfficers = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, videoHearingUpdateDate).Where(x => x is JudicialOfficeHolder);
+            var newJudicialOfficers = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing).Where(x => x is JudicialOfficeHolder);
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newJudicialOfficers)
