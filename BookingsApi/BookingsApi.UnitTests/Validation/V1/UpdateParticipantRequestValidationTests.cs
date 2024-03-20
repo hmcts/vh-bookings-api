@@ -63,7 +63,7 @@ namespace BookingsApi.UnitTests.Validation.V1
                 .Should().BeTrue();
         }
 
-        private UpdateParticipantRequest BuildRequest()
+        private static UpdateParticipantRequest BuildRequest()
         {
             return Builder<UpdateParticipantRequest>.CreateNew()
                 .With(x => x.ContactEmail = "")
