@@ -21,7 +21,7 @@ public class UpdateParticipantDetailsTests : ApiTest
         var request = new UpdateParticipantRequest()
         {
             ParticipantId = Guid.Empty,
-            ContactEmail = null,
+            ContactEmail = "gsdgdsgfs",
             DisplayName = null,
             OrganisationName = null,
             Representee = null,
@@ -42,6 +42,7 @@ public class UpdateParticipantDetailsTests : ApiTest
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         var errorMessages = validationProblemDetails.Errors.SelectMany(e => e.Value).ToList();
         errorMessages.Should().Contain(x => x.Contains(UpdateParticipantRequestValidation.NoDisplayNameErrorMessage));
+        errorMessages.Should().Contain(x => x.Contains(ParticipantRequestValidation.InvalidContactEmailErrorMessage));
     }
     
     [Test]
@@ -196,7 +197,6 @@ public class UpdateParticipantDetailsTests : ApiTest
     [TestCase(1)]
     [TestCase(2)]
     [TestCase(3)]
-    [TestCase(4)]
     public async Task should_update_a_participant_contact_email_and_publish_event_when_hearing_is_confirmed_and_contact_email_already_exists_for_different_person(int testCase)
     {
         // arrange
@@ -215,14 +215,10 @@ public class UpdateParticipantDetailsTests : ApiTest
                 // Identical contact emails
                 break;
             case 2:
-                // Contains whitespace
-                contactEmail += " ";
-                break;
-            case 3:
                 // Upper case
                 contactEmail = contactEmail.ToUpper();
                 break;
-            case 4:
+            case 3:
                 // Lower case
                 contactEmail = contactEmail.ToLower();
                 break;

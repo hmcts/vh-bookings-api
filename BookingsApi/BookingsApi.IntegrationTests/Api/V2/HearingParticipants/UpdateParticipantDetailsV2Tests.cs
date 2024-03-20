@@ -29,6 +29,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
             FirstName = null,
             MiddleNames = null,
             LastName = null,
+            ContactEmail = "gsdgdsgfs",
             LinkedParticipants = new List<LinkedParticipantRequestV2>()
         };
 
@@ -47,6 +48,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         errorMessages.Should().Contain(x => x.Contains(UpdateParticipantRequestValidationV2.NoParticipantIdErrorMessage));
         errorMessages.Should().Contain(x => x.Contains(ParticipantValidationV2.NoFirstNameErrorMessage));
         errorMessages.Should().Contain(x => x.Contains(ParticipantValidationV2.NoLastNameErrorMessage));
+        errorMessages.Should().Contain(x => x.Contains(ParticipantRequestValidationV2.InvalidContactEmailErrorMessage));
     }
     
     [Test]
@@ -300,7 +302,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
     [TestCase(1)]
     [TestCase(2)]
     [TestCase(3)]
-    [TestCase(4)]
     public async Task should_update_a_participant_contact_email_and_publish_event_when_hearing_is_confirmed_and_contact_email_already_exists_for_different_person(int testCase)
     {
         // arrange
@@ -319,14 +320,10 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
                 // Identical contact emails
                 break;
             case 2:
-                // Contains whitespace
-                contactEmail += " ";
-                break;
-            case 3:
                 // Upper case
                 contactEmail = contactEmail.ToUpper();
                 break;
-            case 4:
+            case 3:
                 // Lower case
                 contactEmail = contactEmail.ToLower();
                 break;

@@ -38,10 +38,36 @@ namespace BookingsApi.UnitTests.Validation.V1
                 .Should().BeTrue();
         }
 
+        [Test]
+        public async Task Should_not_validate_contact_email_when_empty()
+        {
+            var request = BuildRequest();
+            request.ContactEmail = "";
+
+            var result = await _validator.ValidateAsync(request);
+            
+            result.IsValid.Should().BeTrue();
+        }
+        
+        [Test]
+        public async Task Should_return_invalid_contact_email_error()
+        {
+            var request = BuildRequest();
+            request.ContactEmail = "gsdgdsgfs";
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.InvalidContactEmailErrorMessage)
+                .Should().BeTrue();
+        }
+
         private UpdateParticipantRequest BuildRequest()
         {
             return Builder<UpdateParticipantRequest>.CreateNew()
-                 .Build();
+                .With(x => x.ContactEmail = "")
+                .Build();
         }
     }
 }
