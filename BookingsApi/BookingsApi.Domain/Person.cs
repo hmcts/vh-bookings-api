@@ -50,7 +50,7 @@ namespace BookingsApi.Domain
 
         public void UpdatePerson(string firstName, string lastName, string title = null, string telephoneNumber = null, string contactEmail = null)
         {
-            var newContactEmail = contactEmail ?? ContactEmail;
+            var newContactEmail = !string.IsNullOrEmpty(contactEmail) ? contactEmail : ContactEmail;
             ValidateArguments(firstName, lastName, newContactEmail);
             FirstName = firstName;
             LastName = lastName;

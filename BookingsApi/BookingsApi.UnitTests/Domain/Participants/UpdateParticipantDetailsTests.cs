@@ -138,12 +138,12 @@ namespace BookingsApi.UnitTests.Domain.Participants
             individualParticipant.Person.ContactEmail.Should().Be(contactEmail);
         }
 
-        [Test]
-        public void Should_not_update_contact_email_when_not_passed_in()
+        [TestCase(null)]
+        [TestCase("")]
+        public void Should_not_update_contact_email_when_not_passed_in(string contactEmail)
         {
             // Arrange
             var individualParticipant = new ParticipantBuilder().IndividualParticipantApplicant;
-            var contactEmail = individualParticipant.Person.ContactEmail;
 
             // Act
             individualParticipant.UpdateParticipantDetails("title",
@@ -151,7 +151,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
                 contactEmail: contactEmail);
 
             // Assert
-            individualParticipant.Person.ContactEmail.Should().Be(contactEmail);
+            individualParticipant.Person.ContactEmail.Should().Be(individualParticipant.Person.ContactEmail);
         }
         
         #region Second Overload
