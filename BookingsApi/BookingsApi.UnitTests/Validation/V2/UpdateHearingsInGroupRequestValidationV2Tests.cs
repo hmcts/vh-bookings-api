@@ -87,6 +87,11 @@ namespace BookingsApi.UnitTests.Validation.V2
                 .Build()
                 .ToList();
             
+            for (var i = 0; i < existingParticipants.Count; i++)
+            {
+                existingParticipants[i].ContactEmail = $"contactEmail_{i}@email.com";
+            }
+            
             return new UpdateHearingsInGroupRequestV2
             {
                 UpdatedBy = "updatedBy@email.com",

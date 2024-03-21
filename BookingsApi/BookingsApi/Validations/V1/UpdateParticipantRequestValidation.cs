@@ -12,5 +12,6 @@ public class UpdateParticipantRequestValidation : AbstractValidator<UpdatePartic
       RuleFor(x => x.DisplayName).NotEmpty().WithMessage(NoDisplayNameErrorMessage);
       RuleFor(x => x.FirstName).Matches(ParticipantRequestValidation.NameRegex).WithMessage(ParticipantRequestValidation.FirstNameDoesntMatchRegex);
       RuleFor(x => x.LastName).Matches(ParticipantRequestValidation.NameRegex).WithMessage(ParticipantRequestValidation.LastNameDoesntMatchRegex);
+      RuleFor(x => x.ContactEmail).Must(x => x.IsValidEmail()).WithMessage(ParticipantRequestValidation.InvalidContactEmailErrorMessage).When(x => !string.IsNullOrEmpty(x.ContactEmail));
     }
 }
