@@ -76,20 +76,19 @@ namespace BookingsApi.UnitTests.Services
         {
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
             var hearing = new VideoHearingBuilder().WithCase().Build();
-            var createConfereceMessageCount = 1;
+            var createConferenceMessageCount = 1;
             var newParticipantMessageCount = hearing.Participants.Count(x => x is not Judge);
             var hearingNotificationMessageCount = hearing.Participants.Count;
-            var judicialOfficerAsNewParticipant = PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing).Count(x => x is JudicialOfficeHolder);
-
-            var totalMessages = newParticipantMessageCount + createConfereceMessageCount + hearingNotificationMessageCount + judicialOfficerAsNewParticipant;
+            
+            var totalMessages = newParticipantMessageCount + createConferenceMessageCount + hearingNotificationMessageCount;
             await _bookingService.PublishNewHearing(hearing, false);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
             messages.Length.Should().Be(totalMessages);
 
             messages.Count(x => x.IntegrationEvent is CreateAndNotifyUserIntegrationEvent).Should().Be(newParticipantMessageCount);
-            messages.Count(x => x.IntegrationEvent is HearingNotificationIntegrationEvent).Should().Be(hearingNotificationMessageCount + judicialOfficerAsNewParticipant);
-            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConfereceMessageCount);
+            messages.Count(x => x.IntegrationEvent is HearingNotificationIntegrationEvent).Should().Be(hearingNotificationMessageCount);
+            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConferenceMessageCount);
         }
 
         [Test]
