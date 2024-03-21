@@ -121,6 +121,38 @@ namespace BookingsApi.UnitTests.Domain.Participants
 
             individualParticipant.Person.TelephoneNumber.Should().Be(telephoneNumber);
         }
+
+        [Test]
+        public void Should_update_contact_email_when_passed_in()
+        {
+            // Arrange
+            var individualParticipant = new ParticipantBuilder().IndividualParticipantApplicant;
+            var contactEmail = "editedContactEmail@email.com";
+
+            // Act
+            individualParticipant.UpdateParticipantDetails("title",
+                "displayName", "telephoneNumber", "organisationName",
+                contactEmail: contactEmail);
+
+            // Assert
+            individualParticipant.Person.ContactEmail.Should().Be(contactEmail);
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        public void Should_not_update_contact_email_when_not_passed_in(string contactEmail)
+        {
+            // Arrange
+            var individualParticipant = new ParticipantBuilder().IndividualParticipantApplicant;
+
+            // Act
+            individualParticipant.UpdateParticipantDetails("title",
+                "displayName", "telephoneNumber", "organisationName",
+                contactEmail: contactEmail);
+
+            // Assert
+            individualParticipant.Person.ContactEmail.Should().Be(individualParticipant.Person.ContactEmail);
+        }
         
         #region Second Overload
         

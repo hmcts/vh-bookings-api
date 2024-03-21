@@ -365,6 +365,8 @@ namespace BookingsApi.Controllers.V1
             var linkedParticipants =
                 LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
 
+            request.ContactEmail = request.ContactEmail?.Trim();
+            
             var updateParticipantCommand = new UpdateParticipantCommand(
                 hearingId, 
                 participantId, 
@@ -374,7 +376,8 @@ namespace BookingsApi.Controllers.V1
                 request.OrganisationName, 
                 representative, 
                 linkedParticipants,
-                additionalInfo);
+                additionalInfo,
+                contactEmail: request.ContactEmail);
             
             var updatedParticipant =
                 await _hearingParticipantService.UpdateParticipantAndPublishEventAsync(videoHearing, updateParticipantCommand);
