@@ -1,3 +1,4 @@
+using BookingsApi.Common;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
@@ -39,7 +40,8 @@ namespace BookingsApi.UnitTests.Services
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge) - 1;
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 2;
             var hearingConfirmationForExistingParticipantsMessageCount = 1 + judgeAsExistingParticipant;
-            var judicialOfficerAsNewParticipant = PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing).Count(x => x is JudicialOfficeHolder);
+            var updateDate = hearing.UpdatedDate.TrimSeconds();
+            var judicialOfficerAsNewParticipant = PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing, updateDate).Count(x => x is JudicialOfficeHolder);
 
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount
                                 + hearingConfirmationForExistingParticipantsMessageCount + judicialOfficerAsNewParticipant;
@@ -97,7 +99,8 @@ namespace BookingsApi.UnitTests.Services
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge) - 1;
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 1;
             var hearingConfirmationForExistingParticipantsMessageCount = 1;
-            var judicialOfficerAsNewParticipant = PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing).Count(x => x is JudicialOfficeHolder);
+            var updateDate = hearing.UpdatedDate.TrimSeconds();
+            var judicialOfficerAsNewParticipant = PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing, updateDate).Count(x => x is JudicialOfficeHolder);
             var totalMessages = newParticipantWelcomeMessageCount + createConferenceMessageCount + hearingConfirmationForNewParticipantsMessageCount
                                 + hearingConfirmationForExistingParticipantsMessageCount + hearing.JudiciaryParticipants.Count + judicialOfficerAsNewParticipant;
 
