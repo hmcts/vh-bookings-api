@@ -204,6 +204,107 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatedIndividual.Person.LastName.Should().Be(individualParticipant.Person.LastName);
         }
 
+        [Test]
+        public async Task Should_update_contact_email_when_passed_in()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+            var individualParticipant = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
+
+            var title = individualParticipant.Person.Title;
+            var displayName = individualParticipant.DisplayName;
+            var telephoneNumber = individualParticipant.Person.TelephoneNumber;
+            var organisationName = individualParticipant.Person.Organisation?.Name;
+            var firstName = individualParticipant.Person.FirstName;
+            var middleNames = individualParticipant.Person.MiddleNames;
+            var lastName = individualParticipant.Person.LastName;
+            var additionalInformation = new AdditionalInformation(firstName, lastName)
+            {
+                MiddleNames = middleNames
+            };
+            var contactEmail = "editedContactEmail@email.com";
+
+            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, 
+                individualParticipant.Id, title, displayName, 
+                telephoneNumber, organisationName, null, 
+                null, additionalInformation: additionalInformation, contactEmail: contactEmail);
+            await _commandHandler.Handle(updateParticipantCommand);
+
+            var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
+
+            updatedIndividual.Should().NotBeNull();
+            updatedIndividual.Person.ContactEmail.Should().Be(contactEmail);
+        }
+        
+        [Test]
+        public async Task Should_not_update_contact_email_when_not_passed_in()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+            var individualParticipant = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
+
+            var title = individualParticipant.Person.Title;
+            var displayName = individualParticipant.DisplayName;
+            var telephoneNumber = individualParticipant.Person.TelephoneNumber;
+            var organisationName = individualParticipant.Person.Organisation?.Name;
+            var firstName = individualParticipant.Person.FirstName;
+            var middleNames = individualParticipant.Person.MiddleNames;
+            var lastName = individualParticipant.Person.LastName;
+            var additionalInformation = new AdditionalInformation(firstName, lastName)
+            {
+                MiddleNames = middleNames
+            };
+
+            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, 
+                individualParticipant.Id, title, displayName, 
+                telephoneNumber, organisationName, null, 
+                null, additionalInformation: additionalInformation);
+            await _commandHandler.Handle(updateParticipantCommand);
+
+            var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
+
+            updatedIndividual.Should().NotBeNull();
+            updatedIndividual.Person.ContactEmail.Should().Be(individualParticipant.Person.ContactEmail);
+        }
+        
+        [Test]
+        public async Task Should_use_contact_email_for_different_person_when_passed_in_contact_email_is_same_as_different_person()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+            var individualParticipant = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
+
+            var seededHearing2 = await Hooks.SeedVideoHearing();
+            var individualParticipant2 = seededHearing2.GetParticipants().First(x => x.HearingRole.UserRole.Name.Equals("Individual"));
+            
+            var title = individualParticipant.Person.Title;
+            var displayName = individualParticipant.DisplayName;
+            var telephoneNumber = individualParticipant.Person.TelephoneNumber;
+            var organisationName = individualParticipant.Person.Organisation?.Name;
+            var firstName = individualParticipant.Person.FirstName;
+            var middleNames = individualParticipant.Person.MiddleNames;
+            var lastName = individualParticipant.Person.LastName;
+            var additionalInformation = new AdditionalInformation(firstName, lastName)
+            {
+                MiddleNames = middleNames
+            };
+            var contactEmail = individualParticipant2.Person.ContactEmail;
+
+            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, 
+                individualParticipant.Id, title, displayName, 
+                telephoneNumber, organisationName, null, 
+                null, additionalInformation: additionalInformation, contactEmail: contactEmail);
+            await _commandHandler.Handle(updateParticipantCommand);
+
+            var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
+
+            updatedIndividual.Should().NotBeNull();
+            updatedIndividual.Person.ContactEmail.Should().Be(individualParticipant2.Person.ContactEmail);
+        }
+
         [TearDown]
         public new async Task TearDown()
         {

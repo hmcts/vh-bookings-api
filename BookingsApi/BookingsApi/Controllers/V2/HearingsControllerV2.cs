@@ -196,25 +196,26 @@ namespace BookingsApi.Controllers.V2
             }
 
             var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            var venues = await GetHearingVenues();
             
-            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidationV2(hearingsInGroup, hearingRoles).ValidateAsync(request);
+            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidationV2(hearingsInGroup, hearingRoles, venues).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
                 return ValidationProblem(ModelState);
             }
 
-            var venues = await GetHearingVenues();
-            
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
-                var venue = venues.First(v => v.Id == hearing.HearingVenueId);
-                var cases = hearing.GetCases().ToList();
+                var venue = venues.Find(v => v.VenueCode == requestHearing.HearingVenueCode);
+                var cases = hearing.GetCases()
+                    .Select(x => new Case(requestHearing.CaseNumber, x.Name))
+                    .ToList();
 
-                await UpdateHearingDetails(hearing.Id, hearing.ScheduledDateTime, 
-                    hearing.ScheduledDuration, venue, hearing.HearingRoomName, hearing.OtherInformation, 
-                    request.UpdatedBy, cases, hearing.AudioRecordingRequired, hearing);
+                await UpdateHearingDetails(hearing.Id, requestHearing.ScheduledDateTime, 
+                    requestHearing.ScheduledDuration, venue, requestHearing.HearingRoomName, requestHearing.OtherInformation, 
+                    request.UpdatedBy, cases, requestHearing.AudioRecordingRequired, hearing);
                 
                 await _updateHearingService.UpdateParticipantsV2(requestHearing.Participants, hearing, hearingRoles);
                 

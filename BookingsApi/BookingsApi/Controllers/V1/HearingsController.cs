@@ -172,7 +172,9 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
             
-            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidation(hearingsInGroup).ValidateAsync(request);
+            var venues = await GetVenues();
+            
+            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidation(hearingsInGroup, venues).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
@@ -191,17 +193,17 @@ namespace BookingsApi.Controllers.V1
                 }
             }
 
-            var venues = await GetVenues();
-            
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
-                var venue = venues.First(v => v.Id == hearing.HearingVenueId);
-                var cases = hearing.GetCases().ToList();
+                var venue = venues.Find(v => v.Name == requestHearing.HearingVenueName);
+                var cases = hearing.GetCases()
+                    .Select(x => new Case(requestHearing.CaseNumber, x.Name))
+                    .ToList();
 
-                await UpdateHearingDetails(hearing.Id, hearing.ScheduledDateTime, 
-                    hearing.ScheduledDuration, venue, hearing.HearingRoomName, hearing.OtherInformation, 
-                    request.UpdatedBy, cases, hearing.AudioRecordingRequired, hearing);
+                await UpdateHearingDetails(hearing.Id, requestHearing.ScheduledDateTime, 
+                    requestHearing.ScheduledDuration, venue, requestHearing.HearingRoomName, requestHearing.OtherInformation, 
+                    request.UpdatedBy, cases, requestHearing.AudioRecordingRequired, hearing);
                 
                 await _updateHearingService.UpdateParticipantsV1(requestHearing.Participants, hearing);
                 
