@@ -211,6 +211,14 @@ namespace BookingsApi.Controllers.V1
                 
                 await _updateHearingService.UpdateEndpointsV1(requestHearing.Endpoints, hearing);
             }
+            
+            var hearings = request.Hearings.ToList();
+            var totalDays = hearings.Count;
+            var firstHearingId = hearings[0].HearingId;
+            var firstHearing = await _bookingService.GetHearingById(firstHearingId);
+            var videoHearingUpdateDate = firstHearing.UpdatedDate.TrimSeconds();
+            // publish multi day hearing notification event
+            await _bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, videoHearingUpdateDate);
 
             return NoContent();
         }
@@ -490,6 +498,8 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
 
+            var videoHearingUpdateDate = videoHearing.UpdatedDate.TrimSeconds();
+
             var validationResult = await new CloneHearingRequestValidation().ValidateAsync(request);
             if (!validationResult.IsValid)
             {
@@ -526,7 +536,7 @@ namespace BookingsApi.Controllers.V1
             }
             
             // publish multi day hearing notification event
-            await _bookingService.PublishMultiDayHearing(videoHearing, totalDays);
+            await _bookingService.PublishMultiDayHearing(videoHearing, totalDays, videoHearingUpdateDate);
             var response = hearingsList.Select(HearingToDetailsResponseMapper.Map).ToList();
 
             return Ok(response);
