@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using BookingsApi.Common;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
@@ -48,8 +49,9 @@ namespace BookingsApi.UnitTests.Services
             var mulitdayHearingConfirmationForExistingParticipantsMessageCount = 2;
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + multidayHearingConfirmationForNewParticipantsMessageCount
                 + mulitdayHearingConfirmationForExistingParticipantsMessageCount + judgeAsExistingParticipant;
-
-            await _clonedMultidaysAsynchronousProcess.Start(hearing, 2);
+            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
+            
+            await _clonedMultidaysAsynchronousProcess.Start(hearing, 2, videoHearingUpdateDate);
             
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
             messages.Length.Should().Be(totalMessages);
@@ -72,9 +74,10 @@ namespace BookingsApi.UnitTests.Services
 
             const int expectedTotalMessageCount = 5;
             const int totalDays = 2;
+            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
             
             // Act
-            await _clonedMultidaysAsynchronousProcess.Start(hearing, totalDays);
+            await _clonedMultidaysAsynchronousProcess.Start(hearing, totalDays, videoHearingUpdateDate);
             
             // Assert
             AssertEventsPublishedForNotifyFeatureOff(hearing, totalDays, expectedTotalMessageCount);
@@ -98,9 +101,10 @@ namespace BookingsApi.UnitTests.Services
 
             const int expectedTotalMessageCount = 4;
             const int totalDays = 2;
+            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
             
             // Act
-            await _clonedMultidaysAsynchronousProcess.Start(hearing, totalDays);
+            await _clonedMultidaysAsynchronousProcess.Start(hearing, totalDays, videoHearingUpdateDate);
             
             // Assert
             AssertEventsPublishedForNotifyFeatureOff(hearing, totalDays, expectedTotalMessageCount);
