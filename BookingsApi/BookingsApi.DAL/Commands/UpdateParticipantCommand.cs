@@ -33,11 +33,12 @@ namespace BookingsApi.DAL.Commands
         public Participant UpdatedParticipant { get; set; }
         public RepresentativeInformation RepresentativeInformation { get; }
         public AdditionalInformation AdditionalInformation { get; }
+        public string ContactEmail { get; set; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }
 
         public UpdateParticipantCommand(Guid hearingId, Guid participantId, string title, string displayName, string telephoneNumber,
             string organisationName, RepresentativeInformation representativeInformation, List<LinkedParticipantDto> linkedParticipants,
-            AdditionalInformation additionalInformation = null)
+            AdditionalInformation additionalInformation = null, string contactEmail = null)
         {
             HearingId = hearingId;
             ParticipantId = participantId;
@@ -47,6 +48,7 @@ namespace BookingsApi.DAL.Commands
             OrganisationName = organisationName;
             RepresentativeInformation = representativeInformation;
             AdditionalInformation = additionalInformation;
+            ContactEmail = contactEmail;
             LinkedParticipants = linkedParticipants ?? new List<LinkedParticipantDto>();
         }
     }
@@ -91,8 +93,17 @@ namespace BookingsApi.DAL.Commands
             }
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
 
+            if (!string.IsNullOrEmpty(command.ContactEmail))
+            {
+                var existingPerson = await _context.Persons.FirstOrDefaultAsync(x => x.ContactEmail.Trim() == command.ContactEmail.Trim());
+                if (existingPerson != null && existingPerson.Id != participant.PersonId)
+                {
+                    participant.ChangePerson(existingPerson);
+                }
+            }
+            
             participant.UpdateParticipantDetails(command.Title, command.DisplayName, command.TelephoneNumber,
-                command.OrganisationName);
+                command.OrganisationName, command.ContactEmail);
 
             if (command.AdditionalInformation != null)
             {

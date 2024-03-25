@@ -1,4 +1,5 @@
-﻿using BookingsApi.Domain;
+﻿using System;
+using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using System.Threading.Tasks;
@@ -15,10 +16,12 @@ namespace BookingsApi.Infrastructure.Services.Publishers
 
         public EventType EventType => EventType.NewParticipantMultidayHearingConfirmationEvent;
         public int TotalDays { get; set; }
+        
+        public DateTime VideoHearingUpdateDate { get; set; }
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing);
+            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, VideoHearingUpdateDate);
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)

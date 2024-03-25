@@ -8,6 +8,7 @@ namespace BookingsApi.Validations.V2
         public const string NoHearingsErrorMessage = "Please provide at least one hearing";
         public const string DuplicateHearingIdsMessage = "Hearing ids must be unique";
         public const string NoUpdatedByErrorMessage = "UpdatedBy is missing";
+        public const string DuplicateScheduledDateTimesMessage = "ScheduledDateTime must be unique for all hearings";
 
         public UpdateHearingsInGroupRequestInputValidationV2()
         {
@@ -18,6 +19,11 @@ namespace BookingsApi.Validations.V2
             RuleFor(x => x.Hearings)
                 .Must(h => !HasDuplicateHearingIds(h))
                 .WithMessage(DuplicateHearingIdsMessage)
+                .When(x => x.Hearings != null && x.Hearings.Any());
+            
+            RuleFor(x => x.Hearings)
+                .Must(h => !HasDuplicateScheduledDateTimes(h))
+                .WithMessage(DuplicateScheduledDateTimesMessage)
                 .When(x => x.Hearings != null && x.Hearings.Any());
 
             RuleForEach(x => x.Hearings)
@@ -36,6 +42,17 @@ namespace BookingsApi.Validations.V2
                 .ToList();
 
             return duplicateHearingIds.Any();
+        }
+        
+        private static bool HasDuplicateScheduledDateTimes(IEnumerable<HearingRequestV2> hearings)
+        {
+            var duplicateScheduledDateTimes = hearings
+                .GroupBy(x => x.ScheduledDateTime)
+                .Where(g => g.Count() > 1)
+                .Select(y => y.Key)
+                .ToList();
+
+            return duplicateScheduledDateTimes.Any();
         }
     }
 }

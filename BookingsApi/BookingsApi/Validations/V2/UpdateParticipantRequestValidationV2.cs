@@ -16,6 +16,7 @@ namespace BookingsApi.Validations.V2
             RuleFor(x => x.FirstName).Matches(ParticipantValidationV2.NameRegex).WithMessage(ParticipantValidationV2.FirstNameDoesntMatchRegex);
             RuleFor(x => x.LastName).NotEmpty().WithMessage(ParticipantValidationV2.NoLastNameErrorMessage);
             RuleFor(x => x.LastName).Matches(ParticipantValidationV2.NameRegex).WithMessage(ParticipantValidationV2.LastNameDoesntMatchRegex);
+            RuleFor(x => x.ContactEmail).Must(x => x.IsValidEmail()).WithMessage(ParticipantRequestValidationV2.InvalidContactEmailErrorMessage).When(x => !string.IsNullOrEmpty(x.ContactEmail));
         }
     }
 }

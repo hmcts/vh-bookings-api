@@ -172,7 +172,9 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
             
-            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidation(hearingsInGroup).ValidateAsync(request);
+            var venues = await GetVenues();
+            
+            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidation(hearingsInGroup, venues).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
@@ -191,17 +193,17 @@ namespace BookingsApi.Controllers.V1
                 }
             }
 
-            var venues = await GetVenues();
-            
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
-                var venue = venues.First(v => v.Id == hearing.HearingVenueId);
-                var cases = hearing.GetCases().ToList();
+                var venue = venues.Find(v => v.Name == requestHearing.HearingVenueName);
+                var cases = hearing.GetCases()
+                    .Select(x => new Case(requestHearing.CaseNumber, x.Name))
+                    .ToList();
 
-                await UpdateHearingDetails(hearing.Id, hearing.ScheduledDateTime, 
-                    hearing.ScheduledDuration, venue, hearing.HearingRoomName, hearing.OtherInformation, 
-                    request.UpdatedBy, cases, hearing.AudioRecordingRequired, hearing);
+                await UpdateHearingDetails(hearing.Id, requestHearing.ScheduledDateTime, 
+                    requestHearing.ScheduledDuration, venue, requestHearing.HearingRoomName, requestHearing.OtherInformation, 
+                    request.UpdatedBy, cases, requestHearing.AudioRecordingRequired, hearing);
                 
                 await _updateHearingService.UpdateParticipantsV1(requestHearing.Participants, hearing);
                 
@@ -209,6 +211,14 @@ namespace BookingsApi.Controllers.V1
                 
                 await _updateHearingService.UpdateEndpointsV1(requestHearing.Endpoints, hearing);
             }
+            
+            var hearings = request.Hearings.ToList();
+            var totalDays = hearings.Count;
+            var firstHearingId = hearings[0].HearingId;
+            var firstHearing = await _bookingService.GetHearingById(firstHearingId);
+            var videoHearingUpdateDate = firstHearing.UpdatedDate.TrimSeconds();
+            // publish multi day hearing notification event
+            await _bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, videoHearingUpdateDate);
 
             return NoContent();
         }
@@ -488,6 +498,8 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
 
+            var videoHearingUpdateDate = videoHearing.UpdatedDate.TrimSeconds();
+
             var validationResult = await new CloneHearingRequestValidation().ValidateAsync(request);
             if (!validationResult.IsValid)
             {
@@ -524,7 +536,7 @@ namespace BookingsApi.Controllers.V1
             }
             
             // publish multi day hearing notification event
-            await _bookingService.PublishMultiDayHearing(videoHearing, totalDays);
+            await _bookingService.PublishMultiDayHearing(videoHearing, totalDays, videoHearingUpdateDate);
             var response = hearingsList.Select(HearingToDetailsResponseMapper.Map).ToList();
 
             return Ok(response);

@@ -2,6 +2,7 @@
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using System.Threading.Tasks;
+using BookingsApi.Common;
 
 namespace BookingsApi.Infrastructure.Services.Publishers
 {
@@ -16,7 +17,8 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         public EventType EventType => EventType.NewParticipantHearingConfirmationEvent;
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing);
+            var videoHearingUpdateDate = videoHearing.UpdatedDate.TrimSeconds();
+            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, videoHearingUpdateDate);
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)

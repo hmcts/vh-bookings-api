@@ -34,6 +34,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             await _publisherFactory.Get(EventType.CreateConferenceEvent).PublishAsync(videoHearing);
             await _publisherFactory.Get(EventType.NewParticipantHearingConfirmationEvent).PublishAsync(videoHearing);
             await _publisherFactory.Get(EventType.ExistingParticipantHearingConfirmationEvent).PublishAsync(videoHearing);
+            await _publisherFactory.Get(EventType.HearingNotificationForNewJudicialOfficersEvent).PublishAsync(videoHearing);
             await _publisherFactory.Get(EventType.HearingNotificationForJudiciaryParticipantEvent).PublishAsync(videoHearing);
         }
     }
