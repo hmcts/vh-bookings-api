@@ -29,6 +29,7 @@ namespace BookingsApi.UnitTests.Services
         private readonly IFeatureToggles _featureToggles;
         private readonly ICreateConferenceAsynchronousProcess _createConferenceAsynchronousProcess;
 
+
         public BookingServiceTests()
         {
             _serviceBusQueueClient = new ServiceBusQueueClientFake();
@@ -54,10 +55,13 @@ namespace BookingsApi.UnitTests.Services
             var hearing = new VideoHearingBuilder().WithCase().Build();
             var createConferenceMessageCount = 1;
             var judgeAsExistingParticipant = 1;
+            var judicialOfficerAsNewParticipant = PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing, hearing.UpdatedDate.TrimSeconds()).Count(x => x is JudicialOfficeHolder);
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not Judge && x is not JudicialOfficeHolder);
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count(x => x is not Judge);
+            
 
-            var totalMessages = newParticipantWelcomeMessageCount + createConferenceMessageCount + hearingConfirmationForNewParticipantsMessageCount + judgeAsExistingParticipant;
+            var totalMessages = newParticipantWelcomeMessageCount + createConferenceMessageCount + hearingConfirmationForNewParticipantsMessageCount + 
+                                judgeAsExistingParticipant + judicialOfficerAsNewParticipant;
             await _bookingService.PublishNewHearing(hearing, false);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
@@ -77,7 +81,7 @@ namespace BookingsApi.UnitTests.Services
             var createConferenceMessageCount = 1;
             var newParticipantMessageCount = hearing.Participants.Count(x => x is not Judge);
             var hearingNotificationMessageCount = hearing.Participants.Count;
-
+            
             var totalMessages = newParticipantMessageCount + createConferenceMessageCount + hearingNotificationMessageCount;
             await _bookingService.PublishNewHearing(hearing, false);
 
