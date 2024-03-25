@@ -84,6 +84,48 @@ public class BookNewHearingTests : ApiTest
         integrationEvent!.Participants.Should().Contain(x=> 
             x.ContactEmail == judge.ContactEmail && x.HearingRole == "Judge" && x.UserRole == "Judge");
     }
+    
+    [Test]
+    public async Task should_book_a_hearing_with_a_new_panelmember()
+    {
+        // arrange
+        var request = CreateBookingRequest();
+        var panelMember = request.Participants.SingleOrDefault(x => x.HearingRoleName == "Panel Member");
+        panelMember.ContactEmail = Faker.Internet.Email();
+        panelMember.DisplayName = Faker.Name.First() + " " + Faker.Name.Last();
+        panelMember.Username = "";
+        panelMember.FirstName = Faker.Name.First();
+        panelMember.LastName = Faker.Name.Last();
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getResponse.Content);
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        _hearingIds.Add(hearingResponse.Id);
+
+        var messages = serviceBusStub.ReadAllMessagesFromQueue(hearingResponse.Id);
+        var messagesConfirmation = messages.Where(x => x.IntegrationEvent.GetType() == typeof(HearingNotificationIntegrationEvent));
+        var integrationsEvent = messagesConfirmation.Select(x=>x.IntegrationEvent as HearingNotificationIntegrationEvent);
+        var integrationEvent = integrationsEvent.Single(x =>
+            x.HearingConfirmationForParticipant.ContactEmail == panelMember.ContactEmail);
+        
+        var messagesCreation = messages.Where(x => x.IntegrationEvent.GetType() == typeof(NewParticipantHearingConfirmationEvent));
+        var integrationsCreationEvent = messagesCreation.Select(x=>x.IntegrationEvent as NewParticipantHearingConfirmationEvent);
+        var integrationCreationEvent = integrationsCreationEvent.Single(x =>
+            x.HearingConfirmationForParticipant.ContactEmail == panelMember.ContactEmail);
+        integrationEvent!.HearingConfirmationForParticipant.Username.Should().NotBeEmpty();
+        integrationCreationEvent!.HearingConfirmationForParticipant.Username.Should().NotBeEmpty();
+    }
 
     [Test]
     public async Task should_book_a_hearing_with_a_panelmember_with_no_telepehone_number()
@@ -510,7 +552,7 @@ public class BookNewHearingTests : ApiTest
         _hearingIds.Add(response.Id);
     }
 
-    private BookNewHearingRequest CreateBookingRequest()
+    private static BookNewHearingRequest CreateBookingRequest()
     {
         var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         var caseName = "Bookings Api Integration Automated";
