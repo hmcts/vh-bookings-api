@@ -20,10 +20,10 @@ namespace BookingsApi.Infrastructure.Services.Publishers
 
         public EventType EventType => EventType.HearingNotificationForJudiciaryParticipantEvent;
 
-        public async Task PublishAsync(VideoHearing videoHearing, IList<JudiciaryParticipant> newJudiciaryParticipants)
+        public async Task PublishAsync(VideoHearing videoHearing, IList<JudiciaryParticipant> judiciaryParticipants)
         {
             var @case = videoHearing.GetCases()[0];
-            foreach (var participant in newJudiciaryParticipants)
+            foreach (var participant in judiciaryParticipants)
             {
                 await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(EventDtoMappers.MapToHearingConfirmationDto(
                     videoHearing.Id, videoHearing.ScheduledDateTime, participant, @case)));
