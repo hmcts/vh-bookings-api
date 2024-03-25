@@ -53,12 +53,13 @@ namespace BookingsApi.Domain.Participants
             }
         }
 
-        public virtual void UpdateParticipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
+        public virtual void UpdateParticipantDetails(string title, string displayName, string telephoneNumber, string organisationName,
+            string contactEmail = null)
         {
             ValidatePartipantDetails(title, displayName, telephoneNumber, organisationName);
 
             DisplayName = displayName;
-            Person.UpdatePerson(Person.FirstName, Person.LastName, title, telephoneNumber);
+            Person.UpdatePerson(Person.FirstName, Person.LastName, title, telephoneNumber, contactEmail: contactEmail);
             UpdatedDate = DateTime.UtcNow;
 
             if (!string.IsNullOrEmpty(organisationName))
@@ -120,5 +121,9 @@ namespace BookingsApi.Domain.Participants
             return Person?.CreatedDate.TrimMilliseconds() != CreatedDate.TrimMilliseconds();
         }
 
+        public void ChangePerson(Person newPerson)
+        {
+            Person = newPerson;
+        }
     }
 }

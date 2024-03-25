@@ -37,8 +37,18 @@ public interface IBookingService
     /// </summary>
     /// <param name="videoHearing"></param>
     /// <param name="totalDays"></param>
+    /// <param name="videoHearingUpdateDate"></param>
     /// <returns></returns>
-    Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays);
+    Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate);
+
+    /// <summary>
+    /// Send a message to the service bus to publish the booking of edit a new multi-day hearing
+    /// </summary>
+    /// <param name="videoHearing"></param>
+    /// <param name="totalDays"></param>
+    /// <param name="videoHearingUpdateDate"></param>
+    /// <returns></returns>
+    Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate);
 
     /// <summary>
     /// Send a message to the service bus to publish the update of a hearing
@@ -54,6 +64,13 @@ public interface IBookingService
     /// <param name="videoHearing"></param>
     /// <returns></returns>
     Task PublishHearingCancelled(VideoHearing videoHearing);
+    
+    /// <summary>
+    /// Get a Hearing by Id
+    /// </summary>
+    /// <param name="hearingId"></param>
+    /// <returns>Hearing</returns>
+    Task<VideoHearing> GetHearingById(Guid hearingId);
 
     /// <summary>
     /// Update status of a hearing and publish a message to the service bus
@@ -125,9 +142,14 @@ public class BookingService : IBookingService
         }
     }
 
-    public async Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays)
+    public async Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate)
     {
-        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays);
+        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays, videoHearingUpdateDate);
+    }
+    
+    public async Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate)
+    {
+        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays, videoHearingUpdateDate, true);
     }
     
     public async Task PublishHearingCancelled(VideoHearing videoHearing)
@@ -137,6 +159,14 @@ public class BookingService : IBookingService
             // publish the event only for confirmed(created) hearing  
             await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(videoHearing.Id));
         }
+    }
+
+    public async Task<VideoHearing> GetHearingById(Guid hearingId)
+    {
+        var query = new GetHearingByIdQuery(hearingId);
+        var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+
+        return hearing;
     }
 
     public async Task<VideoHearing> UpdateHearingAndPublish(UpdateHearingCommand updateHearingCommand, VideoHearing originalHearing)

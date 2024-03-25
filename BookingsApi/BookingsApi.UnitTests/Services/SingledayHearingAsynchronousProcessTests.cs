@@ -1,3 +1,4 @@
+using BookingsApi.Common;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
@@ -39,8 +40,11 @@ namespace BookingsApi.UnitTests.Services
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge) - 1;
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 2;
             var hearingConfirmationForExistingParticipantsMessageCount = 1 + judgeAsExistingParticipant;
+            var updateDate = hearing.UpdatedDate.TrimSeconds();
+            var judicialOfficerAsNewParticipant = PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing, updateDate).Count(x => x is JudicialOfficeHolder);
+
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount
-                                + hearingConfirmationForExistingParticipantsMessageCount;
+                                + hearingConfirmationForExistingParticipantsMessageCount + judicialOfficerAsNewParticipant;
 
             await _singledayHearingAsynchronousProcess.Start(hearing);
             
@@ -62,10 +66,16 @@ namespace BookingsApi.UnitTests.Services
            
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
 
+            
             var createConferenceMessageCount = 1;
+            var judgeAsExistingParticipant = 1;
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge);
-            var totalMessages = 10;
-
+            var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count;
+            var hearingConfirmationForExistingParticipantsMessageCount = 1 + judgeAsExistingParticipant;
+            
+            var totalMessages = newParticipantWelcomeMessageCount + createConferenceMessageCount + hearingConfirmationForNewParticipantsMessageCount
+                                + hearingConfirmationForExistingParticipantsMessageCount;
+            
             await _singledayHearingAsynchronousProcess.Start(hearing);
             
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
@@ -89,8 +99,10 @@ namespace BookingsApi.UnitTests.Services
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge) - 1;
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 1;
             var hearingConfirmationForExistingParticipantsMessageCount = 1;
+            var updateDate = hearing.UpdatedDate.TrimSeconds();
+            var judicialOfficerAsNewParticipant = PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing, updateDate).Count(x => x is JudicialOfficeHolder);
             var totalMessages = newParticipantWelcomeMessageCount + createConferenceMessageCount + hearingConfirmationForNewParticipantsMessageCount
-                                + hearingConfirmationForExistingParticipantsMessageCount + hearing.JudiciaryParticipants.Count;
+                                + hearingConfirmationForExistingParticipantsMessageCount + hearing.JudiciaryParticipants.Count + judicialOfficerAsNewParticipant;
 
             await _singledayHearingAsynchronousProcess.Start(hearing);
             
@@ -101,7 +113,7 @@ namespace BookingsApi.UnitTests.Services
             messages.Count(x => x.IntegrationEvent is NewParticipantHearingConfirmationEvent).Should().Be(hearingConfirmationForNewParticipantsMessageCount);
             messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConferenceMessageCount);
             messages.Count(x => x.IntegrationEvent is ExistingParticipantHearingConfirmationEvent).Should().Be(hearingConfirmationForExistingParticipantsMessageCount);
-            messages.Count(x => x.IntegrationEvent is HearingNotificationIntegrationEvent).Should().Be(hearing.JudiciaryParticipants.Count);
+            messages.Count(x => x.IntegrationEvent is HearingNotificationIntegrationEvent).Should().Be(hearing.JudiciaryParticipants.Count + judicialOfficerAsNewParticipant);
         }
 
         [Test]
@@ -115,8 +127,10 @@ namespace BookingsApi.UnitTests.Services
 
             var createConferenceMessageCount = 1;
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge);
-            var totalMessages = 10;
-
+            var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count;
+            var totalMessages = newParticipantWelcomeMessageCount + createConferenceMessageCount + hearingConfirmationForNewParticipantsMessageCount
+                                 + hearing.JudiciaryParticipants.Count;
+            
             await _singledayHearingAsynchronousProcess.Start(hearing);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
