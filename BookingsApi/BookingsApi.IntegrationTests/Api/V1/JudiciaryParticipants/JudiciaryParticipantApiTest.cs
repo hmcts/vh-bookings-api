@@ -25,24 +25,18 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
                 .BeEquivalentTo(new ParticipantsAddedIntegrationEvent(hearing, judiciaryParticipants));
         }
         
-        protected void AssertEventsPublishedForNewJudiciaryParticipantsNotification(Hearing hearing, int judiciaryParticipantRecevingNotificationCount)
+        protected void AssertEventsPublishedForNewJudiciaryParticipantsNotification(Hearing hearing, IList<JudiciaryParticipant> judiciaryParticipants)
         {
             var serviceBusStub = Application.Services
                 .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
             var messages = serviceBusStub!
                 .ReadAllMessagesFromQueue(hearing.Id);
             
-            var participantAddedMessage = messages.ToList().Find(x => x.IntegrationEvent is HearingNotificationIntegrationEvent);
-            participantAddedMessage.Should().NotBeNull();
-            
-            var participantMessages = messages
+            var notificationMessages = messages
                 .Where(x => x.IntegrationEvent is HearingNotificationIntegrationEvent)
-                .Select(x => x.IntegrationEvent as HearingNotificationIntegrationEvent)
-                .Where(x => x.HearingConfirmationForParticipant.HearingId == hearing.Id)
                 .ToList();
-            
-            
-            participantMessages.Count.Should().Be(judiciaryParticipantRecevingNotificationCount);
+            notificationMessages.Should().NotBeNull();
+            notificationMessages.Count.Should().Be(judiciaryParticipants.Count());
         }
     }
 }

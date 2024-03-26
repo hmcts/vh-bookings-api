@@ -104,7 +104,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var hearing = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(seededHearing.Id));
             var judiciaryParticipants = hearing.JudiciaryParticipants.OrderBy(x => x.DisplayName).ToList();
             judiciaryParticipants.Count.Should().Be(request.Count + judiciaryParticipantsCountBefore);
-            var judiciaryParticipantRecevingNotificationCount = judiciaryParticipants.Count(j => j.JudiciaryPersonId == judiciaryPersonPanelMember.Id);
+            var newJudiciaryParticipants = judiciaryParticipants.Where(j => j.JudiciaryPersonId == judiciaryPersonPanelMember.Id).ToList();
 
             var response = await ApiClientResponse.GetResponses<List<JudiciaryParticipantResponse>>(result.Content);
             response.Should().BeEquivalentTo(request, options => options.ExcludingMissingMembers());
@@ -114,7 +114,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             panelMemberResponse.DisplayName.Should().Be(request[0].DisplayName);
             panelMemberResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.PanelMember);
             
-            AssertEventsPublishedForNewJudiciaryParticipantsNotification(hearing, judiciaryParticipantRecevingNotificationCount);
+            AssertEventsPublishedForNewJudiciaryParticipantsNotification(hearing, newJudiciaryParticipants);
         }
 
         [Test]
