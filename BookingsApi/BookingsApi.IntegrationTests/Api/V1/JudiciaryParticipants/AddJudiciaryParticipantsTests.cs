@@ -75,6 +75,46 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             
             AssertEventsPublishedForNewJudiciaryParticipants(hearing, judiciaryParticipants);
         }
+        
+        [Test]
+        public async Task Should_add_judiciary_panelmember_and_send_one_notification_for_the_added_panelmember()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
+            {
+                options.AddJudge = true;
+                options.AddPanelMember = true;
+            }, status: BookingStatus.Created);
+            var judiciaryPersonPanelMember = await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
+            var judiciaryParticipantsCountBefore = seededHearing.JudiciaryParticipants.Count;
+            
+            var request = BuildValidAddJudiciaryParticipantsPanelMemberRequest();
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PostAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.AddJudiciaryParticipantsToHearing(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+            
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            var hearing = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(seededHearing.Id));
+            var judiciaryParticipants = hearing.JudiciaryParticipants.OrderBy(x => x.DisplayName).ToList();
+            judiciaryParticipants.Count.Should().Be(request.Count + judiciaryParticipantsCountBefore);
+
+            var response = await ApiClientResponse.GetResponses<List<JudiciaryParticipantResponse>>(result.Content);
+            response.Should().BeEquivalentTo(request, options => options.ExcludingMissingMembers());
+            
+            
+            var panelMemberResponse = response.Find(x => x.PersonalCode == _personalCodePanelMember);
+            panelMemberResponse.DisplayName.Should().Be(request[0].DisplayName);
+            panelMemberResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.PanelMember);
+            
+            AssertEventsPublishedForNewJudiciaryParticipantsNotification(hearing, judiciaryParticipants);
+        }
 
         [Test]
         public async Task Should_add_judiciary_participants_to_hearing_with_existing_judiciary_participants()
@@ -256,6 +296,19 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             validationProblemDetails.Errors["judiciaryPerson"][0].Should().Be("A participant with Judge role already exists in the hearing");
         }
 
+        private List<JudiciaryParticipantRequest> BuildValidAddJudiciaryParticipantsPanelMemberRequest()
+        {
+            return new List<JudiciaryParticipantRequest>
+            {
+                new()
+                {
+                    PersonalCode = _personalCodePanelMember,
+                    DisplayName = "B Panel Member",
+                    HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember
+                }
+            };
+        }
+        
         private List<JudiciaryParticipantRequest> BuildValidAddJudiciaryParticipantsRequest()
         {
             return new List<JudiciaryParticipantRequest>

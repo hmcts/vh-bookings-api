@@ -1,5 +1,6 @@
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
+using Moq;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 {
@@ -22,6 +23,26 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             participantAddedMessage.IntegrationEvent
                 .Should()
                 .BeEquivalentTo(new ParticipantsAddedIntegrationEvent(hearing, judiciaryParticipants));
+        }
+        
+        protected void AssertEventsPublishedForNewJudiciaryParticipantsNotification(Hearing hearing, IEnumerable<JudiciaryParticipant> judiciaryParticipants)
+        {
+            var serviceBusStub = Application.Services
+                .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+            var messages = serviceBusStub!
+                .ReadAllMessagesFromQueue(hearing.Id);
+            
+            var participantAddedMessage = messages.ToList().Find(x => x.IntegrationEvent is HearingNotificationIntegrationEvent);
+            participantAddedMessage.Should().NotBeNull();
+            
+            var participantMessages = messages
+                .Where(x => x.IntegrationEvent is HearingNotificationIntegrationEvent)
+                .Select(x => x.IntegrationEvent as HearingNotificationIntegrationEvent)
+                .Where(x => x.HearingConfirmationForParticipant.HearingId == hearing.Id)
+                .ToList();
+            
+            
+            participantMessages.Count.Should().Be(1);
         }
     }
 }
