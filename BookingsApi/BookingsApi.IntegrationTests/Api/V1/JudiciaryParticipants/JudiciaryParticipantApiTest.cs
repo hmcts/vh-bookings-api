@@ -36,7 +36,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
                 .Where(x => x.IntegrationEvent is HearingNotificationIntegrationEvent)
                 .ToList();
             notificationMessages.Should().NotBeNull();
-            notificationMessages.Count.Should().Be(judiciaryParticipants.Count());
+            notificationMessages.Count.Should().Be(judiciaryParticipants.Count);
         }
     }
 }
