@@ -14,7 +14,7 @@ namespace BookingsApi.Domain
             UpdateDisplayName(displayName);
             JudiciaryPerson = judiciaryPerson;
             UpdateHearingRoleCode(hearingRoleCode);
-            ContactEmail = String.IsNullOrWhiteSpace(optionalContactEmail) ? null : optionalContactEmail;
+            ContactEmail = String.IsNullOrWhiteSpace(optionalContactEmail) ? judiciaryPerson.Email : optionalContactEmail;
             ContactTelephone =  String.IsNullOrWhiteSpace(optionalContactTelephone) ? null : optionalContactTelephone;
             CreatedDate = _currentUTC;
             UpdatedDate = _currentUTC;

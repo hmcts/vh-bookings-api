@@ -54,7 +54,7 @@ namespace BookingsApi.Infrastructure.Services
                 DisplayName = string.IsNullOrEmpty(participant.DisplayName) ? $"{participant.JudiciaryPerson.KnownAs} {participant.JudiciaryPerson.Surname}" : participant.DisplayName,
                 Representee = "",
                 Username = participant.JudiciaryPerson.Email, // we need to pass a username otherwise the notification is failing 
-                ContactEmail = participant.JudiciaryPerson.Email,
+                ContactEmail = participant.ContactEmail,
                 ContactTelephone = participant.JudiciaryPerson.WorkPhone,
                 FirstName = participant.JudiciaryPerson.KnownAs,
                 LastName = participant.JudiciaryPerson.Surname,
