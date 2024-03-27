@@ -14,8 +14,8 @@ namespace BookingsApi.Domain
             UpdateDisplayName(displayName);
             JudiciaryPerson = judiciaryPerson;
             UpdateHearingRoleCode(hearingRoleCode);
-            ContactEmail = String.IsNullOrWhiteSpace(optionalContactEmail) ? judiciaryPerson.Email : optionalContactEmail;
-            ContactTelephone =  String.IsNullOrWhiteSpace(optionalContactTelephone) ? null : optionalContactTelephone;
+            ContactEmail = GetEmail();
+            ContactTelephone =  GetTelephone();
             CreatedDate = _currentUTC;
             UpdatedDate = _currentUTC;
         }
@@ -34,7 +34,15 @@ namespace BookingsApi.Domain
         public virtual Hearing Hearing { get; private set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+        
+        /// <summary>
+        /// Do not use GETTER for this property. Use GetEmail() instead
+        /// </summary>
         public string ContactEmail { get; set; }
+        
+        /// <summary>
+        /// Do not use GETTER for this property. Use GetTelephone() instead
+        /// </summary>
         public string ContactTelephone { get; set; }
         
         public string GetEmail() => JudiciaryPerson.IsGeneric 
