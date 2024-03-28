@@ -23,7 +23,8 @@ namespace Testing.Common.Builders.Domain
                         Name.Prefix(), 
                         "Automation_FirstName", 
                         "Automation_LastName", 
-                        $"Automation_{RandomNumber.Next()}@hmcts.net", $"Automation_{RandomNumber.Next()}@hmcts.net"))
+                        $"Automation_{RandomNumber.Next()}@hmcts.net", 
+                        $"Automation_{RandomNumber.Next()}@hearings.reform.hmcts.net"))
                 .With(x => x.UpdatedDate, DateTime.MinValue)
                 .With(x => x.TelephoneNumber, "01234567890")
                 .Build();
@@ -41,7 +42,11 @@ namespace Testing.Common.Builders.Domain
         {
             var settings = new BuilderSettings();
             _person = new Builder(settings).CreateNew<Person>().WithFactory(() =>
-                    new Person(Name.Prefix(), $"Automation_FirstName", $"Automation_LastName", contactEmail, $"Automation_{RandomNumber.Next()}@hmcts.net"))
+                    new Person(Name.Prefix(), 
+                        $"Automation_FirstName", 
+                        $"Automation_LastName", 
+                        contactEmail, 
+                        $"Automation_{RandomNumber.Next()}@hearings.reform.hmcts.net"))
                 .Build();
         }
 
