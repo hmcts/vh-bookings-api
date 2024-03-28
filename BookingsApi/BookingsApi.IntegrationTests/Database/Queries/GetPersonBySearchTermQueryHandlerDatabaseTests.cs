@@ -1,6 +1,4 @@
 using BookingsApi.DAL.Queries;
-using Moq;
-using BookingsApi.Common.Services;
 using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -8,17 +6,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     public class GetPersonBySearchTermQueryHandlerTests : DatabaseTestsBase
     {
         private GetPersonBySearchTermQueryHandler _handler;
-        private Mock<IFeatureToggles> _featureToggles;
-
 
         [SetUp]
         public void Setup()
         {
-            _featureToggles = new Mock<IFeatureToggles>();
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            
-            _featureToggles.Setup(toggle => toggle.EJudFeature()).Returns(false);
-            _handler = new GetPersonBySearchTermQueryHandler(context, _featureToggles.Object);
+            _handler = new GetPersonBySearchTermQueryHandler(context);
         }
 
         [Test]
