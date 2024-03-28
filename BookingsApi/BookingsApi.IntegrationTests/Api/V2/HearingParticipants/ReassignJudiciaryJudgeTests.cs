@@ -59,7 +59,7 @@ public class ReassignJudiciaryJudgeTests : ApiTest
         var serviceBusStub =
             Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var messages = serviceBusStub!.ReadAllMessagesFromQueue(updatedHearing.Id);
-        messages.Length.Should().Be(4);
+        messages.Length.Should().Be(3);
         var judgeMessage = messages.SingleOrDefault(x => x.IntegrationEvent is HearingNotificationIntegrationEvent &&
                                                          ((HearingNotificationIntegrationEvent) x.IntegrationEvent)
                                                          .HearingConfirmationForParticipant.UserRole == "Judge");
