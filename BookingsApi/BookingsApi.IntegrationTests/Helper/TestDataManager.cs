@@ -650,11 +650,12 @@ namespace BookingsApi.IntegrationTests.Helper
             return judiciaryPersonStaging;
         }
 
-        public async Task<JudiciaryPerson> AddJudiciaryPerson(string personalCode = null)
+        public async Task<JudiciaryPerson> AddJudiciaryPerson(string personalCode = null, bool isGeneric = false)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
             var judiciaryPerson = new JudiciaryPersonBuilder(personalCode).Build();
+            judiciaryPerson.IsGeneric = isGeneric;
             await db.JudiciaryPersons.AddAsync(judiciaryPerson);
 
             await db.SaveChangesAsync();
