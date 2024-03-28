@@ -35,17 +35,12 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
             _individualCaseRole = new CaseRole(2, "Individual");
             _panelMemberCaseRole = new CaseRole(4, "pm");
 
-            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(),
-                Faker.Internet.Email());
-            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(),
-                Faker.Internet.Email());
-            _person3 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(),
-                Faker.Internet.Email());
-            _person4 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(),
-                Faker.Internet.Email());
+            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), FakeValidUserName());
+            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), FakeValidUserName());
+            _person3 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), FakeValidUserName());
+            _person4 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), FakeValidUserName());
             _anonymisedPerson =
-                new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(),
-                    $"{Faker.Internet.Email()}@email.net");
+                new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), $"{Faker.Internet.Email()}@email.net");
 
             _caseType1 = new CaseType(12, "case 1")
             {
@@ -66,8 +61,7 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
         }
 
         [Test]
-        public async Task
-            GetAnonymisationDataQuery_Returns_List_Of_Usernames_And_Hearing_Ids_For_Hearings_Over_3_Months_Old()
+        public async Task GetAnonymisationDataQuery_Returns_List_Of_Usernames_And_Hearing_Ids_For_Hearings_Over_3_Months_Old()
         {
             var hearingType = _caseType1.HearingTypes[0];
 
@@ -148,11 +142,10 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
         }
 
         [Test]
-        public async Task
-            GetAnonymisationDataQuery_Filters_Out_Usernames_And_Hearing_Ids_Already_Processed_By_LastRunDate_Specified_In_JobHistory()
+        public async Task GetAnonymisationDataQuery_Filters_Out_Usernames_And_Hearing_Ids_Already_Processed_By_LastRunDate_Specified_In_JobHistory()
         {
             var jobHistory = new JobHistoryForTest();
-            jobHistory.setLastRunDate(DateTime.Now.AddMonths(-5));
+            jobHistory.SetLastRunDate(DateTime.Now.AddMonths(-5));
             _context.JobHistory.Add(jobHistory);
 
             var hearingType = _caseType1.HearingTypes[0];
@@ -160,13 +153,8 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
             var venue = new HearingVenue(1, "venue 1");
             await _context.Venues.AddAsync(venue);
             
-            var hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
-                venue,
-                Faker.Name.First(), Faker.Name.First(), null, false, null);
-
-            var hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
-                venue,
-                Faker.Name.First(), Faker.Name.First(), null, false, null);
+            var hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40, venue, Faker.Name.First(), Faker.Name.First(), null, false, null);
+            var hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40, venue, Faker.Name.First(), Faker.Name.First(), null, false, null);
 
             hearing1.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
             hearing1.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
@@ -174,12 +162,8 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
             hearing2.AddJudge(_person3, _hearingRole1, _judgeCaseRole, "Judge 123");
             hearing2.AddIndividual(_person4, _hearingRole2, _individualCaseRole, "Individual 123");
 
-            var videoHearingType = typeof(VideoHearing);
-            videoHearingType.GetProperty("ScheduledDateTime")
-                .SetValue(hearing1,
-                    DateTime.UtcNow
-                        .AddMonths(-10)); //setting the scheduled time for a hearing that does not fall in between cut off date and last run date 
-
+            //setting the scheduled time for a hearing that does not fall in between cut off date and last run date 
+            typeof(VideoHearing).GetProperty("ScheduledDateTime")?.SetValue(hearing1, DateTime.UtcNow.AddMonths(-10)); 
             await _context.VideoHearings.AddRangeAsync(hearing1, hearing2);
             await _context.SaveChangesAsync();
 
@@ -190,10 +174,44 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
 
             _context.JobHistory.Remove(jobHistory);
         }
+        
+        [Test]
+        public async Task GetAnonymisationDataQuery_since_the_begining_of_time_when_no_successful_JobHistory_dates_to_run_from()
+        {
+            var jobHistory = new JobHistoryForTest();
+            jobHistory.SetLastRunDateFalse();
+            _context.JobHistory.Add(jobHistory);
+
+            var hearingType = _caseType1.HearingTypes[0];
+
+            var venue = new HearingVenue(1, "venue 1");
+            await _context.Venues.AddAsync(venue);
+            
+            var hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40, venue, Faker.Name.First(), Faker.Name.First(), null, false, null);
+            var hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40, venue, Faker.Name.First(), Faker.Name.First(), null, false, null);
+
+            hearing1.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
+            hearing1.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
+
+            hearing2.AddJudge(_person3, _hearingRole1, _judgeCaseRole, "Judge 123");
+            hearing2.AddIndividual(_person4, _hearingRole2, _individualCaseRole, "Individual 123");
+
+            typeof(VideoHearing).GetProperty("ScheduledDateTime")?.SetValue(hearing1, DateTime.UtcNow.AddMonths(-24)); 
+            //Not valid because still within 3 month cut off period
+            typeof(VideoHearing).GetProperty("ScheduledDateTime")?.SetValue(hearing2, DateTime.UtcNow.AddMonths(-1)); 
+            await _context.VideoHearings.AddRangeAsync(hearing1, hearing2);
+            await _context.SaveChangesAsync();
+
+            var result = await _handler.Handle(new GetAnonymisationDataQuery());
+
+            result.Usernames.Count.Should().Be(2);
+            result.HearingIds.Count.Should().Be(1);
+
+            _context.JobHistory.Remove(jobHistory);
+        }
 
         [Test]
-        public async Task
-            GetAnonymisationDataQuery_Returns_List_Of_Usernames_And_Hearing_Ids_For_Hearings_Over_3_Months_Old_And_Are_Unique()
+        public async Task GetAnonymisationDataQuery_Returns_List_Of_Usernames_And_Hearing_Ids_For_Hearings_Over_3_Months_Old_And_Are_Unique()
         {
             var hearingType = _caseType1.HearingTypes[0];
 
@@ -294,27 +312,18 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
             var venue = new HearingVenue(1, "venue 1");
             await _context.Venues.AddAsync(venue);
             
-            var hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
-                venue,
-                Faker.Name.First(), Faker.Name.First(), null, false, null);
-
-            var hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
-                venue,
-                Faker.Name.First(), Faker.Name.First(), null, false, null);
-            
-            var automationTestAccountPersonEntry =
-                new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), username);
+            var hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40, venue, Faker.Name.First(), Faker.Name.First(), null, false, null);
+            var hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40, venue, Faker.Name.First(), Faker.Name.First(), null, false, null);
+            var automationTestAccountPersonEntry = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), username);
 
             hearing1.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
             hearing1.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
-            hearing1.AddIndividual(automationTestAccountPersonEntry, _hearingRole2, _individualCaseRole,
-                "Individual 123");
+            hearing1.AddIndividual(automationTestAccountPersonEntry, _hearingRole2, _individualCaseRole, "Individual 123");
 
             hearing2.AddJudge(_person3, _hearingRole1, _judgeCaseRole, "Judge 123");
             hearing2.AddIndividual(_person4, _hearingRole2, _individualCaseRole, "Individual 123");
 
-            var videoHearingType = typeof(VideoHearing);
-            videoHearingType.GetProperty("ScheduledDateTime").SetValue(hearing1, DateTime.UtcNow.AddMonths(-3));
+            typeof(VideoHearing).GetProperty("ScheduledDateTime")?.SetValue(hearing1, DateTime.UtcNow.AddMonths(-3));
 
             await _context.VideoHearings.AddRangeAsync(hearing1, hearing2);
             await _context.SaveChangesAsync();
@@ -332,12 +341,21 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
 
         private class JobHistoryForTest : JobHistory
         {
-            public void setLastRunDate(DateTime lastRunDate)
+            public void SetLastRunDate(DateTime lastRunDate)
             {
                 LastRunDate = lastRunDate;
                 IsSuccessful = true;
                 JobName = SchedulerJobsNames.AnonymiseHearings;
             }
+
+            public void SetLastRunDateFalse()
+            {
+                LastRunDate = DateTime.Now;
+                IsSuccessful = false;
+                JobName = SchedulerJobsNames.AnonymiseHearings;
+            }
         }
+        
+        private static string FakeValidUserName() => $"{Faker.Internet.UserName()}@hearings.reform.hmcts.net";
     }
 }
