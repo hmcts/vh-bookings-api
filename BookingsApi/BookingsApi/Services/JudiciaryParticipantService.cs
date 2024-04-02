@@ -96,7 +96,8 @@ namespace BookingsApi.Services
                             {
                                 DisplayName = newJudge.DisplayName,
                                 PersonalCode = newJudge.JudiciaryPerson.PersonalCode,
-                                HearingRoleCode = newJudge.HearingRoleCode
+                                HearingRoleCode = newJudge.HearingRoleCode,
+                                OptionalContactEmail = newJudge.ContactEmail
                             }
                         }, sendNotification);
             
@@ -113,7 +114,7 @@ namespace BookingsApi.Services
 
         private async Task PublishEventsForJudiciaryParticipantsAdded(Hearing hearing, IEnumerable<NewJudiciaryParticipant> participants, bool sendNotification = true)
         {
-            await _hearingParticipantService.PublishEventForNewJudiciaryParticipantsAsync(hearing, participants, sendNotification);
+             await _hearingParticipantService.PublishEventForNewJudiciaryParticipantsAsync(hearing, participants, sendNotification);
         }
     }
 }
