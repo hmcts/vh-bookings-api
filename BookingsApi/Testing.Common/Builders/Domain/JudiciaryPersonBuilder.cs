@@ -9,7 +9,7 @@ namespace Testing.Common.Builders.Domain
     {
         private readonly JudiciaryPerson _judiciaryPerson;
 
-        public JudiciaryPersonBuilder(string personalCode = null)
+        public JudiciaryPersonBuilder(string personalCode = null, string userName = null)
         {
             var settings = new BuilderSettings();
             _judiciaryPerson = new Builder(settings).CreateNew<JudiciaryPerson>().WithFactory(() =>
@@ -21,7 +21,7 @@ namespace Testing.Common.Builders.Domain
                         $"Automation_LastName",
                         Name.FullName(),
                         $"{RandomNumber.Next(1000, 100000)}",
-                        $"Automation_{RandomNumber.Next()}@hmcts.net", 
+                        userName ?? $"Automation_{RandomNumber.Next()}@hmcts.net", 
                         Phone.Number(),
                         false,
                         false,

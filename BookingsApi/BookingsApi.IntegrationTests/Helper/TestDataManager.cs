@@ -6,6 +6,7 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.JudiciaryParticipants;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using Faker;
@@ -753,8 +754,7 @@ namespace BookingsApi.IntegrationTests.Helper
             return hearings;
         }
 
-        public async Task AddJudiciaryPanelMember(VideoHearing videoHearing, 
-            JudiciaryPerson judiciaryPerson, string displayName)
+        public async Task AddJudiciaryPanelMember(VideoHearing videoHearing, JudiciaryPerson judiciaryPerson, string displayName)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
             var dbHearing = await db.VideoHearings.Include(x => x.JudiciaryParticipants).ThenInclude(a => a.JudiciaryPerson)
@@ -763,7 +763,26 @@ namespace BookingsApi.IntegrationTests.Helper
             dbHearing.AddJudiciaryPanelMember(person, displayName);
             await db.SaveChangesAsync();
         }
-
+        
+        
+        public async Task AddJudiciaryJudge(VideoHearing videoHearing, JudiciaryPerson judiciaryPerson, string displayName)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var dbHearing = await db.VideoHearings.Include(x => x.JudiciaryParticipants).ThenInclude(a => a.JudiciaryPerson)
+                .FirstAsync(x => x.Id == videoHearing.Id);
+            var person = await db.JudiciaryPersons.FirstAsync(p => p.PersonalCode == judiciaryPerson.PersonalCode);
+            if(dbHearing.Participants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
+            {
+                dbHearing.RemoveParticipant(dbHearing.Participants.First(x => x.HearingRole.UserRole.Name == "Judge"));
+                dbHearing.AddJudiciaryJudge(person, displayName);
+            }
+            else
+            {
+                dbHearing.ReassignJudiciaryJudge(new JudiciaryJudge(displayName, person));
+            }
+            await db.SaveChangesAsync();
+        }
+        
         public async Task AddPanelMember(VideoHearing videoHearing, CaseType caseType)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);

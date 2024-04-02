@@ -878,7 +878,26 @@ namespace BookingsApi.Controllers.V1
 
             return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
         }
+        
+        /// <summary>
+        /// Get Hearings for today by Judiciary Participant email/username
+        /// </summary>
+        /// <param name="email">The username of the judiciary person</param>
+        [HttpGet("email")]
+        [OpenApiOperation("GetHearingsForTodayByJudiciaryPerson")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHearingsForTodayByJudiciaryPerson(string email)
+        {
+            var videoHearings =
+                await _queryHandler.Handle<GetHearingsByJudiciaryPersonQuery, List<VideoHearing>>(new GetHearingsByJudiciaryPersonQuery(email));
 
+            if(videoHearings == null || !videoHearings.Any())
+                return NotFound($"No hearings found for {email}");
+            
+            return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
+        }
+        
         private static string BuildCursorPageUrl(
             string cursor,
             int limit,
