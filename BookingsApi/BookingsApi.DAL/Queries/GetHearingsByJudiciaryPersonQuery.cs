@@ -20,16 +20,12 @@ public class GetHearingsByJudiciaryPersonQueryHandler : IQueryHandler<GetHearing
         if (judiciaryPerson == null)
             throw new JudiciaryPersonNotFoundException(query.JudiciaryEmail);
 
-        var todaysHearings = await _context.VideoHearings
+        return await _context.VideoHearings
             .Include(x => x.JudiciaryParticipants)
-            .Where(x => x.ScheduledDateTime.Date == DateTime.Today.Date)
+            .Where(x => x.ScheduledDateTime.Date == DateTime.Today.Date &&
+                        x.JudiciaryParticipants.Any(p => p.JudiciaryPersonId == judiciaryPerson.Id) && 
+                        x.Status == BookingStatus.Created)
             .ToListAsync();
-
-        return todaysHearings
-            .Where(x =>
-                x.JudiciaryParticipants.Any(p => p.JudiciaryPersonId == judiciaryPerson.Id) && 
-                x.Status == BookingStatus.Created)
-            .ToList();
     }
 }
 
