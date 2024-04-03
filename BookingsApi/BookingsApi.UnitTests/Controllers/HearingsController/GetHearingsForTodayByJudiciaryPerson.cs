@@ -38,8 +38,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             var objectResult = (NotFoundObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-            objectResult.Value.Should().Be($"No hearing found for judiciary person with email {queryParam}");
-            QueryHandlerMock.Verify(x => x.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(It.IsAny<GetHearingsForTodayQuery>()), Times.Once);
+            objectResult.Value.Should().Be($"No hearings found for {queryParam}");
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingsByJudiciaryPersonQuery, List<VideoHearing>>(It.IsAny<GetHearingsByJudiciaryPersonQuery>()), Times.Once);
         }
     }
 }
