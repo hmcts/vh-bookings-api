@@ -337,6 +337,22 @@ stages:
         githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
         subDirectory: ${{ variables.subDirectory }}
 
+#########################################
+# Approve Release to Demo. ##############
+- stage: Approve_Demo_Release
+  displayName: Approve Demo Release
+  jobs:
+  - job: Approve_Demo_Release
+    displayName: Approve Demo Release
+    pool: server
+    timeoutInMinutes: 10080 # 7 Days
+    steps:
+    - task: ManualValidation@0
+      timeoutInMinutes: 10080 # 7 Days
+      inputs:
+        instructions: 'Please Approve Release to Demo'
+        onTimeout: 'reject'
+
 #####################################################
 # Run Entity Framework Demo. #####################
 - stage: Run_Entity_Framework_Demo
