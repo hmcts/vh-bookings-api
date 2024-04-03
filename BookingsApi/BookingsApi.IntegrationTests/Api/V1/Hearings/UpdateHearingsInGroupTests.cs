@@ -1,8 +1,10 @@
+using BookingsApi.Common;
 using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.Common;
 using BookingsApi.Validations.V1;
@@ -17,11 +19,19 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
         {
             // Arrange
             var hearings = await SeedHearingsInGroup();
-            
-            var request = new UpdateHearingsInGroupRequest
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+            foreach (var requestHearing in request.Hearings)
             {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+                requestHearing.CaseNumber = "UpdatedCaseNumber";
+                requestHearing.ScheduledDateTime = requestHearing.ScheduledDateTime.AddDays(1);
+                requestHearing.ScheduledDuration = 90;
+                requestHearing.HearingVenueName = "Manchester County and Family Court";
+                requestHearing.HearingRoomName = "UpdatedRoomName";
+                requestHearing.OtherInformation = "UpdatedOtherInformation";
+                requestHearing.AudioRecordingRequired = true;
+            }
         
             var newParticipant = new Builder(new BuilderSettings()).CreateNew<ParticipantRequest>()
                 .With(p => p.ContactEmail, Faker.Internet.Email())
@@ -31,7 +41,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             var newEndpoint = new Builder(new BuilderSettings()).CreateNew<AddEndpointRequest>()
                 .With(e => e.DefenceAdvocateContactEmail, null)
                 .Build();
-            
+
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearings.First(h => h.Id == requestHearing.HearingId);
@@ -76,26 +86,46 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             foreach (var updatedHearing in updatedHearings)
             {
                 var requestHearing = request.Hearings.First(x => x.HearingId == updatedHearing.Id);
-        
+                var originalHearing = hearings.First(x => x.Id == updatedHearing.Id);
+                
+                updatedHearing.UpdatedDate.Should().BeAfter(originalHearing.UpdatedDate);
+                updatedHearing.UpdatedBy.Should().Be(request.UpdatedBy);
+                var updatedCase = updatedHearing.GetCases().FirstOrDefault();
+                updatedCase.Number.Should().Be(requestHearing.CaseNumber);
+                var originalCase = originalHearing.GetCases().FirstOrDefault();
+                updatedCase.Name.Should().Be(originalCase.Name);
+                updatedHearing.ScheduledDateTime.Should().Be(requestHearing.ScheduledDateTime);
+                updatedHearing.ScheduledDuration.Should().Be(requestHearing.ScheduledDuration);
+                updatedHearing.HearingVenue.Name.Should().Be(requestHearing.HearingVenueName);
+                updatedHearing.HearingRoomName.Should().Be(requestHearing.HearingRoomName);
+                updatedHearing.OtherInformation.Should().Be(requestHearing.OtherInformation);
+                updatedHearing.AudioRecordingRequired.Should().Be(requestHearing.AudioRecordingRequired);
+
                 AssertParticipantsUpdated(updatedHearing, requestHearing);
                 AssertEndpointsUpdated(updatedHearing, requestHearing);
                 AssertEventsPublished(updatedHearing, requestHearing, existingParticipantsModified: 1);
             }
+
+            var updateDateHearing = updatedHearings[0].UpdatedDate.TrimSeconds();
+            var firstHearing = updatedHearings[0];
+            var expectedExistingUser =
+                PublisherHelper.GetExistingParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
+            var expectedNewUser =
+                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
+            var expectedWelcomeNewUser =
+                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).Where(x => x is not JudicialOfficeHolder)
+                    .ToList().Count;
+            AssertNotificationEvents(firstHearing, expectedExistingUser, expectedNewUser, expectedWelcomeNewUser);
         }
         
         [Test]
         public async Task should_return_not_found_when_no_hearings_found_for_group()
         {
             // Arrange
-            var request = new UpdateHearingsInGroupRequest
+            var request = BuildRequest();
+            request.Hearings = new List<HearingRequest>
             {
-                Hearings = new List<HearingRequest>
-                {
-                    new()
-                    {
-                        HearingId = Guid.NewGuid()
-                    }
-                }
+                BuildHearingRequest(DateTime.Today.AddDays(1).AddHours(10))
             };
             
             var groupId = Guid.NewGuid();
@@ -116,21 +146,13 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             // Arrange
             var hearings = await SeedHearingsInGroup();
 
-            var request = new UpdateHearingsInGroupRequest
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             var hearingsNotInGroup = new List<HearingRequest>
             {
-                new()
-                {
-                    HearingId = Guid.NewGuid()
-                },
-                new()
-                {
-                    HearingId = Guid.NewGuid()
-                }
+                BuildHearingRequest(DateTime.Today.AddDays(1).AddHours(10)),
+                BuildHearingRequest(DateTime.Today.AddDays(2).AddHours(10))
             };
             
             request.Hearings.AddRange(hearingsNotInGroup);
@@ -158,10 +180,8 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             // Arrange
             var hearings = await SeedHearingsInGroup();
 
-            var request = new UpdateHearingsInGroupRequest
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             request.Hearings[1].HearingId = request.Hearings[0].HearingId;
 
@@ -184,10 +204,8 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
         public async Task should_return_bad_request_when_empty_hearings_list_in_request()
         {
             // Arrange
-            var request = new UpdateHearingsInGroupRequest
-            {
-                Hearings = new List<HearingRequest>()
-            };
+            var request = BuildRequest();
+            request.Hearings = new List<HearingRequest>();
             
             // Act
             using var client = Application.CreateClient();
@@ -206,10 +224,8 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
         public async Task should_return_bad_request_when_null_hearings_list_in_request()
         {
             // Arrange
-            var request = new UpdateHearingsInGroupRequest
-            {
-                Hearings = null
-            };
+            var request = BuildRequest();
+            request.Hearings = null;
             
             // Act
             using var client = Application.CreateClient();
@@ -223,6 +239,32 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             validationProblemDetails.Errors[nameof(request.Hearings)][0].Should().Be(
                 UpdateHearingsInGroupRequestInputValidation.NoHearingsErrorMessage);
         }
+        
+        [Test]
+        public async Task should_return_bad_request_when_duplicate_scheduled_date_times_in_request()
+        {
+            // Arrange
+            var hearings = await SeedHearingsInGroup();
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+
+            request.Hearings[1].ScheduledDateTime = request.Hearings[0].ScheduledDateTime;
+
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors[nameof(request.Hearings)][0].Should()
+                .Be(UpdateHearingsInGroupRequestInputValidation.DuplicateScheduledDateTimesMessage);
+        }
 
         [Test]
         public async Task should_return_bad_request_when_invalid_participants_in_request()
@@ -230,10 +272,8 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             // Arrange
             var hearings = await SeedHearingsInGroup();
 
-            var request = new UpdateHearingsInGroupRequest
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             foreach (var requestHearing in request.Hearings)
             {
@@ -264,10 +304,8 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             // Arrange
             var hearings = await SeedHearingsInGroup();
 
-            var request = new UpdateHearingsInGroupRequest
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             var newParticipant = new Builder(new BuilderSettings()).CreateNew<ParticipantRequest>()
                 .With(p => p.ContactEmail, Faker.Internet.Email())
@@ -302,11 +340,9 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
         {
             // Arrange
             var hearings = await SeedHearingsInGroup();
- 
-            var request = new UpdateHearingsInGroupRequest
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             var newEndpoint = new Builder(new BuilderSettings()).CreateNew<AddEndpointRequest>()
                 .With(e => e.DefenceAdvocateContactEmail, null)
@@ -333,6 +369,87 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                 AddEndpointRequestValidation.NoDisplayNameError);
         }
 
+        [Test]
+        public async Task should_return_bad_request_when_invalid_details_in_request()
+        {
+            // Arrange
+            var request = new UpdateHearingsInGroupRequest();
+            var groupId = Guid.NewGuid();
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors[nameof(request.UpdatedBy)][0].Should().Be(
+                UpdateHearingsInGroupRequestInputValidation.NoUpdatedByErrorMessage);
+        }
+        
+        [Test]
+        public async Task should_return_bad_request_when_invalid_hearing_details_in_request()
+        {
+            // Arrange
+            var request = new UpdateHearingsInGroupRequest
+            {
+                Hearings = new List<HearingRequest>
+                {
+                    new()
+                    {
+                        HearingId = Guid.NewGuid(),
+                        ScheduledDateTime = DateTime.Today.AddDays(-1).AddHours(10)
+                    }
+                }
+            };
+            var groupId = Guid.NewGuid();
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["Hearings[0].HearingVenueName"][0].Should().Be(
+                UpdateHearingRequestValidation.NoHearingVenueNameErrorMessage);
+            validationProblemDetails.Errors["Hearings[0].ScheduledDuration"][0].Should().Be(
+                UpdateHearingRequestValidation.NoScheduleDurationErrorMessage);
+            validationProblemDetails.Errors["Hearings[0].CaseNumber"][0].Should().Be(
+                CaseRequestValidation.CaseNumberMessage);
+            validationProblemDetails.Errors["Hearings[0].ScheduledDateTime"][0].Should().Be(
+                UpdateHearingRequestValidation.ScheduleDateTimeInPastErrorMessage);
+        }
+        
+        [Test]
+        public async Task should_return_bad_request_when_hearing_venue_name_does_not_exist()
+        {
+            // Arrange
+            var hearings = await SeedHearingsInGroup();
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+            request.Hearings[0].HearingVenueName = "NonExistingVenueName";
+
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["Hearings[0]"][0].Should()
+                .Be($"Hearing venue name {request.Hearings[0].HearingVenueName} does not exist");
+        }
+
         private async Task<List<VideoHearing>> SeedHearingsInGroup()
         {
             var dates = new List<DateTime>
@@ -357,11 +474,34 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
 
             return hearings;
         }
+
+        private static UpdateHearingsInGroupRequest BuildRequest() =>
+            new()
+            {
+                UpdatedBy = "updatedBy@email.com"
+            };
+        
+        private static HearingRequest BuildHearingRequest(DateTime scheduledDateTime) =>
+            new()
+            {
+                HearingId = Guid.NewGuid(),
+                HearingVenueName = "VenueName",
+                ScheduledDateTime = scheduledDateTime,
+                ScheduledDuration = 45,
+                CaseNumber = "CaseNumber"
+            };
         
         private static HearingRequest MapHearingRequest(Hearing hearing) =>
             new()
             {
                 HearingId = hearing.Id,
+                CaseNumber = hearing.GetCases().FirstOrDefault().Number,
+                ScheduledDateTime = hearing.ScheduledDateTime,
+                ScheduledDuration = hearing.ScheduledDuration,
+                HearingVenueName = hearing.HearingVenue.Name,
+                HearingRoomName = hearing.HearingRoomName,
+                OtherInformation = hearing.OtherInformation,
+                AudioRecordingRequired = hearing.AudioRecordingRequired,
                 Participants = new UpdateHearingParticipantsRequest
                 {
                     ExistingParticipants = hearing.Participants.Select(p => new UpdateParticipantRequest
@@ -429,6 +569,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
 
             AssertParticipantEvents();
             AssertEndpointEvents();
+            AssertHearingEvents();
             return;
 
             void AssertParticipantEvents()
@@ -484,6 +625,64 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
 
                 endpointRemovedMessages.Count.Should().Be(expectedRemovedCount);
             }
+            
+            void AssertHearingEvents()
+            {
+                const int expectedDetailsUpdatedCount = 1;
+
+                var hearingDetailsUpdatedMessages = messages
+                    .Where(x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent)
+                    .Select(x => x.IntegrationEvent as HearingDetailsUpdatedIntegrationEvent)
+                    .Where(x => x.Hearing.HearingId == hearing.Id)
+                    .ToList();
+
+                hearingDetailsUpdatedMessages.Count.Should().Be(expectedDetailsUpdatedCount);
+
+                if (requestHearing.ScheduledDateTime != hearing.ScheduledDateTime)
+                {
+                    var expectedHearingAmendmentCount = hearing.Participants.Count + hearing.JudiciaryParticipants.Count;
+
+                    var hearingAmendmentMessages = messages
+                        .Where(x => x.IntegrationEvent is HearingAmendmentNotificationEvent)
+                        .Select(x => x.IntegrationEvent as HearingAmendmentNotificationEvent)
+                        .Where(x => x.HearingConfirmationForParticipant.HearingId == hearing.Id)
+                        .ToList();
+
+                    hearingAmendmentMessages.Count.Should().Be(expectedHearingAmendmentCount);
+                }
+            }
+        }
+        
+        private void AssertNotificationEvents(Hearing hearing, int expectedExistingUserMessages, int expectedNewUserMessages, int expectedNewUserWelcomeMessages)
+        {
+            var serviceBusStub = Application.Services
+                .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+            var messages = serviceBusStub!
+                .ReadAllMessagesFromQueue(hearing.Id);
+            
+            
+            var existingUserMessages = messages
+                .Where(x => x.IntegrationEvent is ExistingParticipantMultidayHearingConfirmationEvent)
+                .Select(x => x.IntegrationEvent as ExistingParticipantMultidayHearingConfirmationEvent)
+                .Where(x => x.HearingConfirmationForParticipant.HearingId == hearing.Id)
+                .ToList();
+            
+            var newUserMessages = messages
+                .Where(x => x.IntegrationEvent is NewParticipantMultidayHearingConfirmationEvent)
+                .Select(x => x.IntegrationEvent as NewParticipantMultidayHearingConfirmationEvent)
+                .Where(x => x.HearingConfirmationForParticipant.HearingId == hearing.Id)
+                .ToList();
+            
+            var newUserWelcomeMessages = messages
+                .Where(x => x.IntegrationEvent is NewParticipantWelcomeEmailEvent)
+                .Select(x => x.IntegrationEvent as NewParticipantWelcomeEmailEvent)
+                .Where(x => x.WelcomeEmail.HearingId == hearing.Id)
+                .ToList();
+            
+            existingUserMessages.Count.Should().Be(expectedExistingUserMessages);
+            newUserMessages.Count.Should().Be(expectedNewUserMessages);
+            newUserWelcomeMessages.Count.Should().Be(expectedNewUserWelcomeMessages);
+            
         }
     }
 }

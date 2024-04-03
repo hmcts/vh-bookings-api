@@ -25,6 +25,14 @@ namespace BookingsApi.DAL.Services
         Task UpdateHearingCaseName(Guid hearingId, string caseName);
 
         /// <summary>
+        /// Update the case name of a multi-day hearing, used purely as part of the clone process
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing</param>
+        /// <param name="newCaseName">New case name</param>
+        /// <returns></returns>
+        Task RenameHearingForMultiDayBooking(Guid hearingId, string newCaseName);
+
+        /// <summary>
         /// Create links between participants if any exist
         /// </summary>
         /// <param name="participants">List of participants in the hearing</param>
@@ -106,15 +114,6 @@ namespace BookingsApi.DAL.Services
                             participantList.Add(judge);
                             break;
                         }
-                    case "Staff Member":
-                        {
-                            var staffMember = hearing.AddStaffMember(existingPerson ?? participantToAdd.Person,
-                                participantToAdd.HearingRole,
-                                participantToAdd.CaseRole, participantToAdd.DisplayName);
-
-                            participantList.Add(staffMember);
-                            break;
-                        }
                     default:
                         throw new DomainRuleException(nameof(participantToAdd.HearingRole.UserRole.Name),
                             $"Role {participantToAdd.HearingRole.UserRole.Name} not recognised");
@@ -153,6 +152,14 @@ namespace BookingsApi.DAL.Services
             {
                 IsLeadCase = existingCase.IsLeadCase
             });
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RenameHearingForMultiDayBooking(Guid hearingId, string newCaseName)
+        {
+            var hearing = await _context.VideoHearings.Include(x => x.HearingCases).ThenInclude(h => h.Case)
+                .FirstAsync(x => x.Id == hearingId);
+            hearing.RenameHearingForMultiDayBooking(newCaseName);
             await _context.SaveChangesAsync();
         }
 

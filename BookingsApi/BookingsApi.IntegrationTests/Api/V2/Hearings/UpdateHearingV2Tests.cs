@@ -119,7 +119,7 @@ public class UpdateHearingV2Tests : ApiTest
 
         var serviceBusStub =
             Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        var message = serviceBusStub!.ReadMessageFromQueue();
+        var message = serviceBusStub!.ReadAllMessagesFromQueue(hearingId)[0];
         message.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
 
         hearingFromDb.HearingVenue.VenueCode.Should().Be(request.HearingVenueCode);
@@ -217,8 +217,68 @@ public class UpdateHearingV2Tests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.OK);
         
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        var message = serviceBusStub!.ReadMessageFromQueue();
-        message.Should().BeNull();
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingId);
+        messages.Length.Should().Be(0);
+    }
+    
+    [Test]
+    public async Task should_update_hearing_when_details_are_the_same()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options =>
+        {
+            options.Case = new Case("Case1 Num", "Case1 Name");
+        }, BookingStatus.Created);
+        var hearingId = hearing.Id;
+        var request = BuildRequestWithSameDetailsAsExisting(hearing);
+
+        var beforeUpdatedDate = hearing.UpdatedDate;
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PutAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingDetails(hearingId),
+            RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var response = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        response.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+        response.UpdatedBy.Should().Be(request.UpdatedBy);
+    }
+
+    [Test]
+    public async Task should_update_case_when_case_info_has_changed_and_all_other_details_are_the_same()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
+        {
+            options.Case = new Case("Case1 Num", "Case1 Name");
+        }, BookingStatus.Created);
+        var hearingId = hearing.Id;
+        var request = BuildRequestWithSameDetailsAsExisting(hearing);
+        
+        var newCase = new
+        {
+            Number = "Updated Case Number",
+            Name = "Updated Case Name"
+        };
+        request.Cases[0].Number = newCase.Number;
+        request.Cases[0].Name = newCase.Name;
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PutAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingDetails(hearingId),
+            RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var response = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        response.Cases[0].Number.Should().Be(newCase.Number);
+        response.Cases[0].Name.Should().Be(newCase.Name);
     }
     
     private static UpdateHearingRequestV2 BuildRequest()
@@ -238,5 +298,20 @@ public class UpdateHearingV2Tests : ApiTest
             HearingVenueCode = "701411", // Manchester County and Family Court
             AudioRecordingRequired = false
         };
+    }
+
+    private static UpdateHearingRequestV2 BuildRequestWithSameDetailsAsExisting(Hearing hearing)
+    {
+        var request = BuildRequest();
+        request.HearingVenueCode = hearing.HearingVenue.VenueCode;
+        request.ScheduledDateTime = hearing.ScheduledDateTime;
+        request.ScheduledDuration = hearing.ScheduledDuration;
+        request.HearingRoomName = hearing.HearingRoomName;
+        request.OtherInformation = hearing.OtherInformation;
+        request.AudioRecordingRequired = hearing.AudioRecordingRequired;
+        request.UpdatedBy = "UpdatedByUserName";
+        request.Cases[0].Number = hearing.GetCases()[0].Number;
+        request.Cases[0].Name = hearing.GetCases()[0].Name;
+        return request;
     }
 }

@@ -45,7 +45,7 @@ namespace BookingsApi.DAL.Commands
                 throw new JudiciaryPersonNotFoundException(command.NewJudiciaryJudge.PersonalCode);
             }
             
-            var newJudge = new JudiciaryJudge(command.NewJudiciaryJudge.DisplayName, judiciaryPerson);
+            var newJudge = new JudiciaryJudge(command.NewJudiciaryJudge.DisplayName, judiciaryPerson, command.NewJudiciaryJudge.OptionalContactEmail);
             
             hearing.ReassignJudiciaryJudge(newJudge);
 

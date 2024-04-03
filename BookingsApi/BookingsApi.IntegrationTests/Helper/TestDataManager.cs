@@ -295,18 +295,6 @@ namespace BookingsApi.IntegrationTests.Helper
 
             videoHearing.AddIndividual(person4, respondentLipHearingRole, respondentCaseRole,
                 $"{person4.FirstName} {person4.LastName}");
-
-            if (options.AddStaffMember)
-            {
-                var staffMemberPerson = new PersonBuilder(true).Build();
-                var staffMemberCaseRole = caseType.CaseRoles.First(x => x.Name == "Staff Member");
-
-                var staffMemberHearingRole = useFlatHearingRoles
-                    ? flatHearingRoles.First(x => x.Code == HearingRoleCodes.StaffMember)
-                    : staffMemberCaseRole.HearingRoles.First(x => x.Name == HearingRoles.StaffMember);
-                videoHearing.AddStaffMember(staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole,
-                    "Staff Member 1");
-            }
         }
 
         private async Task AddPanelMemberToVideoHearing(VideoHearing videoHearing, CaseType caseType,
@@ -662,11 +650,12 @@ namespace BookingsApi.IntegrationTests.Helper
             return judiciaryPersonStaging;
         }
 
-        public async Task<JudiciaryPerson> AddJudiciaryPerson(string personalCode = null)
+        public async Task<JudiciaryPerson> AddJudiciaryPerson(string personalCode = null, bool isGeneric = false)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
             var judiciaryPerson = new JudiciaryPersonBuilder(personalCode).Build();
+            judiciaryPerson.IsGeneric = isGeneric;
             await db.JudiciaryPersons.AddAsync(judiciaryPerson);
 
             await db.SaveChangesAsync();

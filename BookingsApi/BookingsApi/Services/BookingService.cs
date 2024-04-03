@@ -10,6 +10,13 @@ namespace BookingsApi.Services;
 public interface IBookingService
 {
     /// <summary>
+    /// Save a new hearing, and return the saved hearing.
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
+    Task<VideoHearing> SaveNewHearing(CreateVideoHearingCommand command);
+    
+    /// <summary>
     /// Save a new hearing, publish a message to the event bus, and return the saved hearing.
     /// </summary>
     /// <param name="command"></param>
@@ -30,8 +37,18 @@ public interface IBookingService
     /// </summary>
     /// <param name="videoHearing"></param>
     /// <param name="totalDays"></param>
+    /// <param name="videoHearingUpdateDate"></param>
     /// <returns></returns>
-    Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays);
+    Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate);
+
+    /// <summary>
+    /// Send a message to the service bus to publish the booking of edit a new multi-day hearing
+    /// </summary>
+    /// <param name="videoHearing"></param>
+    /// <param name="totalDays"></param>
+    /// <param name="videoHearingUpdateDate"></param>
+    /// <returns></returns>
+    Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate);
 
     /// <summary>
     /// Send a message to the service bus to publish the update of a hearing
@@ -47,6 +64,23 @@ public interface IBookingService
     /// <param name="videoHearing"></param>
     /// <returns></returns>
     Task PublishHearingCancelled(VideoHearing videoHearing);
+    
+    /// <summary>
+    /// Get a Hearing by Id
+    /// </summary>
+    /// <param name="hearingId"></param>
+    /// <returns>Hearing</returns>
+    Task<VideoHearing> GetHearingById(Guid hearingId);
+
+    /// <summary>
+    /// Update status of a hearing and publish a message to the service bus
+    /// </summary>
+    /// <param name="videoHearing"></param>
+    /// <param name="status"></param>
+    /// <param name="updatedBy"></param>
+    /// <param name="reason"></param>
+    /// <returns></returns>
+    Task UpdateHearingStatus(VideoHearing videoHearing, BookingStatus status, string updatedBy, string reason);
 }
 
 public class BookingService : IBookingService
@@ -57,10 +91,12 @@ public class BookingService : IBookingService
     private readonly IBookingAsynchronousProcess _bookingAsynchronousProcess;
     private readonly IFirstdayOfMultidayBookingAsynchronousProcess _firstdayOfMultidayBookingAsyncProcess;
     private readonly IClonedBookingAsynchronousProcess _clonedBookingAsynchronousProcess;
+    private readonly ICreateConferenceAsynchronousProcess _createConferenceAsynchronousProcess;
+        
     public BookingService(IEventPublisher eventPublisher, ICommandHandler commandHandler, IQueryHandler queryHandler,
         IBookingAsynchronousProcess bookingAsynchronousProcess,
         IFirstdayOfMultidayBookingAsynchronousProcess firstdayOfMultidayBookingAsyncProcess,
-        IClonedBookingAsynchronousProcess clonedBookingAsynchronousProcess)
+        IClonedBookingAsynchronousProcess clonedBookingAsynchronousProcess, ICreateConferenceAsynchronousProcess createConferenceAsynchronousProcess)
     {
         _eventPublisher = eventPublisher;
         _commandHandler = commandHandler;
@@ -68,8 +104,21 @@ public class BookingService : IBookingService
         _bookingAsynchronousProcess = bookingAsynchronousProcess;
         _firstdayOfMultidayBookingAsyncProcess = firstdayOfMultidayBookingAsyncProcess;
         _clonedBookingAsynchronousProcess = clonedBookingAsynchronousProcess;
+        _createConferenceAsynchronousProcess = createConferenceAsynchronousProcess;
     }
 
+    public async Task<VideoHearing> SaveNewHearing(CreateVideoHearingCommand command)
+    {
+        await _commandHandler.Handle(command);
+        
+        var getHearingByIdQuery = new GetHearingByIdQuery(command.NewHearingId);
+        var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+
+        await _createConferenceAsynchronousProcess.Start(queriedVideoHearing);
+        
+        return queriedVideoHearing;
+    }
+    
     public async Task<VideoHearing> SaveNewHearingAndPublish(CreateVideoHearingCommand command, bool isMultiDay)
     {
         await _commandHandler.Handle(command);
@@ -93,9 +142,14 @@ public class BookingService : IBookingService
         }
     }
 
-    public async Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays)
+    public async Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate)
     {
-        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays);
+        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays, videoHearingUpdateDate);
+    }
+    
+    public async Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate)
+    {
+        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays, videoHearingUpdateDate, true);
     }
     
     public async Task PublishHearingCancelled(VideoHearing videoHearing)
@@ -105,6 +159,14 @@ public class BookingService : IBookingService
             // publish the event only for confirmed(created) hearing  
             await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(videoHearing.Id));
         }
+    }
+
+    public async Task<VideoHearing> GetHearingById(Guid hearingId)
+    {
+        var query = new GetHearingByIdQuery(hearingId);
+        var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+
+        return hearing;
     }
 
     public async Task<VideoHearing> UpdateHearingAndPublish(UpdateHearingCommand updateHearingCommand, VideoHearing originalHearing)
@@ -118,6 +180,15 @@ public class BookingService : IBookingService
         await PublishHearingUpdateNotificationToParticipants(originalHearing, updatedHearing);
 
         return updatedHearing;
+    }
+
+    public async Task UpdateHearingStatus(VideoHearing videoHearing, BookingStatus status, string updatedBy, string reason)
+    {
+        var command = new UpdateHearingStatusCommand(videoHearing.Id, status, updatedBy, reason);
+        await _commandHandler.Handle(command);
+
+        if (status == BookingStatus.Cancelled) 
+            await PublishHearingCancelled(videoHearing);
     }
 
     private async Task PublishHearingUpdateNotificationToParticipants(VideoHearing originalHearing, VideoHearing updatedHearing)

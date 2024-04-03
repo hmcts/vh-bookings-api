@@ -26,9 +26,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var hearingIdsForAnonymisations =
                 (await _getAnonymisationDataQueryHandler.Handle(new GetAnonymisationDataQuery())).HearingIds;
 
-            await _commandHandler.Handle(new AnonymiseCaseAndParticipantCommand
-                { HearingIds = hearingIdsForAnonymisations });
-            
+            await _commandHandler.Handle(new AnonymiseCaseAndParticipantCommand { HearingIds = hearingIdsForAnonymisations });
             var returnedVideoHearingAfterFirstAnonymisationRequest = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var hearingDataAfterFirstAnonymisationRequest = returnedVideoHearingAfterFirstAnonymisationRequest.HearingCases[0];
             

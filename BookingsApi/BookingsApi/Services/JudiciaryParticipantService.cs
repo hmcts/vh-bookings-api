@@ -2,10 +2,10 @@ namespace BookingsApi.Services
 {
     public interface IJudiciaryParticipantService
     {
-        Task<IList<JudiciaryParticipant>> AddJudiciaryParticipants(List<NewJudiciaryParticipant> newJudiciaryParticipants, Guid hearingId);
+        Task<IList<JudiciaryParticipant>> AddJudiciaryParticipants(List<NewJudiciaryParticipant> newJudiciaryParticipants, Guid hearingId, bool sendNotification = true);
         Task<JudiciaryParticipant> UpdateJudiciaryParticipant(UpdatedJudiciaryParticipant judiciaryParticipant, Guid hearingId);
         Task RemoveJudiciaryParticipant(string personalCode, Guid hearingId);
-        Task<JudiciaryParticipant> ReassignJudiciaryJudge(Guid hearingId, NewJudiciaryJudge newJudiciaryJudge);
+        Task<JudiciaryParticipant> ReassignJudiciaryJudge(Guid hearingId, NewJudiciaryJudge newJudiciaryJudge, bool sendNotification = true);
     }
     
     public class JudiciaryParticipantService : IJudiciaryParticipantService
@@ -24,13 +24,13 @@ namespace BookingsApi.Services
             _eventPublisher = eventPublisher;
         }
         
-        public async Task<IList<JudiciaryParticipant>> AddJudiciaryParticipants(List<NewJudiciaryParticipant> newJudiciaryParticipants, Guid hearingId)
+        public async Task<IList<JudiciaryParticipant>> AddJudiciaryParticipants(List<NewJudiciaryParticipant> newJudiciaryParticipants, Guid hearingId, bool sendNotification = true)
         {
             var command = new AddJudiciaryParticipantsToHearingCommand(hearingId, newJudiciaryParticipants);
             await _commandHandler.Handle(command);
             
             var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-            await PublishEventsForJudiciaryParticipantsAdded(updatedHearing, newJudiciaryParticipants);
+            await PublishEventsForJudiciaryParticipantsAdded(updatedHearing, newJudiciaryParticipants, sendNotification);
             
             var addedParticipants = updatedHearing.JudiciaryParticipants
                 .Where(x => newJudiciaryParticipants.Select(p => p.PersonalCode).Contains(x.JudiciaryPerson.PersonalCode))
@@ -64,7 +64,7 @@ namespace BookingsApi.Services
             await PublishEventForJudiciaryParticipantRemoved(videoHearing, command.RemovedParticipantId.Value);
         }
         
-        public async Task<JudiciaryParticipant> ReassignJudiciaryJudge(Guid hearingId, NewJudiciaryJudge newJudiciaryJudge)
+        public async Task<JudiciaryParticipant> ReassignJudiciaryJudge(Guid hearingId, NewJudiciaryJudge newJudiciaryJudge, bool sendNotification = true)
         {
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
 
@@ -77,27 +77,30 @@ namespace BookingsApi.Services
             
             var newJudge = (JudiciaryParticipant)hearing.GetJudge();
 
-            await PublishEventsForJudiciaryJudgeReassigned(hearing, oldJudge?.Id, newJudge);
+            await PublishEventsForJudiciaryJudgeReassigned(hearing, oldJudge?.Id, newJudge, sendNotification);
 
             return newJudge;
         }
 
-        private async Task PublishEventsForJudiciaryJudgeReassigned(Hearing hearing, Guid? oldJudgeId, JudiciaryParticipant newJudge)
+        private async Task PublishEventsForJudiciaryJudgeReassigned(Hearing hearing, Guid? oldJudgeId, JudiciaryParticipant newJudge, bool sendNotification = true)
         {
             if (oldJudgeId != null)
             {
                 await PublishEventForJudiciaryParticipantRemoved(hearing, oldJudgeId.Value);
             }
+
             
             await PublishEventsForJudiciaryParticipantsAdded(hearing, new List<NewJudiciaryParticipant>
-            {
-                new()
-                {
-                    DisplayName = newJudge.DisplayName,
-                    PersonalCode = newJudge.JudiciaryPerson.PersonalCode,
-                    HearingRoleCode = newJudge.HearingRoleCode
-                }
-            });
+                        {
+                            new()
+                            {
+                                DisplayName = newJudge.DisplayName,
+                                PersonalCode = newJudge.JudiciaryPerson.PersonalCode,
+                                HearingRoleCode = newJudge.HearingRoleCode,
+                                OptionalContactEmail = newJudge.ContactEmail
+                            }
+                        }, sendNotification);
+            
         }
         
         private async Task PublishEventForJudiciaryParticipantRemoved(Hearing hearing, Guid removedJudiciaryParticipantId)
@@ -109,9 +112,9 @@ namespace BookingsApi.Services
             }
         }
 
-        private async Task PublishEventsForJudiciaryParticipantsAdded(Hearing hearing, IEnumerable<NewJudiciaryParticipant> participants)
+        private async Task PublishEventsForJudiciaryParticipantsAdded(Hearing hearing, IEnumerable<NewJudiciaryParticipant> participants, bool sendNotification = true)
         {
-            await _hearingParticipantService.PublishEventForNewJudiciaryParticipantsAsync(hearing, participants);
+             await _hearingParticipantService.PublishEventForNewJudiciaryParticipantsAsync(hearing, participants, sendNotification);
         }
     }
 }
