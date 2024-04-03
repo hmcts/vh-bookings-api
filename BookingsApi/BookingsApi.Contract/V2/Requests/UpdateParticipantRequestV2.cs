@@ -21,6 +21,11 @@ namespace BookingsApi.Contract.V2.Requests
         ///     Participant Telephone number
         /// </summary>
         public string TelephoneNumber { get; set; }
+        
+        /// <summary>
+        ///     Participant Contact email
+        /// </summary>
+        public string ContactEmail { get; set; }
 
         /// <summary>
         ///     Participant Display Name

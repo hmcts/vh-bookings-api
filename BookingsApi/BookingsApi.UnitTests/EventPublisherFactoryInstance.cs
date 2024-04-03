@@ -21,6 +21,7 @@ namespace BookingsApi.UnitTests
                 new HearingNotoficationEventPublisher(eventPublisher),
                 new MultidayHearingNotificationEventPublisher(eventPublisher),
                 new HearingNotificationEventForJudiciaryParticipantPublisher(eventPublisher),
+                new HearingNotificationEventForNewJudicialOfficersPublisher(eventPublisher),
                 new JudiciaryParticipantAddedPublisher(eventPublisher)
             });
         }

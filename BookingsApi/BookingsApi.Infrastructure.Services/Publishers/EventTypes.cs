@@ -13,6 +13,7 @@
         HearingNotificationEvent,
         MultiDayHearingIntegrationEvent,
         HearingNotificationForJudiciaryParticipantEvent,
+        HearingNotificationForNewJudicialOfficersEvent,
         JudiciaryParticipantAddedEvent
     }
 }
