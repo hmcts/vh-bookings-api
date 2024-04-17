@@ -22,7 +22,6 @@ namespace BookingsApi.Controllers.V1
         private readonly IHearingService _hearingService;
         private readonly IVhLogger _ivhLogger;
         private readonly IUpdateHearingService _updateHearingService;
-        private readonly IFeatureToggles _featureToggles;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
             IBookingService bookingService,
@@ -30,8 +29,7 @@ namespace BookingsApi.Controllers.V1
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
             IVhLogger ivhLogger,
-            IUpdateHearingService updateHearingService,
-            IFeatureToggles featureToggles)
+            IUpdateHearingService updateHearingService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -42,7 +40,6 @@ namespace BookingsApi.Controllers.V1
 
             _kinlyConfiguration = kinlyConfiguration.Value;
             _updateHearingService = updateHearingService;
-            _featureToggles = featureToggles;
         }
 
         /// <summary>
@@ -583,17 +580,6 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
 
-            if (_featureToggles.MultiDayBookingEnhancementsEnabled() && videoHearing.SourceId != null)
-            {
-                var hearingsInGroupQuery = new GetHearingsByGroupIdQuery(videoHearing.SourceId.Value);
-                var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(hearingsInGroupQuery);
-                if (hearingsInGroup.Exists(h => h.ScheduledDateTime.Date == request.ScheduledDateTime.Date))
-                {
-                    ModelState.AddModelError(nameof(request.ScheduledDateTime), DomainRuleErrorMessages.CannotBeOnSameDateAsOtherHearingInGroup);
-                    return ValidationProblem(ModelState);
-                }
-            }
-            
             var cases = MapCase(request.Cases);
 
             // use existing video hearing values here when request properties are null

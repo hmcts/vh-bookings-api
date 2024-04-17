@@ -17,12 +17,10 @@ namespace BookingsApi.Controllers.V2
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly ILogger<HearingsControllerV2> _logger;
         private readonly IUpdateHearingService _updateHearingService;
-        private readonly IFeatureToggles _featureToggles;
 
         public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
             ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfigurationOption, IUpdateHearingService updateHearingService,
-            IFeatureToggles featureToggles)
+            IOptions<KinlyConfiguration> kinlyConfigurationOption, IUpdateHearingService updateHearingService)
         {
             _queryHandler = queryHandler;
             _bookingService = bookingService;
@@ -30,7 +28,6 @@ namespace BookingsApi.Controllers.V2
             _randomGenerator = randomGenerator;
             _kinlyConfiguration = kinlyConfigurationOption.Value;
             _updateHearingService = updateHearingService;
-            _featureToggles = featureToggles;
         }
 
         /// <summary>
@@ -136,19 +133,6 @@ namespace BookingsApi.Controllers.V2
                 return ValidationProblem(ModelState);
             }
 
-            var scheduledDateTime = request.ScheduledDateTime.GetValueOrDefault(videoHearing.ScheduledDateTime);
-            
-            if (_featureToggles.MultiDayBookingEnhancementsEnabled() && videoHearing.SourceId != null)
-            {
-                var hearingsInGroupQuery = new GetHearingsByGroupIdQuery(videoHearing.SourceId.Value);
-                var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(hearingsInGroupQuery);
-                if (hearingsInGroup.Exists(h => h.ScheduledDateTime.Date == scheduledDateTime.Date))
-                {
-                    ModelState.AddModelError(nameof(request.ScheduledDateTime), DomainRuleErrorMessages.CannotBeOnSameDateAsOtherHearingInGroup);
-                    return ValidationProblem(ModelState);
-                }
-            }
-
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
 
             // use existing video hearing values here when request properties are null
@@ -156,7 +140,7 @@ namespace BookingsApi.Controllers.V2
             request.HearingRoomName ??= videoHearing.HearingRoomName;
             request.OtherInformation ??= videoHearing.OtherInformation;
 
-            var updatedHearing = await UpdateHearingDetails(hearingId, scheduledDateTime,
+            var updatedHearing = await UpdateHearingDetails(hearingId, request.ScheduledDateTime.GetValueOrDefault(videoHearing.ScheduledDateTime),
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
                 request.UpdatedBy, cases, request.AudioRecordingRequired.Value, videoHearing);
             var response = HearingToDetailsResponseV2Mapper.Map(updatedHearing);

@@ -75,7 +75,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var eventPublisher = withQueueClient ? _eventPublisher : EventPublisherMock.Object;
             var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object,
                 BookingAsynchronousProcess, FirstdayOfMultidayBookingAsyncProcess, ClonedBookingAsynchronousProcess, 
-                CreateConferenceAsynchronousProcess);
+                CreateConferenceAsynchronousProcess, FeatureToggles);
             var participantAddedToHearingAsynchronousProcess = new ParticipantAddedToHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
             var newJudiciaryAddedAsynchronousProcess = new NewJudiciaryAddedAsynchronousProcesses(PublisherFactory);
             var hearingParticipantService = new HearingParticipantService(CommandHandlerMock.Object, EventPublisherMock.Object,
@@ -89,7 +89,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             return new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 bookingService, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object, Logger.Object, updateHearingService, FeatureToggles);
+                HearingServiceMock.Object, Logger.Object, updateHearingService);
         }
 
         [Test]
