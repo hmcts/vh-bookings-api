@@ -176,13 +176,7 @@ public class BookingService : IBookingService
     {
         if (_featureToggles.MultiDayBookingEnhancementsEnabled() && originalHearing.SourceId != null)
         {
-            var hearingsInGroupQuery = new GetHearingsByGroupIdQuery(originalHearing.SourceId.Value);
-            var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(hearingsInGroupQuery);
-            if (hearingsInGroup.Exists(h => h.ScheduledDateTime.Date == updateHearingCommand.ScheduledDateTime.Date))
-            {
-                throw new DomainRuleException(nameof(updateHearingCommand.ScheduledDateTime), 
-                    DomainRuleErrorMessages.CannotBeOnSameDateAsOtherHearingInGroup);
-            }
+            await ValidateScheduleUpdate(updateHearingCommand.ScheduledDateTime, originalHearing.SourceId.Value);
         }
         
         await _commandHandler.Handle(updateHearingCommand);
@@ -222,6 +216,18 @@ public class BookingService : IBookingService
                 await _eventPublisher.PublishAsync(new HearingAmendmentNotificationEvent(EventDtoMappers.MapToHearingConfirmationDto(originalHearing.Id, 
                     originalHearing.ScheduledDateTime, participantDto, @case),  updatedHearing.ScheduledDateTime));
             }
+        }
+    }
+
+    private async Task ValidateScheduleUpdate(DateTime newScheduledDateTime, Guid sourceId)
+    {
+        var hearingsInGroupQuery = new GetHearingsByGroupIdQuery(sourceId);
+        var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(hearingsInGroupQuery);
+        
+        if (hearingsInGroup.Exists(h => h.ScheduledDateTime.Date == newScheduledDateTime.Date))
+        {
+            throw new DomainRuleException("ScheduledDateTime", 
+                DomainRuleErrorMessages.CannotBeOnSameDateAsOtherHearingInGroup);
         }
     }
 }
