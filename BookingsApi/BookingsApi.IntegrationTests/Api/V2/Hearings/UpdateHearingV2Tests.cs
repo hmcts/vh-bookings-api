@@ -1,3 +1,4 @@
+using BookingsApi.Common.Services;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Enumerations;
@@ -6,6 +7,7 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
 using FizzWare.NBuilder;
+using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
 
@@ -94,6 +96,67 @@ public class UpdateHearingV2Tests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         validationProblemDetails.Errors["Hearing"].Should().Contain(DomainRuleErrorMessages.CannotUpdateHearingDetailsCloseToStartTime);
+    }
+
+    [Test]
+    public async Task should_return_bad_request_and_validation_failure_when_changing_hearing_date_to_be_same_as_another_hearing_in_hearing_group_when_multi_day_enhancements_are_enabled()
+    {
+        // arrange
+        var dates = new List<DateTime>
+        {
+            DateTime.Today.AddDays(5).AddHours(10),
+            DateTime.Today.AddDays(6).AddHours(10),
+            DateTime.Today.AddDays(7).AddHours(10)
+        };
+        var hearingsInGroup = await Hooks.SeedMultiDayHearing(useV2: true, dates);
+        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
+        featureToggles.MultiDayBookingEnhancements = true;
+        var hearing = hearingsInGroup[^1];
+        var hearingId = hearing.Id;
+        var request = BuildRequest();
+        request.ScheduledDateTime = hearingsInGroup[0].ScheduledDateTime;
+        request.ScheduledDateTime = request.ScheduledDateTime.Value.AddHours(1); // Offset the time to ensure we are validating against the date only
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PutAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingDetails(hearingId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        validationProblemDetails.Errors[nameof(request.ScheduledDateTime)].Should().Contain(DomainRuleErrorMessages.CannotBeOnSameDateAsOtherHearingInGroup);
+    }
+
+    [Test]
+    public async Task should_update_hearing_when_changing_hearing_date_to_be_same_as_another_hearing_in_hearing_group_when_multi_day_enhancements_are_disabled()
+    {
+        // arrange
+        var dates = new List<DateTime>
+        {
+            DateTime.Today.AddDays(5).AddHours(10),
+            DateTime.Today.AddDays(6).AddHours(10),
+            DateTime.Today.AddDays(7).AddHours(10)
+        };
+        var hearingsInGroup = await Hooks.SeedMultiDayHearing(useV2: true, dates);
+        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
+        featureToggles.MultiDayBookingEnhancements = false;
+        var hearing = hearingsInGroup[^1];
+        var hearingId = hearing.Id;
+        var request = BuildRequest();
+        request.ScheduledDateTime = hearingsInGroup[0].ScheduledDateTime;
+        request.ScheduledDateTime = request.ScheduledDateTime.Value.AddHours(1); // Offset the time to ensure we are validating against the date only
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PutAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingDetails(hearingId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var response = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        response.ScheduledDateTime.Should().Be(request.ScheduledDateTime);
     }
 
     [Test]
