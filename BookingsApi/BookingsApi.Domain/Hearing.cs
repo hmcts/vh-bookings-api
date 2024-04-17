@@ -179,10 +179,6 @@ namespace BookingsApi.Domain
 
         public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (hearingRole.IsInterpreter() && IsHearingConfirmedAndCloseToStartTime())
-            {
-                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotAddInterpreterToHearingCloseToStartTime);
-            }
             if (DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), $"Participant {person.ContactEmail} already exists in the hearing");

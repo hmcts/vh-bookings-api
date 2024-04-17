@@ -31,7 +31,7 @@ public class AddParticipantsToHearingV2Tests : ApiTest
     }
     
     [Test]
-    public async Task should_fail_to_add_an_interpreter_participant_to_hearing_when_hearing_is_close_to_start_time_and_return_400()
+    public async Task should_add_an_interpreter_participant_to_hearing_when_hearing_is_close_to_start_time_and_return_200()
     {
         // arrange
         var hearing = await Hooks.SeedVideoHearingV2(options =>
@@ -60,11 +60,8 @@ public class AddParticipantsToHearingV2Tests : ApiTest
             .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.AddParticipantsToHearing(hearing.Id),RequestBody.Set(request));
 
         // assert
-        result.IsSuccessStatusCode.Should().BeFalse();
-        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors.SelectMany(x => x.Value).Should()
-            .Contain(DomainRuleErrorMessages.CannotAddInterpreterToHearingCloseToStartTime);
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
     }
     
     private static AddParticipantsToHearingRequestV2 BuildRequestObject()

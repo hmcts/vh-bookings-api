@@ -77,7 +77,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         }
         
         [Test]
-        public void Should_not_add_interpreter_to_confirmed_hearing_close_to_start_time()
+        public void Should_add_interpreter_to_confirmed_hearing_close_to_start_time()
         {
             var dateTime = DateTime.UtcNow.AddMinutes(25);
             var hearing = new VideoHearingBuilder(scheduledDateTime:dateTime).Build();
@@ -88,11 +88,10 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newPerson = new PersonBuilder(true).Build();
             var beforeAddCount = hearing.GetParticipants().Count;
             
-            Assert.Throws<DomainRuleException>(() => hearing.AddIndividual(newPerson, interpreterHearingRole, interpreterCaseRole, "Interpreter Display Name"))
-                !.ValidationFailures.Should().Contain(x => x.Message == DomainRuleErrorMessages.CannotAddInterpreterToHearingCloseToStartTime);
-            
+            hearing.AddIndividual(newPerson, interpreterHearingRole, interpreterCaseRole, "Interpreter Display Name");
             var afterAddCount = hearing.GetParticipants().Count;
-            afterAddCount.Should().Be(beforeAddCount);
+
+            afterAddCount.Should().BeGreaterThan(beforeAddCount);
         }
         
         [Test]

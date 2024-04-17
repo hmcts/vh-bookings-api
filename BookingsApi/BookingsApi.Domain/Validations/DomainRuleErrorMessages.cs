@@ -20,7 +20,6 @@ public static class DomainRuleErrorMessages
         "Cannot update a case that is close to start time";
     public const string CannotUpdateHearingDetailsCloseToStartTime =
         "Cannot update hearing details that is close to start time";
-    public const string CannotAddInterpreterToHearingCloseToStartTime = "Cannot add an interpreter to a hearing close to the scheduled start time";
     public const string FirstNameRequired = "FirstName cannot be empty";
     public const string LastNameRequired = "LastName cannot be empty";
     public const string CannotAddJudgeWhenJudiciaryJudgeAlreadyExists = "Cannot add judge when judiciary judge already exists";
