@@ -7,7 +7,7 @@ public class FeatureTogglesStub : IFeatureToggles
     public bool AdminSearch { get; set; } = true;
     public bool RefData { get; set; } = false;
     public bool NewTemplates { get; set; } = true;
-    public bool MultiDayBookingEnhancements { get; set; } = true;
+    public bool MultiDayBookingEnhancements { get; set; } = false;
 
     public bool AdminSearchToggle()
     {

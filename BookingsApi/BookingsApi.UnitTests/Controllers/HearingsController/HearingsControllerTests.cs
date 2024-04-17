@@ -89,7 +89,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             return new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 bookingService, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object, Logger.Object, updateHearingService);
+                HearingServiceMock.Object, Logger.Object, updateHearingService, FeatureToggles);
         }
 
         [Test]
