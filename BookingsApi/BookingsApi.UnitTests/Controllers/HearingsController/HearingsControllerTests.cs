@@ -75,7 +75,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var eventPublisher = withQueueClient ? _eventPublisher : EventPublisherMock.Object;
             var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object,
                 BookingAsynchronousProcess, FirstdayOfMultidayBookingAsyncProcess, ClonedBookingAsynchronousProcess, 
-                CreateConferenceAsynchronousProcess, FeatureToggles);
+                CreateConferenceAsynchronousProcess);
             var participantAddedToHearingAsynchronousProcess = new ParticipantAddedToHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
             var newJudiciaryAddedAsynchronousProcess = new NewJudiciaryAddedAsynchronousProcesses(PublisherFactory);
             var hearingParticipantService = new HearingParticipantService(CommandHandlerMock.Object, EventPublisherMock.Object,

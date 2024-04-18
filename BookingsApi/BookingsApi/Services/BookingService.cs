@@ -92,13 +92,11 @@ public class BookingService : IBookingService
     private readonly IFirstdayOfMultidayBookingAsynchronousProcess _firstdayOfMultidayBookingAsyncProcess;
     private readonly IClonedBookingAsynchronousProcess _clonedBookingAsynchronousProcess;
     private readonly ICreateConferenceAsynchronousProcess _createConferenceAsynchronousProcess;
-    private readonly IFeatureToggles _featureToggles;
         
     public BookingService(IEventPublisher eventPublisher, ICommandHandler commandHandler, IQueryHandler queryHandler,
         IBookingAsynchronousProcess bookingAsynchronousProcess,
         IFirstdayOfMultidayBookingAsynchronousProcess firstdayOfMultidayBookingAsyncProcess,
-        IClonedBookingAsynchronousProcess clonedBookingAsynchronousProcess, ICreateConferenceAsynchronousProcess createConferenceAsynchronousProcess,
-        IFeatureToggles featureToggles)
+        IClonedBookingAsynchronousProcess clonedBookingAsynchronousProcess, ICreateConferenceAsynchronousProcess createConferenceAsynchronousProcess)
     {
         _eventPublisher = eventPublisher;
         _commandHandler = commandHandler;
@@ -107,7 +105,6 @@ public class BookingService : IBookingService
         _firstdayOfMultidayBookingAsyncProcess = firstdayOfMultidayBookingAsyncProcess;
         _clonedBookingAsynchronousProcess = clonedBookingAsynchronousProcess;
         _createConferenceAsynchronousProcess = createConferenceAsynchronousProcess;
-        _featureToggles = featureToggles;
     }
 
     public async Task<VideoHearing> SaveNewHearing(CreateVideoHearingCommand command)
@@ -174,7 +171,7 @@ public class BookingService : IBookingService
 
     public async Task<VideoHearing> UpdateHearingAndPublish(UpdateHearingCommand updateHearingCommand, VideoHearing originalHearing)
     {
-        if (_featureToggles.MultiDayBookingEnhancementsEnabled() && originalHearing.SourceId != null)
+        if (originalHearing.SourceId != null)
         {
             await ValidateScheduleUpdateForHearingInGroup(originalHearing, updateHearingCommand.ScheduledDateTime);
         }

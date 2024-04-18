@@ -9,7 +9,6 @@ namespace BookingsApi.Common.Services
     public interface IFeatureToggles
     {
         bool UsePostMay2023Template();
-        bool MultiDayBookingEnhancementsEnabled();
     }
 
     public class FeatureToggles : IFeatureToggles
@@ -18,7 +17,6 @@ namespace BookingsApi.Common.Services
         private readonly Context _context;
         private const string LdUser = "vh-booking-api";
         private const string NewNotifyTemplatesToggleKey = "notify-post-may-2023-templates";
-        private const string MultiDayBookingEnhancementsToggleKey = "multi-day-booking-enhancements";
 
         public FeatureToggles(string sdkKey, string environmentName)
         {
@@ -29,7 +27,6 @@ namespace BookingsApi.Common.Services
         }
         
         public bool UsePostMay2023Template() => GetBoolToggle(NewNotifyTemplatesToggleKey);
-        public bool MultiDayBookingEnhancementsEnabled() => GetBoolToggle(MultiDayBookingEnhancementsToggleKey);
         
         private bool GetBoolToggle(string key)
         {

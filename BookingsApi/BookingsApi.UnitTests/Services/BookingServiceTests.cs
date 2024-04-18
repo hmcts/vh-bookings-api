@@ -45,7 +45,7 @@ namespace BookingsApi.UnitTests.Services
             _createConferenceAsynchronousProcess = new CreateConferenceAsynchronousProcess(_eventPublisherFactory);
             _bookingService = new BookingService(_eventPublisher, _commandHandlerMock.Object, _queryHandlerMock.Object,
                 _bookingAsynchronousProcess, _firstdayOfMultidayBookingAsynchronousProcess, _clonedBookingAsynchronousProcess, 
-                _createConferenceAsynchronousProcess, _featureToggles);
+                _createConferenceAsynchronousProcess);
         }
 
         [Test]
