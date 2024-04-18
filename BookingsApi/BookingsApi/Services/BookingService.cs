@@ -176,7 +176,7 @@ public class BookingService : IBookingService
     {
         if (_featureToggles.MultiDayBookingEnhancementsEnabled() && originalHearing.SourceId != null)
         {
-            await ValidateScheduleUpdate(updateHearingCommand.ScheduledDateTime, originalHearing.SourceId.Value);
+            await ValidateScheduleUpdateForHearingInGroup(originalHearing, updateHearingCommand.ScheduledDateTime);
         }
         
         await _commandHandler.Handle(updateHearingCommand);
@@ -219,12 +219,14 @@ public class BookingService : IBookingService
         }
     }
 
-    private async Task ValidateScheduleUpdate(DateTime newScheduledDateTime, Guid sourceId)
+    private async Task ValidateScheduleUpdateForHearingInGroup(VideoHearing hearingInGroup, DateTime newScheduledDateTime)
     {
-        var hearingsInGroupQuery = new GetHearingsByGroupIdQuery(sourceId);
+        var hearingsInGroupQuery = new GetHearingsByGroupIdQuery(hearingInGroup.SourceId.Value);
         var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(hearingsInGroupQuery);
         
-        if (hearingsInGroup.Exists(h => h.ScheduledDateTime.Date == newScheduledDateTime.Date))
+        if (hearingsInGroup.Exists(h => 
+                h.ScheduledDateTime.Date == newScheduledDateTime.Date &&
+                h.Id != hearingInGroup.Id))
         {
             throw new DomainRuleException("ScheduledDateTime", 
                 DomainRuleErrorMessages.CannotBeOnSameDateAsOtherHearingInGroup);
