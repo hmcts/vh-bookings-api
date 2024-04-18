@@ -260,7 +260,7 @@ namespace BookingsApi.Domain
                 DisplayName = displayName
             };
             Participants.Add(participant);
-            UpdatedDate = DateTime.Now;
+            UpdatedDate = DateTime.UtcNow;
             return participant;
         }
 
