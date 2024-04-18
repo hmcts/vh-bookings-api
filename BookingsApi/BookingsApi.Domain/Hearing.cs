@@ -181,7 +181,7 @@ namespace BookingsApi.Domain
         {
             if (hearingRole.IsInterpreter() && IsHearingConfirmedAndCloseToStartTime())
             {
-                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotAddInterpreterToHearingCloseToStartTime);
+                throw new DomainRuleException(nameof(Hearing), DomainRuleErrorMessages.CannotAddInterpreterToHearingCloseToStartTime);
             }
             if (DoesParticipantExistByContactEmail(person.ContactEmail))
             {
@@ -669,12 +669,12 @@ namespace BookingsApi.Domain
         {
             if(Status == BookingStatus.Cancelled)
             {
-                throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.CannotEditACancelledHearing);
+                throw new DomainRuleException(nameof(Hearing), errorMessage ?? DomainRuleErrorMessages.CannotEditACancelledHearing);
             }
             
             if (Status is BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge  && IsHearingConfirmedAndCloseToStartTime())
             {
-                throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
+                throw new DomainRuleException(nameof(Hearing), errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
             }
         }
         
@@ -819,7 +819,7 @@ namespace BookingsApi.Domain
         {
             if (Status == BookingStatus.Cancelled)
             {
-                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotEditACancelledHearing);
+                throw new DomainRuleException(nameof(Hearing), DomainRuleErrorMessages.CannotEditACancelledHearing);
             }
         }
 
