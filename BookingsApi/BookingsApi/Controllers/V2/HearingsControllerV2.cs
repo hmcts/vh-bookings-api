@@ -140,8 +140,13 @@ namespace BookingsApi.Controllers.V2
             request.AudioRecordingRequired ??= videoHearing.AudioRecordingRequired;
             request.HearingRoomName ??= videoHearing.HearingRoomName;
             request.OtherInformation ??= videoHearing.OtherInformation;
+            var scheduledDateTime = request.ScheduledDateTime.GetValueOrDefault(videoHearing.ScheduledDateTime);
 
-            var updatedHearing = await UpdateHearingDetails(hearingId, request.ScheduledDateTime.GetValueOrDefault(videoHearing.ScheduledDateTime),
+            if (videoHearing.SourceId != null)
+            {
+                await _bookingService.ValidateScheduleUpdateForHearingInGroup(videoHearing, scheduledDateTime);
+            }
+            var updatedHearing = await UpdateHearingDetails(hearingId, scheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
                 request.UpdatedBy, cases, request.AudioRecordingRequired.Value, videoHearing);
             var response = HearingToDetailsResponseV2Mapper.Map(updatedHearing);

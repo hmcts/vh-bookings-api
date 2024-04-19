@@ -82,6 +82,14 @@ public interface IBookingService
     /// <param name="reason"></param>
     /// <returns></returns>
     Task UpdateHearingStatus(VideoHearing videoHearing, BookingStatus status, string updatedBy, string reason);
+    
+    /// <summary>
+    /// Validates the new scheduled date time for a hearing in a group
+    /// </summary>
+    /// <param name="hearingInGroup"></param>
+    /// <param name="newScheduledDateTime"></param>
+    /// <returns></returns>
+    Task ValidateScheduleUpdateForHearingInGroup(VideoHearing hearingInGroup, DateTime newScheduledDateTime);
 }
 
 public class BookingService : IBookingService
@@ -197,6 +205,20 @@ public class BookingService : IBookingService
 
         if (status == BookingStatus.Cancelled) 
             await PublishHearingCancelled(videoHearing);
+    }
+    
+    public async Task ValidateScheduleUpdateForHearingInGroup(VideoHearing hearingInGroup, DateTime newScheduledDateTime)
+    {
+        var hearingsInGroupQuery = new GetHearingsByGroupIdQuery(hearingInGroup.SourceId.Value);
+        var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(hearingsInGroupQuery);
+        
+        if (hearingsInGroup.Exists(h => 
+                h.ScheduledDateTime.Date == newScheduledDateTime.Date &&
+                h.Id != hearingInGroup.Id))
+        {
+            throw new DomainRuleException("ScheduledDateTime", 
+                DomainRuleErrorMessages.CannotBeOnSameDateAsOtherHearingInGroup);
+        }
     }
 
     private async Task PublishHearingUpdateNotificationToParticipants(VideoHearing originalHearing, VideoHearing updatedHearing)
