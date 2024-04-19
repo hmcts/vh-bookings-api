@@ -1,3 +1,4 @@
+using System.Xml.Linq;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
@@ -230,9 +231,17 @@ namespace BookingsApi.Controllers.V2
             var firstHearingId = hearings[0].HearingId;
             var firstHearing = await _bookingService.GetHearingById(firstHearingId);
             var videoHearingUpdateDate = firstHearing.UpdatedDate.TrimSeconds();
-            
+            var listOfAddedParticipantEmails = request.Hearings.Single(h => h.HearingId == firstHearingId)
+                .Participants.NewParticipants.Select(x=>x.ContactEmail).ToList();
+            var listOfAddedParticipantIds = firstHearing.Participants
+                .Where(x => listOfAddedParticipantEmails.Contains(x.Person.ContactEmail)).Select(x => x.Id).ToList();
+            var listOfAddedJudiciaryParticipantEmails = request.Hearings.Single(h => h.HearingId == firstHearingId)
+                .JudiciaryParticipants.NewJudiciaryParticipants.Select(x=>x.ContactEmail).ToList();
+            var listOfAddedJudiciaryParticipantIds = firstHearing.JudiciaryParticipants
+                .Where(x => listOfAddedJudiciaryParticipantEmails.Contains(x.ContactEmail)).Select(x => x.Id).ToList();
+
             // publish multi day hearing notification event
-            await _bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, videoHearingUpdateDate);
+            await _bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, listOfAddedParticipantIds, listOfAddedJudiciaryParticipantIds);
 
             return NoContent();
         }

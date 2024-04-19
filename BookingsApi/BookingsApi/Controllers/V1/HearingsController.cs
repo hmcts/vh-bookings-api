@@ -217,8 +217,14 @@ namespace BookingsApi.Controllers.V1
             var firstHearingId = hearings[0].HearingId;
             var firstHearing = await _bookingService.GetHearingById(firstHearingId);
             var videoHearingUpdateDate = firstHearing.UpdatedDate.TrimSeconds();
+            var listOfAddedParticipantEmails = request.Hearings.Single(h => h.HearingId == firstHearingId)
+                .Participants.NewParticipants.Select(x=>x.ContactEmail).ToList();
+            var listOfAddedParticipantIds = firstHearing.Participants
+                .Where(x => listOfAddedParticipantEmails.Contains(x.Person.ContactEmail)).Select(x => x.Id).ToList();
+
+
             // publish multi day hearing notification event
-            await _bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, videoHearingUpdateDate);
+            await _bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, listOfAddedParticipantIds, null);
 
             return NoContent();
         }

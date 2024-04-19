@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -19,9 +20,11 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         
         public DateTime VideoHearingUpdateDate { get; set; }
 
+        public IList<Guid> ParticipantsToBeNotifiedIds { get; set; }
+
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, VideoHearingUpdateDate);
+            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, ParticipantsToBeNotifiedIds);
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)

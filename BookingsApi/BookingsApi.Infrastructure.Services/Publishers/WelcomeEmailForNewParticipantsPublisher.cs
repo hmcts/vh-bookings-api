@@ -1,4 +1,6 @@
-﻿using BookingsApi.Domain;
+﻿using System;
+using System.Collections.Generic;
+using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -17,11 +19,14 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         }
 
         public EventType EventType => EventType.NewParticipantWelcomeEmailEvent;
+        
+        public IList<Guid> ParticipantsToBeNotifiedIds { get; set; }
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var videoHearingUpdateDate = videoHearing.UpdatedDate.TrimSeconds();
-            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, videoHearingUpdateDate).Where(x => x is not JudicialOfficeHolder);
+            if (ParticipantsToBeNotifiedIds == null)
+                ParticipantsToBeNotifiedIds = videoHearing.Participants.Select(p => p.Id).ToList();
+            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, ParticipantsToBeNotifiedIds).Where(x => x is not JudicialOfficeHolder);
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)

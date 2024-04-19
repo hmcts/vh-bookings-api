@@ -46,9 +46,10 @@ public interface IBookingService
     /// </summary>
     /// <param name="videoHearing"></param>
     /// <param name="totalDays"></param>
-    /// <param name="videoHearingUpdateDate"></param>
+    /// <param name="participantsToBeNotified"></param>
+    /// <param name="judiciaryParticipantsToBeNotified"></param>
     /// <returns></returns>
-    Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate);
+    Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, IList<Guid> participantsToBeNotified, IList<Guid> judiciaryParticipantsToBeNotified);
 
     /// <summary>
     /// Send a message to the service bus to publish the update of a hearing
@@ -144,12 +145,19 @@ public class BookingService : IBookingService
 
     public async Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate)
     {
-        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays, videoHearingUpdateDate);
+        var listOfAddedParticipantIds = videoHearing.Participants.Select(x => x.Id).ToList();
+        var listOfAddedJudiciaryParticipantIds = videoHearing.JudiciaryParticipants.Select(x => x.Id).ToList();
+        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays, listOfAddedParticipantIds, listOfAddedJudiciaryParticipantIds);
     }
     
     public async Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate)
     {
-        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays, videoHearingUpdateDate, true);
+        //await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays, videoHearingUpdateDate, true);
+    }
+    
+    public async Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, IList<Guid> participantsToBeNotified, IList<Guid> judiciaryParticipantsToBeNotified)
+    {
+        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays, participantsToBeNotified, judiciaryParticipantsToBeNotified, true);
     }
     
     public async Task PublishHearingCancelled(VideoHearing videoHearing)

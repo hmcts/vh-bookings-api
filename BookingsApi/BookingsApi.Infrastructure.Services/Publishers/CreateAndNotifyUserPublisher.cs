@@ -1,4 +1,6 @@
-﻿using BookingsApi.Domain;
+﻿using System;
+using System.Collections.Generic;
+using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -17,10 +19,12 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         }
 
         public EventType EventType => EventType.CreateAndNotifyUserEvent;
+        public IList<Guid> ParticipantsToBeNotifiedIds { get; set; }
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var videoHearingUpdateDate = videoHearing.UpdatedDate.TrimSeconds();
-            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, videoHearingUpdateDate).Where(x => x is not Judge);
+            if (ParticipantsToBeNotifiedIds == null)
+                ParticipantsToBeNotifiedIds = videoHearing.Participants.Select(x => x.Id).ToList();
+            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, ParticipantsToBeNotifiedIds).Where(x => x is not Judge);
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)

@@ -52,10 +52,11 @@ public class HearingParticipantService : IHearingParticipantService
                     .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
         if (participants.Any())
         {
+            var participantsIds = participants.Select(x => x.Id).ToList();
             // Raising the below event here instead of in the async process to avoid the async process adding a duplicate participant to the conference
             // as the UpdateHearingParticipants (also inlcudes new participants) has a separate process to add participants
             await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
-            await _participantAddedToHearingAsynchronousProcess.Start(hearing);
+            await _participantAddedToHearingAsynchronousProcess.Start(hearing, participantsIds);
         }
     }
 
@@ -206,7 +207,8 @@ public class HearingParticipantService : IHearingParticipantService
 
         if (sendNotification)
         {
-            await _participantAddedToHearingAsynchronousProcess.Start(hearing);
+            var eventNewParticipantIds = eventNewParticipants.Select(p => p.Id).ToList();
+            await _participantAddedToHearingAsynchronousProcess.Start(hearing, eventNewParticipantIds);
         }
     }
 

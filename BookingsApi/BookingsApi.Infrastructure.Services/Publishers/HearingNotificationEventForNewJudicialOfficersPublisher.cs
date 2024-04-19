@@ -1,4 +1,6 @@
-﻿using BookingsApi.Domain;
+﻿using System;
+using System.Collections.Generic;
+using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using System.Linq;
@@ -17,14 +19,15 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         }
 
         public EventType EventType => EventType.HearingNotificationForNewJudicialOfficersEvent;
+        public IList<Guid> JudiciaryParticipantsToBeNotifiedIds { get; set; }
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
             var @case = videoHearing.GetCases()[0];
-            
+            JudiciaryParticipantsToBeNotifiedIds = videoHearing.JudiciaryParticipants.Select(j => j.Id).ToList();
             // we need to send a hearing confirmation for new Panel Member created for V1 and send new templates. A create email for those users
             // has been sent previously with login details and needs a second email for hearing confirmation
-            var newJudicialOfficers = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, videoHearing.UpdatedDate.TrimSeconds())
+            var newJudicialOfficers = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, JudiciaryParticipantsToBeNotifiedIds)
                 .Where(x => x is JudicialOfficeHolder);
             
             foreach (var participant in newJudicialOfficers)

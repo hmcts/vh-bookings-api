@@ -1,4 +1,7 @@
-﻿using BookingsApi.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using System.Threading.Tasks;
@@ -15,11 +18,13 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         }
 
         public EventType EventType => EventType.ExistingParticipantHearingConfirmationEvent;
+        public IList<Guid> ParticipantsToBeNotifiedIds { get; set; }
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var updateDate = videoHearing.UpdatedDate.TrimSeconds();
-            var existingParticipants = PublisherHelper.GetExistingParticipantsSinceLastUpdate(videoHearing, updateDate);
+            if (ParticipantsToBeNotifiedIds == null)
+                ParticipantsToBeNotifiedIds = videoHearing.Participants.Select(p => p.Id).ToList();
+            var existingParticipants = PublisherHelper.GetExistingParticipantsSinceLastUpdate(videoHearing, ParticipantsToBeNotifiedIds);
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in existingParticipants)

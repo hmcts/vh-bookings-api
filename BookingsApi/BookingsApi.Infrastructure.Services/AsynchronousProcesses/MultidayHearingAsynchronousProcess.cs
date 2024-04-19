@@ -2,13 +2,14 @@
 using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.Publishers;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 {
     public interface IClonedBookingAsynchronousProcess
     {
-        Task Start(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate, bool sendNotificationNewParticipant = false);
+        Task Start(VideoHearing videoHearing, int totalDays, IList<Guid> participantsToBeNotifiedIds, IList<Guid> judiciaryParticipantsToBeNotifiedIds, bool sendNotificationNewParticipant = false);
     }
 
     public class ClonedMultidaysAsynchronousProcess: IClonedBookingAsynchronousProcess
@@ -21,7 +22,8 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             _featureToggles = featureToggles;
         }
 
-        public async Task Start(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate, bool sendNotificationNewParticipant = false)
+        public async Task Start(VideoHearing videoHearing, int totalDays, 
+            IList<Guid> participantsToBeNotifiedIds, IList<Guid> judiciaryParticipantsToBeNotifiedIds, bool sendNotificationNewParticipant = false)
         {
             if(totalDays <= 0)
             {
@@ -40,17 +42,21 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 
             if (sendNotificationNewParticipant)
             {
-                await _publisherFactory.Get(EventType.NewParticipantWelcomeEmailEvent).PublishAsync(videoHearing);
+                var publisherForWelcomeEmail = (WelcomeEmailForNewParticipantsPublisher) _publisherFactory
+                    .Get(EventType.NewParticipantWelcomeEmailEvent);
+                publisherForWelcomeEmail.ParticipantsToBeNotifiedIds = participantsToBeNotifiedIds;
+                await publisherForWelcomeEmail.PublishAsync(videoHearing);
             }
             
             var publisherForNewParticipant = (MultidayHearingConfirmationforNewParticipantsPublisher)_publisherFactory.Get(EventType.NewParticipantMultidayHearingConfirmationEvent);
             publisherForNewParticipant.TotalDays = totalDays;
-            publisherForNewParticipant.VideoHearingUpdateDate = videoHearingUpdateDate;
+            publisherForNewParticipant.ParticipantsToBeNotifiedIds = participantsToBeNotifiedIds;
             await publisherForNewParticipant.PublishAsync(videoHearing);
 
             var publisherForExistingParticipant = (MultidayHearingConfirmationforExistingParticipantsPublisher)_publisherFactory.Get(EventType.ExistingParticipantMultidayHearingConfirmationEvent);
             publisherForExistingParticipant.TotalDays = totalDays;
-            publisherForExistingParticipant.VideoHearingUpdateDate = videoHearingUpdateDate;
+            publisherForExistingParticipant.ParticipantsToBeNotifiedIds = participantsToBeNotifiedIds;
+            publisherForExistingParticipant.JudiciaryParticipantsToBeNotifiedIds = judiciaryParticipantsToBeNotifiedIds;
             await publisherForExistingParticipant.PublishAsync(videoHearing);
         }
     }
