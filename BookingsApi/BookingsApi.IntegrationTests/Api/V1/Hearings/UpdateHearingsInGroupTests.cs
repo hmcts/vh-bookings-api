@@ -454,9 +454,9 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
         {
             var dates = new List<DateTime>
             {
-                DateTime.Today.AddDays(5).AddHours(10),
-                DateTime.Today.AddDays(6).AddHours(10),
-                DateTime.Today.AddDays(7).AddHours(10)
+                DateTime.Today.AddDays(5).AddHours(10).ToUniversalTime(),
+                DateTime.Today.AddDays(6).AddHours(10).ToUniversalTime(),
+                DateTime.Today.AddDays(7).AddHours(10).ToUniversalTime()
             };
 
             var multiDayHearings = await Hooks.SeedMultiDayHearing(useV2: false, dates, addPanelMember: true);
