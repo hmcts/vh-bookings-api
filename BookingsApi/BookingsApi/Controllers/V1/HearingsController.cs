@@ -587,6 +587,10 @@ namespace BookingsApi.Controllers.V1
             request.HearingRoomName ??= videoHearing.HearingRoomName;
             request.OtherInformation ??= videoHearing.OtherInformation;
 
+            if (videoHearing.SourceId != null)
+            {
+                await _bookingService.ValidateScheduleUpdateForHearingInGroup(videoHearing, request.ScheduledDateTime);
+            }
             var updatedHearing = await UpdateHearingDetails(hearingId, request.ScheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
                 request.UpdatedBy, cases, request.AudioRecordingRequired.Value, videoHearing);

@@ -256,7 +256,7 @@ namespace BookingsApi.Domain
                 DisplayName = displayName
             };
             Participants.Add(participant);
-            UpdatedDate = DateTime.Now;
+            UpdatedDate = DateTime.UtcNow;
             return participant;
         }
 
@@ -665,12 +665,12 @@ namespace BookingsApi.Domain
         {
             if(Status == BookingStatus.Cancelled)
             {
-                throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.CannotEditACancelledHearing);
+                throw new DomainRuleException(nameof(Hearing), errorMessage ?? DomainRuleErrorMessages.CannotEditACancelledHearing);
             }
             
             if (Status is BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge  && IsHearingConfirmedAndCloseToStartTime())
             {
-                throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
+                throw new DomainRuleException(nameof(Hearing), errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
             }
         }
         
@@ -815,7 +815,7 @@ namespace BookingsApi.Domain
         {
             if (Status == BookingStatus.Cancelled)
             {
-                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotEditACancelledHearing);
+                throw new DomainRuleException(nameof(Hearing), DomainRuleErrorMessages.CannotEditACancelledHearing);
             }
         }
 
