@@ -5,6 +5,7 @@ using BookingsApi.Contract.V2.Requests.Enums;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
@@ -95,6 +96,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Add(judiciaryPanelMemberToRemove.PersonalCode);
                 requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.Remove(judiciaryPanelMemberToRemove);
 
+                // Update a judiciary participant
+                var judiciaryPanelMemberToUpdate = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.PanelMember);
+                judiciaryPanelMemberToUpdate.DisplayName += " EDITED";
+                
                 // Reassign a judge
                 requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Add(newJudiciaryJudge);
                 var judiciaryJudgeToReassign = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.Judge);
@@ -710,6 +715,12 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             foreach (var newJudiciaryParticipant in requestHearing.JudiciaryParticipants.NewJudiciaryParticipants)
             {
                 judiciaryParticipants.Should().Contain(p => p.JudiciaryPerson.PersonalCode == newJudiciaryParticipant.PersonalCode);
+            }
+            foreach (var judiciaryParticipant in requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants)
+            {
+                judiciaryParticipants.Should().Contain(p => p.JudiciaryPerson.PersonalCode == judiciaryParticipant.PersonalCode && 
+                                                            p.DisplayName == judiciaryParticipant.DisplayName && 
+                                                            p.HearingRoleCode == judiciaryParticipant.HearingRoleCode.MapToDomainEnum());
             }
             judiciaryParticipants.Should().NotContain(p => requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Contains(p.JudiciaryPerson.PersonalCode));
             var newJudge = requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Find(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.Judge);
