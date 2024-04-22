@@ -114,10 +114,17 @@ namespace BookingsApi.Services
 
             await _judiciaryParticipantService.AddJudiciaryParticipants(judiciaryParticipantsToAdd, hearing.Id, sendNotification: false);
 
-            foreach (var existingJudiciaryParticipant in request.ExistingJudiciaryParticipants)
+            foreach (var judiciaryParticipant in request.ExistingJudiciaryParticipants)
             {
                 var judiciaryParticipantToUpdate = UpdateJudiciaryParticipantRequestV2ToUpdatedJudiciaryParticipantMapper.Map(
-                    existingJudiciaryParticipant.PersonalCode, existingJudiciaryParticipant);
+                    judiciaryParticipant.PersonalCode, judiciaryParticipant);
+                
+                var originalJudiciaryParticipant = hearing.JudiciaryParticipants.SingleOrDefault(x => x.JudiciaryPerson.PersonalCode == judiciaryParticipant.PersonalCode);
+                if (originalJudiciaryParticipant == null)
+                {
+                    // For consistency with the update participants functionality, non-existing judiciary participants are skipped in the update
+                    continue;
+                }
 
                 await _judiciaryParticipantService.UpdateJudiciaryParticipant(judiciaryParticipantToUpdate, hearing.Id);
             }
