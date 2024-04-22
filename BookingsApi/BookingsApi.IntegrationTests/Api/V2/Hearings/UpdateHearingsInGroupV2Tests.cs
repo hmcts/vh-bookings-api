@@ -208,6 +208,32 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             result.IsSuccessStatusCode.Should().BeTrue();
             result.StatusCode.Should().Be(HttpStatusCode.NoContent, result.Content.ReadAsStringAsync().Result);
         }
+        
+        [Test]
+        public async Task should_update_hearings_in_group_when_existing_judiciary_participants_in_request_do_not_exist_in_hearing()
+        {
+            // For consistency with the update participants functionality, non-existing judiciary participants are skipped in the update
+            
+            // Arrange
+            var hearings = await SeedHearingsInGroup();
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+
+            var nonExistingJudiciaryParticipantPersonalCode = Guid.NewGuid().ToString();
+            request.Hearings[0].JudiciaryParticipants.ExistingJudiciaryParticipants[0].PersonalCode = nonExistingJudiciaryParticipantPersonalCode;
+
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent, result.Content.ReadAsStringAsync().Result);
+        }
 
         [Test]
         public async Task should_return_not_found_when_no_hearings_found_for_group()
@@ -501,7 +527,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             validationProblemDetails.Errors["Hearings[0].JudiciaryParticipants.NewJudiciaryParticipants[0].PersonalCode"][0].Should().Be(
                 JudiciaryParticipantRequestValidationV2.NoPersonalCodeErrorMessage);
         }
-        
+
         [Test]
         public async Task should_return_bad_request_when_invalid_details_in_request()
         {
