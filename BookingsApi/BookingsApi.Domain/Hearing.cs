@@ -315,7 +315,6 @@ namespace BookingsApi.Domain
         public JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
             JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
-            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateJudiciaryParticipantCloseToStartTime);
             if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
             {
                 throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.JudiciaryParticipantNotFound);
@@ -331,6 +330,13 @@ namespace BookingsApi.Domain
             {
                 throw new InvalidOperationException($"{nameof(participant)} cannot be null");
             }
+            
+            var hasChanged = newDisplayName != participant.DisplayName ||
+                             newHearingRoleCode != participant.HearingRoleCode;
+            if (!hasChanged)
+                return participant;
+            
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateJudiciaryParticipantCloseToStartTime);
             
             participant.UpdateDisplayName(newDisplayName);
             participant.UpdateHearingRoleCode(newHearingRoleCode);
