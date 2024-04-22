@@ -42,6 +42,23 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 .First(x => x.JudiciaryPerson.PersonalCode == judiciaryPanelMember.JudiciaryPerson.PersonalCode)
                 .DisplayName.Should().Be("New Display Name");
         }
+
+        [Test]
+        public void should_not_update_participant_when_no_changes_made()
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false)
+                .WithJudiciaryJudge()
+                .Build();
+            var participant = hearing.GetJudiciaryParticipants()
+                .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            var updatedDateBefore = hearing.UpdatedDate;
+            
+            hearing.UpdateJudiciaryParticipantByPersonalCode(participant.JudiciaryPerson.PersonalCode, 
+                participant.DisplayName, participant.HearingRoleCode);
+
+            var updatedDateAfter = hearing.UpdatedDate;
+            updatedDateAfter.Should().Be(updatedDateBefore);
+        }
         
         [Test]
         public void Should_raise_exception_when_updating_judiciary_judge_to_panel_member_if_no_other_host_exists()

@@ -5,6 +5,7 @@ using BookingsApi.Contract.V2.Requests.Enums;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
@@ -95,6 +96,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Add(judiciaryPanelMemberToRemove.PersonalCode);
                 requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.Remove(judiciaryPanelMemberToRemove);
 
+                // Update a judiciary participant
+                var judiciaryPanelMemberToUpdate = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.PanelMember);
+                judiciaryPanelMemberToUpdate.DisplayName += " EDITED";
+                
                 // Reassign a judge
                 requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Add(newJudiciaryJudge);
                 var judiciaryJudgeToReassign = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.Judge);
@@ -166,6 +171,60 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             
             var groupId = hearings[0].SourceId.Value;
             
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent, result.Content.ReadAsStringAsync().Result);
+        }
+
+        [Test]
+        public async Task should_update_hearings_in_group_within_30_minutes_of_hearing_starting_when_no_changes_made()
+        {
+            // Arrange
+            var startDate = DateTime.UtcNow.AddMinutes(20);
+            var dates = new List<DateTime>
+            {
+                startDate,
+                startDate.AddDays(1),
+                startDate.AddDays(2)
+            };
+            var hearings = await SeedHearingsInGroup(dates);
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent, result.Content.ReadAsStringAsync().Result);
+        }
+        
+        [Test]
+        public async Task should_update_hearings_in_group_when_existing_judiciary_participants_in_request_do_not_exist_in_hearing()
+        {
+            // For consistency with the update participants functionality, non-existing judiciary participants are skipped in the update
+            
+            // Arrange
+            var hearings = await SeedHearingsInGroup();
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+
+            var nonExistingJudiciaryParticipantPersonalCode = Guid.NewGuid().ToString();
+            request.Hearings[0].JudiciaryParticipants.ExistingJudiciaryParticipants[0].PersonalCode = nonExistingJudiciaryParticipantPersonalCode;
+
+            var groupId = hearings[0].SourceId.Value;
+
             // Act
             using var client = Application.CreateClient();
             var result = await client
@@ -468,7 +527,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             validationProblemDetails.Errors["Hearings[0].JudiciaryParticipants.NewJudiciaryParticipants[0].PersonalCode"][0].Should().Be(
                 JudiciaryParticipantRequestValidationV2.NoPersonalCodeErrorMessage);
         }
-        
+
         [Test]
         public async Task should_return_bad_request_when_invalid_details_in_request()
         {
@@ -566,9 +625,9 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 CaseNumber = "CaseNumber"
             };
 
-        private async Task<List<VideoHearing>> SeedHearingsInGroup()
+        private async Task<List<VideoHearing>> SeedHearingsInGroup(List<DateTime> dates = null)
         {
-            var dates = new List<DateTime>
+            dates ??= new List<DateTime>
             {
                 DateTime.Today.AddDays(5).AddHours(10).ToUniversalTime(),
                 DateTime.Today.AddDays(6).AddHours(10).ToUniversalTime(),
@@ -682,6 +741,12 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             foreach (var newJudiciaryParticipant in requestHearing.JudiciaryParticipants.NewJudiciaryParticipants)
             {
                 judiciaryParticipants.Should().Contain(p => p.JudiciaryPerson.PersonalCode == newJudiciaryParticipant.PersonalCode);
+            }
+            foreach (var judiciaryParticipant in requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants)
+            {
+                judiciaryParticipants.Should().Contain(p => p.JudiciaryPerson.PersonalCode == judiciaryParticipant.PersonalCode && 
+                                                            p.DisplayName == judiciaryParticipant.DisplayName && 
+                                                            p.HearingRoleCode == judiciaryParticipant.HearingRoleCode.MapToDomainEnum());
             }
             judiciaryParticipants.Should().NotContain(p => requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Contains(p.JudiciaryPerson.PersonalCode));
             var newJudge = requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Find(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.Judge);
