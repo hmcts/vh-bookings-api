@@ -177,6 +177,34 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         }
 
         [Test]
+        public async Task should_update_hearings_in_group_within_30_minutes_of_hearing_starting_when_no_changes_made()
+        {
+            // Arrange
+            var startDate = DateTime.UtcNow.AddMinutes(20);
+            var dates = new List<DateTime>
+            {
+                startDate,
+                startDate.AddDays(1),
+                startDate.AddDays(2)
+            };
+            var hearings = await SeedHearingsInGroup(dates);
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent, result.Content.ReadAsStringAsync().Result);
+        }
+
+        [Test]
         public async Task should_return_not_found_when_no_hearings_found_for_group()
         {
             // Arrange
@@ -566,9 +594,9 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 CaseNumber = "CaseNumber"
             };
 
-        private async Task<List<VideoHearing>> SeedHearingsInGroup()
+        private async Task<List<VideoHearing>> SeedHearingsInGroup(List<DateTime> dates = null)
         {
-            var dates = new List<DateTime>
+            dates ??= new List<DateTime>
             {
                 DateTime.Today.AddDays(5).AddHours(10).ToUniversalTime(),
                 DateTime.Today.AddDays(6).AddHours(10).ToUniversalTime(),

@@ -114,10 +114,20 @@ namespace BookingsApi.Services
 
             await _judiciaryParticipantService.AddJudiciaryParticipants(judiciaryParticipantsToAdd, hearing.Id, sendNotification: false);
 
-            foreach (var existingJudiciaryParticipant in request.ExistingJudiciaryParticipants)
+            foreach (var judiciaryParticipant in request.ExistingJudiciaryParticipants)
             {
+                // Only update the judiciary participant if their details have changed, to avoid inadvertently
+                // breaking the domain rule for last minute updates
+                var originalJudiciaryParticipant = hearing.JudiciaryParticipants.SingleOrDefault(x => x.JudiciaryPerson.PersonalCode == judiciaryParticipant.PersonalCode);
+                var judiciaryParticipantHasChanged = judiciaryParticipant.DisplayName != originalJudiciaryParticipant.DisplayName || 
+                                                     judiciaryParticipant.HearingRoleCode.MapToDomainEnum() != originalJudiciaryParticipant.HearingRoleCode;
+                if (!judiciaryParticipantHasChanged)
+                {
+                    continue;
+                }
+                
                 var judiciaryParticipantToUpdate = UpdateJudiciaryParticipantRequestV2ToUpdatedJudiciaryParticipantMapper.Map(
-                    existingJudiciaryParticipant.PersonalCode, existingJudiciaryParticipant);
+                    judiciaryParticipant.PersonalCode, judiciaryParticipant);
 
                 await _judiciaryParticipantService.UpdateJudiciaryParticipant(judiciaryParticipantToUpdate, hearing.Id);
             }
