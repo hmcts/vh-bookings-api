@@ -297,6 +297,7 @@ namespace BookingsApi.DAL.Services
                 .Include(u => u.VhoNonAvailability)
                 .Include(u => u.Allocations).ThenInclude(a => a.Hearing)
                 .Where(ju => ju.JusticeUserRoles.Any(jur => jur.UserRole.Id == (int)UserRoleId.Vho))
+                .AsSplitQuery()
                 .ToList();
 
             return csos
