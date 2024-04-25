@@ -69,5 +69,16 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.TestData.SeededHearing = seededHearing;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
         }
+        
+        [Given(@"I have a confirmed hearing with audio recording")]
+        public async Task GivenIHaveAConfirmedHearingWithAudioRecording()
+        {
+            var seededHearing =
+                await Context.TestDataManager.SeedVideoHearing(options => options.AudioRecordingRequired = true,
+                    status: BookingStatus.Created);
+            Context.TestData.NewHearingId = seededHearing.Id;
+            Context.TestData.SeededHearing = seededHearing;
+            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+        }
     }
 }

@@ -808,8 +808,8 @@ namespace BookingsApi.Controllers.V1
         {
             var caseNumber = WebUtility.UrlDecode(searchQuery.CaseNumber);
 
-            var query = new GetHearingsBySearchQuery(caseNumber, searchQuery.Date);
-            var hearings = await _queryHandler.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(query);
+            var query = new GetAudioRecordedHearingsBySearchQuery(caseNumber, searchQuery.Date);
+            var hearings = await _queryHandler.Handle<GetAudioRecordedHearingsBySearchQuery, List<VideoHearing>>(query);
 
             var hearingMapper = new AudioRecordedHearingsBySearchResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
