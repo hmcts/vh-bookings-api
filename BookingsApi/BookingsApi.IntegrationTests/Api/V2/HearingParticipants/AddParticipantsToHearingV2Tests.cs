@@ -3,7 +3,6 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
-using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.IntegrationTests.Api.V2.HearingParticipants;
 
@@ -38,12 +37,13 @@ public class AddParticipantsToHearingV2Tests : ApiTest
             {
                 options.Case = new Case("Case1 Num", "Case1 Name");
                 options.ScheduledDate = DateTime.UtcNow.AddMinutes(25);
+                options.AudioRecordingRequired = false;
             },
             BookingStatus.Created);
         
         var request = BuildRequestObject();
         var participant = hearing.Participants.First(x => x is Individual);
-        request.Participants[0].HearingRoleCode = "INTP";
+        request.Participants[0].HearingRoleCode = HearingRoleCodes.Interpreter;
         request.LinkedParticipants = new List<LinkedParticipantRequestV2>
         {
             new ()

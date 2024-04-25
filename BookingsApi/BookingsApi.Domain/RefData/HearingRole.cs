@@ -1,4 +1,5 @@
 using System;
+using BookingsApi.Domain.Constants;
 
 namespace BookingsApi.Domain.RefData
 {
@@ -30,8 +31,9 @@ namespace BookingsApi.Domain.RefData
         
         public bool IsJudge() => 
             string.Equals(Name, "Judge", StringComparison.InvariantCultureIgnoreCase);
-        
-        public bool IsInterpreter () => 
-            string.Equals(Name, "Interpreter", StringComparison.InvariantCultureIgnoreCase);
+
+        public bool IsInterpreter() =>
+            string.Equals(Name, "Interpreter", StringComparison.InvariantCultureIgnoreCase) ||
+            Code == HearingRoleCodes.Interpreter;
     }
 }

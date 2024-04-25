@@ -60,10 +60,11 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         }
         
         [Test]
-        public void Should_add_interpreter_to_hearing()
+        public void Should_add_interpreter_to_hearing_and_turn_on_audio_recording()
         {
             var dateTime = DateTime.UtcNow.AddMinutes(25);
             var hearing = new VideoHearingBuilder(scheduledDateTime:dateTime).Build();
+            hearing.AudioRecordingRequired = false;
             var interpreterCaseRole = new CaseRole(6, "Interpreter");
             var interpreterHearingRole = new HearingRole(12, "Interpreter");
 
@@ -73,14 +74,17 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             hearing.AddIndividual(newPerson, interpreterHearingRole, interpreterCaseRole, "Interpreter Display Name");
             var afterAddCount = hearing.GetParticipants().Count;
 
+            hearing.AudioRecordingRequired.Should().BeTrue();
+
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
         }
         
         [Test]
-        public void Should_add_interpreter_to_confirmed_hearing_close_to_start_time()
+        public void Should_add_interpreter_to_confirmed_hearing_close_to_start_time_and_turn_on_audio_recording()
         {
             var dateTime = DateTime.UtcNow.AddMinutes(25);
             var hearing = new VideoHearingBuilder(scheduledDateTime:dateTime).Build();
+            hearing.AudioRecordingRequired = false;
             hearing.UpdateStatus(BookingStatus.Created, "test", null);
             var interpreterCaseRole = new CaseRole(6, "Interpreter");
             var interpreterHearingRole = new HearingRole(12, "Interpreter");
@@ -90,6 +94,8 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             hearing.AddIndividual(newPerson, interpreterHearingRole, interpreterCaseRole, "Interpreter Display Name");
             var afterAddCount = hearing.GetParticipants().Count;
+            
+            hearing.AudioRecordingRequired.Should().BeTrue();
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
         }
