@@ -27,6 +27,7 @@ namespace BookingsApi.DAL.Queries
             var videoHearing = VideoHearings.Get(_context);
 
             return await videoHearing
+                .Include(h => h.Participants)
                 .Where(x =>
                     x.ScheduledDateTime.Date == System.DateTime.UtcNow.Date &&
                     x.Status == Domain.Enumerations.BookingStatus.Created && // Only Confirmed
