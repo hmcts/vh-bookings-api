@@ -5,8 +5,8 @@ namespace BookingsApi.Domain.RefData
 {
     public class CaseType : TrackableEntity<int>
     {
-        private const string CacdServiceId = "VIHTMP1"; // Court of Appeal Criminal Division
-        private const string CccServiceId = "VIHTMP8"; // Crime Crown Court
+        public const string CacdServiceId = "VIHTMP1"; // Court of Appeal Criminal Division
+        public const string CccServiceId = "VIHTMP8"; // Crime Crown Court
         public CaseType(int id, string name)
         {
             Id = id;
