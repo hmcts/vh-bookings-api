@@ -39,21 +39,21 @@ Feature: Search for Audio Recorded Hearings
     And hearing search response should be empty
 
   Scenario: Search for non-confirmed hearings by case number
-    Given I have a confirmed hearing with audio recording
+    Given I have a hearing
     And I have a search hearings by case number request
     When I send the request to the endpoint
     Then the response should have the status OK and success status True
     And hearing search response should be empty
 
   Scenario: Search for non-confirmed hearings by date
-    Given I have a confirmed hearing with audio recording
+    Given I have a hearing
     And I have a search hearings by date request
     When I send the request to the endpoint
     Then the response should have the status OK and success status True
     And hearing search response should be empty
 
   Scenario: Search for non-confirmed hearings by partial case number and date
-    Given I have a confirmed hearing with audio recording
+    Given I have a hearing
     And I have a search hearings by partial case number and date request
     When I send the request to the endpoint
     Then the response should have the status OK and success status True
