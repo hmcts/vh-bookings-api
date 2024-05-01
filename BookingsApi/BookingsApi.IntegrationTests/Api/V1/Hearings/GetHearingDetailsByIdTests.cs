@@ -48,6 +48,7 @@ public class GetHearingDetailsByIdTests : ApiTest
         var hearing = await Hooks.SeedVideoHearing(options =>
         {
             options.EndpointsToAdd = 3;
+            options.AudioRecordingRequired = true;
         });
         var hearingId = hearing.Id;
 

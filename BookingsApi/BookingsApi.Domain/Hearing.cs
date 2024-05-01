@@ -190,6 +190,11 @@ namespace BookingsApi.Domain
                 CreatedBy = CreatedBy
             };
             Participants.Add(participant);
+
+            if (hearingRole.IsInterpreter() && CaseType.SupportsAudioRecording())
+            {
+                AudioRecordingRequired = true;
+            }
             UpdatedDate = DateTime.UtcNow;
             
             return participant;
