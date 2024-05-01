@@ -2,17 +2,14 @@
 using BookingsApi.DAL.Commands.Core;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Net;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Controllers.V1;
-using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
-using BookingsApi.Validations.V1;
 using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers
@@ -41,14 +38,14 @@ namespace BookingsApi.UnitTests.Controllers
                 Lastname = "Lastname",
                 Username = _username,
                 ContactEmail = _username,
-            };
-            _justiceUser.JusticeUserRoles = new List<JusticeUserRole>
-            {
-                new JusticeUserRole { UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead") }
+                JusticeUserRoles = new List<JusticeUserRole>
+                {
+                    new() { UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead") }
+                }
             };
             _queryHandlerMock = new Mock<IQueryHandler>();
             _queryHandlerMock.Setup(x => x.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(It.Is<GetJusticeUserByUsernameQuery>(
-                    x => x.Username == _justiceUser.Username)))
+                    ju => ju.Username == _justiceUser.Username)))
                 .ReturnsAsync(_justiceUser);
             
             _controller = new WorkHoursController(_commandHandlerMock.Object, _queryHandlerMock.Object);
@@ -67,8 +64,8 @@ namespace BookingsApi.UnitTests.Controllers
             var response = await _controller.GetVhoWorkAvailabilityHours(userName) as OkObjectResult;
             // Assert
             _queryHandlerMock.Verify(x => x.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(It.IsAny<GetVhoWorkHoursQuery>()), Times.Once);
-            Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.IsInstanceOf<List<VhoWorkHoursResponse>>(response.Value);
+            response.Should().BeOfType<OkObjectResult>();
+            response!.Value.Should().BeOfType<List<VhoWorkHoursResponse>>();
         }
         
                 
@@ -83,7 +80,7 @@ namespace BookingsApi.UnitTests.Controllers
             _queryHandlerMock.Verify(x => x.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(It.IsAny<GetVhoWorkHoursQuery>()), Times.Never);
             var objectResult = response as ObjectResult;
             objectResult.Should().NotBeNull();
-            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("username", $"Please provide a valid username");
+            ((ValidationProblemDetails)objectResult!.Value).ContainsKeyAndErrorMessage("username", $"Please provide a valid username");
         }
         
                         
@@ -96,7 +93,7 @@ namespace BookingsApi.UnitTests.Controllers
             var response = await _controller.GetVhoWorkAvailabilityHours(userName) as NotFoundObjectResult;
             // Assert
             _queryHandlerMock.Verify(x => x.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(It.IsAny<GetVhoWorkHoursQuery>()), Times.Once);
-            Assert.IsInstanceOf<NotFoundObjectResult>(response);
+            response.Should().BeOfType<NotFoundObjectResult>();
             response?.Value.Should().Be("Vho user not found");
         }
  
@@ -113,8 +110,8 @@ namespace BookingsApi.UnitTests.Controllers
             var response = await _controller.GetVhoNonAvailabilityHours(userName) as OkObjectResult;
             // Assert
             _queryHandlerMock.Verify(x => x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()), Times.Once);
-            Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.IsInstanceOf<List<VhoNonAvailabilityWorkHoursResponse>>(response.Value);
+            response.Should().BeOfType<OkObjectResult>();
+            response!.Value.Should().BeOfType<List<VhoNonAvailabilityWorkHoursResponse>>();
         }
         
                 
@@ -129,7 +126,7 @@ namespace BookingsApi.UnitTests.Controllers
             _queryHandlerMock.Verify(x => x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()), Times.Never);
             var objectResult = response as ObjectResult;
             objectResult.Should().NotBeNull();
-            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("username", $"Please provide a valid username");
+            ((ValidationProblemDetails)objectResult!.Value).ContainsKeyAndErrorMessage("username", $"Please provide a valid username");
         }
         
                         
@@ -142,7 +139,7 @@ namespace BookingsApi.UnitTests.Controllers
             var response = await _controller.GetVhoNonAvailabilityHours(userName) as NotFoundObjectResult;
             // Assert
             _queryHandlerMock.Verify(x =>  x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()), Times.Once);
-            Assert.IsInstanceOf<NotFoundObjectResult>(response);
+            response.Should().BeOfType<NotFoundObjectResult>();
             response?.Value.Should().Be("Vho user not found");
         }
 
@@ -162,11 +159,11 @@ namespace BookingsApi.UnitTests.Controllers
             // Assert
             var objectResult = response as ObjectResult;
             objectResult.Should().NotBeNull();
-            ((ValidationProblemDetails)objectResult.Value).Should().NotBeNull();
+            ((ValidationProblemDetails)objectResult!.Value).Should().NotBeNull();
         }
 
         [Test]
-        public async Task SaveNonWorkingHours_CalllsUploadNonWorkingHoursCommand_AndReturnsResult()
+        public async Task SaveNonWorkingHours_CallsUploadNonWorkingHoursCommand_AndReturnsResult()
         {
             // Arrange
             var uploadNonWorkingHoursRequests = new List<UploadNonWorkingHoursRequest>
@@ -180,8 +177,8 @@ namespace BookingsApi.UnitTests.Controllers
 
             // Assert
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UploadNonWorkingHoursCommand>()), Times.Once);
-            Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.IsInstanceOf<List<string>>(response.Value);
+            response.Should().BeOfType<OkObjectResult>();
+            response!.Value.Should().BeOfType<List<string>>();
         }
     }
 }

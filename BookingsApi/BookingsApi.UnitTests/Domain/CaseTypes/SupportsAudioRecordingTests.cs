@@ -14,6 +14,6 @@ public class SupportsAudioRecordingTests
             ServiceId = serviceId
         };
 
-        Assert.AreEqual(expected, caseType.SupportsAudioRecording());
+        caseType.SupportsAudioRecording().Should().Be(expected);
     }
 }

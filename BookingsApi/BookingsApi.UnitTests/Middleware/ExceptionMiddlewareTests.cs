@@ -49,8 +49,7 @@ namespace BookingsApi.UnitTests.Middleware
 
 
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
-
-            Assert.AreEqual((int)HttpStatusCode.BadRequest, _HttpContext.Response.StatusCode);
+            _HttpContext.Response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
             _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
         }
 
@@ -66,7 +65,7 @@ namespace BookingsApi.UnitTests.Middleware
             
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
 
-            Assert.AreEqual((int)HttpStatusCode.InternalServerError, _HttpContext.Response.StatusCode);
+            _HttpContext.Response.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
             _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
         }
 
@@ -82,7 +81,7 @@ namespace BookingsApi.UnitTests.Middleware
             
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
 
-            Assert.AreEqual((int)HttpStatusCode.InternalServerError, _HttpContext.Response.StatusCode);
+            _HttpContext.Response.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
             _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
             
             _HttpContext.Response.Body.Seek(0, SeekOrigin.Begin);

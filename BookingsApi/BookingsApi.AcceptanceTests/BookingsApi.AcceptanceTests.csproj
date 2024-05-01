@@ -13,9 +13,9 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="6.10.0" />
-    <PackageReference Include="LaunchDarkly.ServerSdk" Version="7.0.3" />
-    <PackageReference Include="nunit" Version="3.14.0" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.4.0" />
+    <PackageReference Include="nunit" Version="4.1.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
     <PackageReference Include="RestSharp" Version="106.12.0" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.10.0.77988">
