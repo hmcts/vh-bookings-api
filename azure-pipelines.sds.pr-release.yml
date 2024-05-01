@@ -44,7 +44,6 @@ stages:
               nugetConfigPath: nuget.config
               appName: ${{ variables.appName }}
               dockerComposeTestFile: docker-compose.tests.yml
-              dotnetversion: 8.x
               sonarExtraProperties: |
                 sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
                 sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*
@@ -99,7 +98,6 @@ stages:
         steps:
           - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
             parameters:
-              netVersion: 8.x
               vstsFeedId: '${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}'
               coreProjectPath: $(projectPath)
 
