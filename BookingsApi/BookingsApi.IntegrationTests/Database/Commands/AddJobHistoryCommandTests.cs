@@ -7,8 +7,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         private AddJobHistoryCommandHandler _commandHandler;
         private BookingsDbContext _context;
 
-        private string job = "unitTestJobName";
-        private bool success = true;
+        private readonly string job = "unitTestJobName";
+        private readonly bool success = true;
         
         [SetUp]
         public void Setup()

@@ -34,7 +34,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == LinkedParticipantRequestValidation.NoParticipantEmail)
+            result.Errors.Exists(x => x.ErrorMessage == LinkedParticipantRequestValidation.NoParticipantEmail)
                 .Should().BeTrue();
         }
         
@@ -47,7 +47,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == LinkedParticipantRequestValidation.NoLinkedParticipantEmail)
+            result.Errors.Exists(x => x.ErrorMessage == LinkedParticipantRequestValidation.NoLinkedParticipantEmail)
                 .Should().BeTrue();
         }
         
@@ -60,7 +60,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == LinkedParticipantRequestValidation.InvalidType)
+            result.Errors.Exists(x => x.ErrorMessage == LinkedParticipantRequestValidation.InvalidType)
                 .Should().BeTrue();
         }
         

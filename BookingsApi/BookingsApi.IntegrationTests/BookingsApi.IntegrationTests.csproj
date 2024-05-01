@@ -15,7 +15,6 @@
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="7.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.9" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.10.0.77988">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

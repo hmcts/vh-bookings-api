@@ -25,12 +25,12 @@ namespace BookingsApi.AcceptanceTests.Models
             return updateParticipantRequest;
         }
 
-        private static LinkedParticipantRequest CreateLinkedParticipantRequest(string participantEmail, string interpreterEmail)
+        private static LinkedParticipantRequest CreateLinkedParticipantRequest(string participantA, string participantB)
         {
             return new LinkedParticipantRequest
             {
-                ParticipantContactEmail = participantEmail,
-                LinkedParticipantContactEmail = interpreterEmail
+                ParticipantContactEmail = participantA,
+                LinkedParticipantContactEmail = participantB
             };
         }
     }

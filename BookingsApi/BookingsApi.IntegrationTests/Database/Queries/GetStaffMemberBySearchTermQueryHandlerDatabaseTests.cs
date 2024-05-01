@@ -62,7 +62,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var staffMember = await _handler.Handle(new GetStaffMemberBySearchTermQuery(_staffMemberPerson.ContactEmail));
             staffMember.Count.Should().Be(1);
-            staffMember.First().ContactEmail.Should().Be(_staffMemberPerson.ContactEmail);
+            staffMember[0].ContactEmail.Should().Be(_staffMemberPerson.ContactEmail);
             staffMember.Select(m => m.Id).Should().Contain(_staffMemberPerson.Id);
             staffMember.Select(m => m.Id).Should().NotContain(_judgePerson.Id);
             staffMember.Select(m => m.Id).Should().NotContain(_individualPerson.Id);

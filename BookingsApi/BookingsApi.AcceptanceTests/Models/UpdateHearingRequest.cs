@@ -23,7 +23,6 @@ namespace BookingsApi.AcceptanceTests.Models
                 OtherInformation = "OtherInformation12345",
                 UpdatedBy = "admin@hmcts.net",
                 Cases = caseList,
-                QuestionnaireNotRequired = false,
                 AudioRecordingRequired = true
             };
         }

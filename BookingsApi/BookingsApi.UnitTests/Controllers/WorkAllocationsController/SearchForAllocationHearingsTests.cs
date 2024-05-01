@@ -17,10 +17,10 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
             var query = new SearchForAllocationHearingsRequest()
             {
                 CaseNumber = "caseNumber",
-                Cso = new[]{Guid.NewGuid()},
-                CaseType =  new[]{"caseType"},
-                FromDate = new DateTime(),
-                ToDate = new DateTime()
+                Cso = [Guid.NewGuid()],
+                CaseType = ["caseType"],
+                FromDate = DateTime.MinValue,
+                ToDate = DateTime.MinValue
             };
 
             QueryHandlerMock
@@ -52,10 +52,10 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
             var query = new SearchForAllocationHearingsRequest()
             {
                 CaseNumber = cNumber,
-                Cso = new[]{Guid.NewGuid()},
-                CaseType =  new[]{"caseType"},
-                FromDate = new DateTime(),
-                ToDate = new DateTime()
+                Cso = [Guid.NewGuid()],
+                CaseType = ["caseType"],
+                FromDate = DateTime.MinValue,
+                ToDate = DateTime.MinValue
             };
             var hearingsByCaseNumber = new List<VideoHearing> { GetHearing(cNumber) };
             var checkForClashesResponse = new List<HearingAllocationResultDto>()

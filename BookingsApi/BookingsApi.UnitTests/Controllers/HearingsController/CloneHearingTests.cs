@@ -51,7 +51,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var request = new CloneHearingRequest { Dates = new List<DateTime> { DateTime.Now.AddDays(2), DateTime.Now.AddDays(3) } };
             var hearing = GetHearing("123");
             var judgeAsExistingParticipantCount = 1;
-            var caseName = $"{hearing.GetCases().First().Name} Day {1} of 3";
+            var caseName = $"{hearing.GetCases()[0].Name} Day {1} of 3";
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
                 .ReturnsAsync(hearing);
@@ -76,7 +76,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var hearingId = Guid.NewGuid();
             var request = new CloneHearingRequest { Dates = new List<DateTime> { DateTime.Now.AddDays(2), DateTime.Now.AddDays(3) } };
             var hearing = GetHearing("123");
-            var caseName = $"{hearing.GetCases().First().Name} Day {1} of 3";
+            var caseName = $"{hearing.GetCases()[0].Name} Day {1} of 3";
 
             hearing.Participants.Remove(hearing.Participants.Single(x => x.HearingRole.Name == "Judge"));
             QueryHandlerMock

@@ -47,8 +47,8 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             @event.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
 
             var typedEvent = (HearingDetailsUpdatedIntegrationEvent) @event.IntegrationEvent;
-            typedEvent.Hearing.CaseName.Should().Be(hearing.GetCases().First().Name);
-            typedEvent.Hearing.CaseNumber.Should().Be(hearing.GetCases().First().Number);
+            typedEvent.Hearing.CaseName.Should().Be(hearing.GetCases()[0].Name);
+            typedEvent.Hearing.CaseNumber.Should().Be(hearing.GetCases()[0].Number);
             typedEvent.Hearing.CaseType.Should().Be(hearing.CaseType.Name);
             typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
         }
@@ -61,7 +61,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             hearing.AddCase("1234", "test", true);
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
-            var individual1 = individuals.First();
+            var individual1 = individuals[0];
             individual1.HearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(1, "Individual")};
             individual1.CaseRole = new CaseRole(1, "test");
 
@@ -91,7 +91,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
         {
             var hearing = new VideoHearingBuilder().Build();
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
-            var individual1 = individuals.First();
+            var individual1 = individuals[0];
             individual1.HearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(1, "Individual")};
             individual1.CaseRole = new CaseRole(1, "test");
 
@@ -112,10 +112,10 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             hearing.AddCase("1234", "test", true);
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
-            var individual1 = individuals.First();
+            var individual1 = individuals[0];
             individual1.CaseRole = new CaseRole(1, "test");
 
-            var individual2 = individuals.Last();
+            var individual2 = individuals[individuals.Count - 1];
             individual2.CaseRole = new CaseRole(2, "test2");
 
             var representative = hearing.GetParticipants().Single(x => x is Representative);
@@ -157,10 +157,10 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             hearing.OtherInformation = $"JudgeEmail|{email}|JudgePhone|{phone}";
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
-            var individual1 = individuals.First();
+            var individual1 = individuals[0];
             individual1.CaseRole = new CaseRole(1, "test");
 
-            var individual2 = individuals.Last();
+            var individual2 = individuals[individuals.Count - 1];
             individual2.CaseRole = new CaseRole(2, "test2");
 
             var representative = hearing.GetParticipants().Single(x => x is Representative);

@@ -50,10 +50,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var justiceUserTwo = await Hooks
                 .SeedJusticeUser("team.lead.2@hearings.reform.hmcts.net", "firstName2", "secondname2", true);
 
-            var justiceUserOneNonWorkingHoursStartTime = new DateTime(2022, 2, 1);
-            var justiceUserOneNonWorkingHoursEndTime = new DateTime(2022, 1, 1);
-            var justiceUserTwoNonWorkingHoursStartTime = new DateTime(2022, 2, 10, 9, 0, 0);
-            var justiceUserTwoNonWorkingHoursEndTime = new DateTime(2022, 2, 11, 16, 30, 0);
+            var justiceUserOneNonWorkingHoursStartTime = new DateTime(2022, 2, 1, 0, 0, 0, DateTimeKind.Utc);
+            var justiceUserOneNonWorkingHoursEndTime = new DateTime(2022, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var justiceUserTwoNonWorkingHoursStartTime = new DateTime(2022, 2, 10, 9, 0, 0, DateTimeKind.Utc);
+            var justiceUserTwoNonWorkingHoursEndTime = new DateTime(2022, 2, 11, 16, 30, 0, DateTimeKind.Utc);
 
             var requests = new List<AddNonWorkHoursDto> {
                 new(
@@ -88,7 +88,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             justiceUserOneNonWorkHours.StartTime.Should().Be(justiceUserOneNonWorkingHoursStartTime);
             justiceUserOneNonWorkHours.EndTime.Should().Be(justiceUserOneNonWorkingHoursEndTime);
             justiceUserTwoNonWorkHours.StartTime.Should().Be(justiceUserTwoNonWorkingHoursStartTime);
-            justiceUserTwoNonWorkHours.EndTime.Should().Be(new DateTime(2022, 2, 11, 17, 30, 0));
+            justiceUserTwoNonWorkHours.EndTime.Should().Be(new DateTime(2022, 2, 11, 17, 30, 0, DateTimeKind.Utc));
         }
 
         [Test]
@@ -98,10 +98,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var justiceUser = await Hooks
                 .SeedJusticeUser("team.lead.1@hearings.reform.hmcts.net", "firstName", "secondname", true);
 
-            var justiceUserNonWorkingHoursStartTime1 = new DateTime(2022, 2, 1);
-            var justiceUserNonWorkingHoursEndTime1 = new DateTime(2022, 1, 1);
-            var justiceUserNonWorkingHoursStartTime2 = new DateTime(2022, 2, 1);
-            var justiceUserNonWorkingHoursEndTime2 = new DateTime(2022, 2, 11, 16, 30, 0);
+            var justiceUserNonWorkingHoursStartTime1 = new DateTime(2022, 2, 1, 0, 0, 0, DateTimeKind.Utc);
+            var justiceUserNonWorkingHoursEndTime1 = new DateTime(2022, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var justiceUserNonWorkingHoursStartTime2 = new DateTime(2022, 2, 1, 0, 0, 0, DateTimeKind.Utc);
+            var justiceUserNonWorkingHoursEndTime2 = new DateTime(2022, 2, 11, 16, 30, 0, DateTimeKind.Utc);
 
             var requests = new List<AddNonWorkHoursDto> {
                 new (

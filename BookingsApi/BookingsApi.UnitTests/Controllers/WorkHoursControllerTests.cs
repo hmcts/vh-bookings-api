@@ -152,7 +152,8 @@ namespace BookingsApi.UnitTests.Controllers
             // Arrange
             var uploadNonWorkingHoursRequests = new List<UploadNonWorkingHoursRequest>
             {
-                new UploadNonWorkingHoursRequest(_username, new DateTime(2022, 2, 1), new DateTime(2022, 1, 1))
+                new(_username, new DateTime(2022, 2, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2022, 1, 10, 0, 0, 0, DateTimeKind.Utc))
             };
 
             // Act
@@ -170,7 +171,8 @@ namespace BookingsApi.UnitTests.Controllers
             // Arrange
             var uploadNonWorkingHoursRequests = new List<UploadNonWorkingHoursRequest>
             {
-                new UploadNonWorkingHoursRequest(_username, new DateTime(2022, 1, 1), new DateTime(2022, 2, 1))
+                new(_username, new DateTime(2022, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2022, 2, 10, 0, 0, 0, DateTimeKind.Utc))
             };
 
             // Act

@@ -113,7 +113,6 @@ namespace BookingsApi.AcceptanceTests.Steps
             model.HearingVenueName.Should().Be("Manchester County and Family Court");
             model.OtherInformation.Should().Be("OtherInformation12345");
             model.HearingRoomName.Should().Be("HearingRoomName12345");
-            model.QuestionnaireNotRequired.Should().BeFalse();
             model.AudioRecordingRequired.Should().BeTrue();
 
             foreach (var participant in model.Participants)

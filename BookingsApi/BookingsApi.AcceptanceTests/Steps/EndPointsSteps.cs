@@ -48,7 +48,7 @@ namespace BookingsApi.AcceptanceTests.Steps
                 DisplayName = $"DisplayName{Guid.NewGuid()}",
             };
 
-            var updatedEndPointId = _context.TestData.EndPointResponses.First().Id;
+            var updatedEndPointId = _context.TestData.EndPointResponses[0].Id;
             _context.TestData.TestContextData.Add(UpdatedEndPointId, updatedEndPointId);
             _context.TestData.TestContextData.Add(UpdateEndPointRequest, updateEndpointRequest);
             _context.Request = _context.Patch(UpdateEndpoint(hearingId, updatedEndPointId), updateEndpointRequest);
@@ -59,7 +59,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         public void GivenIHaveRemoveEndpointToAHearingRequestWithAValidHearingId(Scenario scenario)
         {
             var hearingId = GetHearingIdForTest(scenario);
-            var removedEndPointId = _context.TestData.EndPointResponses.First().Id;
+            var removedEndPointId = _context.TestData.EndPointResponses[0].Id;
             _context.TestData.TestContextData.Add(RemovedEndPointId, removedEndPointId);
             _context.Request = _context.Delete(RemoveEndPointFromHearing(hearingId, removedEndPointId));
         }
@@ -98,7 +98,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         {
             var hearingId = GetHearingIdForTest(scenario);
 
-            var updatedEndPointId = _context.TestData.EndPointResponses.First().Id;
+            var updatedEndPointId = _context.TestData.EndPointResponses[0].Id;
             _context.Request = _context.Patch(UpdateEndpoint(hearingId, updatedEndPointId), new UpdateEndpointRequest()
             {
                 DisplayName = string.Empty,
@@ -111,7 +111,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         {
             var hearing = GetHearing();
             var requestUsed = (AddEndpointRequest)_context.TestData.TestContextData[AddEndPointRequest];
-            var endpointAdded = hearing.Endpoints.FirstOrDefault(ep => ep.DisplayName == requestUsed.DisplayName);
+            var endpointAdded = hearing.Endpoints.Find(ep => ep.DisplayName == requestUsed.DisplayName);
 
             endpointAdded.Should().NotBeNull();
             endpointAdded.Pin.Should().NotBeNull();
@@ -125,7 +125,7 @@ namespace BookingsApi.AcceptanceTests.Steps
             var updatedEndPointId = (Guid)_context.TestData.TestContextData[UpdatedEndPointId];
             var requestUsed = (UpdateEndpointRequest)_context.TestData.TestContextData[UpdateEndPointRequest];
 
-            var endpointUpdated = hearing.Endpoints.FirstOrDefault(ep => ep.Id == updatedEndPointId);
+            var endpointUpdated = hearing.Endpoints.Find(ep => ep.Id == updatedEndPointId);
 
             endpointUpdated.Should().NotBeNull();
             endpointUpdated.Pin.Should().NotBeNull();

@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.50.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.60.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.10.0.77988">
       <PrivateAssets>all</PrivateAssets>
