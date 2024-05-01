@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net6.0": {
+    "net8.0": {
       "coverlet.msbuild": {
         "type": "Direct",
         "requested": "[6.0.0, )",
@@ -1463,10 +1463,10 @@
       },
       "Microsoft.Extensions.FileProviders.Embedded": {
         "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "9uQbDTqX1MidhoZFUSK1JItt74IapEadFDOIWAlBIKxr3O/ZEWLWkLYGlgUeP1Dkyog6/CB7h1EAU3xADYZ/lA==",
+        "resolved": "7.0.0",
+        "contentHash": "mh0rIIjKO7PiU7VPtC92LlIG2lpWVCnGIEqBk8ru2oMWEVQ/gJDizePv1fdmnljwC4e69jtYknXYmLNwm0dZEg==",
         "dependencies": {
-          "Microsoft.Extensions.FileProviders.Abstractions": "6.0.0"
+          "Microsoft.Extensions.FileProviders.Abstractions": "7.0.0"
         }
       },
       "Microsoft.Extensions.FileProviders.Physical": {
@@ -1657,10 +1657,7 @@
       "Microsoft.Extensions.Primitives": {
         "type": "Transitive",
         "resolved": "7.0.0",
-        "contentHash": "um1KU5kxcRp3CNuI8o/GrZtD4AIOXDk+RLsytjZ9QPok3ttLUelLKpilVPuaFT3TFjOhSibUAso0odbOaCDj3Q==",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
-        }
+        "contentHash": "um1KU5kxcRp3CNuI8o/GrZtD4AIOXDk+RLsytjZ9QPok3ttLUelLKpilVPuaFT3TFjOhSibUAso0odbOaCDj3Q=="
       },
       "Microsoft.Extensions.WebEncoders": {
         "type": "Transitive",
@@ -2027,7 +2024,7 @@
         "contentHash": "1pzerLyWoCCBR4toBIatqzXTNVmDpJ2iCKeA1Ht/m+lu575guj2UZHD3clHUAwosvkRKIEh//xjRSncE/AO9gQ==",
         "dependencies": {
           "Microsoft.Extensions.ApiDescription.Server": "6.0.3",
-          "Microsoft.Extensions.FileProviders.Embedded": "[6.0.0, 7.0.0)",
+          "Microsoft.Extensions.FileProviders.Embedded": "[7.0.0, 8.0.0)",
           "NSwag.Annotations": "13.20.0",
           "NSwag.Core": "13.20.0",
           "NSwag.Core.Yaml": "13.20.0",
@@ -2069,8 +2066,8 @@
         "resolved": "13.20.0",
         "contentHash": "OpUg0VIRsz3lJjA5Hql3eBtzsGgdCzzNw8SY0837b2Aqecg4O2hOKPdX+ZnTRDusJn4ttSLbLC03UYbembG4Pw==",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[6.0.0, 8.0.0)",
-          "Microsoft.Extensions.Options": "[6.0.0, 8.0.0)",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[7.0.0, 8.0.0)",
+          "Microsoft.Extensions.Options": "[7.0.0, 8.0.0)",
           "NSwag.Generation": "13.20.0"
         }
       },
@@ -2575,6 +2572,7 @@
         "resolved": "7.0.0",
         "contentHash": "WvRUdlL1lB0dTRZSs5XcQOd5q9MYNk90GkbmRmiCvRHThWiojkpGqWdmEDJdXyHbxG/BhE5hmVbMfRLXW9FJVA==",
         "dependencies": {
+          "System.Diagnostics.EventLog": "7.0.0",
           "System.Security.Cryptography.ProtectedData": "7.0.0",
           "System.Security.Permissions": "7.0.0"
         }
@@ -2599,8 +2597,8 @@
       },
       "System.Diagnostics.EventLog": {
         "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "lcyUiXTsETK2ALsZrX+nWuHSIQeazhqPphLfaRxzdGaG93+0kELqpgEHtwWOlQe7+jSFnKwaCAgL4kjeZCQJnw=="
+        "resolved": "7.0.0",
+        "contentHash": "eUDP47obqQm3SFJfP6z+Fx2nJ4KKTQbXB4Q9Uesnzw9SbYdhjyoGXuvDn/gEmFY6N5Z3bFFbpAQGA7m6hrYJCw=="
       },
       "System.Diagnostics.PerformanceCounter": {
         "type": "Transitive",
@@ -3343,17 +3341,13 @@
       "System.Text.Encodings.Web": {
         "type": "Transitive",
         "resolved": "7.0.0",
-        "contentHash": "OP6umVGxc0Z0MvZQBVigj4/U31Pw72ITihDWP9WiWDm+q5aoe0GaJivsfYGq53o6dxH7DcXWiCTl7+0o2CGdmg==",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
-        }
+        "contentHash": "OP6umVGxc0Z0MvZQBVigj4/U31Pw72ITihDWP9WiWDm+q5aoe0GaJivsfYGq53o6dxH7DcXWiCTl7+0o2CGdmg=="
       },
       "System.Text.Json": {
         "type": "Transitive",
         "resolved": "7.0.0",
         "contentHash": "DaGSsVqKsn/ia6RG8frjwmJonfos0srquhw09TlT8KRw5I43E+4gs+/bZj4K0vShJ5H9imCuXupb4RmS+dBy3w==",
         "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0",
           "System.Text.Encodings.Web": "7.0.0"
         }
       },
