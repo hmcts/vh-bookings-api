@@ -82,12 +82,13 @@ namespace BookingsApi.IntegrationTests.Hooks
                     .UseStartup<Startup>()
                     .ConfigureTestServices(services =>
                     {
+                        const string fakeJwtBearerScheme = "Fake Bearer";
                         services.AddAuthentication(options =>
                         {
-                            options.DefaultScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                            options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                            options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                        }).AddFakeJwtBearer();
+                            options.DefaultScheme = fakeJwtBearerScheme;
+                            options.DefaultAuthenticateScheme = fakeJwtBearerScheme;
+                            options.DefaultChallengeScheme = fakeJwtBearerScheme;
+                        }).AddFakeJwtBearer(fakeJwtBearerScheme, options => _ = options);
                         
                         RegisterStubs(services);
                     });
