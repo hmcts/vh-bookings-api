@@ -14,7 +14,8 @@ RUN dotnet publish "BookingsApi.csproj" -c Release -o /app/publish
 
 # Create Final Image.
 FROM base AS final
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y curl \
+    && apt-get clean
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "BookingsApi.dll"]
