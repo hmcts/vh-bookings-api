@@ -19,14 +19,14 @@
       },
       "GST.Fake.Authentication.JwtBearer": {
         "type": "Direct",
-        "requested": "[7.0.2, )",
-        "resolved": "7.0.2",
-        "contentHash": "rgExDASxkU2iP/bKolfQKbLxrmVAmq91tgLJQqbw4wO8hEBuWGw9gVfkYMu/nDB6AmRgOJAJpcbBFIM9IrTGCw==",
+        "requested": "[6.0.0, )",
+        "resolved": "6.0.0",
+        "contentHash": "qvXgZuizJDXbTkW/lk52Cw0/byOVHyxzHj+FT9KX5Tgp0tU7WYi71VCvzYkkb7aNUhI7t/ZEWTRDn6fs1pyxMw==",
         "dependencies": {
           "Microsoft.AspNetCore.Authentication": "2.2.0",
           "Microsoft.AspNetCore.Session": "2.2.0",
-          "Microsoft.Extensions.Options": "7.0.1",
-          "Newtonsoft.Json": "13.0.3"
+          "Microsoft.Extensions.Options": "6.0.0",
+          "Newtonsoft.Json": "13.0.1"
         }
       },
       "LaunchDarkly.ServerSdk": {
