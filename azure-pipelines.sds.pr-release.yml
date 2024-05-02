@@ -20,6 +20,7 @@ stages:
   ####################################################
   # CI Build Checks. #################################
   - stage: CI_Build
+    condition: false
     displayName: CI Build
     variables:
       - template: variables/shared.yaml

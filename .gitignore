@@ -341,3 +341,4 @@ ASALocalRun/
 Coverage/
 **/SpecFlow/
 azurite/
+.vscode/settings.json
