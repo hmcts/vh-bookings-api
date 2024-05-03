@@ -13,7 +13,7 @@ namespace BookingsApi.Mappings.V2
                 DisplayName = endpoint.DisplayName,
                 Sip = endpoint.Sip,
                 Pin = endpoint.Pin,
-                DefenceAdvocateId = endpoint.DefenceAdvocate?.Id
+                DefenceAdvocateId = endpoint.GetDefenceAdvocate()?.Id,
             };
         }
 

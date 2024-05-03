@@ -1,6 +1,7 @@
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -95,10 +96,14 @@ namespace BookingsApi.DAL.Commands
             if (command.Endpoints != null && command.Endpoints.Count > 0)
             {
                 var dtos = command.Endpoints;
-                var newEndpoints = (from dto in dtos
-                    let defenceAdvocate =
-                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, videoHearing.GetParticipants())
-                    select new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate)).ToList();
+                var newEndpoints = new List<Endpoint>();
+                foreach (var dto in dtos)
+                {
+                    var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, videoHearing.GetParticipants());
+                    var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin);
+                    endpoint.AssignDefenceAdvocate(defenceAdvocate);
+                    newEndpoints.Add(endpoint);
+                }
 
                 videoHearing.AddEndpoints(newEndpoints);
             }

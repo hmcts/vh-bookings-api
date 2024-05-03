@@ -78,7 +78,7 @@ namespace BookingsApi.DAL.Helper
                     Pin = pin,
                     Sip = $"{sip}{sipAddressStem}",
                     DisplayName = endpoint.DisplayName,
-                    ContactEmail = endpoint.DefenceAdvocate?.Person?.ContactEmail
+                    ContactEmail = endpoint.GetDefenceAdvocate().Person?.ContactEmail
                 };
             
                 newEndpoints.Add(newEndpoint);

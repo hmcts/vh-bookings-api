@@ -1073,13 +1073,6 @@ namespace BookingsApi.DAL.Migrations
                     b.HasDiscriminator().HasValue("Representative");
                 });
 
-            modelBuilder.Entity("BookingsApi.Domain.Participants.StaffMember", b =>
-                {
-                    b.HasBaseType("BookingsApi.Domain.Participants.Participant");
-
-                    b.HasDiscriminator().HasValue("StaffMember");
-                });
-
             modelBuilder.Entity("BookingsApi.Domain.VideoHearing", b =>
                 {
                     b.HasBaseType("BookingsApi.Domain.Hearing");
@@ -1121,6 +1114,25 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("DefenceAdvocate");
 
                     b.Navigation("Hearing");
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.EndpointLinkedParticipant", b =>
+                {
+                    b.HasOne("BookingsApi.Domain.Endpoint", "Endpoint")
+                        .WithMany("EndpointLinkedParticipants")
+                        .HasForeignKey("EndpointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookingsApi.Domain.Participants.Participant", "Participant")
+                        .WithMany("EndpointLinkedParticipants")
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Endpoint");
+
+                    b.Navigation("Participant");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.Hearing", b =>
@@ -1357,6 +1369,11 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("HearingCases");
                 });
 
+            modelBuilder.Entity("BookingsApi.Domain.Endpoint", b =>
+                {
+                    b.Navigation("EndpointLinkedParticipants");
+                });
+
             modelBuilder.Entity("BookingsApi.Domain.Hearing", b =>
                 {
                     b.Navigation("Allocations");
@@ -1388,6 +1405,8 @@ namespace BookingsApi.DAL.Migrations
 
             modelBuilder.Entity("BookingsApi.Domain.Participants.Participant", b =>
                 {
+                    b.Navigation("EndpointLinkedParticipants");
+
                     b.Navigation("LinkedParticipants");
                 });
 
