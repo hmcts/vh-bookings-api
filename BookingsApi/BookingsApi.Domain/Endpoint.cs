@@ -12,7 +12,7 @@ namespace BookingsApi.Domain
         public string Sip { get; set; }
         public string Pin { get; set; }
         public Participant DefenceAdvocate { get; set; }
-        public virtual IList<EndpointLinkedParticipant> EndpointLinkedParticipants { get; set; }
+        public virtual IList<EndpointParticipant> EndpointLinkedParticipants { get; set; }
         public Guid HearingId { get; set; }
         public virtual Hearing Hearing { get; protected set; }
         protected Endpoint(){}
@@ -22,7 +22,7 @@ namespace BookingsApi.Domain
             DisplayName = displayName;
             Sip = sip;
             Pin = pin;
-            EndpointLinkedParticipants = new List<EndpointLinkedParticipant>();
+            EndpointLinkedParticipants = new List<EndpointParticipant>();
         }
 
         public void AssignDefenceAdvocate(Participant defenceAdvocate)
@@ -31,7 +31,7 @@ namespace BookingsApi.Domain
                 EndpointLinkedParticipants.Remove(EndpointLinkedParticipants.First(x => x.Type == LinkedParticipantType.DefenceAdvocate));
 
             EndpointLinkedParticipants.Add(
-                new EndpointLinkedParticipant(this, defenceAdvocate, LinkedParticipantType.DefenceAdvocate));
+                new EndpointParticipant(this, defenceAdvocate, LinkedParticipantType.DefenceAdvocate));
         }
         
         public Participant GetDefenceAdvocate()
@@ -45,7 +45,7 @@ namespace BookingsApi.Domain
                 EndpointLinkedParticipants.Remove(EndpointLinkedParticipants.First(x => x.Type == LinkedParticipantType.Intermediary));
 
             EndpointLinkedParticipants.Add(
-                new EndpointLinkedParticipant(this, intermediary, LinkedParticipantType.Intermediary));
+                new EndpointParticipant(this, intermediary, LinkedParticipantType.Intermediary));
         }
         
         public Participant GetIntermediary()

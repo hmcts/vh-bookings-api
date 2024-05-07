@@ -41,7 +41,7 @@ namespace BookingsApi.Domain.Participants
         public string UpdatedBy { get; set; }
         public string Discriminator { get; set; }
         public IList<LinkedParticipant> LinkedParticipants { get; set; }
-        public IList<EndpointLinkedParticipant> EndpointLinkedParticipants { get; set; }
+        public IList<EndpointParticipant> EndpointLinkedParticipants { get; set; }
 
 
         protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
