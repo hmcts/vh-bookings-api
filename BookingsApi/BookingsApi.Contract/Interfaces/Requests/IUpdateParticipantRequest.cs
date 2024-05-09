@@ -8,5 +8,6 @@ namespace BookingsApi.Contract.Interfaces.Requests
         public string DisplayName { get; set; }
         public string TelephoneNumber { get; set; }
         public string Title { get; set; }
+        public string ContactEmail { get; set; }
     }
 }

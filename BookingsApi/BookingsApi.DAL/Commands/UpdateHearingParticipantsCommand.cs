@@ -83,8 +83,19 @@ namespace BookingsApi.DAL.Commands
 
                 existingParticipant.LinkedParticipants.Clear();
 
-                existingParticipant.UpdateParticipantDetails(newExistingParticipantDetails.Title, newExistingParticipantDetails.DisplayName,
-                    newExistingParticipantDetails.TelephoneNumber, newExistingParticipantDetails.OrganisationName);
+                if (newExistingParticipantDetails.ContactEmailIsNew)
+                {
+                    // new users must have their username set to contact email (this gets updated after creating the user)
+                    existingParticipant.UpdateParticipantDetails(newExistingParticipantDetails.Title, newExistingParticipantDetails.DisplayName,
+                        newExistingParticipantDetails.TelephoneNumber, newExistingParticipantDetails.OrganisationName, newExistingParticipantDetails.Person.ContactEmail);
+                    existingParticipant.Person.UpdateUsername(newExistingParticipantDetails.Person.ContactEmail);
+                }
+                else
+                {
+                    existingParticipant.UpdateParticipantDetails(newExistingParticipantDetails.Title,
+                        newExistingParticipantDetails.DisplayName,
+                        newExistingParticipantDetails.TelephoneNumber, newExistingParticipantDetails.OrganisationName);
+                }
 
                 if (existingParticipant.HearingRole.UserRole.IsRepresentative)
                 {
@@ -109,5 +120,6 @@ namespace BookingsApi.DAL.Commands
         public string OrganisationName { get; set; }
         public Person Person { get; set; }
         public RepresentativeInformation RepresentativeInformation { get; set; }
+        public bool ContactEmailIsNew { get; set; }
     }
 }

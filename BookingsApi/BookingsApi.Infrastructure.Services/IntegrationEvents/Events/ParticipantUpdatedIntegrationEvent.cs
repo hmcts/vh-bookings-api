@@ -9,7 +9,7 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
     {
         public ParticipantUpdatedIntegrationEvent(Guid hearingId, Participant participant)
         {
-            if (participant == null) return;
+            if (participant?.Person.ContactEmail is null) return;
             HearingId = hearingId;
             Participant = ParticipantDtoMapper.MapToDto(participant);
         }

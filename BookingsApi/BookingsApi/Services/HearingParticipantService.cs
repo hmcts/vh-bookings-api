@@ -165,16 +165,34 @@ public class HearingParticipantService : IHearingParticipantService
         var existingParticipants = hearing.Participants
             .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id)).ToList();
         
+        // get a list of participants from the hearing where Person.ContactEmail is null but the participant is in the request and has a contact email
+        var existingParticipantsWithContactEmailAdded = hearing.Participants
+            .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id))
+            .Where(x => x.Person.ContactEmail is null)
+            .Where(x => request.ExistingParticipants.Exists(ep => ep.ParticipantId == x.Id && ep.ContactEmail is not null))
+            .ToList();
+
         var existingParticipantDetails = new List<ExistingParticipantDetails>();
+        
+        var existingParticipantsToTreatAsNew = new List<NewParticipant>();
 
         foreach (var existingParticipantRequest in request.ExistingParticipants)
         {
             var updatedParticipantRequest = UpdateExistingParticipantDetailsFromRequest(existingParticipants, existingParticipantRequest);
-            if (updatedParticipantRequest != null)
+            if (updatedParticipantRequest == null) continue;
+            var existingParticipant = existingParticipants.First(ep => ep.Id == existingParticipantRequest.ParticipantId);
+            // if a contact email is not being added, use the existing contact email 
+            if (!existingParticipantsWithContactEmailAdded.Contains(existingParticipant))
             {
-                updatedParticipantRequest.Person.ContactEmail = existingParticipants.First(ep => ep.Id == existingParticipantRequest.ParticipantId).Person.ContactEmail;
-                existingParticipantDetails.Add(updatedParticipantRequest);
+                updatedParticipantRequest.Person.ContactEmail = existingParticipant.Person.ContactEmail;
             }
+            else
+            {
+                existingParticipant.Person.ContactEmail = existingParticipantRequest.ContactEmail;
+                updatedParticipantRequest.ContactEmailIsNew = true;
+                existingParticipantsToTreatAsNew.Add(MapExistingParticipantToNewParticipant(existingParticipantRequest, existingParticipant, hearingRoles));
+            }
+            existingParticipantDetails.Add(updatedParticipantRequest);
         }
         
         var linkedParticipants =
@@ -186,9 +204,37 @@ public class HearingParticipantService : IHearingParticipantService
 
         var getHearingByIdQuery = new GetHearingByIdQuery(hearing.Id);
         var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-        await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants, sendNotification);
+        
+        newParticipants.AddRange(existingParticipantsToTreatAsNew);
+        var existingParticipantsToTreatAsExisting = existingParticipantDetails.Where(x => !x.ContactEmailIsNew).ToList();
+        
+        await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantsToTreatAsExisting, newParticipants, request.RemovedParticipantIds, linkedParticipants, sendNotification);
 
         return updatedHearing;
+    }
+    
+    private NewParticipant MapExistingParticipantToNewParticipant(UpdateParticipantRequestV2 existingRequest, Participant existingParticipant, List<HearingRole> hearingRoles)
+    {
+        var hearingRole = hearingRoles.Find(x => string.Compare(x.Code, existingParticipant.HearingRole.Code, StringComparison.InvariantCultureIgnoreCase) == 0);
+        // For new user we don't have the username yet.
+        // We need to set the username to contact email temporarily.
+        // This will be changed and updated after creating the user.
+        var person = new Person(existingRequest.Title, existingRequest.FirstName,
+            existingRequest.LastName, existingRequest.ContactEmail, existingRequest.ContactEmail)
+        {
+            MiddleNames = existingRequest.MiddleNames,
+            ContactEmail = existingRequest.ContactEmail,
+            TelephoneNumber = existingRequest.TelephoneNumber
+        };
+        
+        return new NewParticipant
+        {
+            Person = person,
+            CaseRole = null,
+            HearingRole = hearingRole,
+            DisplayName = existingRequest.DisplayName,
+            Representee = existingRequest.Representee
+        };
     }
     
     private async Task ProcessParticipantListChange(VideoHearing hearing, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants,
@@ -287,7 +333,8 @@ public class HearingParticipantService : IHearingParticipantService
         return existingParticipant?.Person?.Title != requestChanges.Title ||
                existingParticipant?.Person?.Organisation?.Name != requestChanges.OrganisationName ||
                existingParticipant?.Person?.TelephoneNumber != requestChanges.TelephoneNumber ||
-               existingParticipant?.DisplayName != requestChanges.DisplayName;
+               existingParticipant?.DisplayName != requestChanges.DisplayName ||
+               existingParticipant?.Person?.ContactEmail != requestChanges.ContactEmail;
     }
         
 }
