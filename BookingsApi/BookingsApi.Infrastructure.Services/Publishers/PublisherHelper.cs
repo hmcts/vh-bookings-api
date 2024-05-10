@@ -30,18 +30,23 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         /// and the comparison of the Person.ContactEmail and Person.Username to be the same as the BQS will update after notification
         /// </summary>
         /// <param name="videoHearing"></param>
+        /// <param name="videoHearingUpdateDate">the timestamp for the hearing's last update</param>
         /// <returns></returns>
-        public static IEnumerable<Participant> GetNewParticipantsSinceLastUpdate(VideoHearing videoHearing, DateTime videoHearingUpdateDate)
+        public static IEnumerable<Participant> GetNewParticipantsSinceLastUpdate(VideoHearing videoHearing,
+            DateTime videoHearingUpdateDate)
         {
             var newParticipants = videoHearing.Participants
                 .Where(x => x.Person.ContactEmail is not null)
-                .Where(x=> x is not Judge)
-                .Where(x => x.DoesPersonAlreadyExist() || x.Person?.ContactEmail == x.Person?.Username);
-            var areParticipantsAddedToExistingBooking = newParticipants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
+                .Where(x => x is not Judge)
+                .Where(x => !x.DoesPersonAlreadyExist() || x.Person?.ContactEmail == x.Person?.Username).ToList();
+            var areParticipantsAddedToExistingBooking = newParticipants.Exists(x =>
+                x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
             if (areParticipantsAddedToExistingBooking)
             {
-                newParticipants = newParticipants.Where(x => x.CreatedDate.TrimSeconds() == videoHearingUpdateDate);
+                newParticipants = newParticipants.Where(x => x.CreatedDate.TrimSeconds() == videoHearingUpdateDate)
+                    .ToList();
             }
+
             return newParticipants;
         }
 

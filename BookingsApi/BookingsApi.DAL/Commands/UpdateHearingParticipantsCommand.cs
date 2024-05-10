@@ -83,7 +83,7 @@ namespace BookingsApi.DAL.Commands
 
                 existingParticipant.LinkedParticipants.Clear();
 
-                if (newExistingParticipantDetails.ContactEmailIsNew)
+                if (newExistingParticipantDetails.IsContactEmailNew)
                 {
                     // new users must have their username set to contact email (this gets updated after creating the user)
                     existingParticipant.UpdateParticipantDetails(newExistingParticipantDetails.Title, newExistingParticipantDetails.DisplayName,
@@ -120,6 +120,6 @@ namespace BookingsApi.DAL.Commands
         public string OrganisationName { get; set; }
         public Person Person { get; set; }
         public RepresentativeInformation RepresentativeInformation { get; set; }
-        public bool ContactEmailIsNew { get; set; }
+        public bool IsContactEmailNew { get; set; }
     }
 }

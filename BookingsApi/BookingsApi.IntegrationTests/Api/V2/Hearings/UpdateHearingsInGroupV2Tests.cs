@@ -1,3 +1,4 @@
+using BookingsApi.Client;
 using BookingsApi.Common;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
@@ -656,7 +657,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             new()
             {
                 HearingId = hearing.Id,
-                CaseNumber = hearing.GetCases().FirstOrDefault().Number,
+                CaseNumber = hearing.GetCases().First().Number,
                 ScheduledDateTime = hearing.ScheduledDateTime,
                 ScheduledDuration = hearing.ScheduledDuration,
                 HearingVenueCode = hearing.HearingVenue.VenueCode,
@@ -672,7 +673,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                         TelephoneNumber = p.Person.TelephoneNumber,
                         DisplayName = p.DisplayName,
                         OrganisationName = p.Person.Organisation?.Name,
-                        Representee = p is Representative ? (p as Representative).Representee : null,
+                        Representee = (p as Representative)?.Representee,
                         FirstName = p.Person.FirstName,
                         MiddleNames = p.Person.MiddleNames,
                         LastName = p.Person.LastName,
@@ -681,7 +682,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                             ParticipantContactEmail = lp.Participant.Person.ContactEmail,
                             LinkedParticipantContactEmail = lp.Linked.Person.ContactEmail,
                             Type = LinkedParticipantTypeV2.Interpreter
-                        }).ToList()
+                        }).ToList(),
+                        ContactEmail = p.Person.ContactEmail
                     }).ToList()
                 },
                 Endpoints = new UpdateHearingEndpointsRequestV2

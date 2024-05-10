@@ -25,7 +25,7 @@ namespace Testing.Common.Builders.Domain
                         "Automation_LastName", 
                         $"Automation_{RandomNumber.Next()}@hmcts.net", 
                         $"Automation_{RandomNumber.Next()}@hearings.reform.hmcts.net"))
-                .With(x => x.UpdatedDate, DateTime.MinValue)
+                .With(x => x.UpdatedDate, DateTime.UtcNow)
                 .With(x => x.TelephoneNumber, "01234567890")
                 .Build();
         }

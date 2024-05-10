@@ -1,3 +1,4 @@
+using BookingsApi.Client;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Constants;
@@ -84,7 +85,7 @@ public class ParticipantWithoutEmailTests : ApiTest
     }
 
     [Test]
-    public async Task should_treat_participant_with_contact_email_added_as_a_new_participant()
+    public async Task should_treat_participant_with_contact_email_added_as_a_new_participant_updateparticipants()
     {
         // arrange
         var serviceBusStub =
@@ -145,6 +146,78 @@ public class ParticipantWithoutEmailTests : ApiTest
             messages.Select(x => x.IntegrationEvent).OfType<HearingParticipantsUpdatedIntegrationEvent>().ToList();
         participantsUpdatedEvents.Count.Should().Be(1);
         participantsUpdatedEvents.Exists(x => x.NewParticipants.Exists(p => p.ContactEmail == newEmail)).Should()
+            .BeTrue();
+        
+        var welcomeEmailEvents = 
+                messages.Select(x => x.IntegrationEvent).OfType<NewParticipantWelcomeEmailEvent>().ToList();
+        welcomeEmailEvents.Count.Should().Be(1);
+        welcomeEmailEvents.Exists(x=> x.WelcomeEmail.ContactEmail == newEmail).Should().BeTrue();
+        
+        
+        var hearingConfirmationEvents = 
+            messages.Select(x => x.IntegrationEvent).OfType<NewParticipantHearingConfirmationEvent>().ToList();
+        hearingConfirmationEvents.Count.Should().Be(1);
+        hearingConfirmationEvents.Exists(x=> x.HearingConfirmationForParticipant.ContactEmail == newEmail).Should().BeTrue();
+    }
+    
+    
+    [Test]
+    public async Task should_treat_participant_with_contact_email_added_as_a_new_participant_updateparticipantsdetails()
+    {
+        // arrange
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+
+        // set up a hearing with a participant without an email
+        var bookHearingRequest = await CreateBookingRequestWithServiceIdsAndCodes();
+        var rep = bookHearingRequest.Participants.First(x => x.HearingRoleCode == HearingRoleCodes.Representative);
+        rep.ContactEmail = null;
+
+        using var client = Application.CreateClient();
+        var bookingsApiClient = BookingsApiClient.GetClient(client);
+
+        var hearing = await bookingsApiClient.BookNewHearingWithCodeAsync(bookHearingRequest);
+        _hearingIds.Add(hearing.Id);
+
+        var participantWithoutEmail = hearing.Participants.First(x => x.ContactEmail == null);
+        
+        // make a request to update username so that they are not treated as a new person
+        foreach (var participant in hearing.Participants.Where(x=> x.ContactEmail is not null))
+        {
+            await bookingsApiClient.UpdatePersonUsernameAsync(participant.ContactEmail,
+                $"{participant.Id}_user@test.com");
+        }
+        
+        // clear messages created from the booking flow
+        serviceBusStub!.ClearMessages();
+        
+        var newEmail = "adding_an_email@test.com";
+        var updateParticipantRequest =
+            new UpdateParticipantRequestV2
+            {
+                ParticipantId = participantWithoutEmail.Id,
+                DisplayName = participantWithoutEmail.DisplayName,
+                FirstName = participantWithoutEmail.FirstName,
+                LastName = participantWithoutEmail.LastName,
+                OrganisationName = participantWithoutEmail.Organisation,
+                TelephoneNumber = participantWithoutEmail.TelephoneNumber,
+                Title = participantWithoutEmail.Title,
+                ContactEmail = newEmail,
+                Representee = participantWithoutEmail.Representee,
+                MiddleNames = participantWithoutEmail.MiddleNames
+            };
+
+
+        
+        await bookingsApiClient.UpdateParticipantDetailsV2Async(hearing.Id, participantWithoutEmail.Id,
+            updateParticipantRequest);
+
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearing.Id);
+
+        var participantsUpdatedEvents =
+            messages.Select(x => x.IntegrationEvent).OfType<ParticipantsAddedIntegrationEvent>().ToList();
+        participantsUpdatedEvents.Count.Should().Be(1);
+        participantsUpdatedEvents.Exists(x => x.Participants.Any(p => p.ContactEmail == newEmail)).Should()
             .BeTrue();
         
         var welcomeEmailEvents = 

@@ -67,6 +67,7 @@ namespace BookingsApi.Domain
                 _validationFailures.AddFailure("Username", "Username cannot be empty");
             }
             Username = username;
+            UpdatedDate = DateTime.UtcNow;
         }
 
         public void UpdatePersonNames(string firstName, string lastName, string middleNames = null)
