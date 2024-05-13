@@ -36,7 +36,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             DateTime videoHearingUpdateDate)
         {
             var newParticipants = videoHearing.Participants
-                .Where(x => x.Person.ContactEmail is not null)
+                .Where(x => x.Person?.ContactEmail is not null) // JoH can have a null person
                 .Where(x => x is not Judge)
                 .Where(x => !x.DoesPersonAlreadyExist() || x.Person?.ContactEmail == x.Person?.Username).ToList();
             var areParticipantsAddedToExistingBooking = newParticipants.Exists(x =>
