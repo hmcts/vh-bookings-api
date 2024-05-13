@@ -40,19 +40,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Features\V1\Hearings.feature.cs">
-      <DependentUpon>Hearings.feature</DependentUpon>
-      <AutoGen>true</AutoGen>
-      <DesignTime>true</DesignTime>
-      <Visible>true</Visible>
-    </Compile>
-    <Compile Update="Features\V1\Participants.feature.cs">
-      <DependentUpon>Participants.feature</DependentUpon>
-      <AutoGen>true</AutoGen>
-      <DesignTime>true</DesignTime>
-      <Visible>true</Visible>
-    </Compile>
-  </ItemGroup>
-
 </Project>
