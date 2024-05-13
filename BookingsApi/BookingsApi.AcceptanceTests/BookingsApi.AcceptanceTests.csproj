@@ -17,12 +17,10 @@
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.4.0" />
     <PackageReference Include="nunit" Version="4.1.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-    <PackageReference Include="RestSharp" Version="106.12.0" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.10.0.77988">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.24.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,12 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Features\V1\EndPoints.feature.cs">
-      <DependentUpon>EndPoints.feature</DependentUpon>
-      <AutoGen>true</AutoGen>
-      <DesignTime>true</DesignTime>
-      <Visible>true</Visible>
-    </Compile>
     <Compile Update="Features\V1\Hearings.feature.cs">
       <DependentUpon>Hearings.feature</DependentUpon>
       <AutoGen>true</AutoGen>

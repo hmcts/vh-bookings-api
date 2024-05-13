@@ -7,7 +7,7 @@ namespace BookingsApi.Controllers.V1
     [Route("judiciarypersonstaging")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class JudiciaryPersonStagingController : Controller
+    public class JudiciaryPersonStagingController : ControllerBase
     {
         private readonly ICommandHandler _commandHandler;
         private readonly ILogger<JudiciaryPersonStagingController> _logger;

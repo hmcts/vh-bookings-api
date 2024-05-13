@@ -10,7 +10,7 @@ namespace BookingsApi.Controllers.V1
     [Route("work-hours")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class WorkHoursController : Controller
+    public class WorkHoursController : ControllerBase
     {
         private readonly ICommandHandler _commandHandler;
         private readonly IQueryHandler _queryHandler;

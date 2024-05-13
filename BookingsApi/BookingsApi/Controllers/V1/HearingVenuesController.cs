@@ -6,7 +6,7 @@ namespace BookingsApi.Controllers.V1
     [Route("hearingvenues")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class HearingVenuesController : Controller
+    public class HearingVenuesController : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
 
