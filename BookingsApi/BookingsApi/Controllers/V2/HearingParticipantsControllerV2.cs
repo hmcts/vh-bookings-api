@@ -9,7 +9,7 @@ namespace BookingsApi.Controllers.V2
     [Route(template:"v{version:apiVersion}/hearings")]
     [ApiVersion("2.0")]
     [ApiController]
-    public class HearingParticipantsControllerV2 : Controller
+    public class HearingParticipantsControllerV2 : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;

@@ -59,7 +59,7 @@ public class BookNewHearingV2Tests : ApiTest
         var serviceBusStub =
             Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingResponse.Id);
-        messages.Any(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().BeTrue();
+        Array.Exists(messages, x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().BeTrue();
     }
 
     [Test]

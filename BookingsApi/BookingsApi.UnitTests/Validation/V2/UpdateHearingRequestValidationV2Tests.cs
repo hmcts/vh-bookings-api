@@ -37,7 +37,7 @@ namespace BookingsApi.UnitTests.Validation.V2
             var result = await _validator.ValidateAsync(request);
 
             // assert
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidationV2.NoHearingVenueCodeErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidationV2.NoHearingVenueCodeErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -50,7 +50,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidationV2.ScheduleDateTimeInPastErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidationV2.ScheduleDateTimeInPastErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -63,7 +63,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidationV2.NoScheduleDurationErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidationV2.NoScheduleDurationErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -76,7 +76,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidationV2.NoUpdatedByErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidationV2.NoUpdatedByErrorMessage)
                 .Should().BeTrue();
         }
 

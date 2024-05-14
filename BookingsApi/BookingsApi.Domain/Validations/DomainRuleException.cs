@@ -20,7 +20,7 @@ namespace BookingsApi.Domain.Validations
         {
             if (validationFailures.Count == 1)
             {
-                return validationFailures.First().Message;
+                return validationFailures[0].Message;
             }
 
             var errors = string.Join(", ", validationFailures.Select(v => v.Message));

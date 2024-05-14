@@ -64,7 +64,7 @@ namespace BookingsApi.IntegrationTests.Steps
             var models = RequestHelper.Deserialise<List<CaseTypeResponse>>(json);
             foreach (var (key, value) in caseHearingTypes)
             {
-                var caseType = models.FirstOrDefault(x => x.Name.Equals(key, StringComparison.CurrentCultureIgnoreCase));
+                var caseType = models.Find(x => x.Name.Equals(key, StringComparison.CurrentCultureIgnoreCase));
                 caseType.Should().NotBeNull($"{key} should be in the list of case types");
                 caseType.HearingTypes.Select(x => x.Name).Should().Contain(value);
             }

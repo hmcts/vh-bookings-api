@@ -25,7 +25,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
                     CreatedBy = "created.by@email.com",
                     JusticeUserId = Guid.NewGuid(),
                     DayOfWeekId = 1,
-                    DayOfWeek = new DayOfWeek {Day = "Monday"},
+                    DayOfWeek = new DayOfWeek { Day = "Monday" },
                 }
             };
 
@@ -47,7 +47,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var actualVhoNonAvailabilityResponseJson = JsonConvert.SerializeObject(result);
 
             // Assert
-            Assert.AreEqual(expectedJson, actualVhoNonAvailabilityResponseJson);
+            actualVhoNonAvailabilityResponseJson.Should().BeEquivalentTo(expectedJson);
         }
     }
 }
