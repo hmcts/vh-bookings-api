@@ -44,7 +44,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var actualVhoNonAvailabilityResponseJson = JsonConvert.SerializeObject(result);
 
             // Assert
-            Assert.AreEqual(expectedNonAvailabilityJson, actualVhoNonAvailabilityResponseJson);
+            actualVhoNonAvailabilityResponseJson.Should().BeEquivalentTo(expectedNonAvailabilityJson);
         }
     }
 }

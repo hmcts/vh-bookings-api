@@ -10,7 +10,7 @@ namespace BookingsApi.Controllers.V1
     [Route("hearings")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class EndPointsController : Controller
+    public class EndPointsController : ControllerBase
     {
         private readonly IRandomGenerator _randomGenerator;
         private readonly IQueryHandler _queryHandler;

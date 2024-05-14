@@ -137,7 +137,7 @@ namespace BookingsApi
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseOpenApi();
-            app.UseSwaggerUi3(c =>
+            app.UseSwaggerUi(c =>
             {
                 c.DocumentTitle = "Bookings API V1";
             });

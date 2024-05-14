@@ -9,7 +9,7 @@ namespace BookingsApi.Controllers.V1
     [Route("judiciaryperson")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class JudiciaryPersonController : Controller
+    public class JudiciaryPersonController : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;

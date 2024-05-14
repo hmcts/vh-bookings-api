@@ -11,7 +11,7 @@ namespace BookingsApi.Controllers.V1
     [Route("persons")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class PersonsController : Controller
+    public class PersonsController : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
@@ -211,7 +211,7 @@ namespace BookingsApi.Controllers.V1
             }
             catch (PersonNotFoundException ex)
             {
-                _logger.LogError(ex, "Failed to update a person because the {username} does not exist", username);
+                _logger.LogError(ex, "Failed to update a person because the {Username} does not exist", username);
                 return NotFound();
             }
         }
@@ -344,7 +344,7 @@ namespace BookingsApi.Controllers.V1
             }
             catch (PersonNotFoundException e)
             {
-                _logger.LogError(e, "Failed to update a person because the person with {contactEmail} does not exist", contactEmail);
+                _logger.LogError(e, "Failed to update a person because the person with {ContactEmail} does not exist", contactEmail);
                 return NotFound($"{contactEmail} does not exist");
             }
 

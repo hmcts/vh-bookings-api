@@ -8,7 +8,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     {
         private UpdateEndPointOfHearingCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
-        private Guid _newHearingId;
 
         [SetUp]
         public void Setup()
@@ -16,7 +15,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _commandHandler = new UpdateEndPointOfHearingCommandHandler(context);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
-            _newHearingId = Guid.Empty;
         }
 
         [Test]
@@ -33,7 +31,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             Assert.ThrowsAsync<EndPointNotFoundException>(() => _commandHandler.Handle(
                 new UpdateEndPointOfHearingCommand(seededHearing.Id, Guid.NewGuid(), "DP", null)));
@@ -44,10 +41,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             Assert.ThrowsAsync<ArgumentNullException>(() => _commandHandler.Handle(
-                new UpdateEndPointOfHearingCommand(seededHearing.Id, seededHearing.GetEndpoints().First().Id, string.Empty, null)));
+                new UpdateEndPointOfHearingCommand(seededHearing.Id, seededHearing.GetEndpoints()[0].Id, string.Empty, null)));
         }
 
         [Test]
@@ -55,9 +51,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
-            var endpoint = seededHearing.GetEndpoints().First();
+            var endpoint = seededHearing.GetEndpoints()[0];
             var updatedDisplayName = "updatedDisplayName";
             await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, null));
 
@@ -73,9 +68,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
-
-            var endpoint = seededHearing.GetEndpoints().First();
+            
+            var endpoint = seededHearing.GetEndpoints()[0];
             var dA = seededHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
             var updatedDisplayName = "updatedDisplayName";
             await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, dA));
@@ -96,9 +90,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
-            var endpoint = seededHearing.GetEndpoints().First();
+            var endpoint = seededHearing.GetEndpoints()[0];
             var dA = seededHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
             var updatedDisplayName = "updatedDisplayName";
             await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, dA));

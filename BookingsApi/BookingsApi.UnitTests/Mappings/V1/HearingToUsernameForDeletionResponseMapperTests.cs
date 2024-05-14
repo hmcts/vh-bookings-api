@@ -25,7 +25,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         public void should_map_hearing_to_response_model_with_first_case()
         {
             var hearing = BuildHearing(false);
-            var firstCase = hearing.GetCases().First();
+            var firstCase = hearing.GetCases()[0];
             
             var result = HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse(hearing);
 
@@ -54,7 +54,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         {
             var hearing = BuildHearing(false);
             hearing.AddCase("Test 002 ", "Case name 2", false);
-            var firstCase = hearing.GetCases().First();
+            var firstCase = hearing.GetCases()[0];
 
             var result = HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse(hearing);
 

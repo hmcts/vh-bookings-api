@@ -21,7 +21,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
             _individual.AddLink(_linkedIndividual.Id, LinkedParticipantType.Interpreter);
             var linkedId = _individual.LinkedParticipants.Select(x => x.LinkedId).ToList();
 
-            linkedId.First().Should().Be(_linkedIndividual.Id);
+            linkedId[0].Should().Be(_linkedIndividual.Id);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace BookingsApi.Controllers.V1
     [Route("staffmember")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class StaffMemberController : Controller
+    public class StaffMemberController : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
 

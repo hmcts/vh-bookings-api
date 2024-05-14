@@ -10,7 +10,7 @@ namespace BookingsApi.Controllers.V1
     [Route("hearings")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class JudiciaryParticipantsController : Controller
+    public class JudiciaryParticipantsController : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
         private readonly IJudiciaryParticipantService _judiciaryParticipantService;

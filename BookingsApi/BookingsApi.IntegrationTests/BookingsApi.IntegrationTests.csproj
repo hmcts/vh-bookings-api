@@ -1,86 +1,85 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <IsPackable>false</IsPackable>
-        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
-    <LangVersion>latestmajor</LangVersion>
-    </PropertyGroup>
-    
-    <ItemGroup>
-        <PackageReference Include="coverlet.msbuild" Version="6.0.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="FluentAssertions" Version="6.10.0" />
-        <PackageReference Include="GST.Fake.Authentication.JwtBearer" Version="6.0.0" />
-        <PackageReference Include="LaunchDarkly.ServerSdk" Version="7.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.9" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
-        <PackageReference Include="SonarAnalyzer.CSharp" Version="9.10.0.77988">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="VH.AcceptanceTests.Common" Version="1.24.1" />
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
-        <ProjectReference Include="..\BookingsApi.DAL\BookingsApi.DAL.csproj" />
-        <ProjectReference Include="..\BookingsApi\BookingsApi.csproj" />
-        <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
-    </ItemGroup>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <Content Include="Features\*.feature.cs" />
-        <None Remove="appsettings.json" />
-        <Content Include="appsettings.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="6.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    <PackageReference Include="GST.Fake.Authentication.JwtBearer" Version="6.0.0" />
+    <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.25.0.90414">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.24.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
+    <ProjectReference Include="..\BookingsApi.DAL\BookingsApi.DAL.csproj" />
+    <ProjectReference Include="..\BookingsApi\BookingsApi.csproj" />
+    <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <Compile Update="Features\V1\CloneHearing.feature.cs">
-        <DependentUpon>CloneHearing.feature</DependentUpon>
-        <AutoGen>true</AutoGen>
-        <DesignTime>true</DesignTime>
-        <Visible>true</Visible>
-      </Compile>
-      <Compile Update="Features\V1\Hearings.feature.cs">
-        <DependentUpon>Hearings.feature</DependentUpon>
-        <AutoGen>true</AutoGen>
-        <DesignTime>true</DesignTime>
-        <Visible>true</Visible>
-      </Compile>
-      <Compile Update="Features\V1\JudiciaryPersons.feature.cs">
-        <DependentUpon>JudiciaryPersons.feature</DependentUpon>
-        <AutoGen>true</AutoGen>
-        <DesignTime>true</DesignTime>
-        <Visible>true</Visible>
-      </Compile>
-      <Compile Update="Features\V1\Participants.feature.cs">
-        <DependentUpon>Participants.feature</DependentUpon>
-        <AutoGen>true</AutoGen>
-        <DesignTime>true</DesignTime>
-        <Visible>true</Visible>
-      </Compile>
-      <Compile Update="Features\V1\Persons.feature.cs">
-        <DependentUpon>Persons.feature</DependentUpon>
-        <AutoGen>true</AutoGen>
-        <DesignTime>true</DesignTime>
-        <Visible>true</Visible>
-      </Compile>
-      <Compile Update="Features\V1\SearchForPersons.feature.cs">
-        <DependentUpon>SearchForPersons.feature</DependentUpon>
-        <AutoGen>true</AutoGen>
-        <DesignTime>true</DesignTime>
-        <Visible>true</Visible>
-      </Compile>
-      <Compile Update="Features\V1\SearchHearings.feature.cs">
-        <DependentUpon>SearchHearings.feature</DependentUpon>
-        <AutoGen>true</AutoGen>
-        <DesignTime>true</DesignTime>
-        <Visible>true</Visible>
-      </Compile>
-    </ItemGroup>
+  <ItemGroup>
+    <Content Include="Features\*.feature.cs" />
+    <None Remove="appsettings.json" />
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Features\V1\CloneHearing.feature.cs">
+      <DependentUpon>CloneHearing.feature</DependentUpon>
+      <AutoGen>true</AutoGen>
+      <DesignTime>true</DesignTime>
+      <Visible>true</Visible>
+    </Compile>
+    <Compile Update="Features\V1\Hearings.feature.cs">
+      <DependentUpon>Hearings.feature</DependentUpon>
+      <AutoGen>true</AutoGen>
+      <DesignTime>true</DesignTime>
+      <Visible>true</Visible>
+    </Compile>
+    <Compile Update="Features\V1\JudiciaryPersons.feature.cs">
+      <DependentUpon>JudiciaryPersons.feature</DependentUpon>
+      <AutoGen>true</AutoGen>
+      <DesignTime>true</DesignTime>
+      <Visible>true</Visible>
+    </Compile>
+    <Compile Update="Features\V1\Participants.feature.cs">
+      <DependentUpon>Participants.feature</DependentUpon>
+      <AutoGen>true</AutoGen>
+      <DesignTime>true</DesignTime>
+      <Visible>true</Visible>
+    </Compile>
+    <Compile Update="Features\V1\Persons.feature.cs">
+      <DependentUpon>Persons.feature</DependentUpon>
+      <AutoGen>true</AutoGen>
+      <DesignTime>true</DesignTime>
+      <Visible>true</Visible>
+    </Compile>
+    <Compile Update="Features\V1\SearchForPersons.feature.cs">
+      <DependentUpon>SearchForPersons.feature</DependentUpon>
+      <AutoGen>true</AutoGen>
+      <DesignTime>true</DesignTime>
+      <Visible>true</Visible>
+    </Compile>
+    <Compile Update="Features\V1\SearchHearings.feature.cs">
+      <DependentUpon>SearchHearings.feature</DependentUpon>
+      <AutoGen>true</AutoGen>
+      <DesignTime>true</DesignTime>
+      <Visible>true</Visible>
+    </Compile>
+  </ItemGroup>
 </Project>

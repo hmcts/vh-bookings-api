@@ -12,7 +12,7 @@ namespace BookingsApi.AcceptanceTests.Api.V1.Persons;
 
 public class PersonTests : ApiTest
 {
-    private List<HearingDetailsResponse> _hearings = new();
+    private readonly List<HearingDetailsResponse> _hearings = new();
     
     [OneTimeTearDown]
     public async Task TearDown()

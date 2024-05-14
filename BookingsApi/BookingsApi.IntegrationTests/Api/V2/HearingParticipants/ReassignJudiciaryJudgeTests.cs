@@ -33,8 +33,7 @@ public class ReassignJudiciaryJudgeTests : ApiTest
         var judiciaryPersonJudge = await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
 
         var originalJudge = seededHearing.JudiciaryParticipants
-            .Where(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge)
-            .FirstOrDefault();
+            .First(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
 
         var request = BuildReassignJudiciaryJudgeRequest(judiciaryPersonJudge);
 
@@ -77,8 +76,7 @@ public class ReassignJudiciaryJudgeTests : ApiTest
         }, BookingStatus.Created);
         var judiciaryPersonJudge = await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge, isGeneric: true);
         var originalJudge = seededHearing.JudiciaryParticipants
-            .Where(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge)
-            .FirstOrDefault();
+            .First(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
 
         var request = BuildReassignJudiciaryJudgeRequest(judiciaryPersonJudge);
         request.OptionalContactEmail = "judge1@email.com";
