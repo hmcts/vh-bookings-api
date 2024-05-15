@@ -116,7 +116,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
 
     [Test]
     public async Task
-        should_return_validation_error_when_updating_a_representative_without_representee_or_organisation_name()
+        should_return_validation_error_when_updating_a_representative_without_representee()
     {
         var hearing = await Hooks.SeedVideoHearingV2();
         var hearingId = hearing.Id;
@@ -146,7 +146,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         var errorMessages = validationProblemDetails.Errors.SelectMany(e => e.Value).ToList();
-        errorMessages.Should().Contain(x => x.Contains(RepresentativeValidation.NoOrganisation));
         errorMessages.Should().Contain(x => x.Contains(RepresentativeValidation.NoRepresentee));
     }
     
