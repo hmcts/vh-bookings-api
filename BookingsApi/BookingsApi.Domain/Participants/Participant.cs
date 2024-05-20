@@ -17,7 +17,6 @@ namespace BookingsApi.Domain.Participants
             Id = Guid.NewGuid();
             CreatedDate = DateTime.UtcNow;
             LinkedParticipants = new List<LinkedParticipant>();
-            CreatedDate = UpdatedDate = DateTime.UtcNow;
         }
 
         protected Participant(Person person, HearingRole hearingRole, CaseRole caseRole) : this()
