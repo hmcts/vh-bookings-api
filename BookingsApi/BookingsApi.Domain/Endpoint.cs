@@ -12,7 +12,7 @@ namespace BookingsApi.Domain
         public string Sip { get; set; }
         public string Pin { get; set; }
         public Participant DefenceAdvocate { get; set; }
-        public virtual IList<EndpointParticipant> EndpointLinkedParticipants { get; set; }
+        public virtual IList<EndpointParticipant> EndpointParticipants { get; }
         public Guid HearingId { get; set; }
         public virtual Hearing Hearing { get; protected set; }
         protected Endpoint(){}
@@ -22,42 +22,42 @@ namespace BookingsApi.Domain
             DisplayName = displayName;
             Sip = sip;
             Pin = pin;
-            EndpointLinkedParticipants = new List<EndpointParticipant>();
+            EndpointParticipants = new List<EndpointParticipant>();
         }
 
         public void AssignDefenceAdvocate(Participant defenceAdvocate)
         {
-            if(EndpointLinkedParticipants.Any(x => x.Type == LinkedParticipantType.DefenceAdvocate))
-                EndpointLinkedParticipants.Remove(EndpointLinkedParticipants.First(x => x.Type == LinkedParticipantType.DefenceAdvocate));
+            if(EndpointParticipants.Any(x => x.Type == LinkedParticipantType.DefenceAdvocate))
+                EndpointParticipants.Remove(EndpointParticipants.First(x => x.Type == LinkedParticipantType.DefenceAdvocate));
 
-            EndpointLinkedParticipants.Add(
+            EndpointParticipants.Add(
                 new EndpointParticipant(this, defenceAdvocate, LinkedParticipantType.DefenceAdvocate));
         }
         
         public Participant GetDefenceAdvocate()
         {
-            return EndpointLinkedParticipants.FirstOrDefault(x => x.Type == LinkedParticipantType.DefenceAdvocate)?.Participant;
+            return EndpointParticipants.FirstOrDefault(x => x.Type == LinkedParticipantType.DefenceAdvocate)?.Participant;
         }
         
         public void AssignIntermediary(Participant intermediary)
         {
-            if(EndpointLinkedParticipants.Any(x => x.Type == LinkedParticipantType.Intermediary))
-                EndpointLinkedParticipants.Remove(EndpointLinkedParticipants.First(x => x.Type == LinkedParticipantType.Intermediary));
+            if(EndpointParticipants.Any(x => x.Type == LinkedParticipantType.Intermediary))
+                EndpointParticipants.Remove(EndpointParticipants.First(x => x.Type == LinkedParticipantType.Intermediary));
 
-            EndpointLinkedParticipants.Add(
+            EndpointParticipants.Add(
                 new EndpointParticipant(this, intermediary, LinkedParticipantType.Intermediary));
         }
         
         public Participant GetIntermediary()
         {
-            return EndpointLinkedParticipants.FirstOrDefault(x => x.Type == LinkedParticipantType.Intermediary)?.Participant;
+            return EndpointParticipants.FirstOrDefault(x => x.Type == LinkedParticipantType.Intermediary)?.Participant;
         }
         
         public void RemoveLinkedParticipant(Participant participant)
         {
-            var linkedParticipant = EndpointLinkedParticipants.FirstOrDefault(x => x.ParticipantId == participant.Id);
+            var linkedParticipant = EndpointParticipants.FirstOrDefault(x => x.ParticipantId == participant.Id);
             if(linkedParticipant != null)
-                EndpointLinkedParticipants.Remove(linkedParticipant);
+                EndpointParticipants.Remove(linkedParticipant);
         }
         
         public void UpdateDisplayName(string displayName)

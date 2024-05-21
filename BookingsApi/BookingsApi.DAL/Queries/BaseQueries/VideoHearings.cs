@@ -18,7 +18,7 @@ namespace BookingsApi.DAL.Queries.BaseQueries
                 .Include(x => x.HearingType)
                 .Include(x => x.HearingVenue)
                 .Include(x => x.Endpoints)
-                    .ThenInclude(x => x.EndpointLinkedParticipants)
+                    .ThenInclude(x => x.EndpointParticipants)
                     .ThenInclude(x => x.Participant)
                     .ThenInclude(x => x.Person)
                 .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser)

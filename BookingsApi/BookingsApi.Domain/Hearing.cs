@@ -158,7 +158,7 @@ namespace BookingsApi.Domain
             if (DoesEndpointExist(endpoint.Sip))
                 throw new DomainRuleException(nameof(endpoint), $"Endpoint {endpoint.Sip} already exists in the hearing");
             
-            var defenceAdvocate = Participants.Single(x => endpoint.EndpointLinkedParticipants.Any(y => y.ParticipantId == x.Id));
+            var defenceAdvocate = Participants.Single(x => endpoint.EndpointParticipants.Any(y => y.ParticipantId == x.Id));
             var newEndpoint = new Endpoint(endpoint.DisplayName, endpoint.Sip, endpoint.Pin);
             newEndpoint.AssignDefenceAdvocate(defenceAdvocate);
             Endpoints.Add(newEndpoint);
@@ -377,7 +377,7 @@ namespace BookingsApi.Domain
             if (validateParticipantCount) ValidateHostCount();
 
             var existingParticipant = Participants.Single(x => x.Person.ContactEmail == participant.Person.ContactEmail);
-            var endpoint = Endpoints.SingleOrDefault(e => e.EndpointLinkedParticipants.Any(p => p.ParticipantId == participant.Id));
+            var endpoint = Endpoints.SingleOrDefault(e => e.EndpointParticipants.Any(p => p.ParticipantId == participant.Id));
             endpoint?.RemoveLinkedParticipant(participant);
 
             participant.LinkedParticipants.Clear();
