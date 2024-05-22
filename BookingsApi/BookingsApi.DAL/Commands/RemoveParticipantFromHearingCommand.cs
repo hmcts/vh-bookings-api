@@ -40,7 +40,13 @@ namespace BookingsApi.DAL.Commands
             if (hearing == null)
                 throw new HearingNotFoundException(command.HearingId);
             
-            hearing.RemoveParticipant(command.Participant);
+            var participant = hearing.GetParticipants().Single( e => e.Id == command.Participant.Id);
+            
+            if(participant.EndpointLinkedParticipants.Any())
+                foreach (var ep in command.Participant.EndpointLinkedParticipants)
+                    ep.Endpoint.RemoveLinkedParticipant(participant);
+                
+            hearing.RemoveParticipant(participant);
             hearing.UpdateBookingStatusJudgeRequirement();
             await _context.SaveChangesAsync();
         }

@@ -74,8 +74,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var dA = seededHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
             var updatedDisplayName = "updatedDisplayName";
             await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, (dA, LinkedParticipantType.DefenceAdvocate)));
-
-
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);

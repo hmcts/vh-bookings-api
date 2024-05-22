@@ -4,12 +4,12 @@ using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.Domain;
 
-public sealed class EndpointParticipant : TrackableEntity<Guid>
+public class EndpointParticipant : TrackableEntity<Guid>
 {
     public Guid EndpointId { get; }
-    public Endpoint Endpoint { get; }
+    public virtual Endpoint Endpoint { get; }
     public Guid ParticipantId { get; }
-    public Participant Participant { get; }
+    public virtual Participant Participant { get; }
     public LinkedParticipantType Type { get;}
     
     public EndpointParticipant() { }

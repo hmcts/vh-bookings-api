@@ -32,15 +32,12 @@
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
-            {
                 throw new HearingNotFoundException(command.HearingId);
-            }
 
             var endpoint = hearing.Endpoints.FirstOrDefault(e => e.Id == command.EndpointId);
             if (endpoint == null)
-            {
                 throw new EndPointNotFoundException(command.EndpointId);
-            }
+            
 
             hearing.RemoveEndpoint(endpoint);
             await _context.SaveChangesAsync();

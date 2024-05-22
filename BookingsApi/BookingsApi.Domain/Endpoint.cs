@@ -11,11 +11,11 @@ public class Endpoint : TrackableEntity<Guid>
     public string DisplayName { get; set; }
     public string Sip { get; set; }
     public string Pin { get; set; }
-    [Obsolete("This property is only used for EF. Use EndpointParticipants instead")]
-    public Participant DefenceAdvocate { get; set; }
     public virtual IList<EndpointParticipant> EndpointParticipants { get; } = new List<EndpointParticipant>();
     public Guid HearingId { get; set; }
     public virtual Hearing Hearing { get; protected set; }
+    [Obsolete("This property is only used for EF. Use EndpointParticipants instead")]
+    public Participant DefenceAdvocate { get; set; }
     protected Endpoint(){}
 
     public Endpoint(string displayName, string sip, string pin)
