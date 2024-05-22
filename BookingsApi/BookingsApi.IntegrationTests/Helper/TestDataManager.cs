@@ -150,8 +150,7 @@ namespace BookingsApi.IntegrationTests.Helper
             BookingStatus status = BookingStatus.Booked, bool withLinkedParticipants = false,
             bool isMultiDayFirstHearing = false)
         {
-            return await SeedVideoHearing(true, configureOptions, status, withLinkedParticipants,
-                isMultiDayFirstHearing);
+            return await SeedVideoHearing(true, configureOptions, status, withLinkedParticipants, isMultiDayFirstHearing);
         }
 
         /// <summary>
@@ -260,10 +259,8 @@ namespace BookingsApi.IntegrationTests.Helper
             if (useFlatHearingRoles)
             {
                 applicantLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Applicant);
-                applicantRepresentativeHearingRole =
-                    flatHearingRoles.First(x => x.Code == HearingRoleCodes.Representative);
-                respondentRepresentativeHearingRole =
-                    flatHearingRoles.First(x => x.Code == HearingRoleCodes.WelfareRepresentative);
+                applicantRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Representative);
+                respondentRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.WelfareRepresentative);
                 respondentLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Respondent);
             }
             else
@@ -359,8 +356,7 @@ namespace BookingsApi.IntegrationTests.Helper
             BookingStatus status = BookingStatus.Booked, int duration = Contract.V1.Constants.CloneHearings.DefaultScheduledDuration)
         {
             var dbContext = new BookingsDbContext(_dbContextOptions);
-            var hearing = await new GetHearingByIdQueryHandler(dbContext)
-                .Handle(new GetHearingByIdQuery(hearingId));
+            var hearing = await new GetHearingByIdQueryHandler(dbContext).Handle(new GetHearingByIdQuery(hearingId));
 
             var orderedDates = datesOfHearing.OrderBy(x => x).ToList();
             var totalDays = orderedDates.Count + 1;

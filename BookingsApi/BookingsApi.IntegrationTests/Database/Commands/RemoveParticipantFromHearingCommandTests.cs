@@ -42,8 +42,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var newPerson = new PersonBuilder(true).Build();
             var participant = new Individual(newPerson, new HearingRole(1, "Dummy"), new CaseRole(1, "Dummy"));
-            Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
-                new RemoveParticipantFromHearingCommand(seededHearing.Id, participant)));
+            Assert.ThrowsAsync<ParticipantNotFoundException>(() => _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, participant)));
         }
 
         [Test]

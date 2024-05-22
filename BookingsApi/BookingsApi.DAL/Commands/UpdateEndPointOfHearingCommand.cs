@@ -44,10 +44,14 @@ namespace BookingsApi.DAL.Commands
             if (!string.IsNullOrWhiteSpace(endpoint.DisplayName)) 
                 endpoint.UpdateDisplayName(command.DisplayName);
             
-            if (command.EndpointParticipants != null)
-                foreach (var endpointParticipant in command.EndpointParticipants)
-                    endpoint.LinkParticipantToEndpoint(endpointParticipant.Item1, endpointParticipant.Item2);
-            
+            foreach ((Participant participant, LinkedParticipantType type) endpointParticipant in command.EndpointParticipants)
+            {
+                var participantToAddToEndpoint = hearing.GetParticipants().Single(p => p.Id == endpointParticipant.participant.Id);
+                endpoint.LinkParticipantToEndpoint(participantToAddToEndpoint, endpointParticipant.type);
+            }
+            var participantToRemove = (from endpointParticipant in endpoint.EndpointParticipants where command.EndpointParticipants.All(x => x.Item1.Id != endpointParticipant.ParticipantId) select endpointParticipant.Participant).ToList();
+            participantToRemove.ForEach(p => endpoint.RemoveLinkedParticipant(p));
+          
             await _context.SaveChangesAsync();
         }
     }

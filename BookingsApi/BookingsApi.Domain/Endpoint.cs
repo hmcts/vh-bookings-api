@@ -40,8 +40,7 @@ public class Endpoint : TrackableEntity<Guid>
         if(EndpointParticipants.Any(x => x.Participant == defenceAdvocate))
             RemoveLinkedParticipant(defenceAdvocate);
         
-        EndpointParticipants.Add(
-            new EndpointParticipant(this, defenceAdvocate, LinkedParticipantType.DefenceAdvocate));
+        EndpointParticipants.Add(new EndpointParticipant(this, defenceAdvocate, LinkedParticipantType.DefenceAdvocate));
     }
     
     public Participant GetDefenceAdvocate()

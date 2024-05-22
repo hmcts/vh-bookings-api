@@ -28,11 +28,11 @@ namespace BookingsApi.Mappings.V2
                 Pin = pin,
                 Sip = sipComplete,
                 DisplayName = requestV2.DisplayName,
-                EndpointParticipants = requestV2.EndpointParticipants.Select(x => new EndpointParticipantDto
+                EndpointParticipants = requestV2.EndpointParticipants?.Select(x => new EndpointParticipantDto
                 {
                     ContactEmail = x.ContactEmail,
                     Type = (LinkedParticipantType)x.Type
-                }).ToList()
+                }).ToList() ?? new List<EndpointParticipantDto>()
             };
         }
     }
