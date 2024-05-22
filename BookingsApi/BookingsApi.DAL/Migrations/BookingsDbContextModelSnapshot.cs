@@ -148,35 +148,6 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("Endpoint", (string)null);
                 });
 
-            modelBuilder.Entity("BookingsApi.Domain.EndpointParticipant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("EndpointId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ParticipantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EndpointId");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.ToTable("EndpointParticipant", (string)null);
-                });
-
             modelBuilder.Entity("BookingsApi.Domain.Hearing", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1145,18 +1116,18 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("Hearing");
                 });
 
-            modelBuilder.Entity("BookingsApi.Domain.EndpointParticipant", b =>
+            modelBuilder.Entity("BookingsApi.Domain.EndpointLinkedParticipant", b =>
                 {
                     b.HasOne("BookingsApi.Domain.Endpoint", "Endpoint")
                         .WithMany("EndpointLinkedParticipants")
                         .HasForeignKey("EndpointId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BookingsApi.Domain.Participants.Participant", "Participant")
                         .WithMany("EndpointLinkedParticipants")
                         .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Endpoint");

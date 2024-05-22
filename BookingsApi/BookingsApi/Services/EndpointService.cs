@@ -1,9 +1,11 @@
+using BookingsApi.Domain.Dtos;
+
 namespace BookingsApi.Services
 {
     public interface IEndpointService
     {
-        Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint);
-        Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName);
+        Task<Endpoint> AddEndpoint(Guid hearingId, EndpointDto endpointDto);
+        Task UpdateEndpoint(VideoHearing hearing, Guid id, List<EndpointParticipantDto> endpointParticipantDtos, string displayName);
         Task RemoveEndpoint(VideoHearing hearing, Guid id);
     }
     
@@ -21,14 +23,14 @@ namespace BookingsApi.Services
             _eventPublisher = eventPublisher;
         }
         
-        public async Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint)
+        public async Task<Endpoint> AddEndpoint(Guid hearingId, EndpointDto endpointDto)
         {
-            var command = new AddEndPointToHearingCommand(hearingId, newEndpoint);
+            var command = new AddEndPointToHearingCommand(hearingId, endpointDto);
             await _commandHandler.Handle(command);
 
             var updatedHearing =
                 await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-            var endpoint = updatedHearing.GetEndpoints().First(x => x.DisplayName.Equals(newEndpoint.DisplayName));
+            var endpoint = updatedHearing.GetEndpoints().First(x => x.DisplayName.Equals(endpointDto.DisplayName));
 
             if (updatedHearing.Status == BookingStatus.Created || updatedHearing.Status == BookingStatus.ConfirmedWithoutJudge)
             {
@@ -38,20 +40,20 @@ namespace BookingsApi.Services
             return endpoint;
         }
 
-        public async Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName)
+        public async Task UpdateEndpoint(VideoHearing hearing, Guid id, List<EndpointParticipantDto> endpointParticipantDtos, string displayName)
         {
-            var defenceAdvocate =
-                DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(defenceAdvocateContactEmail,
-                    hearing.GetParticipants());
-            var command = new UpdateEndPointOfHearingCommand(hearing.Id, id, displayName, defenceAdvocate);
+            var endpointParticipants =  hearing
+                .GetParticipants()
+                .GetEndpointParticipants(endpointParticipantDtos);
+            
+            var command = new UpdateEndPointOfHearingCommand(hearing.Id, id, displayName, endpointParticipants.ToArray());
             await _commandHandler.Handle(command);
 
             var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == id);
 
             if (endpoint != null && (hearing.Status == BookingStatus.Created || hearing.Status == BookingStatus.ConfirmedWithoutJudge))
             {
-                await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearing.Id, endpoint.Sip,
-                    displayName, defenceAdvocate?.Person.ContactEmail));
+                await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearing.Id, endpoint.Sip, displayName));
             }
         }
 

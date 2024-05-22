@@ -11,13 +11,13 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddEndpoints(new List<Endpoint>
             {
-                new Endpoint("new endpoint1", Guid.NewGuid().ToString(), "pin", null),
-                new Endpoint("new endpoint2", Guid.NewGuid().ToString(), "pin", null),
-                new Endpoint("new endpoint2", Guid.NewGuid().ToString(), "pin", null)
+                new ("new endpoint1", Guid.NewGuid().ToString(), "pin"),
+                new ("new endpoint2", Guid.NewGuid().ToString(), "pin"),
+                new ("new endpoint2", Guid.NewGuid().ToString(), "pin")
             });
             
             var beforeRemoveCount = hearing.GetEndpoints().Count;
-            hearing.RemoveEndpoint(hearing.GetEndpoints().First());
+            hearing.RemoveEndpoint(hearing.GetEndpoints()[0]);
             var afterRemoveCount = hearing.GetEndpoints().Count;
             afterRemoveCount.Should().BeLessThan(beforeRemoveCount);
         }

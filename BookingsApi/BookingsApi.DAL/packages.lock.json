@@ -935,6 +935,11 @@
           "System.Runtime": "4.3.0"
         }
       },
+      "System.ComponentModel.Annotations": {
+        "type": "Transitive",
+        "resolved": "5.0.0",
+        "contentHash": "dMkqfy2el8A8/I76n2Hi1oBFEbG1SfxD2l5nhwXV3XjlnOmwxJlQbYpJH4W51odnU9sARCSAgv7S3CyAFMkpYg=="
+      },
       "System.ComponentModel.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -1825,6 +1830,14 @@
           "Microsoft.Extensions.Configuration.UserSecrets": "[7.0.0, )",
           "Microsoft.Identity.Client": "[4.50.0, )",
           "Newtonsoft.Json": "[13.0.2, )"
+        }
+      },
+      "bookingsapi.contract": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Json": "[7.0.0, )",
+          "Newtonsoft.Json": "[13.0.2, )",
+          "System.ComponentModel.Annotations": "[5.0.0, )"
         }
       },
       "bookingsapi.domain": {

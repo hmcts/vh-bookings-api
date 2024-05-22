@@ -46,7 +46,6 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 .With(p => p.HearingRoleCode, "APPL")
                 .Build();
             var newEndpoint = new Builder(new BuilderSettings()).CreateNew<EndpointRequestV2>()
-                .With(e => e.DefenceAdvocateContactEmail, null)
                 .Build();
             var newJudiciaryPanelMemberPerson = await Hooks.AddJudiciaryPerson(personalCode: Guid.NewGuid().ToString());
             var newJudiciaryPanelMember = new Builder(new BuilderSettings()).CreateNew<JudiciaryParticipantRequestV2>()
@@ -64,9 +63,11 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearings.First(h => h.Id == requestHearing.HearingId);
-                
+
                 var defenceAdvocateEmail = requestHearing.Endpoints.ExistingEndpoints
-                    .First(e => e.DefenceAdvocateContactEmail != null).DefenceAdvocateContactEmail;
+                    .First(e => e.EndpointParticipants.Any())
+                    .EndpointParticipants[0]
+                    .ContactEmail;
                 var defenceAdvocateParticipant = hearing.Participants.First(p => p.Person.ContactEmail == defenceAdvocateEmail);
                 
                 // Add a participant
@@ -84,7 +85,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 requestHearing.Endpoints.NewEndpoints.Add(newEndpoint);
                 
                 // Remove an endpoint
-                var endpointToRemove = requestHearing.Endpoints.ExistingEndpoints.First(e => e.DefenceAdvocateContactEmail != defenceAdvocateEmail);
+                var endpointToRemove = requestHearing.Endpoints.ExistingEndpoints.First(e => e.EndpointParticipants.TrueForAll(e => e.ContactEmail != defenceAdvocateEmail));
                 requestHearing.Endpoints.RemovedEndpointIds.Add(endpointToRemove.Id);
                 requestHearing.Endpoints.ExistingEndpoints.Remove(endpointToRemove);
 
@@ -468,7 +469,6 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             var newEndpoint = new Builder(new BuilderSettings()).CreateNew<EndpointRequestV2>()
-                .With(e => e.DefenceAdvocateContactEmail, null)
                 .With(e => e.DisplayName, "**") // Invalid display name
                 .Build();
             
@@ -690,7 +690,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                     {
                         Id = e.Id,
                         DisplayName = e.DisplayName,
-                        DefenceAdvocateContactEmail = e.DefenceAdvocate?.Person.ContactEmail
+                        EndpointParticipants = new List<EndpointParticipantsRequestV2> 
+                        { 
+                            new () { ContactEmail = e.DefenceAdvocate?.Person.ContactEmail, Type = LinkedParticipantTypeV2.DefenceAdvocate}
+                        } 
                     }).ToList()
                 },
                 JudiciaryParticipants = new UpdateJudiciaryParticipantsRequestV2

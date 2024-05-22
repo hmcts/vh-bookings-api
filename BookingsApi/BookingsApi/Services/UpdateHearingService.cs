@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Requests.Enums;
+using BookingsApi.Domain.Dtos;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
 
@@ -59,7 +60,14 @@ namespace BookingsApi.Services
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName);
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, new List<EndpointParticipantDto>()
+                {
+                    new ()
+                    {
+                        ContactEmail = endpointToUpdate.DefenceAdvocateContactEmail,
+                        Type = LinkedParticipantType.DefenceAdvocate
+                    }
+                }, endpointToUpdate.DisplayName);
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)
@@ -72,21 +80,22 @@ namespace BookingsApi.Services
         {
             foreach (var endpointToAdd in request.NewEndpoints)
             {
-                var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
-                    _kinlyConfiguration.SipAddressStem);
-
+                var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator, _kinlyConfiguration.SipAddressStem);
                 await _endpointService.AddEndpoint(hearing.Id, newEp);
             }
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName);
+                var endpointParticipants = endpointToUpdate.EndpointParticipants.Select(x => new EndpointParticipantDto
+                {
+                    ContactEmail = x.ContactEmail,
+                    Type = (LinkedParticipantType)x.Type
+                }).ToList();
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointParticipants, endpointToUpdate.DisplayName);
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)
-            {
                 await _endpointService.RemoveEndpoint(hearing, endpointIdToRemove);
-            }
         }
 
         public async Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, VideoHearing hearing)

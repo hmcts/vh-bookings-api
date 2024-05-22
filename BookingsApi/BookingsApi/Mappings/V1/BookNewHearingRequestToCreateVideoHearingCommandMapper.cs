@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Domain.Dtos;
 
 namespace BookingsApi.Mappings.V1
 {
@@ -33,10 +34,10 @@ namespace BookingsApi.Mappings.V1
             return newParticipants;
         }
 
-        private static List<NewEndpoint> MapEndpoints(BookNewHearingRequest request, IRandomGenerator randomGenerator,
+        private static List<EndpointDto> MapEndpoints(BookNewHearingRequest request, IRandomGenerator randomGenerator,
             string sipAddressStem)
         {
-            var endpoints = new List<NewEndpoint>();
+            var endpoints = new List<EndpointDto>();
             if (request.Endpoints != null)
             {
                 endpoints = request.Endpoints.Select(x =>

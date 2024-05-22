@@ -6,7 +6,7 @@ public class EndpointParticipantMap : IEntityTypeConfiguration<EndpointParticipa
     {
         builder.ToTable(nameof(EndpointParticipant));
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).IsRequired();
+        builder.Property(x => x.Id).IsRequired().ValueGeneratedNever();
         builder.Property(x => x.EndpointId).IsRequired();
         builder.Property(x => x.ParticipantId).IsRequired();
         builder.HasOne(x => x.Endpoint)

@@ -1,6 +1,8 @@
 ﻿using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Dtos;
+using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -23,12 +25,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public void Should_throw_exception_when_hearing_does_not_exist()
         {
             var hearingId = Guid.NewGuid();
-            var newEndpoint = new NewEndpoint
+            var newEndpoint = new EndpointDto
             {
                 DisplayName = "displayName",
                 Sip = "sip",
-                Pin = "pin",
-                ContactEmail = null
+                Pin = "pin"
             };
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(
                 new AddEndPointToHearingCommand(hearingId, newEndpoint)));
@@ -46,12 +47,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var displayName = "newDisplayName";
             var sip = "newSIP";
             var pin = "9999";
-            var newEndpoint = new NewEndpoint
+            var newEndpoint = new EndpointDto
             {
                 DisplayName = displayName,
                 Sip = sip,
-                Pin = pin,
-                ContactEmail = null
+                Pin = pin
             };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));
@@ -84,12 +84,15 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var displayName = "newDisplayName";
             var sip = "newSIP";
             var pin = "9999";
-            var newEndpoint = new NewEndpoint
+            var newEndpoint = new EndpointDto
             {
                 DisplayName = displayName,
                 Sip = sip,
                 Pin = pin,
-                ContactEmail = dA.Person.ContactEmail
+                EndpointParticipants = new List<EndpointParticipantDto>()
+                {
+                    new () { ContactEmail = dA.Person.ContactEmail, Type = LinkedParticipantType.DefenceAdvocate }
+                } 
             };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));
@@ -106,8 +109,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             newlyAddedEndPointInDb.DisplayName.Should().Be(displayName);
             newlyAddedEndPointInDb.Pin.Should().Be(pin);
             newlyAddedEndPointInDb.Sip.Should().Be(sip);
-            newlyAddedEndPointInDb.DefenceAdvocate.Should().NotBeNull();
-            newlyAddedEndPointInDb.DefenceAdvocate.Id.Should().Be(dA.Id);
+            newlyAddedEndPointInDb.GetDefenceAdvocate().Should().NotBeNull();
+            newlyAddedEndPointInDb.GetDefenceAdvocate().Id.Should().Be(dA.Id);
         }
     }
 }

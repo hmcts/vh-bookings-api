@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Domain.Dtos;
 using BookingsApi.Mappings.V1;
 
 namespace BookingsApi.Mappings.V2;
@@ -40,15 +41,11 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
         return newParticipants;
     }
 
-    private static List<NewEndpoint> MapEndpoints(BookNewHearingRequestV2 requestV2, IRandomGenerator randomGenerator,
-        string sipAddressStem)
+    private static List<EndpointDto> MapEndpoints(BookNewHearingRequestV2 requestV2, IRandomGenerator randomGenerator, string sipAddressStem)
     {
-        var endpoints = new List<NewEndpoint>();
+        var endpoints = new List<EndpointDto>();
         if (requestV2.Endpoints != null)
-        {
-            endpoints = requestV2.Endpoints.Select(x =>
-                EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(x, randomGenerator, sipAddressStem)).ToList();
-        }
+            endpoints = requestV2.Endpoints.Select(x => EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(x, randomGenerator, sipAddressStem)).ToList();
 
         return endpoints;
     }

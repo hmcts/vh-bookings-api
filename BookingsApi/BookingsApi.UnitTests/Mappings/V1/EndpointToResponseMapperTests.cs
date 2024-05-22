@@ -1,6 +1,7 @@
 ﻿using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Mappings.V1;
 
 namespace BookingsApi.UnitTests.Mappings.V1
@@ -20,7 +21,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.Should().NotBeNull();
             result.Sip.EndsWith(sipAddStream).Should().BeTrue();
             result.DisplayName.Should().Be(endpointRequest.DisplayName);
-            result.ContactEmail.Should().Be(endpointRequest.DefenceAdvocateContactEmail);
+            result.EndpointParticipants[0].Should().Be(endpointRequest.DefenceAdvocateContactEmail);
 
         }
 
@@ -29,7 +30,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         {
             var participant = new ParticipantBuilder().Build();
 
-            var source = new Endpoint("displayName", "sip", "pin", participant[0]);
+            var source = new Endpoint("displayName", "sip", "pin", (participant[0],LinkedParticipantType.DefenceAdvocate));
 
             var result = EndpointToResponseMapper.MapEndpointToResponse(source);
 

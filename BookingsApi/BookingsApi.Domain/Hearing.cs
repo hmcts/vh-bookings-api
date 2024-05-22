@@ -158,10 +158,7 @@ namespace BookingsApi.Domain
             if (DoesEndpointExist(endpoint.Sip))
                 throw new DomainRuleException(nameof(endpoint), $"Endpoint {endpoint.Sip} already exists in the hearing");
             
-            var defenceAdvocate = Participants.Single(x => endpoint.EndpointParticipants.Any(y => y.ParticipantId == x.Id));
-            var newEndpoint = new Endpoint(endpoint.DisplayName, endpoint.Sip, endpoint.Pin);
-            newEndpoint.AssignDefenceAdvocate(defenceAdvocate);
-            Endpoints.Add(newEndpoint);
+            Endpoints.Add(endpoint);
             UpdatedDate = DateTime.UtcNow;
         }
 

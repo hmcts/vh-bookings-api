@@ -5,5 +5,6 @@ namespace BookingsApi.Domain.Enumerations
         Interpreter = 1,
         DefenceAdvocate = 2,
         Intermediary = 3,
+        Representative = 4,
     }
 }

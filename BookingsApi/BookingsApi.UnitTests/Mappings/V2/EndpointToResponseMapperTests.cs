@@ -1,6 +1,9 @@
-﻿using BookingsApi.Common.Services;
+﻿using System.Collections.Generic;
+using BookingsApi.Common.Services;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Mappings.V2;
 
 namespace BookingsApi.UnitTests.Mappings.V2
@@ -12,14 +15,18 @@ namespace BookingsApi.UnitTests.Mappings.V2
         {
             var sipAddStream = "TestSipStream";
             var randomGen = new Mock<IRandomGenerator>();
-            var endpointRequest = new EndpointRequestV2 { DefenceAdvocateContactEmail = "TestUserName", DisplayName = "TestDispName" };
+            var endpointRequest = new EndpointRequestV2 { EndpointParticipants = new List<EndpointParticipantsRequestV2>
+            {
+                new () { ContactEmail = "TestEmail", Type = LinkedParticipantTypeV2.DefenceAdvocate }
+            
+            }, DisplayName = "TestDispName" };
 
             var result = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointRequest,randomGen.Object, sipAddStream);
 
             result.Should().NotBeNull();
             result.Sip.EndsWith(sipAddStream).Should().BeTrue();
             result.DisplayName.Should().Be(endpointRequest.DisplayName);
-            result.ContactEmail.Should().Be(endpointRequest.DefenceAdvocateContactEmail);
+            result.EndpointParticipants[0].ContactEmail.Should().Be(endpointRequest.EndpointParticipants[0].ContactEmail);
 
         }
 
@@ -28,7 +35,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
         {
             var participant = new ParticipantBuilder().Build();
 
-            var source = new Endpoint("displayName", "sip", "pin", participant[0]);
+            var source = new Endpoint("displayName", "sip", "pin", (participant[0], LinkedParticipantType.DefenceAdvocate));
 
             var result = EndpointToResponseV2Mapper.MapEndpointToResponse(source);
 

@@ -2,6 +2,7 @@ using BookingsApi.Domain.Participants;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
+using BookingsApi.Domain.Dtos;
 
 namespace BookingsApi.DAL.Helper
 {
@@ -45,8 +46,7 @@ namespace BookingsApi.DAL.Helper
             {
                 IsLeadCase = c.IsLeadCase
             }).ToList();
-
-
+            
             var newEndpoints = GetNewEndpointsDtos(hearing, randomGenerator, sipAddressStem);
 
             var linkedParticipantDtos = GetLinkedParticipantDtos(hearing);
@@ -62,9 +62,9 @@ namespace BookingsApi.DAL.Helper
             return command;
         }
 
-        private static List<NewEndpoint> GetNewEndpointsDtos(Hearing hearing, IRandomGenerator randomGenerator, string sipAddressStem)
+        private static List<EndpointDto> GetNewEndpointsDtos(Hearing hearing, IRandomGenerator randomGenerator, string sipAddressStem)
         {
-            var newEndpoints = new List<NewEndpoint>();
+            var newEndpoints = new List<EndpointDto>();
             foreach (var endpoint in hearing.GetEndpoints())
             {
                 string sip;
@@ -73,12 +73,16 @@ namespace BookingsApi.DAL.Helper
                     sip = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
                 } while (newEndpoints.Exists(x => x.Sip.StartsWith(sip)));
                 var pin = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
-                var newEndpoint =  new NewEndpoint
+                var newEndpoint =  new EndpointDto
                 {
                     Pin = pin,
                     Sip = $"{sip}{sipAddressStem}",
                     DisplayName = endpoint.DisplayName,
-                    ContactEmail = endpoint.GetDefenceAdvocate().Person?.ContactEmail
+                    EndpointParticipants = endpoint.EndpointParticipants.Select(x => new EndpointParticipantDto
+                    {
+                        ContactEmail = x.Participant.Person.ContactEmail,
+                        Type = x.Type
+                    }).ToList()
                 };
             
                 newEndpoints.Add(newEndpoint);

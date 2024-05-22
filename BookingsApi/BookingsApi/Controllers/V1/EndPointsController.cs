@@ -1,5 +1,6 @@
 ﻿using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Domain.Dtos;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
 
@@ -140,7 +141,8 @@ namespace BookingsApi.Controllers.V1
             {
                 var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
                 if(hearing == null) throw new HearingNotFoundException(hearingId);
-                await _endpointService.UpdateEndpoint(hearing, endpointId, updateEndpointRequest.DefenceAdvocateContactEmail, updateEndpointRequest.DisplayName);
+                var endpointParticipant = new List<EndpointParticipantDto>(){new (){ContactEmail = updateEndpointRequest.DefenceAdvocateContactEmail, Type = LinkedParticipantType.DefenceAdvocate}};
+                await _endpointService.UpdateEndpoint(hearing, endpointId, endpointParticipant, updateEndpointRequest.DisplayName);
             }
             catch (HearingNotFoundException exception)
             {

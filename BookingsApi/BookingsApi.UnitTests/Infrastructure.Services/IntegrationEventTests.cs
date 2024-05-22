@@ -47,8 +47,8 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             @event.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
 
             var typedEvent = (HearingDetailsUpdatedIntegrationEvent) @event.IntegrationEvent;
-            typedEvent.Hearing.CaseName.Should().Be(hearing.GetCases().First().Name);
-            typedEvent.Hearing.CaseNumber.Should().Be(hearing.GetCases().First().Number);
+            typedEvent.Hearing.CaseName.Should().Be(hearing.GetCases()[0].Name);
+            typedEvent.Hearing.CaseNumber.Should().Be(hearing.GetCases()[0].Number);
             typedEvent.Hearing.CaseType.Should().Be(hearing.CaseType.Name);
             typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
         }
@@ -61,7 +61,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             hearing.AddCase("1234", "test", true);
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
-            var individual1 = individuals.First();
+            var individual1 = individuals[0];
             individual1.HearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(1, "Individual")};
             individual1.CaseRole = new CaseRole(1, "test");
 
@@ -91,7 +91,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
         {
             var hearing = new VideoHearingBuilder().Build();
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
-            var individual1 = individuals.First();
+            var individual1 = individuals[0];
             individual1.HearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(1, "Individual")};
             individual1.CaseRole = new CaseRole(1, "test");
 
@@ -112,10 +112,10 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             hearing.AddCase("1234", "test", true);
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
-            var individual1 = individuals.First();
+            var individual1 = individuals[0];
             individual1.CaseRole = new CaseRole(1, "test");
 
-            var individual2 = individuals.Last();
+            var individual2 = individuals[^1];
             individual2.CaseRole = new CaseRole(2, "test2");
 
             var representative = hearing.GetParticipants().Single(x => x is Representative);
@@ -129,8 +129,8 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             
             hearing.AddEndpoints(new List<Endpoint>
             {
-                new Endpoint("one", Guid.NewGuid().ToString(), "1234", null),
-                new Endpoint("two", Guid.NewGuid().ToString(), "1234", representative)
+                new ("one", Guid.NewGuid().ToString(), "1234"),
+                new Endpoint("two", Guid.NewGuid().ToString(), "1234", (representative, LinkedParticipantType.Representative ))
             });
 
             var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
@@ -157,10 +157,10 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             hearing.OtherInformation = $"JudgeEmail|{email}|JudgePhone|{phone}";
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
-            var individual1 = individuals.First();
+            var individual1 = individuals[0];
             individual1.CaseRole = new CaseRole(1, "test");
 
-            var individual2 = individuals.Last();
+            var individual2 = individuals[^1];
             individual2.CaseRole = new CaseRole(2, "test2");
 
             var representative = hearing.GetParticipants().Single(x => x is Representative);
@@ -175,7 +175,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             hearing.AddEndpoints(new List<Endpoint>
             {
                 new Endpoint("one", Guid.NewGuid().ToString(), "1234", null),
-                new Endpoint("two", Guid.NewGuid().ToString(), "1234", representative)
+                new Endpoint("two", Guid.NewGuid().ToString(), "1234", (representative, LinkedParticipantType.Representative))
             });
 
             var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
@@ -214,7 +214,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
         {
             var dA = new ParticipantBuilder().RepresentativeParticipantRespondent;
             var endpointAddedIntegrationEvent =
-                new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234", dA));
+                new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234", (dA, LinkedParticipantType.DefenceAdvocate)));
             _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
@@ -237,7 +237,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
         public void Should_publish_message_to_queue_when_EndpointUpdatedIntegrationEvent_is_raised()
         {
             var endpointUpdatedIntegrationEvent =
-                new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name", "sol1@hmcts.net");
+                new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name");
             _eventPublisher.PublishAsync(endpointUpdatedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);

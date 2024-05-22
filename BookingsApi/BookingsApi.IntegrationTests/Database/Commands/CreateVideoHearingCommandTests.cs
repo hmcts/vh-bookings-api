@@ -2,6 +2,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Dtos;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using Testing.Common.Builders.Domain;
@@ -72,30 +73,25 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var createdBy = "User01";
             const bool audioRecordingRequired = true;
 
-            var endpoints = new List<NewEndpoint>
+            var endpoints = new List<EndpointDto>
             {
-                new NewEndpoint
+                new EndpointDto
                 {
                     DisplayName = "display 1",
                     Sip = Guid.NewGuid().ToString(),
-                    Pin = "1234",
-                    ContactEmail = null
+                    Pin = "1234"
                 },
-                new NewEndpoint
+                new EndpointDto
                 {
                     DisplayName = "display 2",
                     Sip = Guid.NewGuid().ToString(),
-                    Pin = "5678",
-                    ContactEmail = null
+                    Pin = "5678"
                 }
             };
 
             var linkedParticipants = new List<LinkedParticipantDto>
             {
-                new LinkedParticipantDto(
-                    newParticipant.Person.ContactEmail,
-                    newJudgeParticipant.Person.ContactEmail,
-                    LinkedParticipantType.Interpreter)
+                new (newParticipant.Person.ContactEmail, newJudgeParticipant.Person.ContactEmail, LinkedParticipantType.Interpreter)
             };
 
             var requiredDto = new CreateVideoHearingRequiredDto(caseType, scheduledDate, duration, hearingVenue, cases);

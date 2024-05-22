@@ -4,18 +4,18 @@ namespace BookingsApi.DAL.Commands
 {
     public class UpdateEndPointOfHearingCommand : ICommand
     {
-        public UpdateEndPointOfHearingCommand(Guid hearingId, Guid endpointId, string displayName, Participant defenceAdvocate)
+        public UpdateEndPointOfHearingCommand(Guid hearingId, Guid endpointId, string displayName, params (Participant, LinkedParticipantType)[] endpointParticipants)
         {
             HearingId = hearingId;
             EndpointId = endpointId;
             DisplayName = displayName;
-            DefenceAdvocate = defenceAdvocate;
+            EndpointParticipants = endpointParticipants ?? Array.Empty<(Participant, LinkedParticipantType)>();
         }
 
         public Guid HearingId { get; }
         public Guid EndpointId { get;  }
         public string DisplayName { get;  }
-        public Participant DefenceAdvocate { get; }
+        public (Participant, LinkedParticipantType)[] EndpointParticipants { get; }
 }
 
     public class UpdateEndPointOfHearingCommandHandler : ICommandHandler<UpdateEndPointOfHearingCommand>
@@ -32,9 +32,6 @@ namespace BookingsApi.DAL.Commands
             var hearing = await _context.VideoHearings
                 .Include(h => h.Participants).ThenInclude(x => x.Person)
                 .Include(h => h.Endpoints)
-                    .ThenInclude(x => x.EndpointParticipants)
-                    .ThenInclude(x => x.Participant)
-                    .ThenInclude(x => x.Person)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
@@ -49,16 +46,10 @@ namespace BookingsApi.DAL.Commands
             }
 
             if (!string.IsNullOrWhiteSpace(endpoint.DisplayName)) endpoint.UpdateDisplayName(command.DisplayName);
-            if (command.DefenceAdvocate != null)
-            {
-                var defenceAdvocate = hearing.GetParticipants().Single(x => x.Id == command.DefenceAdvocate.Id);
-                endpoint.AssignDefenceAdvocate(defenceAdvocate);
-            }
-            else
-            {
-                endpoint.AssignDefenceAdvocate(null);
-            }
-
+            if (command.EndpointParticipants != null)
+                foreach (var endpointParticipant in command.EndpointParticipants)
+                    endpoint.LinkParticipantToEndpoint(endpointParticipant.Item1, endpointParticipant.Item2);
+            
             await _context.SaveChangesAsync();
         }
     }

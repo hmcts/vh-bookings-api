@@ -1,6 +1,7 @@
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Dtos;
 using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.DAL.Commands
@@ -44,7 +45,7 @@ namespace BookingsApi.DAL.Commands
         public string OtherInformation { get; }
         public string CreatedBy { get; }
         public bool AudioRecordingRequired { get; }
-        public List<NewEndpoint> Endpoints { get; }
+        public List<EndpointDto> Endpoints { get; }
         public string CancelReason { get; }
         public Guid? SourceId { get; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }
@@ -99,9 +100,8 @@ namespace BookingsApi.DAL.Commands
                 var newEndpoints = new List<Endpoint>();
                 foreach (var dto in dtos)
                 {
-                    var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, videoHearing.GetParticipants());
-                    var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin);
-                    endpoint.AssignDefenceAdvocate(defenceAdvocate);
+                    var endpointParticipants = participants.GetEndpointParticipants(dto.EndpointParticipants).ToArray();
+                    var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, endpointParticipants);
                     newEndpoints.Add(endpoint);
                 }
 

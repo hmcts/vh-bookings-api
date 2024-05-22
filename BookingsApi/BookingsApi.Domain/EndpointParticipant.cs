@@ -6,18 +6,21 @@ namespace BookingsApi.Domain;
 
 public sealed class EndpointParticipant : TrackableEntity<Guid>
 {
-    public Guid EndpointId { get; set; }
-    public Endpoint Endpoint { get; set; }
-    public Guid ParticipantId { get; set; }
-    public Participant Participant { get; set; }
-    public LinkedParticipantType Type { get; private set; }
+    public Guid EndpointId { get; }
+    public Endpoint Endpoint { get; }
+    public Guid ParticipantId { get; }
+    public Participant Participant { get; }
+    public LinkedParticipantType Type { get;}
+    
+    public EndpointParticipant() { }
     
     public EndpointParticipant(Endpoint endpoint, Participant participant, LinkedParticipantType type)
     {
         Id = Guid.NewGuid();
+        EndpointId = endpoint.Id;
         Endpoint = endpoint;
+        ParticipantId = participant.Id;
         Participant = participant;
         Type = type;
     }
-    public EndpointParticipant() {}
 }
