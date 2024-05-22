@@ -100,7 +100,7 @@ namespace BookingsApi.DAL.Commands
                 var newEndpoints = new List<Endpoint>();
                 foreach (var dto in dtos)
                 {
-                    var endpointParticipants = participants.GetEndpointParticipants(dto.EndpointParticipants).ToArray();
+                    var endpointParticipants = ParticipantEndpointHelper.GetEndpointParticipants(participants, dto.EndpointParticipants).ToArray();
                     var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, endpointParticipants);
                     newEndpoints.Add(endpoint);
                 }

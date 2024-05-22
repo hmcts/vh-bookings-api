@@ -6,16 +6,14 @@ public class EndpointParticipantMap : IEntityTypeConfiguration<EndpointParticipa
     {
         builder.ToTable(nameof(EndpointParticipant));
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).IsRequired().ValueGeneratedNever();
         builder.Property(x => x.EndpointId).IsRequired();
         builder.Property(x => x.ParticipantId).IsRequired();
-        builder.HasOne(x => x.Endpoint)
-            .WithMany(x => x.EndpointParticipants)
+        builder.HasOne(x => x.Endpoint).WithMany(x => x.EndpointParticipants)
             .HasForeignKey(x => x.EndpointId)
             .OnDelete(DeleteBehavior.Cascade);
-        builder.HasOne(x => x.Participant)
-            .WithMany(x => x.EndpointLinkedParticipants)
+        builder.HasOne(x => x.Participant).WithMany(x => x.EndpointLinkedParticipants)
             .HasForeignKey(x => x.ParticipantId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(x => x.Type).IsRequired();
     }
 }

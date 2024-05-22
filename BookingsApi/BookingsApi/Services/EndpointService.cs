@@ -42,9 +42,7 @@ namespace BookingsApi.Services
 
         public async Task UpdateEndpoint(VideoHearing hearing, Guid id, List<EndpointParticipantDto> endpointParticipantDtos, string displayName)
         {
-            var endpointParticipants =  hearing
-                .GetParticipants()
-                .GetEndpointParticipants(endpointParticipantDtos);
+            var endpointParticipants = ParticipantEndpointHelper.GetEndpointParticipants(hearing.GetParticipants(), endpointParticipantDtos);
             
             var command = new UpdateEndPointOfHearingCommand(hearing.Id, id, displayName, endpointParticipants.ToArray());
             await _commandHandler.Handle(command);

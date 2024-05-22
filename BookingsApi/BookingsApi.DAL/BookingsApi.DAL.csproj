@@ -25,4 +25,10 @@
     <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
     <ProjectReference Include="..\BookingsApi.Domain\BookingsApi.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Migrations\20240522112935_AddedEndpointParticipantsMapping.cs" />
+    <Compile Remove="Migrations\20240522112935_AddedEndpointParticipantsMapping.Designer.cs" />
+    <Compile Remove="Migrations\20240522123344_AddedEndpointParticipantsMapping.cs" />
+    <Compile Remove="Migrations\20240522123344_AddedEndpointParticipantsMapping.Designer.cs" />
+  </ItemGroup>
 </Project>

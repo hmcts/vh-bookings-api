@@ -99,7 +99,7 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
             hearingResponse.Endpoints.Should().ContainEquivalentOf(new EndpointResponseV2
             {
                 DisplayName = endpoint.DisplayName,
-                DefenceAdvocateId = endpoint.DefenceAdvocate?.Id,
+                DefenceAdvocateId = endpoint.GetDefenceAdvocate()?.Id,
                 Id = endpoint.Id,
                 Pin = endpoint.Pin,
                 Sip = endpoint.Sip,

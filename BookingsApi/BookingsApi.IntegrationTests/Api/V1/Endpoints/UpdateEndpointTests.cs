@@ -122,11 +122,11 @@ public class UpdateEndpointTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        var hearingFromDb = db.VideoHearings.Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+        var hearingFromDb = db.VideoHearings.Include(x => x.Endpoints).ThenInclude(x => x.GetDefenceAdvocate())
             .ThenInclude(x => x.Person).Include(x => x.Participants).AsNoTracking().First(x => x.Id == hearingId);
         var endpoint = hearingFromDb.Endpoints.First(x=>x.DisplayName == request.DisplayName);
         endpoint.DisplayName.Should().Be(request.DisplayName);
-        endpoint.DefenceAdvocate.Should().NotBeNull();
-        endpoint.DefenceAdvocate.Person.ContactEmail.Should().Be(request.DefenceAdvocateContactEmail);
+        endpoint.GetDefenceAdvocate().Should().NotBeNull();
+        endpoint.GetDefenceAdvocate().Person.ContactEmail.Should().Be(request.DefenceAdvocateContactEmail);
     }
 }

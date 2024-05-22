@@ -51,7 +51,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             {
                 DisplayName = displayName,
                 Sip = sip,
-                Pin = pin
+                Pin = pin,
+                EndpointParticipants = new List<EndpointParticipantDto>()
             };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));

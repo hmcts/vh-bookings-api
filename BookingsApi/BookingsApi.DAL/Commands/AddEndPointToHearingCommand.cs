@@ -39,7 +39,7 @@ public class AddEndPointToHearingCommandHandler : ICommandHandler<AddEndPointToH
             throw new HearingNotFoundException(command.HearingId);
             
         var dto = command.EndpointDto;
-        var endpointParticipants = hearing.Participants.GetEndpointParticipants(dto.EndpointParticipants);
+        var endpointParticipants = ParticipantEndpointHelper.GetEndpointParticipants(hearing.Participants, dto.EndpointParticipants);
         var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, endpointParticipants.ToArray());
         hearing.AddEndpoint(endpoint);
         await _context.SaveChangesAsync();

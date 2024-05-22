@@ -31,21 +31,19 @@ namespace BookingsApi.DAL.Commands
         {
             var hearing = await _context.VideoHearings
                 .Include(h => h.Participants).ThenInclude(x => x.Person)
-                .Include(h => h.Endpoints)
+                .Include(h => h.Endpoints).ThenInclude(e => e.EndpointParticipants)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
-            {
                 throw new HearingNotFoundException(command.HearingId);
-            }
 
             var endpoint = hearing.Endpoints.SingleOrDefault(e => e.Id == command.EndpointId);
             if (endpoint == null)
-            {
                 throw new EndPointNotFoundException(command.EndpointId);
-            }
 
-            if (!string.IsNullOrWhiteSpace(endpoint.DisplayName)) endpoint.UpdateDisplayName(command.DisplayName);
+            if (!string.IsNullOrWhiteSpace(endpoint.DisplayName)) 
+                endpoint.UpdateDisplayName(command.DisplayName);
+            
             if (command.EndpointParticipants != null)
                 foreach (var endpointParticipant in command.EndpointParticipants)
                     endpoint.LinkParticipantToEndpoint(endpointParticipant.Item1, endpointParticipant.Item2);

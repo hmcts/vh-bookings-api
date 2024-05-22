@@ -84,7 +84,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             {
                 hearing.GetEndpoints().SingleOrDefault(x =>
                     x.DisplayName == ep.DisplayName &&
-                    x.DefenceAdvocate?.Person?.ContactEmail == ep.EndpointParticipants[0].ContactEmail).Should().NotBeNull();
+                    x.GetDefenceAdvocate()?.Person?.ContactEmail == ep.EndpointParticipants[0].ContactEmail).Should().NotBeNull();
             }
             command.AudioRecordingRequired.Should().Be(hearing.AudioRecordingRequired);
             

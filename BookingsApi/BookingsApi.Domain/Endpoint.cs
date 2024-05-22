@@ -29,9 +29,7 @@ public class Endpoint : TrackableEntity<Guid>
     {
         if(participants?.Any() ?? false)
             foreach (var (participant, type) in participants)
-            {
                 LinkParticipantToEndpoint(participant, type);
-            }
     }
 
     public void AssignDefenceAdvocate(Participant defenceAdvocate)

@@ -71,10 +71,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var beforeCount = seededHearing.GetParticipants().Count;
 
-            var endpoint = seededHearing.GetEndpoints().First(ep => ep.DefenceAdvocate != null);
-            _personsToRemove.Add(endpoint.DefenceAdvocate.Person.ContactEmail);
+            var endpoint = seededHearing.GetEndpoints().First(ep => ep.GetDefenceAdvocate() != null);
+            _personsToRemove.Add(endpoint.GetDefenceAdvocate().Person.ContactEmail);
             await _commandHandler.Handle(
-                new RemoveParticipantFromHearingCommand(seededHearing.Id, endpoint.DefenceAdvocate));
+                new RemoveParticipantFromHearingCommand(seededHearing.Id, endpoint.GetDefenceAdvocate()));
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));

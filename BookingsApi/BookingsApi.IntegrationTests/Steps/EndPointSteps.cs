@@ -180,7 +180,7 @@ namespace BookingsApi.IntegrationTests.Steps
 
             if (!checkForDefenceAdvocate) return;
             var rep = hearingFromDb.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
-            updatedEndpoint.DefenceAdvocate.Id.Should().Be(rep.Id);
+            updatedEndpoint.GetDefenceAdvocate().Id.Should().Be(rep.Id);
             var originalSeededEndpoints = Context.TestData.TestContextData[ExistingEndPoints] as List<Endpoint>;
             originalSeededEndpoints.First(x => x.Id == endpointId).UpdatedDate.Value.Should()
                 .BeBefore(updatedEndpoint.UpdatedDate.Value);
@@ -194,7 +194,7 @@ namespace BookingsApi.IntegrationTests.Steps
                 hearingFromDb = db.VideoHearings
                     .Include(x => x.Participants).ThenInclude(x => x.HearingRole).ThenInclude(x => x.UserRole)
                     .Include(h => h.Participants).ThenInclude(x => x.Person)
-                    .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                    .Include(h => h.Endpoints).ThenInclude(x => x.GetDefenceAdvocate())
                     .AsNoTracking()
                     .Single(x => x.Id == Context.TestData.NewHearingId);
             }

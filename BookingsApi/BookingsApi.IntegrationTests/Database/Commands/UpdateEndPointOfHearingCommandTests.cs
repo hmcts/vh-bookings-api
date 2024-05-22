@@ -70,7 +70,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
-            var endpoint = seededHearing.GetEndpoints()[0];
+            var endpoint = seededHearing.GetEndpoints().First(ep => !ep.EndpointParticipants.Any());
             var dA = seededHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
             var updatedDisplayName = "updatedDisplayName";
             await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, (dA, LinkedParticipantType.DefenceAdvocate)));
@@ -80,8 +80,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
-            updatedEndPoint.DefenceAdvocate.Should().NotBeNull();
-            updatedEndPoint.DefenceAdvocate.Id.Should().Be(dA.Id);
+            updatedEndPoint.GetDefenceAdvocate().Should().NotBeNull();
+            updatedEndPoint.GetDefenceAdvocate().Id.Should().Be(dA.Id);
             endpoint.CreatedDate.Should().Be(updatedEndPoint.CreatedDate.Value);
             updatedEndPoint.UpdatedDate.Should().BeAfter(updatedEndPoint.CreatedDate.Value);
         }
@@ -101,15 +101,15 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
-            updatedEndPoint.DefenceAdvocate.Should().NotBeNull();
-            updatedEndPoint.DefenceAdvocate.Id.Should().Be(dA.Id);
+            updatedEndPoint.GetDefenceAdvocate().Should().NotBeNull();
+            updatedEndPoint.GetDefenceAdvocate().Id.Should().Be(dA.Id);
 
             await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, null));
             returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
-            updatedEndPoint.DefenceAdvocate.Should().BeNull();
+            updatedEndPoint.GetDefenceAdvocate().Should().BeNull();
         }
     }
 }

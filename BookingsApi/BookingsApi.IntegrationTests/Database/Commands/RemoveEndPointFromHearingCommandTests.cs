@@ -8,7 +8,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     {
         private RemoveEndPointFromHearingCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
-        private Guid _newHearingId;
 
         [SetUp]
         public void Setup()
@@ -16,7 +15,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _commandHandler = new RemoveEndPointFromHearingCommandHandler(context);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
-            _newHearingId = Guid.Empty;
         }
 
         [Test]
@@ -33,7 +31,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             Assert.ThrowsAsync<EndPointNotFoundException>(() => _commandHandler.Handle(
                 new RemoveEndPointFromHearingCommand(seededHearing.Id, Guid.NewGuid())));
@@ -44,11 +41,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             var beforeCount = seededHearing.GetEndpoints().Count;
 
-            var endpoint = seededHearing.GetEndpoints().First();
+            var endpoint = seededHearing.GetEndpoints()[0];
             await _commandHandler.Handle(new RemoveEndPointFromHearingCommand(seededHearing.Id, endpoint.Id));
 
 
@@ -64,11 +60,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             var beforeCount = seededHearing.GetEndpoints().Count;
 
-            var endpoint = seededHearing.GetEndpoints().FirstOrDefault(ep => ep.DefenceAdvocate != null);
+            var endpoint = seededHearing.GetEndpoints().FirstOrDefault(ep => ep.GetDefenceAdvocate() != null);
             await _commandHandler.Handle(new RemoveEndPointFromHearingCommand(seededHearing.Id, endpoint.Id));
 
             var returnedVideoHearing =

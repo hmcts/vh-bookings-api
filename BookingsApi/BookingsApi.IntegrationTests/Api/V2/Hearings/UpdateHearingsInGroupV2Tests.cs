@@ -692,7 +692,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                         DisplayName = e.DisplayName,
                         EndpointParticipants = new List<EndpointParticipantsRequestV2> 
                         { 
-                            new () { ContactEmail = e.DefenceAdvocate?.Person.ContactEmail, Type = LinkedParticipantTypeV2.DefenceAdvocate}
+                            new () { ContactEmail = e.GetDefenceAdvocate()?.Person.ContactEmail, Type = LinkedParticipantTypeV2.DefenceAdvocate}
                         } 
                     }).ToList()
                 },

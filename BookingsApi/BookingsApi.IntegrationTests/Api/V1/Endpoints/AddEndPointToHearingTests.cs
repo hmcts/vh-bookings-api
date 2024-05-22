@@ -97,8 +97,9 @@ public class AddEndPointToHearingTests : ApiTest
         
         
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        var hearingFromDb = db.VideoHearings.Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
-            .ThenInclude(x => x.Person).Include(x => x.Participants).AsNoTracking().First(x => x.Id == hearingId);
+        var hearingFromDb = db.VideoHearings
+            .Include(x => x.Endpoints).ThenInclude(x => x.EndpointParticipants)
+            .Include(x => x.Participants).AsNoTracking().First(x => x.Id == hearingId);
         var endpoint = hearingFromDb.Endpoints.First(x=>x.DisplayName == request.DisplayName);
 
         var createdResponse = await ApiClientResponse.GetResponses<EndpointResponse>(result.Content);

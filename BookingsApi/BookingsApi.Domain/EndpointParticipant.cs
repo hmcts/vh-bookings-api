@@ -16,7 +16,6 @@ public sealed class EndpointParticipant : TrackableEntity<Guid>
     
     public EndpointParticipant(Endpoint endpoint, Participant participant, LinkedParticipantType type)
     {
-        Id = Guid.NewGuid();
         EndpointId = endpoint.Id;
         Endpoint = endpoint;
         ParticipantId = participant.Id;

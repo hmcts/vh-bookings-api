@@ -162,8 +162,7 @@ namespace BookingsApi.IntegrationTests.Helper
             bool withLinkedParticipants = false,
             bool isMultiDayFirstHearing = false)
         {
-            return await SeedVideoHearing(false, configureOptions, status, withLinkedParticipants,
-                isMultiDayFirstHearing);
+            return await SeedVideoHearing(false, configureOptions, status, withLinkedParticipants, isMultiDayFirstHearing);
         }
 
         private async Task<VideoHearing> SeedVideoHearing(bool useFlatHearingRoles,
@@ -174,9 +173,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
             var caseType = GetCaseTypeFromDb(options.CaseTypeName);
-            var hearingType = options.ExcludeHearingType
-                ? null
-                : caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
+            var hearingType = options.ExcludeHearingType ? null : caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
             await using var db = new BookingsDbContext(_dbContextOptions);
             
@@ -198,7 +195,7 @@ namespace BookingsApi.IntegrationTests.Helper
                     var pin = r.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
                     videoHearing.AddEndpoints(new List<Endpoint>
                     {
-                        new Endpoint($"new endpoint {i}", $"{sip}@hmcts.net", pin, null)
+                        new ($"new endpoint {i}", $"{sip}@hmcts.net", pin)
                     });
                 }
             }
@@ -215,7 +212,7 @@ namespace BookingsApi.IntegrationTests.Helper
             videoHearing.AddEndpoints(
                 new List<Endpoint>
                 {
-                    new("new endpoint", Guid.NewGuid().ToString(), "pin", null),
+                    new("new endpoint", Guid.NewGuid().ToString(), "pin"),
                     new("new endpoint", Guid.NewGuid().ToString(), "pin", (defenceAdvocate, LinkedParticipantType.DefenceAdvocate)),
                 });
 
