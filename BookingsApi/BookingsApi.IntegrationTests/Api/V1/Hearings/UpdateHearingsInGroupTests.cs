@@ -515,6 +515,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                         FirstName = p.Person.FirstName,
                         MiddleName = p.Person.MiddleNames,
                         LastName = p.Person.LastName,
+                        ContactEmail = p.Person.ContactEmail,
                         LinkedParticipants = p.LinkedParticipants.Select(lp => new LinkedParticipantRequest
                         {
                             ParticipantContactEmail = lp.Participant.Person.ContactEmail,

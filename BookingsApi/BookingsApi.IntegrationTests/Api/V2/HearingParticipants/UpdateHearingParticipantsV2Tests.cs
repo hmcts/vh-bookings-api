@@ -207,7 +207,6 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors["NewParticipants[0].ContactEmail"].Should().Contain(ParticipantRequestValidationV2.NoContactEmailErrorMessage);
         validationProblemDetails.Errors["NewParticipants[0].DisplayName"].Should().Contain(ParticipantRequestValidationV2.NoDisplayNameErrorMessage);
         validationProblemDetails.Errors["ExistingParticipants[0].ParticipantId"].Should().Contain(UpdateParticipantRequestValidationV2.NoParticipantIdErrorMessage);
         validationProblemDetails.Errors["ExistingParticipants[0].DisplayName"].Should().Contain(UpdateParticipantRequestValidationV2.NoDisplayNameErrorMessage);

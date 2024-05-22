@@ -1,5 +1,4 @@
-﻿using System;
-using Faker;
+﻿using Faker;
 using FizzWare.NBuilder;
 using BookingsApi.Domain;
 
@@ -10,7 +9,7 @@ namespace Testing.Common.Builders.Domain
         private readonly Person _person;
         private readonly BuilderSettings _settings;
 
-        public PersonBuilder(bool ignoreId = false)
+        public PersonBuilder(bool ignoreId = false,bool treatPersonAsNew = true)
         {
             _settings = new BuilderSettings();
             if (ignoreId)
@@ -19,13 +18,21 @@ namespace Testing.Common.Builders.Domain
                 
             }
             _person = new Builder(_settings).CreateNew<Person>().WithFactory(() =>
-                    new Person(
-                        Name.Prefix(), 
-                        "Automation_FirstName", 
-                        "Automation_LastName", 
-                        $"Automation_{RandomNumber.Next()}@hmcts.net", 
-                        $"Automation_{RandomNumber.Next()}@hearings.reform.hmcts.net"))
-                .With(x => x.UpdatedDate, DateTime.MinValue)
+                {
+                    var contactEmail = $"vh_automation_{RandomNumber.Next()}@hmcts.net";
+                    var person = new Person(
+                        Name.Prefix(),
+                        "VH Automation_FirstName",
+                        "VH Automation_LastName",
+                        contactEmail:contactEmail,
+                        username:contactEmail
+                        );
+                    if (treatPersonAsNew) return person;
+                    var username = $"vh_automation_{RandomNumber.Next()}@hearings.reform.hmcts.net";
+                    person.UpdateUsername(username);
+
+                    return person;
+                })
                 .With(x => x.TelephoneNumber, "01234567890")
                 .Build();
         }

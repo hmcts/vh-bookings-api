@@ -82,7 +82,7 @@ namespace BookingsApi.Services
             return newJudge;
         }
 
-        private async Task PublishEventsForJudiciaryJudgeReassigned(Hearing hearing, Guid? oldJudgeId, JudiciaryParticipant newJudge, bool sendNotification = true)
+        private async Task PublishEventsForJudiciaryJudgeReassigned(VideoHearing hearing, Guid? oldJudgeId, JudiciaryParticipant newJudge, bool sendNotification = true)
         {
             if (oldJudgeId != null)
             {
@@ -103,7 +103,7 @@ namespace BookingsApi.Services
             
         }
         
-        private async Task PublishEventForJudiciaryParticipantRemoved(Hearing hearing, Guid removedJudiciaryParticipantId)
+        private async Task PublishEventForJudiciaryParticipantRemoved(VideoHearing hearing, Guid removedJudiciaryParticipantId)
         {
             if (hearing.Status is BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge)
             {
@@ -112,7 +112,7 @@ namespace BookingsApi.Services
             }
         }
 
-        private async Task PublishEventsForJudiciaryParticipantsAdded(Hearing hearing, IEnumerable<NewJudiciaryParticipant> participants, bool sendNotification = true)
+        private async Task PublishEventsForJudiciaryParticipantsAdded(VideoHearing hearing, IEnumerable<NewJudiciaryParticipant> participants, bool sendNotification = true)
         {
              await _hearingParticipantService.PublishEventForNewJudiciaryParticipantsAsync(hearing, participants, sendNotification);
         }

@@ -118,7 +118,9 @@ namespace BookingsApi.Domain.Participants
 
         public bool DoesPersonAlreadyExist()
         {
-            return Person?.CreatedDate.TrimMilliseconds() != CreatedDate.TrimMilliseconds();
+            return Person?.CreatedDate.TrimMilliseconds() != CreatedDate.TrimMilliseconds()
+                   || Person?.UpdatedDate.TrimMilliseconds() != CreatedDate.TrimMilliseconds()
+                   || (Person?.Username is not null && Person.Username != Person.ContactEmail);
         }
 
         public void ChangePerson(Person newPerson)

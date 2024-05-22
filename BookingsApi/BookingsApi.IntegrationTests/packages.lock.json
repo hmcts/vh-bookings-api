@@ -3851,6 +3851,13 @@
           "libphonenumber-csharp": "[8.13.35, )"
         }
       },
+      "bookingsapi.client": {
+        "type": "Project",
+        "dependencies": {
+          "BookingsApi.Contract": "[1.0.0, )",
+          "Microsoft.AspNetCore.Mvc.Core": "[2.2.5, )"
+        }
+      },
       "bookingsapi.common": {
         "type": "Project",
         "dependencies": {

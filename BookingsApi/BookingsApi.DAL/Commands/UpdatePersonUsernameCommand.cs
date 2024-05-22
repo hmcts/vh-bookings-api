@@ -30,7 +30,7 @@ namespace BookingsApi.DAL.Commands
                 throw new PersonNotFoundException(command.PersonId);
             }
 
-            person.UpdatePerson(command.Username);
+            person.UpdateUsername(command.Username);
 
             await _context.SaveChangesAsync();
         }

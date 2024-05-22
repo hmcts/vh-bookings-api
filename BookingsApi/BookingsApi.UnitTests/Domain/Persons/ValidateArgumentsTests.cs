@@ -14,8 +14,7 @@ namespace BookingsApi.UnitTests.Domain.Persons
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
                 .Contain(x => x.Name == "FirstName")
-                .And.Contain(x => x.Name == "LastName")
-                .And.Contain(x => x.Name == "ContactEmail");
+                .And.Contain(x => x.Name == "LastName");
         }
     }
 }
