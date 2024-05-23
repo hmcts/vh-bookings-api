@@ -73,15 +73,15 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var createdBy = "User01";
             const bool audioRecordingRequired = true;
 
-            var endpoints = new List<EndpointDto>
+            var endpoints = new List<NewEndpointDto>
             {
-                new EndpointDto
+                new NewEndpointDto
                 {
                     DisplayName = "display 1",
                     Sip = Guid.NewGuid().ToString(),
                     Pin = "1234"
                 },
-                new EndpointDto
+                new NewEndpointDto
                 {
                     DisplayName = "display 2",
                     Sip = Guid.NewGuid().ToString(),

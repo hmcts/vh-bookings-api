@@ -62,9 +62,9 @@ namespace BookingsApi.DAL.Helper
             return command;
         }
 
-        private static List<EndpointDto> GetNewEndpointsDtos(Hearing hearing, IRandomGenerator randomGenerator, string sipAddressStem)
+        private static List<NewEndpointDto> GetNewEndpointsDtos(Hearing hearing, IRandomGenerator randomGenerator, string sipAddressStem)
         {
-            var newEndpoints = new List<EndpointDto>();
+            var newEndpoints = new List<NewEndpointDto>();
             foreach (var endpoint in hearing.GetEndpoints())
             {
                 string sip;
@@ -73,16 +73,16 @@ namespace BookingsApi.DAL.Helper
                     sip = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
                 } while (newEndpoints.Exists(x => x.Sip.StartsWith(sip)));
                 var pin = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
-                var newEndpoint =  new EndpointDto
+                var newEndpoint =  new NewEndpointDto
                 {
                     Pin = pin,
                     Sip = $"{sip}{sipAddressStem}",
                     DisplayName = endpoint.DisplayName,
-                    EndpointParticipants = endpoint.EndpointParticipants?.Select(x => new EndpointParticipantDto
+                    EndpointParticipants = endpoint.EndpointParticipants?.Select(x => new NewEndpointParticipantDto
                     {
                         ContactEmail = x.Participant.Person.ContactEmail,
                         Type = x.Type
-                    }).ToList() ?? new List<EndpointParticipantDto>(),
+                    }).ToList() ?? new List<NewEndpointParticipantDto>(),
                 };
             
                 newEndpoints.Add(newEndpoint);

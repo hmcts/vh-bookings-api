@@ -4,8 +4,8 @@ namespace BookingsApi.Services
 {
     public interface IEndpointService
     {
-        Task<Endpoint> AddEndpoint(Guid hearingId, EndpointDto endpointDto);
-        Task UpdateEndpoint(VideoHearing hearing, Guid id, List<EndpointParticipantDto> endpointParticipantDtos, string displayName);
+        Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpointDto newEndpointDto);
+        Task UpdateEndpoint(VideoHearing hearing, Guid id, List<NewEndpointParticipantDto> endpointParticipantDtos, string displayName);
         Task RemoveEndpoint(VideoHearing hearing, Guid id);
     }
     
@@ -23,14 +23,14 @@ namespace BookingsApi.Services
             _eventPublisher = eventPublisher;
         }
         
-        public async Task<Endpoint> AddEndpoint(Guid hearingId, EndpointDto endpointDto)
+        public async Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpointDto newEndpointDto)
         {
-            var command = new AddEndPointToHearingCommand(hearingId, endpointDto);
+            var command = new AddEndPointToHearingCommand(hearingId, newEndpointDto);
             await _commandHandler.Handle(command);
 
             var updatedHearing =
                 await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-            var endpoint = updatedHearing.GetEndpoints().First(x => x.DisplayName.Equals(endpointDto.DisplayName));
+            var endpoint = updatedHearing.GetEndpoints().First(x => x.DisplayName.Equals(newEndpointDto.DisplayName));
 
             if (updatedHearing.Status == BookingStatus.Created || updatedHearing.Status == BookingStatus.ConfirmedWithoutJudge)
             {
@@ -40,7 +40,7 @@ namespace BookingsApi.Services
             return endpoint;
         }
 
-        public async Task UpdateEndpoint(VideoHearing hearing, Guid id, List<EndpointParticipantDto> endpointParticipantDtos, string displayName)
+        public async Task UpdateEndpoint(VideoHearing hearing, Guid id, List<NewEndpointParticipantDto> endpointParticipantDtos, string displayName)
         {
             var endpointParticipants = ParticipantEndpointHelper.GetEndpointParticipants(hearing.GetParticipants(), endpointParticipantDtos);
             

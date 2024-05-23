@@ -41,9 +41,9 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
         return newParticipants;
     }
 
-    private static List<EndpointDto> MapEndpoints(BookNewHearingRequestV2 requestV2, IRandomGenerator randomGenerator, string sipAddressStem)
+    private static List<NewEndpointDto> MapEndpoints(BookNewHearingRequestV2 requestV2, IRandomGenerator randomGenerator, string sipAddressStem)
     {
-        var endpoints = new List<EndpointDto>();
+        var endpoints = new List<NewEndpointDto>();
         if (requestV2.Endpoints != null)
             endpoints = requestV2.Endpoints.Select(x => EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(x, randomGenerator, sipAddressStem)).ToList();
 

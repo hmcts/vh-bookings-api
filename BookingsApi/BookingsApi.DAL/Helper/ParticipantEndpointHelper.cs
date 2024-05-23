@@ -5,7 +5,7 @@ namespace BookingsApi.DAL.Helper;
 
 public static class ParticipantEndpointHelper
 {
-    public static IEnumerable<(Participant, LinkedParticipantType)> GetEndpointParticipants(IEnumerable<Participant> hearingParticipants, IEnumerable<EndpointParticipantDto> endpointParticipants)
+    public static IEnumerable<(Participant, LinkedParticipantType)> GetEndpointParticipants(IEnumerable<Participant> hearingParticipants, IEnumerable<NewEndpointParticipantDto> endpointParticipants)
     {
         return GetEndpointParticipants(hearingParticipants.ToArray(), endpointParticipants.Select(ep => (ep.ContactEmail, ep.Type)));
     }

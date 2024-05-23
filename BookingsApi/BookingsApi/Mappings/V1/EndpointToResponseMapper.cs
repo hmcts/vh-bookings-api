@@ -18,20 +18,20 @@ namespace BookingsApi.Mappings.V1
             };
         }
 
-        public static EndpointDto MapRequestToNewEndpointDto(EndpointRequest request, IRandomGenerator randomGenerator, string sipAddressStem)
+        public static NewEndpointDto MapRequestToNewEndpointDto(EndpointRequest request, IRandomGenerator randomGenerator, string sipAddressStem)
         {
             var sip = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
             var pin = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
             var sipComplete = sip + sipAddressStem;
-            return new EndpointDto
+            var endpointParticipants = new List<NewEndpointParticipantDto>();
+            if(!String.IsNullOrWhiteSpace(request.DefenceAdvocateContactEmail))
+                endpointParticipants.Add(new NewEndpointParticipantDto { ContactEmail = request.DefenceAdvocateContactEmail, Type = LinkedParticipantType.DefenceAdvocate });
+            return new NewEndpointDto
             {
                 Pin = pin,
                 Sip = sipComplete,
                 DisplayName = request.DisplayName,
-                EndpointParticipants = new List<EndpointParticipantDto>
-                {
-                    new() { ContactEmail = request.DefenceAdvocateContactEmail, Type = LinkedParticipantType.DefenceAdvocate  }
-                }
+                EndpointParticipants = endpointParticipants
             };
         }
     }

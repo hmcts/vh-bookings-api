@@ -25,7 +25,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public void Should_throw_exception_when_hearing_does_not_exist()
         {
             var hearingId = Guid.NewGuid();
-            var newEndpoint = new EndpointDto
+            var newEndpoint = new NewEndpointDto
             {
                 DisplayName = "displayName",
                 Sip = "sip",
@@ -47,12 +47,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var displayName = "newDisplayName";
             var sip = "newSIP";
             var pin = "9999";
-            var newEndpoint = new EndpointDto
+            var newEndpoint = new NewEndpointDto
             {
                 DisplayName = displayName,
                 Sip = sip,
                 Pin = pin,
-                EndpointParticipants = new List<EndpointParticipantDto>()
+                EndpointParticipants = new List<NewEndpointParticipantDto>()
             };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));
@@ -85,12 +85,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var displayName = "newDisplayName";
             var sip = "newSIP";
             var pin = "9999";
-            var newEndpoint = new EndpointDto
+            var newEndpoint = new NewEndpointDto
             {
                 DisplayName = displayName,
                 Sip = sip,
                 Pin = pin,
-                EndpointParticipants = new List<EndpointParticipantDto>()
+                EndpointParticipants = new List<NewEndpointParticipantDto>()
                 {
                     new () { ContactEmail = dA.Person.ContactEmail, Type = LinkedParticipantType.DefenceAdvocate }
                 } 

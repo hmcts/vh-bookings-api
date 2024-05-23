@@ -6,14 +6,14 @@ namespace BookingsApi.DAL.Commands;
 
 public class AddEndPointToHearingCommand : ICommand
 {
-    public AddEndPointToHearingCommand(Guid hearingId, EndpointDto endpointDto)
+    public AddEndPointToHearingCommand(Guid hearingId, NewEndpointDto newEndpointDto)
     {
         HearingId = hearingId;
-        EndpointDto = endpointDto;
+        NewEndpointDto = newEndpointDto;
     }
 
     public Guid HearingId { get; }
-    public EndpointDto EndpointDto { get; }
+    public NewEndpointDto NewEndpointDto { get; }
 }
 
 public class AddEndPointToHearingCommandHandler : ICommandHandler<AddEndPointToHearingCommand>
@@ -38,7 +38,7 @@ public class AddEndPointToHearingCommandHandler : ICommandHandler<AddEndPointToH
         if (hearing == null)
             throw new HearingNotFoundException(command.HearingId);
             
-        var dto = command.EndpointDto;
+        var dto = command.NewEndpointDto;
         var endpointParticipants = ParticipantEndpointHelper.GetEndpointParticipants(hearing.Participants, dto.EndpointParticipants);
         var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, endpointParticipants.ToArray());
         hearing.AddEndpoint(endpoint);

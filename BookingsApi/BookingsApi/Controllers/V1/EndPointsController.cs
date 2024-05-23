@@ -130,7 +130,7 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
 
-            var result = new UpdateEndpointRequestValidation().Validate(updateEndpointRequest);
+            var result = await new UpdateEndpointRequestValidation().ValidateAsync(updateEndpointRequest);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
@@ -141,7 +141,9 @@ namespace BookingsApi.Controllers.V1
             {
                 var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
                 if(hearing == null) throw new HearingNotFoundException(hearingId);
-                var endpointParticipant = new List<EndpointParticipantDto>(){new (){ContactEmail = updateEndpointRequest.DefenceAdvocateContactEmail, Type = LinkedParticipantType.DefenceAdvocate}};
+                var endpointParticipant = new List<NewEndpointParticipantDto>();
+                if(!String.IsNullOrEmpty(updateEndpointRequest.DefenceAdvocateContactEmail))
+                    endpointParticipant.Add(new (){ContactEmail = updateEndpointRequest.DefenceAdvocateContactEmail, Type = LinkedParticipantType.DefenceAdvocate});
                 await _endpointService.UpdateEndpoint(hearing, endpointId, endpointParticipant, updateEndpointRequest.DisplayName);
             }
             catch (HearingNotFoundException exception)

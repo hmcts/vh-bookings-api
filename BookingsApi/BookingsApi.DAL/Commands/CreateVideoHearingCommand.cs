@@ -45,7 +45,7 @@ namespace BookingsApi.DAL.Commands
         public string OtherInformation { get; }
         public string CreatedBy { get; }
         public bool AudioRecordingRequired { get; }
-        public List<EndpointDto> Endpoints { get; }
+        public List<NewEndpointDto> Endpoints { get; }
         public string CancelReason { get; }
         public Guid? SourceId { get; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }

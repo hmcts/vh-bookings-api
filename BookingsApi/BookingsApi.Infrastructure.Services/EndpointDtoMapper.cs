@@ -11,8 +11,7 @@ public static class EndpointDtoMapper
         {
             DisplayName = source.DisplayName,
             Sip = source.Sip,
-            Pin = source.Pin,
-            DefenceAdvocateContactEmail = source.GetDefenceAdvocate()?.Person.ContactEmail
+            Pin = source.Pin
         };
     }
 }

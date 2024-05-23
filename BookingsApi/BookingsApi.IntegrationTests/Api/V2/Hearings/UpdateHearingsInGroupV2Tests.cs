@@ -734,9 +734,14 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                     {
                         Id = e.Id,
                         DisplayName = e.DisplayName,
-                        EndpointParticipants = new List<EndpointParticipantsRequestV2> 
+                        EndpointParticipants = !e.EndpointParticipants.Any()
+                            ? []
+                            : new List<EndpointParticipantsRequestV2>
                         { 
-                            new () { ContactEmail = e.GetDefenceAdvocate()?.Person.ContactEmail, Type = LinkedParticipantTypeV2.DefenceAdvocate}
+                            new () { 
+                                ContactEmail = e.EndpointParticipants[0].Participant.Person.ContactEmail, 
+                                Type = (LinkedParticipantTypeV2)e.EndpointParticipants[0].Type
+                            }
                         } 
                     }).ToList()
                 },

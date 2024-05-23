@@ -34,10 +34,10 @@ namespace BookingsApi.Mappings.V1
             return newParticipants;
         }
 
-        private static List<EndpointDto> MapEndpoints(BookNewHearingRequest request, IRandomGenerator randomGenerator,
+        private static List<NewEndpointDto> MapEndpoints(BookNewHearingRequest request, IRandomGenerator randomGenerator,
             string sipAddressStem)
         {
-            var endpoints = new List<EndpointDto>();
+            var endpoints = new List<NewEndpointDto>();
             if (request.Endpoints != null)
             {
                 endpoints = request.Endpoints.Select(x =>

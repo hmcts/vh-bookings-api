@@ -1,14 +1,26 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using BookingsApi.Common;
 using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Contract.V1.Requests;
+using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
+using BookingsApi.IntegrationTests.Helper;
 using BookingsApi.Validations.Common;
 using BookingsApi.Validations.V1;
 using FizzWare.NBuilder;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using NUnit.Framework;
+using Testing.Common.Builders.Api;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings
 {

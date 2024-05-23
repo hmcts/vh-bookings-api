@@ -122,8 +122,12 @@ public class UpdateEndpointTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        var hearingFromDb = db.VideoHearings.Include(x => x.Endpoints).ThenInclude(x => x.GetDefenceAdvocate())
-            .ThenInclude(x => x.Person).Include(x => x.Participants).AsNoTracking().First(x => x.Id == hearingId);
+        var hearingFromDb = await db.VideoHearings
+            .Include(x => x.Endpoints)
+                .ThenInclude(x => x.EndpointParticipants)
+                .ThenInclude(x => x.Participant)
+                .ThenInclude(x => x.Person)
+            .AsNoTracking().FirstAsync(x => x.Id == hearingId);
         var endpoint = hearingFromDb.Endpoints.First(x=>x.DisplayName == request.DisplayName);
         endpoint.DisplayName.Should().Be(request.DisplayName);
         endpoint.GetDefenceAdvocate().Should().NotBeNull();

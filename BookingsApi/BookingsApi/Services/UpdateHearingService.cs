@@ -60,7 +60,7 @@ namespace BookingsApi.Services
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, new List<EndpointParticipantDto>()
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, new List<NewEndpointParticipantDto>()
                 {
                     new ()
                     {
@@ -86,7 +86,7 @@ namespace BookingsApi.Services
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                var endpointParticipants = endpointToUpdate.EndpointParticipants.Select(x => new EndpointParticipantDto
+                var endpointParticipants = endpointToUpdate.EndpointParticipants.Select(x => new NewEndpointParticipantDto
                 {
                     ContactEmail = x.ContactEmail,
                     Type = (LinkedParticipantType)x.Type
