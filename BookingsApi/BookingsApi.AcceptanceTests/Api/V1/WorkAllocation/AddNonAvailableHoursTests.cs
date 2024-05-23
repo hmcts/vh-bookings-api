@@ -56,7 +56,7 @@ public class AddNonAvailableHoursTests : ApiTest
         // assert
         var response = await BookingsApiClient.GetVhoNonAvailabilityHoursAsync(_cso.Username);
         var newNonWorkHours = response.FirstOrDefault(x =>
-            x.StartTime == request.Hours.First().StartTime && x.EndTime == request.Hours.First().EndTime);
+            x.StartTime == request.Hours[0].StartTime && x.EndTime == request.Hours[0].EndTime);
         newNonWorkHours.Should().NotBeNull();
         _newNonWorkingHoursId = newNonWorkHours!.Id;
         Assert.Pass();

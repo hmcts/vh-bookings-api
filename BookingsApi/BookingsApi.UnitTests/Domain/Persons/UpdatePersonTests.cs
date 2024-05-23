@@ -21,7 +21,7 @@ namespace BookingsApi.UnitTests.Domain.Persons
         {
             var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net", "john.doe@hmcts.net");
             var exception = Assert.Throws<DomainRuleException>(() => person.UpdatePerson(null, "Me", "me@me.com", "new.me@hmcts.net"));
-            exception.ValidationFailures.Any(x => x.Name == nameof(person.FirstName)).Should().BeTrue();
+            exception.ValidationFailures.Exists(x => x.Name == nameof(person.FirstName)).Should().BeTrue();
         }
         
         [Test]
@@ -29,7 +29,7 @@ namespace BookingsApi.UnitTests.Domain.Persons
         {
             var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net", "john.doe@hmcts.net");
             var exception = Assert.Throws<DomainRuleException>(() => person.UpdatePerson("New", null, "me@me.com", "new.me@hmcts.net"));
-            exception.ValidationFailures.Any(x => x.Name == nameof(person.LastName)).Should().BeTrue();
+            exception.ValidationFailures.Exists(x => x.Name == nameof(person.LastName)).Should().BeTrue();
         }
     }
 }

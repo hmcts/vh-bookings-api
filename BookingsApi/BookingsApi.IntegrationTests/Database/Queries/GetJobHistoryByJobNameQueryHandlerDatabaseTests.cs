@@ -5,7 +5,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     public class GetJobHistoryByJobNameQueryHandlerDatabaseTests : DatabaseTestsBase
     {
         private GetJobHistoryByJobNameQueryHandler _handler;
-        private string jobName = "unitTestJobName";
+        private readonly string jobName = "unitTestJobName";
         [SetUp]
         public void Setup()
         {

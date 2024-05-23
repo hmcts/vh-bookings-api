@@ -6,7 +6,7 @@ namespace BookingsApi.Controllers.V1
     [Route("JobHistory")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class JobHistoryController : Controller
+    public class JobHistoryController : ControllerBase
     {
         private readonly ICommandHandler _commandHandler;
         private readonly IQueryHandler _queryHandler;

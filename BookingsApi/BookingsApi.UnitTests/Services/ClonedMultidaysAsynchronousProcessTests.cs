@@ -18,28 +18,25 @@ namespace BookingsApi.UnitTests.Services
     public class ClonedMultidaysAsynchronousProcessTests
     {
         private readonly ClonedMultidaysAsynchronousProcess _clonedMultidaysAsynchronousProcess;
-        private readonly IEventPublisher _eventPublisher;
         private readonly ServiceBusQueueClientFake _serviceBusQueueClient;
-        private readonly IEventPublisherFactory _eventPublisherFactory;
         private readonly IFeatureToggles _featureToggles;
         public ClonedMultidaysAsynchronousProcessTests()
         {
             _serviceBusQueueClient = new ServiceBusQueueClientFake();
-            _eventPublisher = new EventPublisher(_serviceBusQueueClient);
-            _eventPublisherFactory = EventPublisherFactoryInstance.Get(_eventPublisher);
+            IEventPublisher eventPublisher = new EventPublisher(_serviceBusQueueClient);
+            IEventPublisherFactory eventPublisherFactory = EventPublisherFactoryInstance.Get(eventPublisher);
             _featureToggles = new FeatureTogglesStub();
-            _clonedMultidaysAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisherFactory, _featureToggles);
+            _clonedMultidaysAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(eventPublisherFactory, _featureToggles);
         }
         
         [Test]
         public async Task Should_publish_messages_with_new_notify_templates_feature_on()
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
-            hearing.Participants[0].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[0].Person, 
-                hearing.Participants[0].Person.CreatedDate.AddDays(-10), null);
-            hearing.Participants[1].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[1].Person,
-                hearing.Participants[1].Person.CreatedDate.AddDays(-10), null);
-
+            // treat the first 2 participants an existing person
+            hearing.Participants[0].ChangePerson(new PersonBuilder(treatPersonAsNew: false).Build());
+            hearing.Participants[1].ChangePerson(new PersonBuilder(treatPersonAsNew: false).Build());
+            
             ((FeatureTogglesStub)_featureToggles).NewTemplates = true;
             
             var judgeAsExistingParticipant = 1;

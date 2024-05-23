@@ -87,7 +87,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var persons = await _handler.Handle(new GetPersonBySearchTermQuery("luff"));
 
-            var personToQuery = persons.FirstOrDefault(m => m.Id == IndividualPerson.Id);
+            var personToQuery = persons.Find(m => m.Id == IndividualPerson.Id);
             personToQuery.Id.Should().Be(IndividualPerson.Id);
             personToQuery.Organisation.Should().NotBeNull();
             personToQuery.Organisation.Name.Should().Be("strawhat");

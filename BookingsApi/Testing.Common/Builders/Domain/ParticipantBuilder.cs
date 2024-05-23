@@ -13,19 +13,25 @@ namespace Testing.Common.Builders.Domain
         private readonly List<Participant> _participants = new List<Participant>();
 
 
-        public ParticipantBuilder()
+        public ParticipantBuilder(bool treatPersonAsNew = true)
         {
             var applicantCaseRole = new CaseRole(1, "Applicant");
             var respondentCaseRole = new CaseRole(2, "Respondent");
-            var applicantLipHearingRole = new HearingRole(1, "Litigant in person");
-            applicantLipHearingRole.UserRole = new UserRole(5, "Individual");
-            var respondentRepresentativeHearingRole = new HearingRole(5, "Representative");
-            respondentRepresentativeHearingRole.UserRole = new UserRole(6, "Representative");
-            var respondentLipHearingRole = new HearingRole(4, "Litigant in person");
-            respondentLipHearingRole.UserRole = new UserRole(5, "Individual");
-            var person1 = new PersonBuilder(true).Build();
-            var person2 = new PersonBuilder(true).Build();
-            var person3 = new PersonBuilder(true).Build();
+            var applicantLipHearingRole = new HearingRole(1, "Litigant in person")
+            {
+                UserRole = new UserRole(5, "Individual")
+            };
+            var respondentRepresentativeHearingRole = new HearingRole(5, "Representative")
+            {
+                UserRole = new UserRole(6, "Representative")
+            };
+            var respondentLipHearingRole = new HearingRole(4, "Litigant in person")
+            {
+                UserRole = new UserRole(5, "Individual")
+            };
+            var person1 = new PersonBuilder(true, treatPersonAsNew:treatPersonAsNew).Build();
+            var person2 = new PersonBuilder(true, treatPersonAsNew:treatPersonAsNew).Build();
+            var person3 = new PersonBuilder(true, treatPersonAsNew:treatPersonAsNew).Build();
 
             _individualParticipant1 = new Individual(person1, applicantLipHearingRole, applicantCaseRole);
             _individualParticipant1.HearingRole = applicantLipHearingRole;

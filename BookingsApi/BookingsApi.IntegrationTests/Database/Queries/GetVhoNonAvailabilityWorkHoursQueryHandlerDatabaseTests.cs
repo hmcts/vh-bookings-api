@@ -78,7 +78,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var justiceUser = await Hooks.SeedJusticeUser(username, "UserWithoutRecords", "UserWithoutRecords", initWorkHours: false);
             
             // act
-            var query = new GetVhoNonAvailableWorkHoursQuery(username);
+            var query = new GetVhoNonAvailableWorkHoursQuery(justiceUser.Username);
             var vhoWorkHours = await _handler.Handle(query);
             
             // assert

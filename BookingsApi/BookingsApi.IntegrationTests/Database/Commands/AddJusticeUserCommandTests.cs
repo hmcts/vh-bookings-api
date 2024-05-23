@@ -43,7 +43,7 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         justiceUser.Lastname.Should().Be(command.Lastname);
         justiceUser.ContactEmail.Should().Be(command.ContactEmail);
         justiceUser.CreatedBy.Should().Be(command.CreatedBy);
-        justiceUser.JusticeUserRoles.First().UserRole.Id.Should().Be(command.RoleIds.First());
+        justiceUser.JusticeUserRoles[0].UserRole.Id.Should().Be(command.RoleIds[0]);
         justiceUser.Telephone.Should().Be(command.Telephone);
     }
 

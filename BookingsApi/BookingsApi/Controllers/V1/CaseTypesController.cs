@@ -6,7 +6,7 @@ namespace BookingsApi.Controllers.V1
     [Route("casetypes")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class CaseTypesController : Controller
+    public class CaseTypesController : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
         public CaseTypesController(IQueryHandler queryHandler)

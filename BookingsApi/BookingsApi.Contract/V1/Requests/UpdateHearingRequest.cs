@@ -42,13 +42,6 @@ namespace BookingsApi.Contract.V1.Requests
         public string UpdatedBy { get; set; }
 
         /// <summary>
-        /// QuestionnaireNotRequired
-        /// </summary>
-        [Obsolete("This property is no longer used.")]
-        [DefaultValue(false)]
-        public bool? QuestionnaireNotRequired { get; set; }
-
-        /// <summary>
         /// Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
         /// </summary>
         public bool? AudioRecordingRequired { get; set; }
