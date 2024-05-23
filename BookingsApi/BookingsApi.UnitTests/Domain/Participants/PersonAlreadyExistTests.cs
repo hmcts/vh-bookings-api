@@ -1,5 +1,3 @@
-using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.UnitTests.Domain.Participants
@@ -17,7 +15,26 @@ namespace BookingsApi.UnitTests.Domain.Participants
         [Test]
         public void Should_return_false_when_new_person_added_as_participant()
         {
+            // new participants/persons will have username equal their contact email
+            // use set protected to avoid updating timestamps like the domain method
+            _individual.Person.SetProtected(nameof(_individual.Person.Username), _individual.Person.ContactEmail);
             _individual.DoesPersonAlreadyExist().Should().BeFalse();
+        }
+        
+        [Test]
+        public void should_return_true_when_new_person_added_but_has_been_updated_since()
+        {
+            var historicalDate = DateTime.UtcNow.AddDays(-10);
+            _individual.SetProtected(nameof(_individual.CreatedDate), historicalDate);
+            _individual.Person.SetProtected(nameof(_individual.Person.CreatedDate), historicalDate);
+            _individual.Person.SetProtected(nameof(_individual.Person.UpdatedDate), historicalDate);
+            _individual.Person.SetProtected(nameof(_individual.Person.Username), _individual.Person.ContactEmail);
+            
+            _individual.DoesPersonAlreadyExist().Should().BeFalse();
+            
+            // when a person's username is created and assiged, they are no longer a new person
+            _individual.Person.UpdateUsername("new_user@test.com");
+            _individual.DoesPersonAlreadyExist().Should().BeTrue();
         }
 
         [Test]

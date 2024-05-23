@@ -32,8 +32,8 @@ namespace BookingsApi.UnitTests.Services
         public async Task Should_publish_messages_for_single_day_booking()
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
-            hearing.Participants[0].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[0].Person, 
-                hearing.Participants[0].Person.CreatedDate.AddDays(-10), null);
+            // treat the first participant an existing person
+            hearing.Participants[0].ChangePerson(new PersonBuilder(true, treatPersonAsNew: false).Build());
 
             var createConfereceMessageCount = 1;
             var judgeAsExistingParticipant = 1;
@@ -61,8 +61,8 @@ namespace BookingsApi.UnitTests.Services
         public async Task Should_publish_messages_for_single_day_booking_with_panel_member_and_ejud_new_template_off()
         {
             var hearing = new VideoHearingBuilder(addJudge:false).WithCase().WithJudiciaryPanelMember().WithJudiciaryJudge().Build();
-            hearing.Participants[0].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[0].Person, 
-                hearing.Participants[0].Person.CreatedDate.AddDays(-10), null);
+            // treat the first participant an existing person
+            hearing.Participants[0].ChangePerson(new PersonBuilder(true, treatPersonAsNew: false).Build());
            
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
 
@@ -90,8 +90,8 @@ namespace BookingsApi.UnitTests.Services
         public async Task Should_publish_messages_for_single_day_booking_with_panel_member_and_ejud_new_template_on()
         {
             var hearing = new VideoHearingBuilder(addJudge:false).WithCase().WithJudiciaryPanelMember().WithJudiciaryJudge().Build();
-            hearing.Participants[0].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[0].Person, 
-                hearing.Participants[0].Person.CreatedDate.AddDays(-10), null);
+            // treat the first participant an existing person
+            hearing.Participants[0].ChangePerson(new PersonBuilder(true, treatPersonAsNew: false).Build());
             
             ((FeatureTogglesStub)_featureToggles).NewTemplates = true;
             
@@ -120,8 +120,8 @@ namespace BookingsApi.UnitTests.Services
         public async Task Should_publish_messages_for_user_setup_before_booking_but_no_Account_created()
         {
             var hearing = new VideoHearingBuilder(addJudge: false).WithCase().WithJudiciaryPanelMember().WithJudiciaryJudge().Build();
-            hearing.Participants[0].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[0].Person,
-                hearing.Participants[0].Person.CreatedDate.AddDays(-10), null);
+            // treat the first participant an existing person
+            hearing.Participants[0].ChangePerson(new PersonBuilder(true, treatPersonAsNew: false).Build());
 
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
 

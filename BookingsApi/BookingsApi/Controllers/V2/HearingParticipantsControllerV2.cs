@@ -141,15 +141,16 @@ namespace BookingsApi.Controllers.V2
 
             var additionalInformation = new AdditionalInformation(request.FirstName, request.LastName)
             {
-                MiddleNames = request.MiddleNames
+                MiddleNames = request.MiddleNames,
+                IsContactEmailNew = participant.Person.ContactEmail is null && !string.IsNullOrEmpty(request.ContactEmail)
             };
             
             request.ContactEmail = request.ContactEmail?.Trim();
-            
-            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
-                request.DisplayName, request.TelephoneNumber, request.OrganisationName, representative, linkedParticipants,
-                additionalInformation: additionalInformation, contactEmail: request.ContactEmail);
 
+            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
+                request.DisplayName, request.TelephoneNumber, request.OrganisationName, representative,
+                linkedParticipants,
+                additionalInformation: additionalInformation, contactEmail: request.ContactEmail);
             var updatedParticipant = await _hearingParticipantService.UpdateParticipantAndPublishEventAsync(videoHearing, updateParticipantCommand);
             
             var response = new ParticipantToResponseV2Mapper().MapParticipantToResponse(updatedParticipant);

@@ -34,7 +34,9 @@ namespace BookingsApi.DAL.Queries
                 .Include(p => p.Person)
                 .Where(h => h.Hearing.ScheduledDateTime >= cutOffDateFrom && h.Hearing.ScheduledDateTime < cutOffDate)
                 .Where(p => personsInFutureHearings.All(pf => pf != p.Person.Username))
-                .Where(p => p.Person.Username.ToLower().EndsWith("@hearings.reform.hmcts.net"))
+                .Where(p => p.Person.Username.ToLower().EndsWith("@hearings.reform.hmcts.net") // created in ad
+                            || p.Person.Username.ToLower().Equals(p.Person.ContactEmail.ToLower()) // failed to create in ad
+                            || p.Person.ContactEmail == null) // never got a contact email to complete the user creation
                 .Where(p => !p.Person.Username.ToLower().StartsWith("auto_"))
                 .ToListAsync();
 

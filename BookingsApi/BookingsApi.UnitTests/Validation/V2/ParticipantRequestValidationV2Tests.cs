@@ -1,5 +1,4 @@
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.Domain.Constants;
 using BookingsApi.Validations.V2;
 using FizzWare.NBuilder;
 
@@ -85,17 +84,14 @@ namespace BookingsApi.UnitTests.Validation.V2
         }
 
         [Test]
-        public async Task Should_return_missing_contact_email_error()
+        public async Task Should_not_return_missing_contact_email_error()
         {
             var request = BuildRequest();
             request.ContactEmail = string.Empty;
 
             var result = await _validator.ValidateAsync(request);
 
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(2);
-            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoContactEmailErrorMessage)
-                .Should().BeTrue();
+            result.IsValid.Should().BeTrue();
         }
 
         [Test]
