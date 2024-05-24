@@ -70,7 +70,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 
                 var endpointWithDa = requestHearing.Endpoints.ExistingEndpoints
                     .First(e => e.EndpointParticipants.TrueForAll(e => !String.IsNullOrEmpty(e.ContactEmail)));
-                var defenceAdvocateEmail = endpointWithDa.EndpointParticipants[0].ContactEmail;
+                var defenceAdvocateEmail = endpointWithDa.EndpointParticipants[0]?.ContactEmail;
                 var defenceAdvocateParticipant = hearing.Participants.First(p => p.Person.ContactEmail == defenceAdvocateEmail);
                 
                 // Add a participant

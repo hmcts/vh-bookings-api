@@ -30,7 +30,8 @@ namespace BookingsApi.UnitTests.Mappings.V1
                 .WithJudiciaryPanelMember()
                 .Build();
             hearing.AddEndpoint(new Endpoint("Endpoint1", $"{Guid.NewGuid():N}@hmcts.net", "1234"));
-            hearing.AddEndpoint(new Endpoint("Endpoint2", $"{Guid.NewGuid():N}@hmcts.net", "2345", (hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative) , LinkedParticipantType.Representative)));
+            hearing.AddEndpoint(new Endpoint("Endpoint2", $"{Guid.NewGuid():N}@hmcts.net", "2345", 
+                (hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative) , LinkedParticipantType.Representative)));
             hearing.AddCase("HBS/1234","Case 1 Test", true);
        
             var individualsInHearing = hearing.Participants.Where(x => x.HearingRole.UserRole.IsIndividual).ToList();
@@ -84,7 +85,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             {
                 hearing.GetEndpoints().SingleOrDefault(x =>
                     x.DisplayName == ep.DisplayName &&
-                    x.GetDefenceAdvocate()?.Person?.ContactEmail == ep.EndpointParticipants[0].ContactEmail).Should().NotBeNull();
+                    x.EndpointParticipants.FirstOrDefault()?.Participant?.Person?.ContactEmail == ep.EndpointParticipants?.FirstOrDefault()?.ContactEmail).Should().NotBeNull();
             }
             command.AudioRecordingRequired.Should().Be(hearing.AudioRecordingRequired);
             

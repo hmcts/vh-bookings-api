@@ -21,7 +21,8 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.Should().NotBeNull();
             result.Sip.EndsWith(sipAddStream).Should().BeTrue();
             result.DisplayName.Should().Be(endpointRequest.DisplayName);
-            result.EndpointParticipants[0].Should().Be(endpointRequest.DefenceAdvocateContactEmail);
+            result.EndpointParticipants[0].ContactEmail.Should().Be(endpointRequest.DefenceAdvocateContactEmail);
+            result.EndpointParticipants[0].Type.Should().Be(LinkedParticipantType.DefenceAdvocate);
 
         }
 
