@@ -418,7 +418,6 @@ namespace BookingsApi.Domain
         public void RemoveEndpoint(Endpoint endpoint)
         {
             ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveAnEndpointCloseToStartTime);
-            endpoint.EndpointParticipants.Clear();
             Endpoints.Remove(endpoint);
             UpdatedDate = DateTime.UtcNow;
         }

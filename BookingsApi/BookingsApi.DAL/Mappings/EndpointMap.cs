@@ -11,7 +11,10 @@
             builder.HasIndex(x => x.Sip).IsUnique();
             builder.Property(x => x.Pin).IsRequired();
             builder.HasOne<Hearing>("Hearing").WithMany("Endpoints").HasForeignKey(x => x.HearingId);
-            builder.HasMany(u => u.EndpointParticipants).WithOne(x => x.Endpoint).HasForeignKey(x => x.EndpointId);
+            builder.HasMany(u => u.EndpointParticipants)
+                .WithOne(x => x.Endpoint)
+                .HasForeignKey(x => x.EndpointId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

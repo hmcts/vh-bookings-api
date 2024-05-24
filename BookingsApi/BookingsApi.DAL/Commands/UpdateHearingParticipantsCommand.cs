@@ -75,8 +75,10 @@ namespace BookingsApi.DAL.Commands
                         x.EndpointParticipants.FirstOrDefault(ep => ep.ParticipantId == removedParticipantId) != null);
 
                 if (endpoint != null)
+                {
                     endpoint.RemoveLinkedParticipant(hearing.GetParticipants().Single(x => x.Id == removedParticipantId));
-                
+                    await _context.SaveChangesAsync();
+                }
                 
                 hearing.RemoveParticipantById(removedParticipantId, false);
             }
