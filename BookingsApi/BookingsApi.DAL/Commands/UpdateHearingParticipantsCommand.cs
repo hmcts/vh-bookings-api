@@ -68,6 +68,15 @@ namespace BookingsApi.DAL.Commands
                     command.NewParticipants.Remove(newJudgeParticipant);
                     continue;
                 }
+
+                var endpoint = hearing
+                    .GetEndpoints()
+                    .FirstOrDefault(x =>
+                        x.EndpointParticipants.FirstOrDefault(ep => ep.ParticipantId == removedParticipantId) != null);
+
+                if (endpoint != null)
+                    endpoint.RemoveLinkedParticipant(hearing.GetParticipants().Single(x => x.Id == removedParticipantId));
+                
                 
                 hearing.RemoveParticipantById(removedParticipantId, false);
             }
