@@ -5,7 +5,12 @@ namespace BookingsApi.Services
     public interface IEndpointService
     {
         Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpointDto newEndpointDto);
-        Task UpdateEndpoint(VideoHearing hearing, Guid id, List<NewEndpointParticipantDto> endpointParticipantDtos, string displayName);
+        Task UpdateEndpoint(VideoHearing hearing,
+            Guid id,
+            List<NewEndpointParticipantDto> endpointParticipantDtos,
+            List<string> participantsAdded,
+            List<string> participantsRemoved,
+            string displayName);
         Task RemoveEndpoint(VideoHearing hearing, Guid id);
     }
     
@@ -40,7 +45,12 @@ namespace BookingsApi.Services
             return endpoint;
         }
 
-        public async Task UpdateEndpoint(VideoHearing hearing, Guid id, List<NewEndpointParticipantDto> endpointParticipantDtos, string displayName)
+        public async Task UpdateEndpoint(VideoHearing hearing,
+            Guid id,
+            List<NewEndpointParticipantDto> endpointParticipantDtos, 
+            List<string> participantsAdded,
+            List<string> participantsRemoved,
+            string displayName)
         {
             var endpointParticipants = ParticipantEndpointHelper.GetEndpointParticipants(hearing.GetParticipants(), endpointParticipantDtos);
             
@@ -51,7 +61,13 @@ namespace BookingsApi.Services
 
             if (endpoint != null && (hearing.Status == BookingStatus.Created || hearing.Status == BookingStatus.ConfirmedWithoutJudge))
             {
-                await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearing.Id, endpoint.Sip, displayName));
+                var integrationEventDto = new EndpointUpdatedIntegrationEvent(hearing.Id, endpoint.Sip, displayName)
+                {
+                    EndpointParticipants = endpointParticipantDtos.Select(x => x.ContactEmail).ToList(),
+                    EndpointParticipantsAdded = participantsAdded,
+                    EndpointParticipantsRemoved = participantsRemoved
+                };
+                await _eventPublisher.PublishAsync(integrationEventDto);
             }
         }
 

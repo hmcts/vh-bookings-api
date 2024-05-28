@@ -117,5 +117,10 @@ public class Endpoint : TrackableEntity<Guid>
                 throw new ArgumentException("Invalid participant type for linking participant to endpoint", type.ToString());
         }
     }
+    
+    public List<Participant> GetLinkedParticipants()
+    {
+        return EndpointParticipants.Select(x => x.Participant).ToList();
+    }
 }
 

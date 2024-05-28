@@ -64,10 +64,9 @@ namespace BookingsApi.Services
                 {
                     new ()
                     {
-                        ContactEmail = endpointToUpdate.DefenceAdvocateContactEmail,
-                        Type = LinkedParticipantType.DefenceAdvocate
+                        ContactEmail = endpointToUpdate.DefenceAdvocateContactEmail, Type = LinkedParticipantType.DefenceAdvocate
                     }
-                }, endpointToUpdate.DisplayName);
+                }, null, null, endpointToUpdate.DisplayName);
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)
@@ -91,11 +90,35 @@ namespace BookingsApi.Services
                     ContactEmail = x.ContactEmail,
                     Type = (LinkedParticipantType)x.Type
                 }).ToList();
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointParticipants, endpointToUpdate.DisplayName);
+                
+                var (endpointParticipantsAdded, endpointParticipantsRemoved) 
+                    = GetNewAndRemovedEndpointParticipants(hearing, endpointToUpdate.Id, endpointParticipants);
+
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointParticipants, endpointParticipantsAdded, endpointParticipantsRemoved, endpointToUpdate.DisplayName);
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)
                 await _endpointService.RemoveEndpoint(hearing, endpointIdToRemove);
+        }
+
+        private static (List<string> endpointParticipantsAdded, List<string> endpointParticipantsRemoved) 
+            GetNewAndRemovedEndpointParticipants(VideoHearing hearing, Guid endpointId, List<NewEndpointParticipantDto> endpointParticipants)
+        {
+            var previousEndpointParticipants = hearing.GetEndpoints().Single(x => x.Id == endpointId)
+                .GetLinkedParticipants()?.Select(x => x.Person.ContactEmail)
+                .ToList() ?? [];
+
+            //Where endpointParticipants not exist in previousListOfEndpointParticipants is added endpointParticipant
+            var endpointParticipantsAdded = endpointParticipants
+                .Where(x => !previousEndpointParticipants.Contains(x.ContactEmail))
+                .Select(x => x.ContactEmail)
+                .ToList();
+            
+            //Where previousListOfEndpointParticipants not exist in endpointParticipants is removed endpointParticipant
+            var endpointParticipantsRemoved = previousEndpointParticipants
+                .Where(x => endpointParticipants.TrueForAll(e => e.ContactEmail != x))
+                .ToList();
+            return (endpointParticipantsAdded, endpointParticipantsRemoved);
         }
 
         public async Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, VideoHearing hearing)
