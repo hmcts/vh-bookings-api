@@ -1,6 +1,5 @@
 ﻿using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Domain.Dtos;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
 
@@ -41,7 +40,8 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> AddEndPointToHearingAsync(Guid hearingId, AddEndpointRequest addEndpointRequest)
+        public async Task<IActionResult> AddEndPointToHearingAsync(Guid hearingId,
+            AddEndpointRequest addEndpointRequest)
         {
             if (hearingId == Guid.Empty)
             {
@@ -58,7 +58,8 @@ namespace BookingsApi.Controllers.V1
 
             try
             {
-                var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(addEndpointRequest, _randomGenerator, _kinlyConfiguration.SipAddressStem);
+                var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(addEndpointRequest, _randomGenerator,
+                    _kinlyConfiguration.SipAddressStem);
                 var endpoint = await _endpointService.AddEndpoint(hearingId, newEp);
                 var endpointResponse = EndpointToResponseMapper.MapEndpointToResponse(endpoint);
 
@@ -92,9 +93,10 @@ namespace BookingsApi.Controllers.V1
             }
 
             try
-            {   
-                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-                if(hearing == null) throw new HearingNotFoundException(hearingId);
+            {
+                var hearing =
+                    await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+                if (hearing == null) throw new HearingNotFoundException(hearingId);
                 await _endpointService.RemoveEndpoint(hearing, endpointId);
             }
             catch (HearingNotFoundException exception)
@@ -109,53 +111,5 @@ namespace BookingsApi.Controllers.V1
             return NoContent();
         }
 
-        /// <summary>
-        ///  Update an endpoint of a given hearing
-        /// </summary>
-        /// <param name="hearingId">The hearing id</param>
-        /// <param name="endpointId">The endpoint id</param>
-        /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
-        /// <returns></returns>
-        [HttpPatch("{hearingId}/endpoints/{endpointId}")]
-        [OpenApiOperation("UpdateDisplayNameForEndpoint")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [MapToApiVersion("1.0")]
-        public async Task<IActionResult> UpdateEndpointAsync(Guid hearingId, Guid endpointId, UpdateEndpointRequest updateEndpointRequest)
-        {
-            if (hearingId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return ValidationProblem(ModelState);
-            }
-
-            var result = await new UpdateEndpointRequestValidation().ValidateAsync(updateEndpointRequest);
-            if (!result.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(result.Errors);
-                return ValidationProblem(ModelState);
-            }
-
-            try
-            {
-                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-                if(hearing == null) throw new HearingNotFoundException(hearingId);
-                var endpointParticipant = new List<NewEndpointParticipantDto>();
-                if(!String.IsNullOrEmpty(updateEndpointRequest.DefenceAdvocateContactEmail))
-                    endpointParticipant.Add(new (){ContactEmail = updateEndpointRequest.DefenceAdvocateContactEmail, Type = LinkedParticipantType.DefenceAdvocate});
-                await _endpointService.UpdateEndpoint(hearing, endpointId, endpointParticipant, updateEndpointRequest.DisplayName);
-            }
-            catch (HearingNotFoundException exception)
-            {
-                return NotFound(exception.Message);
-            }
-            catch (EndPointNotFoundException exception)
-            {
-                return NotFound(exception.Message);
-            }
-
-            return NoContent();
-        }
     }
 }
