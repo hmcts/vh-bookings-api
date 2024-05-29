@@ -52,7 +52,7 @@ namespace BookingsApi.Services
             List<string> participantsRemoved,
             string displayName)
         {
-            var endpointParticipants = ParticipantEndpointHelper.GetEndpointParticipants(hearing.GetParticipants(), endpointParticipantDtos);
+            var endpointParticipants = ParticipantEndpointHelper.GetEndpointParticipants(hearing.GetParticipants().ToList(), endpointParticipantDtos);
             
             var command = new UpdateEndPointOfHearingCommand(hearing.Id, id, displayName, endpointParticipants.ToArray());
             await _commandHandler.Handle(command);
