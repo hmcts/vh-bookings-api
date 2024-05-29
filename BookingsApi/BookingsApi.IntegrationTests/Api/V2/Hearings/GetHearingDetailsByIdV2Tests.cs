@@ -1,3 +1,4 @@
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V2;
@@ -99,7 +100,10 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
             hearingResponse.Endpoints.Should().ContainEquivalentOf(new EndpointResponseV2
             {
                 DisplayName = endpoint.DisplayName,
-                DefenceAdvocateId = endpoint.GetDefenceAdvocate()?.Id,
+                EndpointParticipants = new List<EndpointParticipantResponse>
+                {
+                    new (){LinkedParticipantType = LinkedParticipantTypeV2.DefenceAdvocate, ParticipantId = endpoint.GetDefenceAdvocate().Id}  
+                }, 
                 Id = endpoint.Id,
                 Pin = endpoint.Pin,
                 Sip = endpoint.Sip,

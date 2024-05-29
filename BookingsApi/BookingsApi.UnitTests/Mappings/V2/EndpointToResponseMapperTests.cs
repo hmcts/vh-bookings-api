@@ -43,7 +43,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             result.DisplayName.Should().Be(source.DisplayName);
             result.Sip.Should().Be(source.Sip);
             result.Pin.Should().Be(source.Pin);
-            result.DefenceAdvocateId.Should().Be(participant[0].Id);
+            result.EndpointParticipants.Should().Contain(e => e.ParticipantId == participant[0].Id && e.LinkedParticipantType == LinkedParticipantTypeV2.DefenceAdvocate);
         }
     }
 }

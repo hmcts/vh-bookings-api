@@ -1,3 +1,4 @@
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Dtos;
@@ -14,7 +15,11 @@ namespace BookingsApi.Mappings.V2
                 DisplayName = endpoint.DisplayName,
                 Sip = endpoint.Sip,
                 Pin = endpoint.Pin,
-                DefenceAdvocateId = endpoint.GetDefenceAdvocate()?.Id,
+                EndpointParticipants = endpoint.EndpointParticipants?.Select(x => new EndpointParticipantResponse
+                {
+                    ParticipantId = x.ParticipantId,
+                    LinkedParticipantType = (LinkedParticipantTypeV2)x.Type
+                }).ToList()
             };
         }
         

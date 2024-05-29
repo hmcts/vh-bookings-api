@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace BookingsApi.Contract.V2.Responses
 {
@@ -8,6 +9,7 @@ namespace BookingsApi.Contract.V2.Responses
         public string DisplayName { get; set; }
         public string Sip { get; set; }
         public string Pin { get; set; }
-        public Guid? DefenceAdvocateId { get; set; }
+        
+        public List<EndpointParticipantResponse> EndpointParticipants { get; set; }
     }
 }
