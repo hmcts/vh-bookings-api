@@ -46,7 +46,9 @@ namespace BookingsApi.DAL.Commands
             
             foreach ((Participant participant, LinkedParticipantType type) endpointParticipant in command.EndpointParticipants)
             {
-                var participantToAddToEndpoint = hearing.GetParticipants().Single(p => p.Id == endpointParticipant.participant.Id);
+                var participants = hearing.GetParticipants().ToList();
+                var participantToAddToEndpoint = participants
+                    .SingleOrDefault(p => p.Person.ContactEmail == endpointParticipant.participant.Person.ContactEmail) ?? throw new ParticipantNotFoundException(endpointParticipant.participant.Id);
                 endpoint.LinkParticipantToEndpoint(participantToAddToEndpoint, endpointParticipant.type);
             }
             var participantToRemove = (from endpointParticipant in endpoint.EndpointParticipants where command.EndpointParticipants.All(x => x.Item1.Id != endpointParticipant.ParticipantId) select endpointParticipant.Participant).ToList();

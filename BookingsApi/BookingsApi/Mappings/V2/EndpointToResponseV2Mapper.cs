@@ -18,6 +18,7 @@ namespace BookingsApi.Mappings.V2
                 EndpointParticipants = endpoint.EndpointParticipants?.Select(x => new EndpointParticipantResponse
                 {
                     ParticipantId = x.ParticipantId,
+                    ParticipantUsername = x.Participant?.Person?.Username,
                     LinkedParticipantType = (LinkedParticipantTypeV2)x.Type
                 }).ToList()
             };
