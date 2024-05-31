@@ -20,11 +20,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             // arrange
             var query = new GetVhoNonAvailableWorkHoursQuery("doesnt.existatall@hmcts.net");
-
-            // act / assert
-            var action = async() => await _handler.Handle(query);
-            await action.Should().ThrowAsync<JusticeUserNotFoundException>()
-                .WithMessage($"Justice user with username {query.UserName} not found");
+            var vhoNotAvailableWorkHours = await _handler.Handle(query);
+            vhoNotAvailableWorkHours.Should().BeNull();
         }
         
         [Test]
