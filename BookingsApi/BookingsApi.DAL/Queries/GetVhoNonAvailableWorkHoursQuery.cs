@@ -20,12 +20,7 @@
                 .Include(e => e.VhoNonAvailability)
                 .FirstOrDefaultAsync(e => e.Username == query.UserName);
 
-            if (justiceUser == null)
-            {
-                throw new JusticeUserNotFoundException(query.UserName);
-            }
-
-            return justiceUser.VhoNonAvailability.Where(x => !x.Deleted).ToList();
+            return justiceUser == null ? null : justiceUser.VhoNonAvailability.Where(x => !x.Deleted).ToList();
         }
     }
 }
