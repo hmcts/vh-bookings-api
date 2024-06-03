@@ -28,11 +28,16 @@ namespace BookingsApi.Extensions
                 var modelState = new ModelStateDictionary();
                 modelState.AddDomainRuleErrors(ex.ValidationFailures);
                 var problemDetails = new ValidationProblemDetails(modelState);
-                
+
                 httpContext.Response.ContentType = "application/json";
-                httpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+                httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
                 await httpContext.Response.WriteAsJsonAsync(problemDetails);
+            }
+            catch (EntityNotFoundException ex)
+            {
+                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "Entity Not Found", ex, null, null);
+                await HandleExceptionAsync(httpContext, HttpStatusCode.NotFound, ex);
             }
             catch (BadRequestException ex)
             {

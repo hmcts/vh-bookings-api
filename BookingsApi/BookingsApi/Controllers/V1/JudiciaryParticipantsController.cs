@@ -22,7 +22,7 @@ namespace BookingsApi.Controllers.V1
             _queryHandler = queryHandler;
             _judiciaryParticipantService = judiciaryParticipantService;
         }
-        
+
         /// <summary>
         /// Add judiciary participants to a hearing
         /// </summary>
@@ -34,7 +34,8 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> AddJudiciaryParticipantsToHearing(Guid hearingId, [FromBody] List<JudiciaryParticipantRequest> request)
+        public async Task<IActionResult> AddJudiciaryParticipantsToHearing(Guid hearingId,
+            [FromBody] List<JudiciaryParticipantRequest> request)
         {
             var validation = await new AddJudiciaryParticipantsToHearingRequestValidation().ValidateAsync(request);
             if (!validation.IsValid)
@@ -48,23 +49,14 @@ namespace BookingsApi.Controllers.V1
                 .ToList();
 
             IList<JudiciaryParticipant> addedParticipants = new List<JudiciaryParticipant>();
-            
-            try
-            {
-                addedParticipants = await _judiciaryParticipantService.AddJudiciaryParticipants(participants, hearingId);
-            }
-            catch (HearingNotFoundException exception)
-            {
-                return NotFound(exception.Message);
-            }
-            catch (JudiciaryPersonNotFoundException exception)
-            {
-                return NotFound(exception.Message);
-            }
+
+
+            addedParticipants = await _judiciaryParticipantService.AddJudiciaryParticipants(participants, hearingId);
+
 
             var mapper = new JudiciaryParticipantToResponseMapper();
             var response = addedParticipants.Select(mapper.MapJudiciaryParticipantToResponse).ToList();
-            
+
             return Ok(response);
         }
 
@@ -80,10 +72,6 @@ namespace BookingsApi.Controllers.V1
             try
             {
                 await _judiciaryParticipantService.RemoveJudiciaryParticipant(personalCode, hearingId);
-            }
-            catch (HearingNotFoundException exception)
-            {
-                return NotFound(exception.Message);
             }
             catch (DomainRuleException exception)
             {
@@ -179,24 +167,10 @@ namespace BookingsApi.Controllers.V1
 
             if (hearing == null)
             {
-                return NotFound(new HearingNotFoundException(hearingId).Message);
+                throw new HearingNotFoundException(hearingId);
             }
 
-            JudiciaryParticipant newJudge;
-            
-            try
-            {
-                newJudge = await _judiciaryParticipantService.ReassignJudiciaryJudge(hearing.Id, newJudiciaryJudge);
-            }
-            catch (HearingNotFoundException exception)
-            {
-                return NotFound(exception.Message);
-            }
-            catch (JudiciaryPersonNotFoundException exception)
-            {
-                return NotFound(exception.Message);
-            }
-            
+            var newJudge = await _judiciaryParticipantService.ReassignJudiciaryJudge(hearing.Id, newJudiciaryJudge);
             var mapper = new JudiciaryParticipantToResponseMapper();
             var response = mapper.MapJudiciaryParticipantToResponse(newJudge);
             

@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
-using BookingsApi.DAL.Commands;
-using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using Microsoft.AspNetCore.Mvc;
@@ -26,24 +24,6 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
             ((ValidationProblemDetails)objectResult.Value).Should().NotBeNull();
-        }
-
-        [Test]
-        public async Task should_return_not_found_when_command_throws_person_not_found_exception()
-        {
-            var personId = Guid.NewGuid();
-            var payload = new UpdatePersonDetailsRequest()
-            {
-                Username = "new.me@hmcts.net",
-                FirstName = "New",
-                LastName = "Me"
-            };
-            CommandHandlerMock.Setup(x => x.Handle(It.IsAny<UpdatePersonCommand>()))
-                .ThrowsAsync(new PersonNotFoundException(personId));
-            var result = await Controller.UpdatePersonDetails(personId, payload);
-            result.Result.Should().BeOfType<NotFoundObjectResult>();
-            var typed = result.Result.As<NotFoundObjectResult>();
-            typed.Value.Should().Be($"{personId} does not exist");
         }
 
         [Test]

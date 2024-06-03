@@ -35,7 +35,7 @@ namespace BookingsApi.DAL.Exceptions
     }
 
     [Serializable]
-    public class JudiciaryPersonNotFoundException : JudiciaryPersonException
+    public class JudiciaryPersonNotFoundException : ObfuscatedEntityNotFoundException
     {
         public JudiciaryPersonNotFoundException(string personalCode) : 
             base($"Judiciary Person with personal code: {personalCode} does not exist")
