@@ -88,34 +88,6 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.Uri = RemoveEndPointFromHearing(_hearingId, hearing.Endpoints[0].Id);
         }
 
-        [Given(@"I have update display name of an endpoint request")]
-        public void GivenIHaveUpdateDisplayNameOfAnEndpointRequest()
-        {
-            var hearing = GetHearingFromDb();
-            var updatedEndPointId = hearing.Endpoints[0].Id;
-            PrepareUpdateEndpointRequest(_hearingId, updatedEndPointId, new UpdateEndpointRequest()
-            {
-                DisplayName = "UpdatedDisplayName",
-            });
-
-            Context.TestData.TestContextData.Add(EndPointSteps.UpdatedEndPointId, updatedEndPointId);
-        }
-
-        [Given(@"I have update an endpoint request with a defence advocate")]
-        public void GivenIHaveUpdateEndpointWithDefenceAdvocateRequest()
-        {
-            var hearing = GetHearingFromDb();
-            var updatedEndPointId = hearing.Endpoints[0].Id;
-            var rep = hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
-            PrepareUpdateEndpointRequest(_hearingId, updatedEndPointId, new UpdateEndpointRequest()
-            {
-                DisplayName = "UpdatedDisplayName",
-                DefenceAdvocateContactEmail = rep.Person.ContactEmail
-            });
-
-            Context.TestData.TestContextData.Add(EndPointSteps.UpdatedEndPointId, updatedEndPointId);
-        }
-
         [Given(@"I have add endpoint to a hearing request")]
         public void GivenIHaveAddEndpointToAHearingRequest()
         {
@@ -132,15 +104,6 @@ namespace BookingsApi.IntegrationTests.Steps
 
             Context.Uri = AddEndpointToHearing(hearingId);
             Context.HttpMethod = HttpMethod.Post;
-        }
-
-        private void PrepareUpdateEndpointRequest(Guid hearingId, Guid endpointId, UpdateEndpointRequest request)
-        {
-            var jsonBody = RequestHelper.Serialise(request);
-            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-            Context.Uri = UpdateEndpoint(hearingId, endpointId);
-            Context.HttpMethod = HttpMethod.Patch;
         }
 
         [Then(@"the endpoint should be removed")]

@@ -58,7 +58,7 @@ public class AddEndPointToHearingTests : ApiTest
     {
         // arrange
         var hearingId = Guid.NewGuid();
-        var request = new AddEndpointRequest()
+        var request = new AddEndpointRequest
         {
             DisplayName = "Auto Add Endpoint",
             DefenceAdvocateContactEmail = null

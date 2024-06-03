@@ -1,6 +1,8 @@
 ﻿using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V1;
+using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V1;
 
 namespace BookingsApi.Controllers.V1
@@ -111,5 +113,22 @@ namespace BookingsApi.Controllers.V1
             return NoContent();
         }
 
+        /// <summary>
+        ///  Currently returns a V2 response, this will be updated one V1 controllers refactored
+        /// </summary>
+        /// <param name="hearingId">The hearing id</param>
+        /// <returns></returns>
+        [HttpGet("endpoints/{sipAddress}")]
+        [OpenApiOperation("GetEndpoint")]
+        [ProducesResponseType(typeof(EndpointResponseV2), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult> GetEndpoint(string sipAddress)
+        {
+            var endpoint = await _queryHandler.Handle<GetEndpointQuery, Endpoint>(new GetEndpointQuery(sipAddress));
+            if (endpoint == null)
+                return NotFound("No endpoint found with the provided SipAddress");
+            return Ok(EndpointToResponseV2Mapper.MapEndpointToResponse(endpoint));
+        }
     }
 }
