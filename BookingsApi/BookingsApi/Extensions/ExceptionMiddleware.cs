@@ -36,7 +36,7 @@ namespace BookingsApi.Extensions
             }
             catch (JusticeUserNotFoundException ex)
             {
-                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "400 Exception", ex, null,
+                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "API Exception", ex, null,
                     null);
                 await HandleExceptionAsync(httpContext, HttpStatusCode.NotFound, ex);
             }
