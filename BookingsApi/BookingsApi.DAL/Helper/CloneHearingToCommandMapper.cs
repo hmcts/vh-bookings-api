@@ -78,11 +78,8 @@ namespace BookingsApi.DAL.Helper
                     Pin = pin,
                     Sip = $"{sip}{sipAddressStem}",
                     DisplayName = endpoint.DisplayName,
-                    EndpointParticipants = endpoint.EndpointParticipants?.Select(x => new NewEndpointParticipantDto
-                    {
-                        ContactEmail = x.Participant.Person.ContactEmail,
-                        Type = x.Type
-                    }).ToList() ?? new List<NewEndpointParticipantDto>(),
+                    EndpointParticipants = endpoint.EndpointParticipants?
+                        .Select(x => new NewEndpointParticipantDto(x.Participant.Person.ContactEmail, x.Type)).ToList()
                 };
             
                 newEndpoints.Add(newEndpoint);

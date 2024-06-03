@@ -1,21 +1,21 @@
-﻿using BookingsApi.Domain.Participants;
+﻿using BookingsApi.Domain.Dtos;
 
 namespace BookingsApi.DAL.Commands
 {
     public class UpdateEndPointOfHearingCommand : ICommand
     {
-        public UpdateEndPointOfHearingCommand(Guid hearingId, Guid endpointId, string displayName, params (Participant, LinkedParticipantType)[] endpointParticipants)
+        public UpdateEndPointOfHearingCommand(Guid hearingId, Guid endpointId, string displayName, List<NewEndpointParticipantDto> endpointParticipants)
         {
             HearingId = hearingId;
             EndpointId = endpointId;
             DisplayName = displayName;
-            EndpointParticipants = endpointParticipants ?? Array.Empty<(Participant, LinkedParticipantType)>();
+            EndpointParticipants = endpointParticipants ?? new List<NewEndpointParticipantDto>();
         }
 
         public Guid HearingId { get; }
         public Guid EndpointId { get;  }
         public string DisplayName { get;  }
-        public (Participant, LinkedParticipantType)[] EndpointParticipants { get; }
+        public List<NewEndpointParticipantDto> EndpointParticipants { get; } 
 }
 
     public class UpdateEndPointOfHearingCommandHandler : ICommandHandler<UpdateEndPointOfHearingCommand>
@@ -44,14 +44,17 @@ namespace BookingsApi.DAL.Commands
             if (!string.IsNullOrWhiteSpace(endpoint.DisplayName)) 
                 endpoint.UpdateDisplayName(command.DisplayName);
             
-            foreach ((Participant participant, LinkedParticipantType type) endpointParticipant in command.EndpointParticipants)
+            foreach (var endpointParticipant in command.EndpointParticipants)
             {
-                var participants = hearing.GetParticipants().ToList();
-                var participantToAddToEndpoint = participants
-                    .SingleOrDefault(p => p.Person.ContactEmail == endpointParticipant.participant.Person.ContactEmail) ?? throw new ParticipantNotFoundException(endpointParticipant.participant.Id);
-                endpoint.LinkParticipantToEndpoint(participantToAddToEndpoint, endpointParticipant.type);
+                var participant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == endpointParticipant.ContactEmail);
+                endpoint.LinkParticipantToEndpoint(participant, endpointParticipant.Type);
             }
-            var participantToRemove = (from endpointParticipant in endpoint.EndpointParticipants where command.EndpointParticipants.All(x => x.Item1.Id != endpointParticipant.ParticipantId) select endpointParticipant.Participant).ToList();
+            
+            var participantToRemove = endpoint
+                .GetLinkedParticipants()
+                .Where(p => !command.EndpointParticipants.Exists(ep => ep.ContactEmail == p.Person.ContactEmail))
+                .ToList();
+            
             participantToRemove.ForEach(p => endpoint.RemoveLinkedParticipant(p));
           
             await _context.SaveChangesAsync();

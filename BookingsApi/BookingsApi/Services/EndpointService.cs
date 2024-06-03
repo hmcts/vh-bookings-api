@@ -52,9 +52,8 @@ namespace BookingsApi.Services
             List<string> participantsRemoved,
             string displayName)
         {
-            var endpointParticipants = ParticipantEndpointHelper.GetEndpointParticipants(hearing.GetParticipants().ToList(), endpointParticipantDtos);
             
-            var command = new UpdateEndPointOfHearingCommand(hearing.Id, id, displayName, endpointParticipants.ToArray());
+            var command = new UpdateEndPointOfHearingCommand(hearing.Id, id, displayName, endpointParticipantDtos);
             await _commandHandler.Handle(command);
 
             var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == id);

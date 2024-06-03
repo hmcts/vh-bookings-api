@@ -25,7 +25,7 @@ namespace BookingsApi.Mappings.V1
             var sipComplete = sip + sipAddressStem;
             var endpointParticipants = new List<NewEndpointParticipantDto>();
             if(!String.IsNullOrWhiteSpace(request.DefenceAdvocateContactEmail))
-                endpointParticipants.Add(new NewEndpointParticipantDto { ContactEmail = request.DefenceAdvocateContactEmail, Type = LinkedParticipantType.DefenceAdvocate });
+                endpointParticipants.Add(new NewEndpointParticipantDto (request.DefenceAdvocateContactEmail, LinkedParticipantType.DefenceAdvocate));
             return new NewEndpointDto
             {
                 Pin = pin,

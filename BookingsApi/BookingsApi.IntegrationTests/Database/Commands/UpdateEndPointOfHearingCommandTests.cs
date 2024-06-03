@@ -1,6 +1,7 @@
 ﻿using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Dtos;
 using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
@@ -73,7 +74,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var endpoint = seededHearing.GetEndpoints().First(ep => !ep.EndpointParticipants.Any());
             var dA = seededHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
             var updatedDisplayName = "updatedDisplayName";
-            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, (dA, LinkedParticipantType.DefenceAdvocate)));
+            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, [new(dA.Person.ContactEmail, LinkedParticipantType.DefenceAdvocate)]));
+            
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
@@ -93,7 +95,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var endpoint = seededHearing.GetEndpoints()[0];
             var dA = seededHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
             var updatedDisplayName = "updatedDisplayName";
-            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, (dA, LinkedParticipantType.DefenceAdvocate)));
+            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName,  [new(dA.Person.ContactEmail, LinkedParticipantType.DefenceAdvocate)]));
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));

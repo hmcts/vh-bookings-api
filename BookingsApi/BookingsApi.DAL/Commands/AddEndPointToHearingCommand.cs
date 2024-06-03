@@ -1,5 +1,4 @@
 ﻿
-using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.Dtos;
 
 namespace BookingsApi.DAL.Commands;
@@ -39,8 +38,12 @@ public class AddEndPointToHearingCommandHandler : ICommandHandler<AddEndPointToH
             throw new HearingNotFoundException(command.HearingId);
             
         var dto = command.NewEndpointDto;
-        var endpointParticipants = ParticipantEndpointHelper.GetEndpointParticipants(hearing.Participants.ToList(), dto.EndpointParticipants);
-        var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, endpointParticipants.ToArray());
+        var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin);
+        foreach (var endpointParticipant in dto.EndpointParticipants)
+        {
+            var participant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == endpointParticipant.ContactEmail);
+            endpoint.LinkParticipantToEndpoint(participant, endpointParticipant.Type);
+        }
         hearing.AddEndpoint(endpoint);
         await _context.SaveChangesAsync();
     }

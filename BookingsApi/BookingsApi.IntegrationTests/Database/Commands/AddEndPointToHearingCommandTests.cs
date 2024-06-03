@@ -51,8 +51,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             {
                 DisplayName = displayName,
                 Sip = sip,
-                Pin = pin,
-                EndpointParticipants = new List<NewEndpointParticipantDto>()
+                Pin = pin
             };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));
@@ -90,10 +89,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 DisplayName = displayName,
                 Sip = sip,
                 Pin = pin,
-                EndpointParticipants = new List<NewEndpointParticipantDto>()
-                {
-                    new () { ContactEmail = dA.Person.ContactEmail, Type = LinkedParticipantType.DefenceAdvocate }
-                } 
+                EndpointParticipants =  [new(dA.Person.ContactEmail, LinkedParticipantType.DefenceAdvocate)]
             };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));

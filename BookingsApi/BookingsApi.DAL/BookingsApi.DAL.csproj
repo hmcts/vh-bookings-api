@@ -26,5 +26,6 @@
     <Compile Remove="Migrations\20240522112935_AddedEndpointParticipantsMapping.Designer.cs" />
     <Compile Remove="Migrations\20240522123344_AddedEndpointParticipantsMapping.cs" />
     <Compile Remove="Migrations\20240522123344_AddedEndpointParticipantsMapping.Designer.cs" />
+    <Compile Remove="Helper\ParticipantEndpointHelper.cs" />
   </ItemGroup>
 </Project>

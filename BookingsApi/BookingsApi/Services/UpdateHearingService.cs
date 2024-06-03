@@ -60,13 +60,9 @@ namespace BookingsApi.Services
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, new List<NewEndpointParticipantDto>()
-                {
-                    new ()
-                    {
-                        ContactEmail = endpointToUpdate.DefenceAdvocateContactEmail, Type = LinkedParticipantType.DefenceAdvocate
-                    }
-                }, null, null, endpointToUpdate.DisplayName);
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id,
+                    [new(endpointToUpdate.DefenceAdvocateContactEmail, LinkedParticipantType.DefenceAdvocate)], 
+                    null, null, endpointToUpdate.DisplayName);
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)
@@ -85,11 +81,7 @@ namespace BookingsApi.Services
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                var endpointParticipants = endpointToUpdate.EndpointParticipants.Select(x => new NewEndpointParticipantDto
-                {
-                    ContactEmail = x.ContactEmail,
-                    Type = (LinkedParticipantType)x.Type
-                }).ToList();
+                var endpointParticipants = endpointToUpdate.EndpointParticipants.Select(x => new NewEndpointParticipantDto(x.ContactEmail, (LinkedParticipantType)x.Type)).ToList();
                 
                 var (endpointParticipantsAdded, endpointParticipantsRemoved) 
                     = GetNewAndRemovedEndpointParticipants(hearing, endpointToUpdate.Id, endpointParticipants);
