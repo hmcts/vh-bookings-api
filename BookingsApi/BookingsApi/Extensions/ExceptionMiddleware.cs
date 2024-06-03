@@ -28,21 +28,29 @@ namespace BookingsApi.Extensions
                 var modelState = new ModelStateDictionary();
                 modelState.AddDomainRuleErrors(ex.ValidationFailures);
                 var problemDetails = new ValidationProblemDetails(modelState);
-                
+
                 httpContext.Response.ContentType = "application/json";
                 httpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
 
                 await httpContext.Response.WriteAsJsonAsync(problemDetails);
             }
+            catch (JusticeUserNotFoundException ex)
+            {
+                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "400 Exception", ex, null,
+                    null);
+                await HandleExceptionAsync(httpContext, HttpStatusCode.NotFound, ex);
+            }
             catch (BadRequestException ex)
             {
-                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "400 Exception", ex, null, null);
+                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "400 Exception", ex, null,
+                    null);
                 await HandleExceptionAsync(httpContext, HttpStatusCode.BadRequest, ex);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error");
-                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "API Exception", ex,null, null);
+                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "API Exception", ex, null,
+                    null);
                 await HandleExceptionAsync(httpContext, HttpStatusCode.InternalServerError, ex);
             }
         }
