@@ -135,6 +135,7 @@ namespace BookingsApi.Controllers.V1
             }
 
             var results = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(new GetVhoNonAvailableWorkHoursQuery(username));
+            
             if (results == null)
                 return NotFound("Vho user not found");
             
