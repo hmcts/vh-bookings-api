@@ -20,7 +20,10 @@
                 .Include(e => e.VhoNonAvailability)
                 .FirstOrDefaultAsync(e => e.Username == query.UserName);
 
-            return justiceUser == null ? null : justiceUser.VhoNonAvailability.Where(x => !x.Deleted).ToList();
+            if(justiceUser == null)
+                return null;
+            
+            return justiceUser.VhoNonAvailability.Where(x => !x.Deleted).ToList();
         }
     }
 }
