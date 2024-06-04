@@ -37,6 +37,7 @@ namespace BookingsApi.Extensions
             catch (EntityNotFoundException ex)
             {
                 ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "Entity Not Found", ex, null, null);
+                await HandleExceptionAsync(httpContext, HttpStatusCode.NotFound, ex);
             }
             catch (BadRequestException ex)
             {
