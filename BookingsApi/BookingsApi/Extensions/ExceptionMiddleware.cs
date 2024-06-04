@@ -37,17 +37,18 @@ namespace BookingsApi.Extensions
             catch (EntityNotFoundException ex)
             {
                 ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "Entity Not Found", ex, null, null);
-                await HandleExceptionAsync(httpContext, HttpStatusCode.NotFound, ex);
             }
             catch (BadRequestException ex)
             {
-                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "400 Exception", ex, null, null);
+                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "400 Exception", ex, null,
+                    null);
                 await HandleExceptionAsync(httpContext, HttpStatusCode.BadRequest, ex);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error");
-                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "API Exception", ex,null, null);
+                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "API Exception", ex, null,
+                    null);
                 await HandleExceptionAsync(httpContext, HttpStatusCode.InternalServerError, ex);
             }
         }
