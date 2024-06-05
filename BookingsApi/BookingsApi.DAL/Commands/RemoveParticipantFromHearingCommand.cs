@@ -1,4 +1,5 @@
 using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -31,13 +32,28 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(h => h.Participants).ThenInclude(x => x.LinkedParticipants)
-                .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(h => h.Endpoints)
+                    .ThenInclude(x => x.EndpointParticipants)
+                    .ThenInclude(x => x.Participant)
+                    .ThenInclude(x => x.Person)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
-            
+                    
             if (hearing == null)
                 throw new HearingNotFoundException(command.HearingId);
             
-            hearing.RemoveParticipant(command.Participant);
+            var participant = hearing.GetParticipants().SingleOrDefault( e => e.Id == command.Participant.Id);
+    
+            if (participant == null)
+                throw new ParticipantNotFoundException(command.Participant.Id);
+            
+            if(participant.EndpointLinkedParticipants?.Any() ?? false)
+                foreach (var endpoint in hearing.Endpoints)
+                    endpoint.RemoveLinkedParticipant(participant);
+            
+            //Save removal FK participants first
+            await _context.SaveChangesAsync();
+            
+            hearing.RemoveParticipant(participant);
             hearing.UpdateBookingStatusJudgeRequirement();
             await _context.SaveChangesAsync();
         }

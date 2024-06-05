@@ -573,7 +573,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             }
 
             hearing.AddEndpoints(new List<Endpoint>
-                { new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", null) });
+                { new ("new endpoint", Guid.NewGuid().ToString(), "pin") });
 
             return hearing;
         }

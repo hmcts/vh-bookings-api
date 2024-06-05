@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Requests.Enums;
+using BookingsApi.Domain.Dtos;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
 
@@ -59,7 +60,9 @@ namespace BookingsApi.Services
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName);
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id,
+                    [new(endpointToUpdate.DefenceAdvocateContactEmail, LinkedParticipantType.Representative)], 
+                    null, null, endpointToUpdate.DisplayName);
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)
@@ -72,21 +75,42 @@ namespace BookingsApi.Services
         {
             foreach (var endpointToAdd in request.NewEndpoints)
             {
-                var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
-                    _kinlyConfiguration.SipAddressStem);
-
+                var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator, _kinlyConfiguration.SipAddressStem);
                 await _endpointService.AddEndpoint(hearing.Id, newEp);
             }
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName);
+                var endpointParticipants = endpointToUpdate.EndpointParticipants.Select(x => new NewEndpointParticipantDto(x.ContactEmail, (LinkedParticipantType)x.Type)).ToList();
+                
+                var (endpointParticipantsAdded, endpointParticipantsRemoved) 
+                    = GetNewAndRemovedEndpointParticipants(hearing, endpointToUpdate.Id, endpointParticipants);
+
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointParticipants, endpointParticipantsAdded, endpointParticipantsRemoved, endpointToUpdate.DisplayName);
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)
-            {
                 await _endpointService.RemoveEndpoint(hearing, endpointIdToRemove);
-            }
+        }
+
+        private static (List<string> endpointParticipantsAdded, List<string> endpointParticipantsRemoved) 
+            GetNewAndRemovedEndpointParticipants(VideoHearing hearing, Guid endpointId, List<NewEndpointParticipantDto> endpointParticipants)
+        {
+            var previousEndpointParticipants = hearing.GetEndpoints().Single(x => x.Id == endpointId)
+                .GetLinkedParticipants()?.Select(x => x.Person.ContactEmail)
+                .ToList() ?? [];
+
+            //Where endpointParticipants not exist in previousListOfEndpointParticipants is added endpointParticipant
+            var endpointParticipantsAdded = endpointParticipants
+                .Where(x => !previousEndpointParticipants.Contains(x.ContactEmail))
+                .Select(x => x.ContactEmail)
+                .ToList();
+            
+            //Where previousListOfEndpointParticipants not exist in endpointParticipants is removed endpointParticipant
+            var endpointParticipantsRemoved = previousEndpointParticipants
+                .Where(x => endpointParticipants.TrueForAll(e => e.ContactEmail != x))
+                .ToList();
+            return (endpointParticipantsAdded, endpointParticipantsRemoved);
         }
 
         public async Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, VideoHearing hearing)

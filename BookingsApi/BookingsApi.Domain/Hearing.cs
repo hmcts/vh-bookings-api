@@ -156,19 +156,9 @@ namespace BookingsApi.Domain
         public void AddEndpoint(Endpoint endpoint)
         {
             if (DoesEndpointExist(endpoint.Sip))
-            {
-                
                 throw new DomainRuleException(nameof(endpoint), $"Endpoint {endpoint.Sip} already exists in the hearing");
-            }
-
-            Participant defenceAdvocate = null;
-
-            if (endpoint.DefenceAdvocate != null)
-            {
-                defenceAdvocate = Participants.Single(x => x.Id == endpoint.DefenceAdvocate.Id);
-            }
-
-            Endpoints.Add(new Endpoint(endpoint.DisplayName, endpoint.Sip, endpoint.Pin, defenceAdvocate));
+            
+            Endpoints.Add(endpoint);
             UpdatedDate = DateTime.UtcNow;
         }
 
@@ -384,8 +374,8 @@ namespace BookingsApi.Domain
             if (validateParticipantCount) ValidateHostCount();
 
             var existingParticipant = Participants.Single(x => x.Person.ContactEmail == participant.Person.ContactEmail);
-            var endpoint = Endpoints.SingleOrDefault(e => e.DefenceAdvocate != null && e.DefenceAdvocate.Id == participant.Id);
-            endpoint?.AssignDefenceAdvocate(null);
+            var endpoint = Endpoints.SingleOrDefault(e => e.EndpointParticipants.Any(p => p.ParticipantId == participant.Id));
+            endpoint?.RemoveLinkedParticipant(participant);
 
             participant.LinkedParticipants.Clear();
 
@@ -428,7 +418,6 @@ namespace BookingsApi.Domain
         public void RemoveEndpoint(Endpoint endpoint)
         {
             ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveAnEndpointCloseToStartTime);
-            endpoint.AssignDefenceAdvocate(null);
             Endpoints.Remove(endpoint);
             UpdatedDate = DateTime.UtcNow;
         }

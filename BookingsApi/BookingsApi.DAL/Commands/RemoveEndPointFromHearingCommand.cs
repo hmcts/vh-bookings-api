@@ -25,19 +25,19 @@
         {
             var hearing = await _context.VideoHearings
                 .Include(h => h.Participants).ThenInclude(x => x.Person)
-                .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(h => h.Endpoints)
+                    .ThenInclude(x => x.EndpointParticipants)
+                    .ThenInclude(x => x.Participant)
+                    .ThenInclude(x => x.Person)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
-            {
                 throw new HearingNotFoundException(command.HearingId);
-            }
 
             var endpoint = hearing.Endpoints.FirstOrDefault(e => e.Id == command.EndpointId);
             if (endpoint == null)
-            {
                 throw new EndPointNotFoundException(command.EndpointId);
-            }
+            
 
             hearing.RemoveEndpoint(endpoint);
             await _context.SaveChangesAsync();

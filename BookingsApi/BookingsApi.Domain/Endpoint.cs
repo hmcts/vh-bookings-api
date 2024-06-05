@@ -1,40 +1,106 @@
 using System;
-using BookingsApi.Domain.Ddd;
+using System.Collections.Generic;
+using System.Linq;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 
-namespace BookingsApi.Domain
+namespace BookingsApi.Domain;
+
+public class Endpoint : TrackableEntity<Guid>
 {
-    public class Endpoint : TrackableEntity<Guid>
+    public string DisplayName { get; set; }
+    public string Sip { get; set; }
+    public string Pin { get; set; }
+    public virtual IList<EndpointParticipant> EndpointParticipants { get; } = new List<EndpointParticipant>();
+    public Guid HearingId { get; set; }
+    public virtual Hearing Hearing { get; protected set; }
+    [Obsolete("This property is only used for EF. Use EndpointParticipants instead")]
+    public Participant DefenceAdvocate { get; set; }
+    protected Endpoint(){}
+
+    public Endpoint(string displayName, string sip, string pin)
     {
-        public string DisplayName { get; set; }
-        public string Sip { get; set; }
-        public string Pin { get; set; }
-        public Participant DefenceAdvocate { get; private set; }
-        public Guid HearingId { get; set; }
-        public virtual Hearing Hearing { get; protected set; }
-        protected Endpoint(){}
+        DisplayName = displayName;
+        Sip = sip;
+        Pin = pin;
+    }
+    
+    public Endpoint(string displayName, string sip, string pin, params (Participant participant, LinkedParticipantType type)[] participants) : this(displayName, sip, pin)
+    {
+        if(participants?.Any() ?? false)
+            foreach (var (participant, type) in participants)
+                LinkParticipantToEndpoint(participant, type);
+    }
+    
+    public void AssignIntermediary(Participant intermediary)
+    {
+        if(EndpointParticipants.Any(x => x.Type == LinkedParticipantType.Intermediary))
+            EndpointParticipants.Remove(EndpointParticipants.First(x => x.Type == LinkedParticipantType.Intermediary));
 
-        public Endpoint(string displayName, string sip, string pin, Participant defenceAdvocate)
-        {
-            DisplayName = displayName;
-            Sip = sip;
-            Pin = pin;
-            DefenceAdvocate = defenceAdvocate;
-        }
-
-        public void AssignDefenceAdvocate(Participant defenceAdvocate)
-        {
-            DefenceAdvocate = defenceAdvocate;
-        }
+        if(EndpointParticipants.Any(x => x.Participant == intermediary))
+            RemoveLinkedParticipant(intermediary);
         
-        public void UpdateDisplayName(string displayName)
-        {
-            if (string.IsNullOrEmpty(displayName))
-            {
-                throw new ArgumentNullException(nameof(displayName));
-            }
+        EndpointParticipants.Add(
+            new EndpointParticipant(this, intermediary, LinkedParticipantType.Intermediary));
+    }
+    
+    public Participant GetIntermediary()
+    {
+        return EndpointParticipants.FirstOrDefault(x => x.Type == LinkedParticipantType.Intermediary)?.Participant;
+    }   
+    
+    public void AssignRepresentative(Participant representative)
+    {
+        if(EndpointParticipants.Any(x => x.Type == LinkedParticipantType.Representative))
+            EndpointParticipants.Remove(EndpointParticipants.First(x => x.Type == LinkedParticipantType.Representative));
 
-            DisplayName = displayName;
+        if(EndpointParticipants.Any(x => x.Participant == representative))
+            RemoveLinkedParticipant(representative);
+        
+        EndpointParticipants.Add(
+            new EndpointParticipant(this, representative, LinkedParticipantType.Representative));
+    }
+    
+    public Participant GetRepresentative()
+    {
+        return EndpointParticipants.FirstOrDefault(x => x.Type == LinkedParticipantType.Representative)?.Participant;
+    }
+    
+    public void RemoveLinkedParticipant(Participant participant)
+    {
+        var linkedParticipant = EndpointParticipants.FirstOrDefault(x => x.ParticipantId == participant.Id);
+        if(linkedParticipant != null)
+            EndpointParticipants.Remove(linkedParticipant);
+    }
+    
+    public void UpdateDisplayName(string displayName)
+    {
+        if (string.IsNullOrEmpty(displayName))
+        {
+            throw new ArgumentNullException(nameof(displayName));
+        }
+
+        DisplayName = displayName;
+    }
+    
+    public void LinkParticipantToEndpoint(Participant participant, LinkedParticipantType type)
+    {
+        switch (type)
+        {
+            case LinkedParticipantType.Intermediary:
+                AssignIntermediary(participant);
+                break;
+            case LinkedParticipantType.Representative:
+                AssignRepresentative(participant);
+                break;
+            default:
+                throw new ArgumentException("Invalid participant type for linking participant to endpoint", type.ToString());
         }
     }
+    
+    public List<Participant> GetLinkedParticipants()
+    {
+        return EndpointParticipants.Select(x => x.Participant).ToList();
+    }
 }
+

@@ -88,34 +88,6 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.Uri = RemoveEndPointFromHearing(_hearingId, hearing.Endpoints[0].Id);
         }
 
-        [Given(@"I have update display name of an endpoint request")]
-        public void GivenIHaveUpdateDisplayNameOfAnEndpointRequest()
-        {
-            var hearing = GetHearingFromDb();
-            var updatedEndPointId = hearing.Endpoints[0].Id;
-            PrepareUpdateEndpointRequest(_hearingId, updatedEndPointId, new UpdateEndpointRequest()
-            {
-                DisplayName = "UpdatedDisplayName",
-            });
-
-            Context.TestData.TestContextData.Add(EndPointSteps.UpdatedEndPointId, updatedEndPointId);
-        }
-
-        [Given(@"I have update an endpoint request with a defence advocate")]
-        public void GivenIHaveUpdateEndpointWithDefenceAdvocateRequest()
-        {
-            var hearing = GetHearingFromDb();
-            var updatedEndPointId = hearing.Endpoints[0].Id;
-            var rep = hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
-            PrepareUpdateEndpointRequest(_hearingId, updatedEndPointId, new UpdateEndpointRequest()
-            {
-                DisplayName = "UpdatedDisplayName",
-                DefenceAdvocateContactEmail = rep.Person.ContactEmail
-            });
-
-            Context.TestData.TestContextData.Add(EndPointSteps.UpdatedEndPointId, updatedEndPointId);
-        }
-
         [Given(@"I have add endpoint to a hearing request")]
         public void GivenIHaveAddEndpointToAHearingRequest()
         {
@@ -132,15 +104,6 @@ namespace BookingsApi.IntegrationTests.Steps
 
             Context.Uri = AddEndpointToHearing(hearingId);
             Context.HttpMethod = HttpMethod.Post;
-        }
-
-        private void PrepareUpdateEndpointRequest(Guid hearingId, Guid endpointId, UpdateEndpointRequest request)
-        {
-            var jsonBody = RequestHelper.Serialise(request);
-            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-            Context.Uri = UpdateEndpoint(hearingId, endpointId);
-            Context.HttpMethod = HttpMethod.Patch;
         }
 
         [Then(@"the endpoint should be removed")]
@@ -180,7 +143,7 @@ namespace BookingsApi.IntegrationTests.Steps
 
             if (!checkForDefenceAdvocate) return;
             var rep = hearingFromDb.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
-            updatedEndpoint.DefenceAdvocate.Id.Should().Be(rep.Id);
+            updatedEndpoint.GetRepresentative().Id.Should().Be(rep.Id);
             var originalSeededEndpoints = Context.TestData.TestContextData[ExistingEndPoints] as List<Endpoint>;
             originalSeededEndpoints.First(x => x.Id == endpointId).UpdatedDate.Value.Should()
                 .BeBefore(updatedEndpoint.UpdatedDate.Value);
@@ -194,7 +157,7 @@ namespace BookingsApi.IntegrationTests.Steps
                 hearingFromDb = db.VideoHearings
                     .Include(x => x.Participants).ThenInclude(x => x.HearingRole).ThenInclude(x => x.UserRole)
                     .Include(h => h.Participants).ThenInclude(x => x.Person)
-                    .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                    .Include(h => h.Endpoints).ThenInclude(x => x.GetRepresentative())
                     .AsNoTracking()
                     .Single(x => x.Id == Context.TestData.NewHearingId);
             }

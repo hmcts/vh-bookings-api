@@ -43,7 +43,10 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
-                .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(h => h.Endpoints)
+                    .ThenInclude(x => x.EndpointParticipants)
+                    .ThenInclude(x => x.Participant)
+                    .ThenInclude(x => x.Person)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
                         
             if (hearing == null)
@@ -64,6 +67,17 @@ namespace BookingsApi.DAL.Commands
 
                     command.NewParticipants.Remove(newJudgeParticipant);
                     continue;
+                }
+
+                var endpoint = hearing
+                    .GetEndpoints()
+                    .FirstOrDefault(x =>
+                        x.EndpointParticipants.FirstOrDefault(ep => ep.ParticipantId == removedParticipantId) != null);
+
+                if (endpoint != null)
+                {
+                    endpoint.RemoveLinkedParticipant(hearing.GetParticipants().Single(x => x.Id == removedParticipantId));
+                    await _context.SaveChangesAsync();
                 }
                 
                 hearing.RemoveParticipantById(removedParticipantId, false);

@@ -1,21 +1,21 @@
-﻿using BookingsApi.Domain.Participants;
+﻿using BookingsApi.Domain.Dtos;
 
 namespace BookingsApi.DAL.Commands
 {
     public class UpdateEndPointOfHearingCommand : ICommand
     {
-        public UpdateEndPointOfHearingCommand(Guid hearingId, Guid endpointId, string displayName, Participant defenceAdvocate)
+        public UpdateEndPointOfHearingCommand(Guid hearingId, Guid endpointId, string displayName, List<NewEndpointParticipantDto> endpointParticipants)
         {
             HearingId = hearingId;
             EndpointId = endpointId;
             DisplayName = displayName;
-            DefenceAdvocate = defenceAdvocate;
+            EndpointParticipants = endpointParticipants ?? new List<NewEndpointParticipantDto>();
         }
 
         public Guid HearingId { get; }
         public Guid EndpointId { get;  }
         public string DisplayName { get;  }
-        public Participant DefenceAdvocate { get; }
+        public List<NewEndpointParticipantDto> EndpointParticipants { get; } 
 }
 
     public class UpdateEndPointOfHearingCommandHandler : ICommandHandler<UpdateEndPointOfHearingCommand>
@@ -31,31 +31,34 @@ namespace BookingsApi.DAL.Commands
         {
             var hearing = await _context.VideoHearings
                 .Include(h => h.Participants).ThenInclude(x => x.Person)
-                .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(h => h.Endpoints).ThenInclude(e => e.EndpointParticipants)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
-            {
                 throw new HearingNotFoundException(command.HearingId);
-            }
 
             var endpoint = hearing.Endpoints.SingleOrDefault(e => e.Id == command.EndpointId);
             if (endpoint == null)
-            {
                 throw new EndPointNotFoundException(command.EndpointId);
-            }
 
-            if (!string.IsNullOrWhiteSpace(endpoint.DisplayName)) endpoint.UpdateDisplayName(command.DisplayName);
-            if (command.DefenceAdvocate != null)
+            if (!string.IsNullOrWhiteSpace(endpoint.DisplayName)) 
+                endpoint.UpdateDisplayName(command.DisplayName);
+            
+            foreach (var endpointParticipant in command.EndpointParticipants)
             {
-                var defenceAdvocate = hearing.GetParticipants().Single(x => x.Id == command.DefenceAdvocate.Id);
-                endpoint.AssignDefenceAdvocate(defenceAdvocate);
+                var participant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == endpointParticipant.ContactEmail);
+                if (participant != null)
+                    endpoint.LinkParticipantToEndpoint(participant, endpointParticipant.Type);
+                
             }
-            else
-            {
-                endpoint.AssignDefenceAdvocate(null);
-            }
-
+            
+            var participantToRemove = endpoint
+                .GetLinkedParticipants()
+                .Where(p => !command.EndpointParticipants.Exists(ep => ep.ContactEmail == p.Person.ContactEmail))
+                .ToList();
+            
+            participantToRemove.ForEach(p => endpoint.RemoveLinkedParticipant(p));
+          
             await _context.SaveChangesAsync();
         }
     }

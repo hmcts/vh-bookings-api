@@ -19,6 +19,7 @@ namespace BookingsApi.DAL.Mappings
             builder.HasOne(x => x.HearingRole).WithMany().HasForeignKey(x => x.HearingRoleId);
             builder.HasOne<Hearing>("Hearing").WithMany("Participants").HasForeignKey(x => x.HearingId);
             builder.HasMany(x => x.LinkedParticipants).WithOne(x => x.Participant).HasForeignKey(x => x.ParticipantId);
+            builder.HasMany(x => x.EndpointLinkedParticipants).WithOne(x => x.Participant).HasForeignKey(x => x.ParticipantId);
             builder.Property(x => x.CreatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
             builder.Property(x => x.UpdatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
         }

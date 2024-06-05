@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Domain.Dtos;
 
 namespace BookingsApi.Mappings.V1
 {
@@ -13,21 +14,24 @@ namespace BookingsApi.Mappings.V1
                 DisplayName = endpoint.DisplayName,
                 Sip = endpoint.Sip,
                 Pin = endpoint.Pin,
-                DefenceAdvocateId = endpoint.DefenceAdvocate?.Id
+                DefenceAdvocateId = endpoint.GetRepresentative()?.Id,
             };
         }
 
-        public static NewEndpoint MapRequestToNewEndpointDto(EndpointRequest request, IRandomGenerator randomGenerator, string sipAddressStem)
+        public static NewEndpointDto MapRequestToNewEndpointDto(EndpointRequest request, IRandomGenerator randomGenerator, string sipAddressStem)
         {
             var sip = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
             var pin = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
             var sipComplete = sip + sipAddressStem;
-            return new NewEndpoint
+            var endpointParticipants = new List<NewEndpointParticipantDto>();
+            if(!String.IsNullOrWhiteSpace(request.DefenceAdvocateContactEmail))
+                endpointParticipants.Add(new NewEndpointParticipantDto (request.DefenceAdvocateContactEmail, LinkedParticipantType.Representative));
+            return new NewEndpointDto
             {
                 Pin = pin,
                 Sip = sipComplete,
                 DisplayName = request.DisplayName,
-                ContactEmail = request.DefenceAdvocateContactEmail
+                EndpointParticipants = endpointParticipants
             };
         }
     }

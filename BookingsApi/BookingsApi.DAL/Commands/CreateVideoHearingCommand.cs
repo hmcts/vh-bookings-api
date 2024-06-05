@@ -1,6 +1,8 @@
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Dtos;
+using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -43,7 +45,7 @@ namespace BookingsApi.DAL.Commands
         public string OtherInformation { get; }
         public string CreatedBy { get; }
         public bool AudioRecordingRequired { get; }
-        public List<NewEndpoint> Endpoints { get; }
+        public List<NewEndpointDto> Endpoints { get; }
         public string CancelReason { get; }
         public Guid? SourceId { get; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }
@@ -95,10 +97,19 @@ namespace BookingsApi.DAL.Commands
             if (command.Endpoints != null && command.Endpoints.Count > 0)
             {
                 var dtos = command.Endpoints;
-                var newEndpoints = (from dto in dtos
-                    let defenceAdvocate =
-                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, videoHearing.GetParticipants())
-                    select new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate)).ToList();
+                var newEndpoints = new List<Endpoint>();
+                foreach (var dto in dtos)
+                {
+                    var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin);
+                    
+                    foreach (var endpointParticipant in dto.EndpointParticipants)
+                    {
+                        var participant = participants.SingleOrDefault(x => x.Person.ContactEmail == endpointParticipant.ContactEmail);
+                        endpoint.LinkParticipantToEndpoint(participant, endpointParticipant.Type);
+                    }
+                    
+                    newEndpoints.Add(endpoint);
+                }
 
                 videoHearing.AddEndpoints(newEndpoints);
             }

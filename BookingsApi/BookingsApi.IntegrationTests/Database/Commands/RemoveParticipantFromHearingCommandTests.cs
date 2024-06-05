@@ -42,8 +42,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var newPerson = new PersonBuilder(true).Build();
             var participant = new Individual(newPerson, new HearingRole(1, "Dummy"), new CaseRole(1, "Dummy"));
-            Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
-                new RemoveParticipantFromHearingCommand(seededHearing.Id, participant)));
+            Assert.ThrowsAsync<ParticipantNotFoundException>(() => _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, participant)));
         }
 
         [Test]
@@ -71,10 +70,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var beforeCount = seededHearing.GetParticipants().Count;
 
-            var endpoint = seededHearing.GetEndpoints().First(ep => ep.DefenceAdvocate != null);
-            _personsToRemove.Add(endpoint.DefenceAdvocate.Person.ContactEmail);
+            var endpoint = seededHearing.GetEndpoints().First(ep => ep.GetRepresentative() != null);
+            _personsToRemove.Add(endpoint.GetRepresentative().Person.ContactEmail);
             await _commandHandler.Handle(
-                new RemoveParticipantFromHearingCommand(seededHearing.Id, endpoint.DefenceAdvocate));
+                new RemoveParticipantFromHearingCommand(seededHearing.Id, endpoint.GetRepresentative()));
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));

@@ -7,6 +7,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -50,7 +51,6 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 .With(p => p.HearingRoleCode, "APPL")
                 .Build();
             var newEndpoint = new Builder(new BuilderSettings()).CreateNew<EndpointRequestV2>()
-                .With(e => e.DefenceAdvocateContactEmail, null)
                 .Build();
             var newJudiciaryPanelMemberPerson = await Hooks.AddJudiciaryPerson(personalCode: Guid.NewGuid().ToString());
             var newJudiciaryPanelMember = new Builder(new BuilderSettings()).CreateNew<JudiciaryParticipantRequestV2>()
@@ -68,16 +68,18 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearings.First(h => h.Id == requestHearing.HearingId);
-                
-                var defenceAdvocateEmail = requestHearing.Endpoints.ExistingEndpoints
-                    .First(e => e.DefenceAdvocateContactEmail != null).DefenceAdvocateContactEmail;
-                var defenceAdvocateParticipant = hearing.Participants.First(p => p.Person.ContactEmail == defenceAdvocateEmail);
+
+                var endpointWithDa = requestHearing.Endpoints.ExistingEndpoints
+                    .First(e => e.EndpointParticipants.TrueForAll(e => !String.IsNullOrEmpty(e.ContactEmail)));
+               
+                var defenceAdvocateEmail = endpointWithDa.EndpointParticipants.FirstOrDefault()?.ContactEmail;
+                var defenceAdvocateParticipant = hearing.Participants.FirstOrDefault(p => p.Person.ContactEmail == defenceAdvocateEmail);
                 
                 // Add a participant
                 requestHearing.Participants.NewParticipants.Add(newParticipant);
                 
                 // Remove a participant
-                var participantToRemove = requestHearing.Participants.ExistingParticipants.First(p => p.ParticipantId != defenceAdvocateParticipant.Id);
+                var participantToRemove = requestHearing.Participants.ExistingParticipants.First(p => p.ParticipantId != defenceAdvocateParticipant?.Id);
                 requestHearing.Participants.RemovedParticipantIds.Add(participantToRemove.ParticipantId);
                 requestHearing.Participants.ExistingParticipants.Remove(participantToRemove);
                            
@@ -88,7 +90,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 requestHearing.Endpoints.NewEndpoints.Add(newEndpoint);
                 
                 // Remove an endpoint
-                var endpointToRemove = requestHearing.Endpoints.ExistingEndpoints.First(e => e.DefenceAdvocateContactEmail != defenceAdvocateEmail);
+                var endpointToRemove = requestHearing.Endpoints.ExistingEndpoints.First(e => e.EndpointParticipants.TrueForAll(e => e.ContactEmail != defenceAdvocateEmail));
                 requestHearing.Endpoints.RemovedEndpointIds.Add(endpointToRemove.Id);
                 requestHearing.Endpoints.ExistingEndpoints.Remove(endpointToRemove);
 
@@ -472,7 +474,6 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             var newEndpoint = new Builder(new BuilderSettings()).CreateNew<EndpointRequestV2>()
-                .With(e => e.DefenceAdvocateContactEmail, null)
                 .With(e => e.DisplayName, "**") // Invalid display name
                 .Build();
             
@@ -735,7 +736,12 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                     {
                         Id = e.Id,
                         DisplayName = e.DisplayName,
-                        DefenceAdvocateContactEmail = e.DefenceAdvocate?.Person.ContactEmail
+                        EndpointParticipants = e.EndpointParticipants?.Select(ep => new EndpointParticipantsRequestV2
+                        {
+                            ContactEmail = ep.Participant.Person.ContactEmail,
+                            Type = (LinkedParticipantTypeV2)ep.Type
+                        }).ToList()
+                        
                     }).ToList()
                 },
                 JudiciaryParticipants = new UpdateJudiciaryParticipantsRequestV2

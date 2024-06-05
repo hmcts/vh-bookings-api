@@ -24,10 +24,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_reassign_judiciary_judge_when_hearing_has_a_judge()
         {
-            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
-            {
-                options.AddJudge = true;
-            }, status: BookingStatus.Created);
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options => { options.AddJudge = true; }, status: BookingStatus.Created);
             var personalCode = Guid.NewGuid().ToString();
             await Hooks.AddJudiciaryPerson(personalCode: personalCode);
             var hearingId = seededHearing.Id;

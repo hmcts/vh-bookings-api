@@ -489,8 +489,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> CloneHearing([FromRoute] Guid hearingId,
-            [FromBody] CloneHearingRequest request)
+        public async Task<IActionResult> CloneHearing([FromRoute] Guid hearingId, [FromBody] CloneHearingRequest request)
         {
             var videoHearing = await GetHearingAsync(hearingId);
             if (videoHearing == null)
@@ -507,8 +506,7 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
             
-            var datesValidationResult =
-                new CloneHearingRequestValidation(videoHearing)
+            var datesValidationResult = new CloneHearingRequestValidation(videoHearing)
                     .ValidateDates(request);
             if (!datesValidationResult.IsValid)
             {
@@ -521,8 +519,7 @@ namespace BookingsApi.Controllers.V1
             var commands = orderedDates.Select((newDate, index) =>
             {
                 var hearingDay = index + 2; // zero index including original hearing
-                return CloneHearingToCommandMapper.CloneToCommand(videoHearing, newDate, _randomGenerator,
-                    _kinlyConfiguration.SipAddressStem, totalDays, hearingDay, request.ScheduledDuration);
+                return CloneHearingToCommandMapper.CloneToCommand(videoHearing, newDate, _randomGenerator, _kinlyConfiguration.SipAddressStem, totalDays, hearingDay, request.ScheduledDuration);
             }).ToList();
 
             var existingCase = videoHearing.GetCases()[0];

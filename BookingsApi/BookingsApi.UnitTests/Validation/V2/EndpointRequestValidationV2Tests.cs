@@ -19,7 +19,6 @@ public class EndpointRequestValidationV2Tests
         var request = new EndpointRequestV2()
         {
             DisplayName = "EP1",
-            DefenceAdvocateContactEmail = null
         };
 
         var result = await _validator.ValidateAsync(request);
@@ -33,7 +32,6 @@ public class EndpointRequestValidationV2Tests
         var request = new EndpointRequestV2()
         {
             DisplayName = string.Empty,
-            DefenceAdvocateContactEmail = null
         };
             
         var result = await _validator.ValidateAsync(request);
@@ -42,35 +40,4 @@ public class EndpointRequestValidationV2Tests
         result.Errors.Exists(x => x.ErrorMessage == EndpointRequestValidationV2.InvalidDisplayNameErrorMessage).Should().BeTrue();
     }
         
-    [Test]
-    public async Task Should_return_missing_defence_advocate_contact_email_error()
-    {
-        var request = new EndpointRequestV2()
-        {
-            DisplayName = "EP1",
-            DefenceAdvocateContactEmail = string.Empty
-        };
-            
-        var result = await _validator.ValidateAsync(request);
-
-        result.IsValid.Should().BeFalse();
-        result.Errors.Count.Should().Be(1);
-        result.Errors.Exists(x => x.ErrorMessage == EndpointRequestValidationV2.InvalidDefenceAdvocateContactEmailError).Should().BeTrue();
-    }
-        
-    [Test]
-    public async Task Should_return_invalid_defence_advocate_contact_email_error()
-    {
-        var request = new EndpointRequestV2()
-        {
-            DisplayName = "EP1",
-            DefenceAdvocateContactEmail = "invalid"
-        };
-            
-        var result = await _validator.ValidateAsync(request);
-
-        result.IsValid.Should().BeFalse();
-        result.Errors.Count.Should().Be(1);
-        result.Errors.Exists(x => x.ErrorMessage == EndpointRequestValidationV2.InvalidDefenceAdvocateContactEmailError).Should().BeTrue();
-    }
 }

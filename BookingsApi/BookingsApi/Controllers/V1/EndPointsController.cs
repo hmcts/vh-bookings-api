@@ -1,6 +1,8 @@
 ﻿using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V1;
+using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V1;
 
 namespace BookingsApi.Controllers.V1
@@ -83,54 +85,30 @@ namespace BookingsApi.Controllers.V1
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
                 return ValidationProblem(ModelState);
             }
-
-
             var hearing =
                 await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
             if (hearing == null) throw new HearingNotFoundException(hearingId);
             await _endpointService.RemoveEndpoint(hearing, endpointId);
 
-
             return NoContent();
         }
 
         /// <summary>
-        ///  Update an endpoint of a given hearing
+        ///  Currently returns a V2 response, this will be updated one V1 controllers refactored
         /// </summary>
         /// <param name="hearingId">The hearing id</param>
-        /// <param name="endpointId">The endpoint id</param>
-        /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
         /// <returns></returns>
-        [HttpPatch("{hearingId}/endpoints/{endpointId}")]
-        [OpenApiOperation("UpdateDisplayNameForEndpoint")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [HttpGet("endpoints/{sipAddress}")]
+        [OpenApiOperation("GetEndpoint")]
+        [ProducesResponseType(typeof(EndpointResponseV2), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> UpdateEndpointAsync(Guid hearingId, Guid endpointId,
-            UpdateEndpointRequest updateEndpointRequest)
+        public async Task<IActionResult> GetEndpoint(string sipAddress)
         {
-            if (hearingId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return ValidationProblem(ModelState);
-            }
-
-            var result = new UpdateEndpointRequestValidation().Validate(updateEndpointRequest);
-            if (!result.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(result.Errors);
-                return ValidationProblem(ModelState);
-            }
-
-            var hearing =
-                await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-            if (hearing == null) throw new HearingNotFoundException(hearingId);
-            await _endpointService.UpdateEndpoint(hearing, endpointId,
-                updateEndpointRequest.DefenceAdvocateContactEmail, updateEndpointRequest.DisplayName);
-
-
-            return NoContent();
+            var endpoint = await _queryHandler.Handle<GetEndpointQuery, Endpoint>(new GetEndpointQuery(sipAddress));
+            if (endpoint == null)
+                return NotFound("No endpoint found with the provided SipAddress");
+            return Ok(EndpointToResponseV2Mapper.MapEndpointToResponse(endpoint));
         }
     }
 }
