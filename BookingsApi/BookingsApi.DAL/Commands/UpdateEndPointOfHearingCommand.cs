@@ -47,7 +47,9 @@ namespace BookingsApi.DAL.Commands
             foreach (var endpointParticipant in command.EndpointParticipants)
             {
                 var participant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == endpointParticipant.ContactEmail);
-                endpoint.LinkParticipantToEndpoint(participant, endpointParticipant.Type);
+                if (participant != null)
+                    endpoint.LinkParticipantToEndpoint(participant, endpointParticipant.Type);
+                
             }
             
             var participantToRemove = endpoint

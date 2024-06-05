@@ -7,6 +7,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -735,15 +736,12 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                     {
                         Id = e.Id,
                         DisplayName = e.DisplayName,
-                        EndpointParticipants = !e.EndpointParticipants.Any()
-                            ? []
-                            : new List<EndpointParticipantsRequestV2>
-                        { 
-                            new () { 
-                                ContactEmail = e.EndpointParticipants[0].Participant.Person.ContactEmail, 
-                                Type = (LinkedParticipantTypeV2)e.EndpointParticipants[0].Type
-                            }
-                        } 
+                        EndpointParticipants = e.EndpointParticipants?.Select(ep => new EndpointParticipantsRequestV2
+                        {
+                            ContactEmail = ep.Participant.Person.ContactEmail,
+                            Type = (LinkedParticipantTypeV2)ep.Type
+                        }).ToList()
+                        
                     }).ToList()
                 },
                 JudiciaryParticipants = new UpdateJudiciaryParticipantsRequestV2
