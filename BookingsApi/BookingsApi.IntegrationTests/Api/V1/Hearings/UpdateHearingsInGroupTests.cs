@@ -542,7 +542,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                     {
                         Id = e.Id,
                         DisplayName = e.DisplayName,
-                        DefenceAdvocateContactEmail = e.GetDefenceAdvocate()?.Person.ContactEmail
+                        DefenceAdvocateContactEmail = e.GetRepresentative()?.Person.ContactEmail
                     }).ToList()
                 }
             };
