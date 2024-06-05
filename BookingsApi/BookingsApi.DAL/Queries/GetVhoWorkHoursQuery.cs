@@ -19,8 +19,10 @@
                 .Include(e => e.VhoWorkHours).ThenInclude(e=>e.DayOfWeek)
                 .FirstOrDefaultAsync(e => e.Username == query.UserName);
             
-            if(justiceUser == null)
-                return null;
+            if (justiceUser == null)
+            {
+                throw new JusticeUserNotFoundException(query.UserName);
+            }
             
             return justiceUser.VhoWorkHours?.ToList() ?? new List<VhoWorkHours>();
         }

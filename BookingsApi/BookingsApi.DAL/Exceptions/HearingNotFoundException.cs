@@ -1,7 +1,7 @@
 namespace BookingsApi.DAL.Exceptions
 {
 #pragma warning disable S3925 // "ISerializable" should be implemented correctly
-    public class HearingNotFoundException : Exception
+    public class HearingNotFoundException : EntityNotFoundException
     {
         
         

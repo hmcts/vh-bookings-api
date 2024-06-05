@@ -48,20 +48,13 @@ namespace BookingsApi.Controllers.V1
             }
 
             var query = new GetParticipantsInHearingQuery(hearingId);
-            try
-            {
-                var participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
 
-                var mapper = new ParticipantToResponseMapper();
-                var response = participants.Select(x => mapper.MapParticipantToResponse(x)).ToList();
+            var participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
 
-                return Ok(response);
-            }
-            catch (HearingNotFoundException)
-            {
-                return NotFound();
-            }
+            var mapper = new ParticipantToResponseMapper();
+            var response = participants.Select(x => mapper.MapParticipantToResponse(x)).ToList();
 
+            return Ok(response);
         }
 
         /// <summary>
@@ -91,25 +84,19 @@ namespace BookingsApi.Controllers.V1
             }
 
             var query = new GetParticipantsInHearingQuery(hearingId);
-            try
-            {
-                var participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
-                var participant = participants.Find(x => x.Id == participantId);
 
-                if (participant == null)
-                {
-                    return NotFound();
-                }
+            var participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
+            var participant = participants.Find(x => x.Id == participantId);
 
-                var mapper = new ParticipantToResponseMapper();
-                var response = mapper.MapParticipantToResponse(participant);
-
-                return Ok(response);
-            }
-            catch (HearingNotFoundException)
+            if (participant == null)
             {
                 return NotFound();
             }
+
+            var mapper = new ParticipantToResponseMapper();
+            var response = mapper.MapParticipantToResponse(participant);
+
+            return Ok(response);
         }
 
         /// <summary>
@@ -272,16 +259,9 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
 
-            List<Participant> participants;
             var query = new GetParticipantsInHearingQuery(hearingId);
-            try
-            {
-                participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
-            }
-            catch (HearingNotFoundException)
-            {
-                return NotFound();
-            }
+            var participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
+            
 
             var participant = participants.Find(x => x.Id == participantId);
             if (participant == null)

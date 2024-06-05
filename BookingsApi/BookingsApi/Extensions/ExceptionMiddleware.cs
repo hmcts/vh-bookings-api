@@ -30,14 +30,13 @@ namespace BookingsApi.Extensions
                 var problemDetails = new ValidationProblemDetails(modelState);
 
                 httpContext.Response.ContentType = "application/json";
-                httpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+                httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
                 await httpContext.Response.WriteAsJsonAsync(problemDetails);
             }
-            catch (JusticeUserNotFoundException ex)
+            catch (EntityNotFoundException ex)
             {
-                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "API Exception", ex, null,
-                    null);
+                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "Entity Not Found", ex, null, null);
                 await HandleExceptionAsync(httpContext, HttpStatusCode.NotFound, ex);
             }
             catch (BadRequestException ex)
