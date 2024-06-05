@@ -58,20 +58,12 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
 
-            try
-            {
-                var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(addEndpointRequest, _randomGenerator,
-                    _kinlyConfiguration.SipAddressStem);
-                var endpoint = await _endpointService.AddEndpoint(hearingId, newEp);
-                var endpointResponse = EndpointToResponseMapper.MapEndpointToResponse(endpoint);
+            var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(addEndpointRequest, _randomGenerator,
+                _kinlyConfiguration.SipAddressStem);
+            var endpoint = await _endpointService.AddEndpoint(hearingId, newEp);
+            var endpointResponse = EndpointToResponseMapper.MapEndpointToResponse(endpoint);
 
-                return Ok(endpointResponse);
-
-            }
-            catch (HearingNotFoundException exception)
-            {
-                return NotFound(exception.Message);
-            }
+            return Ok(endpointResponse);
         }
 
         /// <summary>
@@ -93,22 +85,10 @@ namespace BookingsApi.Controllers.V1
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
                 return ValidationProblem(ModelState);
             }
-
-            try
-            {
-                var hearing =
-                    await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-                if (hearing == null) throw new HearingNotFoundException(hearingId);
-                await _endpointService.RemoveEndpoint(hearing, endpointId);
-            }
-            catch (HearingNotFoundException exception)
-            {
-                return NotFound(exception.Message);
-            }
-            catch (EndPointNotFoundException exception)
-            {
-                return NotFound(exception.Message);
-            }
+            var hearing =
+                await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            if (hearing == null) throw new HearingNotFoundException(hearingId);
+            await _endpointService.RemoveEndpoint(hearing, endpointId);
 
             return NoContent();
         }
