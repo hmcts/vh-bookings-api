@@ -226,8 +226,8 @@ namespace BookingsApi.Controllers.V2
                 
                 hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(requestHearing.HearingId));
                 
-                await _updateHearingService.UpdateEndpointsV2(requestHearing.Endpoints, hearing);
                 await _updateHearingService.UpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants, hearing);
+                await _updateHearingService.UpdateEndpointsV2(requestHearing.Endpoints, hearing);
             }
             
             var hearings = request.Hearings.ToList();

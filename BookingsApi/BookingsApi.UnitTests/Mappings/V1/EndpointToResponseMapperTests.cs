@@ -22,7 +22,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.Sip.EndsWith(sipAddStream).Should().BeTrue();
             result.DisplayName.Should().Be(endpointRequest.DisplayName);
             result.EndpointParticipants[0].ContactEmail.Should().Be(endpointRequest.DefenceAdvocateContactEmail);
-            result.EndpointParticipants[0].Type.Should().Be(LinkedParticipantType.DefenceAdvocate);
+            result.EndpointParticipants[0].Type.Should().Be(LinkedParticipantType.Representative);
 
         }
 
@@ -31,7 +31,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         {
             var participant = new ParticipantBuilder().Build();
 
-            var source = new Endpoint("displayName", "sip", "pin", (participant[0],LinkedParticipantType.DefenceAdvocate));
+            var source = new Endpoint("displayName", "sip", "pin", (participant[0],LinkedParticipantType.Representative));
 
             var result = EndpointToResponseMapper.MapEndpointToResponse(source);
 

@@ -89,7 +89,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 DisplayName = displayName,
                 Sip = sip,
                 Pin = pin,
-                EndpointParticipants =  [new(dA.Person.ContactEmail, LinkedParticipantType.DefenceAdvocate)]
+                EndpointParticipants =  [new(dA.Person.ContactEmail, LinkedParticipantType.Representative)]
             };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));
@@ -106,8 +106,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             newlyAddedEndPointInDb.DisplayName.Should().Be(displayName);
             newlyAddedEndPointInDb.Pin.Should().Be(pin);
             newlyAddedEndPointInDb.Sip.Should().Be(sip);
-            newlyAddedEndPointInDb.GetDefenceAdvocate().Should().NotBeNull();
-            newlyAddedEndPointInDb.GetDefenceAdvocate().Id.Should().Be(dA.Id);
+            newlyAddedEndPointInDb.GetRepresentative().Should().NotBeNull();
+            newlyAddedEndPointInDb.GetRepresentative().Id.Should().Be(dA.Id);
         }
     }
 }

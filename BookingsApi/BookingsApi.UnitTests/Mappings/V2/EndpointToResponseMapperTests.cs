@@ -17,7 +17,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             var randomGen = new Mock<IRandomGenerator>();
             var endpointRequest = new EndpointRequestV2 { EndpointParticipants = new List<EndpointParticipantsRequestV2>
             {
-                new () { ContactEmail = "TestEmail", Type = LinkedParticipantTypeV2.DefenceAdvocate }
+                new () { ContactEmail = "TestEmail", Type = LinkedParticipantTypeV2.Representative }
             
             }, DisplayName = "TestDispName" };
 
@@ -35,7 +35,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
         {
             var participant = new ParticipantBuilder().Build();
 
-            var source = new Endpoint("displayName", "sip", "pin", (participant[0], LinkedParticipantType.DefenceAdvocate));
+            var source = new Endpoint("displayName", "sip", "pin", (participant[0], LinkedParticipantType.Representative));
 
             var result = EndpointToResponseV2Mapper.MapEndpointToResponse(source);
 
@@ -43,7 +43,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             result.DisplayName.Should().Be(source.DisplayName);
             result.Sip.Should().Be(source.Sip);
             result.Pin.Should().Be(source.Pin);
-            result.EndpointParticipants.Should().Contain(e => e.ParticipantId == participant[0].Id && e.LinkedParticipantType == LinkedParticipantTypeV2.DefenceAdvocate);
+            result.EndpointParticipants.Should().Contain(e => e.ParticipantId == participant[0].Id && e.LinkedParticipantType == LinkedParticipantTypeV2.Representative);
         }
     }
 }

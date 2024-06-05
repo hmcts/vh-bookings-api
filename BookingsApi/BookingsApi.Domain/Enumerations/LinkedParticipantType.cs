@@ -3,8 +3,7 @@ namespace BookingsApi.Domain.Enumerations
     public enum LinkedParticipantType
     {
         Interpreter = 1,
-        DefenceAdvocate = 2,
+        Representative = 2,
         Intermediary = 3,
-        Representative = 4,
     }
 }

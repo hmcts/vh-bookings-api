@@ -212,7 +212,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 new List<Endpoint>
                 {
                     new("new endpoint", Guid.NewGuid().ToString(), "pin"),
-                    new("new endpoint", Guid.NewGuid().ToString(), "pin", (defenceAdvocate, LinkedParticipantType.DefenceAdvocate)),
+                    new("new endpoint", Guid.NewGuid().ToString(), "pin", (defenceAdvocate, LinkedParticipantType.Representative)),
                 });
 
             if (status != BookingStatus.Booked)

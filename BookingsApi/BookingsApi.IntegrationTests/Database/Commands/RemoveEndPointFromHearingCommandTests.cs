@@ -63,7 +63,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var beforeCount = seededHearing.GetEndpoints().Count;
 
-            var endpoint = seededHearing.GetEndpoints().FirstOrDefault(ep => ep.GetDefenceAdvocate() != null);
+            var endpoint = seededHearing.GetEndpoints().FirstOrDefault(ep => ep.GetRepresentative() != null);
             await _commandHandler.Handle(new RemoveEndPointFromHearingCommand(seededHearing.Id, endpoint.Id));
 
             var returnedVideoHearing =

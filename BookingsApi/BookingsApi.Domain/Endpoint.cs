@@ -31,22 +31,6 @@ public class Endpoint : TrackableEntity<Guid>
             foreach (var (participant, type) in participants)
                 LinkParticipantToEndpoint(participant, type);
     }
-
-    public void AssignDefenceAdvocate(Participant defenceAdvocate)
-    {
-        if(EndpointParticipants.Any(x => x.Type == LinkedParticipantType.DefenceAdvocate))
-            EndpointParticipants.Remove(EndpointParticipants.First(x => x.Type == LinkedParticipantType.DefenceAdvocate));
-
-        if(EndpointParticipants.Any(x => x.Participant == defenceAdvocate))
-            RemoveLinkedParticipant(defenceAdvocate);
-        
-        EndpointParticipants.Add(new EndpointParticipant(this, defenceAdvocate, LinkedParticipantType.DefenceAdvocate));
-    }
-    
-    public Participant GetDefenceAdvocate()
-    {
-        return EndpointParticipants.FirstOrDefault(x => x.Type == LinkedParticipantType.DefenceAdvocate)?.Participant;
-    }
     
     public void AssignIntermediary(Participant intermediary)
     {
@@ -103,16 +87,12 @@ public class Endpoint : TrackableEntity<Guid>
     {
         switch (type)
         {
-            case LinkedParticipantType.DefenceAdvocate:
-                AssignDefenceAdvocate(participant);
-                break;
             case LinkedParticipantType.Intermediary:
                 AssignIntermediary(participant);
                 break;
             case LinkedParticipantType.Representative:
                 AssignRepresentative(participant);
                 break;
-            case LinkedParticipantType.Interpreter:
             default:
                 throw new ArgumentException("Invalid participant type for linking participant to endpoint", type.ToString());
         }

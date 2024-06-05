@@ -214,7 +214,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
         {
             var dA = new ParticipantBuilder().RepresentativeParticipantRespondent;
             var endpointAddedIntegrationEvent =
-                new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234", (dA, LinkedParticipantType.DefenceAdvocate)));
+                new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234", (dA, LinkedParticipantType.Representative)));
             _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);

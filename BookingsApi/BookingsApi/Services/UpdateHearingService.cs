@@ -61,7 +61,7 @@ namespace BookingsApi.Services
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
                 await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id,
-                    [new(endpointToUpdate.DefenceAdvocateContactEmail, LinkedParticipantType.DefenceAdvocate)], 
+                    [new(endpointToUpdate.DefenceAdvocateContactEmail, LinkedParticipantType.Representative)], 
                     null, null, endpointToUpdate.DisplayName);
             }
 

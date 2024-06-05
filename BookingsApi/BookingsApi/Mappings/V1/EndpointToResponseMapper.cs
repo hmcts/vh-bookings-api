@@ -14,7 +14,7 @@ namespace BookingsApi.Mappings.V1
                 DisplayName = endpoint.DisplayName,
                 Sip = endpoint.Sip,
                 Pin = endpoint.Pin,
-                DefenceAdvocateId = endpoint.GetDefenceAdvocate()?.Id,
+                DefenceAdvocateId = endpoint.GetRepresentative()?.Id,
             };
         }
 
@@ -25,7 +25,7 @@ namespace BookingsApi.Mappings.V1
             var sipComplete = sip + sipAddressStem;
             var endpointParticipants = new List<NewEndpointParticipantDto>();
             if(!String.IsNullOrWhiteSpace(request.DefenceAdvocateContactEmail))
-                endpointParticipants.Add(new NewEndpointParticipantDto (request.DefenceAdvocateContactEmail, LinkedParticipantType.DefenceAdvocate));
+                endpointParticipants.Add(new NewEndpointParticipantDto (request.DefenceAdvocateContactEmail, LinkedParticipantType.Representative));
             return new NewEndpointDto
             {
                 Pin = pin,
