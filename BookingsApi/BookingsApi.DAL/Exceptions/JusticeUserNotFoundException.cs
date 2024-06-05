@@ -1,7 +1,7 @@
 namespace BookingsApi.DAL.Exceptions
 {
     [Serializable]
-    public class JusticeUserNotFoundException : BookingsDalException
+    public class JusticeUserNotFoundException : EntityNotFoundException
     {
         public JusticeUserNotFoundException(Guid id) : base($"Justice user with id {id} not found")
         {

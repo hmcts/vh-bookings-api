@@ -80,10 +80,6 @@ namespace BookingsApi.Controllers.V1
                     .ToList();
                 return Ok(response);
             }
-            catch (PersonNotFoundException)
-            {
-                return NotFound();
-            }
             catch (PersonIsAJudgeException)
             {
                 return Unauthorized();
@@ -175,21 +171,15 @@ namespace BookingsApi.Controllers.V1
         /// <returns></returns>
         [HttpPatch("username/{username}/anonymise")]
         [OpenApiOperation("AnonymisePersonWithUsername")]
-        [ProducesResponseType((int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> AnonymisePerson(string username)
         {
             var command = new AnonymisePersonCommand(username);
-            try
-            {
-                await _commandHandler.Handle(command);
-                return Ok();
-            }
-            catch (PersonNotFoundException)
-            {
-                return NotFound();
-            }
+
+            await _commandHandler.Handle(command);
+            return Ok();
         }
 
         /// <summary>
@@ -199,23 +189,15 @@ namespace BookingsApi.Controllers.V1
         /// <returns></returns>
         [HttpPatch("username/{username}/anonymise-for-expired-hearings")]
         [OpenApiOperation("AnonymisePersonWithUsernameForExpiredHearings")]
-        [ProducesResponseType((int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> AnonymisePersonWithUsernameForExpiredHearings(string username)
         {
-            try
-            {
-                await _commandHandler.Handle(new AnonymisePersonWithUsernameCommand { Username = username });
-                return Ok();
-            }
-            catch (PersonNotFoundException ex)
-            {
-                _logger.LogError(ex, "Failed to update a person because the {Username} does not exist", username);
-                return NotFound();
-            }
+            await _commandHandler.Handle(new AnonymisePersonWithUsernameCommand { Username = username });
+            return Ok();
         }
-        
+
         [HttpGet]
         [OpenApiOperation("SearchForNonJudgePersonsByContactEmail")]
         [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
@@ -252,7 +234,7 @@ namespace BookingsApi.Controllers.V1
             var response = mapper.MapPersonToResponse(person);
             return Ok(response);
         }
-        
+
         /// <summary>
         /// Update the personal details
         /// </summary>
@@ -264,7 +246,8 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult<IList<PersonResponse>>> UpdatePersonDetails([FromRoute] Guid personId, [FromBody] UpdatePersonDetailsRequest payload)
+        public async Task<ActionResult<IList<PersonResponse>>> UpdatePersonDetails([FromRoute] Guid personId,
+            [FromBody] UpdatePersonDetailsRequest payload)
         {
             var validation = await new UpdatePersonDetailsRequestValidation().ValidateAsync(payload);
             if (!validation.IsValid)
@@ -273,21 +256,14 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
 
-            try
-            {
-                var command = new UpdatePersonCommand(personId, payload.FirstName, payload.LastName, payload.Username);
-                await _commandHandler.Handle(command);
-            }
-            catch (PersonNotFoundException e)
-            {
-                _logger.LogError(e, "Failed to update a person because the person {Person} does not exist", personId);
-                return NotFound($"{personId} does not exist");
-            }
+            var command = new UpdatePersonCommand(personId, payload.FirstName, payload.LastName, payload.Username);
+            await _commandHandler.Handle(command);
+
 
             // get all hearings for user
             var query = new GetHearingsByUsernameQuery(payload.Username);
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
-            
+
             // raise an update event for each hearing to ensure consistency between video and bookings api
             var anonymisedText = "@hmcts.net";
             var nonAnonymisedParticipants = hearings
@@ -296,12 +272,13 @@ namespace BookingsApi.Controllers.V1
                 .Where(p => p.PersonId == personId && !p.DisplayName.EndsWith(anonymisedText)).ToList();
             _logger.LogDebug("Updating {Count} non-anonymised participants", nonAnonymisedParticipants.Count);
 
-            foreach(var participant in nonAnonymisedParticipants)
+            foreach (var participant in nonAnonymisedParticipants)
             {
                 // map to updated participant event
-                await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(participant.HearingId, participant));
+                await _eventPublisher.PublishAsync(
+                    new ParticipantUpdatedIntegrationEvent(participant.HearingId, participant));
             }
-     
+
             return Accepted();
         }
 
@@ -324,11 +301,13 @@ namespace BookingsApi.Controllers.V1
                 ModelState.AddModelError(nameof(contactEmail), $"Please provide a valid {nameof(contactEmail)}");
                 return ValidationProblem(ModelState);
             }
+
             if (!username.IsValidEmail())
             {
                 ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
                 return ValidationProblem(ModelState);
             }
+
             var query = new GetPersonByContactEmailQuery(contactEmail);
             var person = await _queryHandler.Handle<GetPersonByContactEmailQuery, Person>(query);
 
@@ -336,17 +315,9 @@ namespace BookingsApi.Controllers.V1
             {
                 return NotFound();
             }
-
-            try
-            {
-                var command = new UpdatePersonUsernameCommand(person.Id, username);
-                await _commandHandler.Handle(command);
-            }
-            catch (PersonNotFoundException e)
-            {
-                _logger.LogError(e, "Failed to update a person because the person with {ContactEmail} does not exist", contactEmail);
-                return NotFound($"{contactEmail} does not exist");
-            }
+            
+            var command = new UpdatePersonUsernameCommand(person.Id, username);
+            await _commandHandler.Handle(command);
 
             return NoContent();
         }

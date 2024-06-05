@@ -1,8 +1,11 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using BookingsApi.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 using BookingsApi.Common;
+using BookingsApi.DAL.Exceptions;
+using BookingsApi.Domain.Validations;
 using Microsoft.Extensions.Logging;
 
 namespace BookingsApi.UnitTests.Middleware
@@ -49,6 +52,32 @@ namespace BookingsApi.UnitTests.Middleware
 
 
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
+            _HttpContext.Response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+            _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
+        }
+
+        [Test]
+        public void should_return_not_found_when_EntityNotFoundException_is_thrown()
+        {
+            RequestDelegateMock
+                .Setup(x => x.RequestDelegate(It.IsAny<HttpContext>()))
+                .Returns(Task.FromException(new JusticeUserNotFoundException("random@test.om")));
+            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate, LoggerMock.Object);
+
+            ExceptionMiddleware.InvokeAsync(_HttpContext).Wait();
+            _HttpContext.Response.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
+            _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
+        }
+
+        [Test]
+        public void should_return_bad_request_when_DomainRuleException_is_thrown()
+        {
+            RequestDelegateMock
+                .Setup(x => x.RequestDelegate(It.IsAny<HttpContext>()))
+                .Returns(Task.FromException(new DomainRuleException("Error", "Error Test message")));
+            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate, LoggerMock.Object);
+
+            ExceptionMiddleware.InvokeAsync(_HttpContext).Wait();
             _HttpContext.Response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
             _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
         }
