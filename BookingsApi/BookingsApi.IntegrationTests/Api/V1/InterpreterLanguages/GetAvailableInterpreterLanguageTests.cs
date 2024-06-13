@@ -6,7 +6,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.InterpreterLanguages;
 public class GetAvailableInterpreterLanguageTests : ApiTest
 {
     [Test]
-    public async Task should_return_and_available_languages()
+    public async Task should_return_available_languages()
     {
         // arrange
         using var client = Application.CreateClient();
