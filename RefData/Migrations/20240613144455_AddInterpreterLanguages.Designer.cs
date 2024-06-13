@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RefData;
 
@@ -10,9 +11,11 @@ using RefData;
 namespace RefData.Migrations
 {
     [DbContext(typeof(RefDataContext))]
-    partial class RefDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240613144455_AddInterpreterLanguages")]
+    partial class AddInterpreterLanguages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
