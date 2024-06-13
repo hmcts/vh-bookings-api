@@ -36,14 +36,12 @@ namespace BookingsApi.Mappings.V1
         private static List<NewEndpoint> MapEndpoints(BookNewHearingRequest request, IRandomGenerator randomGenerator,
             string sipAddressStem)
         {
-            var endpoints = new List<NewEndpoint>();
-            if (request.Endpoints != null)
+            var dtos = request.Endpoints.Select(x => new NewEndpointRequestDto()
             {
-                endpoints = request.Endpoints.Select(x =>
-                    EndpointToResponseMapper.MapRequestToNewEndpointDto(x, randomGenerator, sipAddressStem)).ToList();
-            }
-
-            return endpoints;
+                DisplayName = x.DisplayName,
+                DefenceAdvocateContactEmail = x.DefenceAdvocateContactEmail
+            }).ToList();
+            return NewEndpointGenerator.GenerateNewEndpoints(dtos, randomGenerator, sipAddressStem);
         }
 
         private static List<LinkedParticipantDto> MapLinkedParticipants(BookNewHearingRequest request)
