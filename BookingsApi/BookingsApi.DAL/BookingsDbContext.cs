@@ -21,6 +21,7 @@ namespace BookingsApi.DAL
         public DbSet<JudiciaryPersonStaging> JudiciaryPersonsStaging { get; set; }
         public DbSet<Jurisdiction> Jurisdiction { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<InterpreterLanguage> InterpreterLanguages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
