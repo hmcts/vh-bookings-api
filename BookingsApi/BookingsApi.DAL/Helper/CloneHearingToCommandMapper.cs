@@ -64,27 +64,13 @@ namespace BookingsApi.DAL.Helper
 
         private static List<NewEndpoint> GetNewEndpointsDtos(Hearing hearing, IRandomGenerator randomGenerator, string sipAddressStem)
         {
-            var newEndpoints = new List<NewEndpoint>();
-            foreach (var endpoint in hearing.GetEndpoints())
+            var endpointsToClone = hearing.GetEndpoints().Select(x => new NewEndpointRequestDto()
             {
-                string sip;
-                do
-                {
-                    sip = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
-                } while (newEndpoints.Exists(x => x.Sip.StartsWith(sip)));
-                var pin = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
-                var newEndpoint =  new NewEndpoint
-                {
-                    Pin = pin,
-                    Sip = $"{sip}{sipAddressStem}",
-                    DisplayName = endpoint.DisplayName,
-                    ContactEmail = endpoint.DefenceAdvocate?.Person?.ContactEmail
-                };
-            
-                newEndpoints.Add(newEndpoint);
-            }
+                DisplayName = x.DisplayName,
+                DefenceAdvocateContactEmail = x.DefenceAdvocate?.Person?.ContactEmail
+            }).ToList();
 
-            return newEndpoints;
+            return NewEndpointGenerator.GenerateNewEndpoints(endpointsToClone, randomGenerator, sipAddressStem);
         }
 
         private static List<LinkedParticipantDto> GetLinkedParticipantDtos(Hearing hearing)

@@ -14,7 +14,7 @@ namespace BookingsApi.DAL.Exceptions
         }
     }
 
-    public class PersonNotFoundException : PersonException
+    public class PersonNotFoundException : ObfuscatedEntityNotFoundException
     {
         public PersonNotFoundException(string username) : base(
             $"Person with username {GetObfuscatedUsernameAsync(username)} does not exist")
