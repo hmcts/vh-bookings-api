@@ -22,7 +22,7 @@ namespace BookingsApi.UnitTests.Services
         }
         
         [Test]
-        public async Task Should_publish_messages_with_new_notify_templates_feature_on()
+        public async Task Should_publish_messages()
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
             // treat the first 2 participants an existing person
