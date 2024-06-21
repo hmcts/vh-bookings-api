@@ -1,8 +1,8 @@
 using BookingsApi.Contract.V1.Enums;
 
-namespace BookingsApi.Contract.V1.Responses;
+namespace BookingsApi.Contract.V1.Requests;
 
-public class InterpreterLanguagesResponse
+public class InterpreterLanguagesRequest
 {
     /// <summary>
     /// The code or key for the language
