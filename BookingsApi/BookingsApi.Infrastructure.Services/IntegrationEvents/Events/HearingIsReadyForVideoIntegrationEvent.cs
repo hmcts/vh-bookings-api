@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
@@ -12,9 +13,9 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
         {
             Hearing = HearingDtoMapper.MapToDto(hearing);
             
-            var hearingParticipants = hearing.GetParticipants();
+            var hearingParticipants = hearing.GetParticipants().Where(ParticipantHasContactEmail());
             Participants = hearingParticipants.Select(ParticipantDtoMapper.MapToDto).ToList();
-            foreach(var newParticipant in newParticipants)
+            foreach(var newParticipant in newParticipants.Where(ParticipantHasContactEmail()))
             {
                 var participant = Participants.SingleOrDefault(x => x.ParticipantId == newParticipant.Id);
                 if(participant != null)
@@ -29,6 +30,11 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
             Participants.SingleOrDefault(x => x.UserRole == "Judge")?.SetOtherFieldsForNonEJudJudgeUser(hearing.OtherInformation);
             var hearingEndpoints = hearing.GetEndpoints();
             Endpoints = hearingEndpoints.Select(EndpointDtoMapper.MapToDto).ToList();
+            
+            Func<Participant, bool> ParticipantHasContactEmail()
+            {
+                return x=> x.Person.ContactEmail is not null;
+            }
         }
 
         public HearingDto Hearing { get; }

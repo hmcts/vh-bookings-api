@@ -179,10 +179,6 @@ namespace BookingsApi.Domain
 
         public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (hearingRole.IsInterpreter() && IsHearingConfirmedAndCloseToStartTime())
-            {
-                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotAddInterpreterToHearingCloseToStartTime);
-            }
             if (DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), $"Participant {person.ContactEmail} already exists in the hearing");
@@ -194,6 +190,11 @@ namespace BookingsApi.Domain
                 CreatedBy = CreatedBy
             };
             Participants.Add(participant);
+
+            if (hearingRole.IsInterpreter() && CaseType.SupportsAudioRecording())
+            {
+                AudioRecordingRequired = true;
+            }
             UpdatedDate = DateTime.UtcNow;
             
             return participant;
@@ -260,7 +261,7 @@ namespace BookingsApi.Domain
                 DisplayName = displayName
             };
             Participants.Add(participant);
-            UpdatedDate = DateTime.Now;
+            UpdatedDate = DateTime.UtcNow;
             return participant;
         }
 
@@ -319,7 +320,6 @@ namespace BookingsApi.Domain
         public JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
             JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
-            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateJudiciaryParticipantCloseToStartTime);
             if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
             {
                 throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.JudiciaryParticipantNotFound);
@@ -335,6 +335,13 @@ namespace BookingsApi.Domain
             {
                 throw new InvalidOperationException($"{nameof(participant)} cannot be null");
             }
+            
+            var hasChanged = newDisplayName != participant.DisplayName ||
+                             newHearingRoleCode != participant.HearingRoleCode;
+            if (!hasChanged)
+                return participant;
+            
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateJudiciaryParticipantCloseToStartTime);
             
             participant.UpdateDisplayName(newDisplayName);
             participant.UpdateHearingRoleCode(newHearingRoleCode);
@@ -669,12 +676,12 @@ namespace BookingsApi.Domain
         {
             if(Status == BookingStatus.Cancelled)
             {
-                throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.CannotEditACancelledHearing);
+                throw new DomainRuleException(nameof(Hearing), errorMessage ?? DomainRuleErrorMessages.CannotEditACancelledHearing);
             }
             
             if (Status is BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge  && IsHearingConfirmedAndCloseToStartTime())
             {
-                throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
+                throw new DomainRuleException(nameof(Hearing), errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
             }
         }
         
@@ -819,7 +826,7 @@ namespace BookingsApi.Domain
         {
             if (Status == BookingStatus.Cancelled)
             {
-                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotEditACancelledHearing);
+                throw new DomainRuleException(nameof(Hearing), DomainRuleErrorMessages.CannotEditACancelledHearing);
             }
         }
 

@@ -35,7 +35,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
             result.Errors
-                .Any(x => x.ErrorMessage == AddParticipantsToHearingRequestValidation.NoParticipantsErrorMessage)
+                .Exists(x => x.ErrorMessage == AddParticipantsToHearingRequestValidation.NoParticipantsErrorMessage)
                 .Should().BeTrue();
         }
         

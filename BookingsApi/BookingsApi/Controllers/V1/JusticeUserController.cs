@@ -9,13 +9,14 @@ namespace BookingsApi.Controllers.V1
     [Route("justiceuser")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class JusticeUserController : Controller
+    public class JusticeUserController : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly ILogger<JusticeUserController> _logger;
 
-        public JusticeUserController(IQueryHandler queryHandler, ICommandHandler commandHandler, ILogger<JusticeUserController> logger)
+        public JusticeUserController(IQueryHandler queryHandler, ICommandHandler commandHandler,
+            ILogger<JusticeUserController> logger)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -29,7 +30,7 @@ namespace BookingsApi.Controllers.V1
         /// <returns></returns>
         [HttpPost]
         [OpenApiOperation("AddJusticeUser")]
-        [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(JusticeUserResponse), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
         [MapToApiVersion("1.0")]
@@ -40,8 +41,9 @@ namespace BookingsApi.Controllers.V1
             {
                 ModelState.AddFluentValidationErrors(validation.Errors);
                 return ValidationProblem(ModelState);
-            }       
-            var userRoleIds = request.Roles.Select(x => (int) x).ToArray();
+            }
+
+            var userRoleIds = request.Roles.Select(x => (int)x).ToArray();
             var command = new AddJusticeUserCommand(request.FirstName, request.LastName, request.Username,
                 request.ContactEmail, request.CreatedBy, userRoleIds)
             {
@@ -56,7 +58,7 @@ namespace BookingsApi.Controllers.V1
 
                 var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
                 return CreatedAtAction(actionName: nameof(GetJusticeUserByUsername),
-                    routeValues: new {username = request.Username},
+                    routeValues: new { username = request.Username },
                     value: justiceUserResponse);
             }
             catch (JusticeUserAlreadyExistsException e)
@@ -73,7 +75,7 @@ namespace BookingsApi.Controllers.V1
         /// <returns></returns>
         [HttpPatch]
         [OpenApiOperation("EditJusticeUser")]
-        [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(JusticeUserResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
@@ -85,25 +87,21 @@ namespace BookingsApi.Controllers.V1
                 ModelState.AddFluentValidationErrors(validation.Errors);
                 return ValidationProblem(ModelState);
             }
-            int[] userRoleIds = request.Roles?.Select(x => (int) x).ToArray();
-            var command = new EditJusticeUserCommand(request.Id, request.Username, request.FirstName, request.LastName, request.ContactTelephone, userRoleIds);
-            try
-            {
-                await _commandHandler.Handle(command);
-                var justiceUser =
-                    await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(
-                        new GetJusticeUserByUsernameQuery(request.Username));
 
-                var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
-                return Ok(justiceUserResponse);
-            }
-            catch (JusticeUserNotFoundException e)
-            {
-                _logger.LogError(e, "User not found for the username {Username}", request.Username);
-                return NotFound(e.Message);
-            }
+            var userRoleIds = request.Roles?.Select(x => (int)x).ToArray();
+            var command = new EditJusticeUserCommand(request.Id, request.Username, request.FirstName, request.LastName,
+                request.ContactTelephone, userRoleIds);
+
+            await _commandHandler.Handle(command);
+            var justiceUser =
+                await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(
+                    new GetJusticeUserByUsernameQuery(request.Username));
+
+            var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
+            return Ok(justiceUserResponse);
+
         }
-        
+
         /// <summary>
         /// Find justice user with matching username.
         /// </summary>
@@ -111,8 +109,8 @@ namespace BookingsApi.Controllers.V1
         /// <returns>Person list</returns>
         [HttpGet("GetJusticeUserByUsername")]
         [OpenApiOperation("GetJusticeUserByUsername")]
-        [ProducesResponseType(typeof(JusticeUserResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(JusticeUserResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetJusticeUserByUsername(string username)
         {
@@ -120,7 +118,7 @@ namespace BookingsApi.Controllers.V1
             var justiceUser =
                 await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(query);
 
-            if (justiceUser == null) 
+            if (justiceUser == null)
                 return NotFound();
 
             var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
@@ -137,8 +135,8 @@ namespace BookingsApi.Controllers.V1
         /// <returns>Justice User list</returns>
         [HttpGet("GetJusticeUserList")]
         [OpenApiOperation("GetJusticeUserList")]
-        [ProducesResponseType(typeof(List<JusticeUserResponse>), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(List<JusticeUserResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetJusticeUserList(string term, bool includeDeleted = false)
         {
@@ -169,19 +167,10 @@ namespace BookingsApi.Controllers.V1
             }
 
             var command = new DeleteJusticeUserCommand(id);
-
-            try
-            {
-                await _commandHandler.Handle(command);
-            }
-            catch (JusticeUserNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-
+            await _commandHandler.Handle(command);
             return NoContent();
         }
-        
+
         /// <summary>
         /// Restore a justice user
         /// </summary>
@@ -204,15 +193,9 @@ namespace BookingsApi.Controllers.V1
 
             var command = new RestoreJusticeUserCommand(request.Id);
 
-            try
-            {
-                await _commandHandler.Handle(command);
-                return NoContent();
-            }
-            catch (JusticeUserNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
+            await _commandHandler.Handle(command);
+            return NoContent();
+
         }
     }
 }

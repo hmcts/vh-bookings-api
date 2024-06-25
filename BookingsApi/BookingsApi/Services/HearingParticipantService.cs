@@ -19,11 +19,11 @@ public interface IHearingParticipantService
         List<Guid> removedParticipantIds,
         List<LinkedParticipantDto> linkedParticipants, 
         bool sendNotification = true);
-    public Task PublishEventForNewJudiciaryParticipantsAsync(Hearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants, bool sendNotification = true);
-    public Task PublishEventForUpdateJudiciaryParticipantAsync(Hearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant);
+    public Task PublishEventForNewJudiciaryParticipantsAsync(VideoHearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants, bool sendNotification = true);
+    public Task PublishEventForUpdateJudiciaryParticipantAsync(VideoHearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant);
     
     public Task<ValidationResult> ValidateRepresentativeInformationAsync(IRepresentativeInfoRequest request);
-    public Task<Participant> UpdateParticipantAndPublishEventAsync(Hearing videoHearing, UpdateParticipantCommand updateParticipantCommand);
+    public Task<Participant> UpdateParticipantAndPublishEventAsync(VideoHearing videoHearing, UpdateParticipantCommand updateParticipantCommand);
     Task<VideoHearing> UpdateParticipants(UpdateHearingParticipantsRequest request, VideoHearing hearing, bool sendNotification = true);
     Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles, bool sendNotification = true);
 }
@@ -53,7 +53,7 @@ public class HearingParticipantService : IHearingParticipantService
         if (participants.Any())
         {
             // Raising the below event here instead of in the async process to avoid the async process adding a duplicate participant to the conference
-            // as the UpdateHearingParticipants (also inlcudes new participants) has a separate process to add participants
+            // as the UpdateHearingParticipants (also includes new participants) has a separate process to add participants
             await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
             await _participantAddedToHearingAsynchronousProcess.Start(hearing);
         }
@@ -81,7 +81,7 @@ public class HearingParticipantService : IHearingParticipantService
         }
     }
     
-    public async Task PublishEventForNewJudiciaryParticipantsAsync(Hearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants, bool sendNotification = true)
+    public async Task PublishEventForNewJudiciaryParticipantsAsync(VideoHearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants, bool sendNotification = true)
     {
         var participants = hearing.GetJudiciaryParticipants()
             .Where(x => newJudiciaryParticipants.Any(y => y.PersonalCode == x.JudiciaryPerson.PersonalCode))
@@ -90,7 +90,7 @@ public class HearingParticipantService : IHearingParticipantService
         switch (hearing.Status)
         {
             case BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge:
-                await _newJudiciaryAddedAsynchronousProcesses.Start((VideoHearing) hearing, participants, sendNotification);
+                await _newJudiciaryAddedAsynchronousProcesses.Start(hearing, participants, sendNotification);
                 break;
             case BookingStatus.Booked or BookingStatus.BookedWithoutJudge when participants.Exists(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge):
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.GetParticipants()));
@@ -98,7 +98,7 @@ public class HearingParticipantService : IHearingParticipantService
         }
     }
     
-    public async Task PublishEventForUpdateJudiciaryParticipantAsync(Hearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant)
+    public async Task PublishEventForUpdateJudiciaryParticipantAsync(VideoHearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant)
     {
         var participant = hearing.GetJudiciaryParticipants()
             .FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == updatedJudiciaryParticipant.PersonalCode);
@@ -113,11 +113,38 @@ public class HearingParticipantService : IHearingParticipantService
         return await new RepresentativeValidation().ValidateAsync(request);
     }
 
-    public async Task<Participant> UpdateParticipantAndPublishEventAsync(Hearing videoHearing, UpdateParticipantCommand updateParticipantCommand)
+    public async Task<Participant> UpdateParticipantAndPublishEventAsync(VideoHearing videoHearing, UpdateParticipantCommand updateParticipantCommand)
     {
         await _commandHandler.Handle(updateParticipantCommand);
 
         var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
+        if (updateParticipantCommand.AdditionalInformation?.IsContactEmailNew == true)
+        {
+            string representee = null;
+            if (updatedParticipant is Representative representative)
+            {
+                representee = representative.Representee;
+            }
+
+            // need a refreshed object of video hearing including updated time stamps
+            var updatedHearing =
+                await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(videoHearing.Id));
+            
+            await PublishEventForNewParticipantsAsync(updatedHearing, new List<NewParticipant>
+            {
+                new()
+                {
+                    Person = updatedParticipant.Person,
+                    CaseRole = updatedParticipant.CaseRole,
+                    HearingRole = updatedParticipant.HearingRole,
+                    DisplayName = updatedParticipant.DisplayName,
+                    Representee = representee
+                }
+            });
+
+            return updatedParticipant;
+        }
+
         await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(updateParticipantCommand.HearingId, updatedParticipant));
         return updatedParticipant;
     }
@@ -165,16 +192,34 @@ public class HearingParticipantService : IHearingParticipantService
         var existingParticipants = hearing.Participants
             .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id)).ToList();
         
+        // get a list of participants from the hearing where Person.ContactEmail is null but the participant is in the request and has a contact email
+        var existingParticipantsWithContactEmailAdded = hearing.Participants
+            .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id))
+            .Where(x => x.Person.ContactEmail is null)
+            .Where(x => request.ExistingParticipants.Exists(ep => ep.ParticipantId == x.Id && ep.ContactEmail is not null))
+            .ToList();
+
         var existingParticipantDetails = new List<ExistingParticipantDetails>();
+        
+        var existingParticipantsToTreatAsNew = new List<NewParticipant>();
 
         foreach (var existingParticipantRequest in request.ExistingParticipants)
         {
             var updatedParticipantRequest = UpdateExistingParticipantDetailsFromRequest(existingParticipants, existingParticipantRequest);
-            if (updatedParticipantRequest != null)
+            if (updatedParticipantRequest == null) continue;
+            var existingParticipant = existingParticipants.First(ep => ep.Id == existingParticipantRequest.ParticipantId);
+            // if a contact email is not being added, use the existing contact email 
+            if (!existingParticipantsWithContactEmailAdded.Contains(existingParticipant))
             {
-                updatedParticipantRequest.Person.ContactEmail = existingParticipants.First(ep => ep.Id == existingParticipantRequest.ParticipantId).Person.ContactEmail;
-                existingParticipantDetails.Add(updatedParticipantRequest);
+                updatedParticipantRequest.Person.ContactEmail = existingParticipant.Person.ContactEmail;
             }
+            else
+            {
+                existingParticipant.Person.ContactEmail = existingParticipantRequest.ContactEmail;
+                updatedParticipantRequest.IsContactEmailNew = true;
+                existingParticipantsToTreatAsNew.Add(MapExistingParticipantToNewParticipant(existingParticipantRequest, existingParticipant, hearingRoles));
+            }
+            existingParticipantDetails.Add(updatedParticipantRequest);
         }
         
         var linkedParticipants =
@@ -186,9 +231,37 @@ public class HearingParticipantService : IHearingParticipantService
 
         var getHearingByIdQuery = new GetHearingByIdQuery(hearing.Id);
         var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-        await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants, sendNotification);
+        
+        newParticipants.AddRange(existingParticipantsToTreatAsNew);
+        var existingParticipantsToTreatAsExisting = existingParticipantDetails.Where(x => !x.IsContactEmailNew).ToList();
+        
+        await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantsToTreatAsExisting, newParticipants, request.RemovedParticipantIds, linkedParticipants, sendNotification);
 
         return updatedHearing;
+    }
+    
+    private NewParticipant MapExistingParticipantToNewParticipant(UpdateParticipantRequestV2 existingRequest, Participant existingParticipant, List<HearingRole> hearingRoles)
+    {
+        var hearingRole = hearingRoles.Find(x => string.Compare(x.Code, existingParticipant.HearingRole.Code, StringComparison.InvariantCultureIgnoreCase) == 0);
+        // For new user we don't have the username yet.
+        // We need to set the username to contact email temporarily.
+        // This will be changed and updated after creating the user.
+        var person = new Person(existingRequest.Title, existingRequest.FirstName,
+            existingRequest.LastName, existingRequest.ContactEmail, existingRequest.ContactEmail)
+        {
+            MiddleNames = existingRequest.MiddleNames,
+            ContactEmail = existingRequest.ContactEmail,
+            TelephoneNumber = existingRequest.TelephoneNumber
+        };
+        
+        return new NewParticipant
+        {
+            Person = person,
+            CaseRole = null,
+            HearingRole = hearingRole,
+            DisplayName = existingRequest.DisplayName,
+            Representee = existingRequest.Representee
+        };
     }
     
     private async Task ProcessParticipantListChange(VideoHearing hearing, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants,
@@ -210,7 +283,7 @@ public class HearingParticipantService : IHearingParticipantService
         }
     }
 
-    private async Task PublishHearingParticipantListUpdatedEvent(Hearing hearing, List<Guid> removedParticipantIds,
+    private async Task PublishHearingParticipantListUpdatedEvent(VideoHearing hearing, List<Guid> removedParticipantIds,
         List<LinkedParticipantDto> linkedParticipants, List<Participant> eventExistingParticipants, List<Participant> eventNewParticipants)
     {
         var eventLinkedParticipants = new List<Infrastructure.Services.Dtos.LinkedParticipantDto>();
@@ -237,7 +310,7 @@ public class HearingParticipantService : IHearingParticipantService
         await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
     }
 
-    private async Task PublishExistingParticipantUpdatedEvent(Hearing hearing, List<ExistingParticipantDetails> existingParticipants,
+    private async Task PublishExistingParticipantUpdatedEvent(VideoHearing hearing, List<ExistingParticipantDetails> existingParticipants,
         List<Participant> eventExistingParticipants, bool sendNotification = true)
     {
         foreach (var participant in eventExistingParticipants)
@@ -287,7 +360,8 @@ public class HearingParticipantService : IHearingParticipantService
         return existingParticipant?.Person?.Title != requestChanges.Title ||
                existingParticipant?.Person?.Organisation?.Name != requestChanges.OrganisationName ||
                existingParticipant?.Person?.TelephoneNumber != requestChanges.TelephoneNumber ||
-               existingParticipant?.DisplayName != requestChanges.DisplayName;
+               existingParticipant?.DisplayName != requestChanges.DisplayName ||
+               existingParticipant?.Person?.ContactEmail != requestChanges.ContactEmail;
     }
         
 }

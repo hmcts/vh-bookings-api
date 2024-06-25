@@ -97,6 +97,89 @@ public class UpdateHearingV2Tests : ApiTest
     }
 
     [Test]
+    public async Task should_return_bad_request_when_changing_hearing_scheduled_datetime_to_be_on_same_date_as_another_hearing_in_hearing_group()
+    {
+        // arrange
+        var dates = new List<DateTime>
+        {
+            DateTime.Today.AddDays(5).AddHours(10).ToUniversalTime(),
+            DateTime.Today.AddDays(6).AddHours(10).ToUniversalTime(),
+            DateTime.Today.AddDays(7).AddHours(10).ToUniversalTime()
+        };
+        var hearingsInGroup = await Hooks.SeedMultiDayHearing(useV2: true, dates);
+        var hearingToUpdate = hearingsInGroup[^1];
+        var hearingId = hearingToUpdate.Id;
+        var request = BuildRequest();
+        request.ScheduledDateTime = hearingsInGroup[0].ScheduledDateTime.AddHours(1);
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PutAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingDetails(hearingId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        validationProblemDetails.Errors[nameof(request.ScheduledDateTime)].Should().Contain(DomainRuleErrorMessages.CannotBeOnSameDateAsOtherHearingInGroup);
+    }
+
+    [Test]
+    public async Task should_update_hearing_when_changing_hearing_scheduled_datetime_to_be_on_different_date_to_other_hearings_in_hearing_group()
+    {
+        // arrange
+        var dates = new List<DateTime>
+        {
+            DateTime.Today.AddDays(5).AddHours(10).ToUniversalTime(),
+            DateTime.Today.AddDays(6).AddHours(10).ToUniversalTime(),
+            DateTime.Today.AddDays(7).AddHours(10).ToUniversalTime()
+        };
+        var hearingsInGroup = await Hooks.SeedMultiDayHearing(useV2: true, dates);
+        var hearingToUpdate = hearingsInGroup[0];
+        var hearingId = hearingToUpdate.Id;
+        var request = BuildRequest();
+        request.ScheduledDateTime = hearingsInGroup.Max(x => x.ScheduledDateTime).AddDays(1);
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PutAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingDetails(hearingId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var response = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        response.ScheduledDateTime.Should().Be(request.ScheduledDateTime);
+    }
+
+    [Test]
+    public async Task should_update_hearing_when_hearing_scheduled_datetime_date_is_unchanged_for_hearing_in_group()
+    {
+        // arrange
+        var dates = new List<DateTime>
+        {
+            DateTime.Today.AddDays(5).AddHours(10).ToUniversalTime(),
+            DateTime.Today.AddDays(6).AddHours(10).ToUniversalTime(),
+            DateTime.Today.AddDays(7).AddHours(10).ToUniversalTime()
+        };
+        var hearingsInGroup = await Hooks.SeedMultiDayHearing(useV2: true, dates);
+        var hearingToUpdate = hearingsInGroup[0];
+        var hearingId = hearingToUpdate.Id;
+        var request = BuildRequest();
+        request.ScheduledDateTime = hearingToUpdate.ScheduledDateTime.AddHours(1);
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PutAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingDetails(hearingId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var response = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        response.ScheduledDateTime.Should().Be(request.ScheduledDateTime);
+    }
+
+    [Test]
     public async Task should_update_hearing_and_publish_when_hearing_status_is_created()
     {
         // arrange
@@ -290,7 +373,7 @@ public class UpdateHearingV2Tests : ApiTest
         return new UpdateHearingRequestV2
         {
             ScheduledDuration = 60,
-            ScheduledDateTime = DateTime.Today.AddDays(5).AddHours(10).AddMinutes(30),
+            ScheduledDateTime = DateTime.Today.AddDays(5).AddHours(10).AddMinutes(30).ToUniversalTime(),
             HearingRoomName = "RoomUpdate",
             OtherInformation = "OtherInformationUpdate",
             UpdatedBy = "test@hmcts.net",

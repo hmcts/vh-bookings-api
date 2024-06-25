@@ -3,6 +3,7 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
@@ -206,7 +207,6 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors["NewParticipants[0].ContactEmail"].Should().Contain(ParticipantRequestValidationV2.NoContactEmailErrorMessage);
         validationProblemDetails.Errors["NewParticipants[0].DisplayName"].Should().Contain(ParticipantRequestValidationV2.NoDisplayNameErrorMessage);
         validationProblemDetails.Errors["ExistingParticipants[0].ParticipantId"].Should().Contain(UpdateParticipantRequestValidationV2.NoParticipantIdErrorMessage);
         validationProblemDetails.Errors["ExistingParticipants[0].DisplayName"].Should().Contain(UpdateParticipantRequestValidationV2.NoDisplayNameErrorMessage);
@@ -319,7 +319,57 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         hearingResponse.Status.Should().Be(BookingStatusV2.Created);
     }
     
-        
+    [Test]
+    public async Task should_add_an_interpreter_participant_to_hearing_when_hearing_is_close_to_start_time_and_return_200()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
+            {
+                options.Case = new Case("Case1 Num", "Case1 Name");
+                options.ScheduledDate = DateTime.UtcNow.AddMinutes(25);
+                options.AudioRecordingRequired = false;
+            },
+            BookingStatus.Created);
+
+        var request = new UpdateHearingParticipantsRequestV2()
+        {
+            NewParticipants = new List<ParticipantRequestV2>
+            {
+                new()
+                {
+                    DisplayName = "Add Interpreter Participant DisplayName",
+                    Title = "Mr",
+                    FirstName = "FirstName",
+                    HearingRoleCode = HearingRoleCodes.Interpreter,
+                    LastName = "LastName",
+                    MiddleNames = "MiddleNames",
+                    OrganisationName = "OrganisationName",
+                    ContactEmail = "int@testadded.com",
+                    TelephoneNumber = "01234567890"
+                }
+            },
+            LinkedParticipants = new()
+            {
+                new LinkedParticipantRequestV2
+                {
+                    Type = LinkedParticipantTypeV2.Interpreter,
+                    ParticipantContactEmail = "int@testadded.com",
+                    LinkedParticipantContactEmail =
+                        hearing.GetParticipants().First(x => x is Individual).Person.ContactEmail
+                }
+            }
+        };
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+    
     [Test]
     public async Task should_remove_a_judge_from_the_confirmed_hearing()
     {

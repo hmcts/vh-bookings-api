@@ -35,20 +35,5 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             var objectResult = (ObjectResult)result;
             ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
         }
-
-        [Test]
-        public async Task Should_return_notfound_with_HearingNotFoundException()
-        {
-            hearingId = Guid.NewGuid();
-
-            QueryHandler.Setup(q => q.Handle<GetParticipantsInHearingQuery, List<Participant>>(It.IsAny<GetParticipantsInHearingQuery>()))
-                .ThrowsAsync(new HearingNotFoundException(hearingId));
-
-            var result = await Controller.GetAllParticipantsInHearing(hearingId);
-
-            result.Should().NotBeNull();
-            var objectResult = (NotFoundResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-        }
     }
 }

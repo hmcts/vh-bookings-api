@@ -32,7 +32,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
             };
             var userRoleCso = new UserRole((int)UserRoleId.Vho, "Video hearings officer");
             _justiceUser.JusticeUserRoles.Add(new JusticeUserRole(_justiceUser, userRoleCso));
-            _justiceUser.AddOrUpdateNonAvailability(new DateTime(), new DateTime());
+            _justiceUser.AddOrUpdateNonAvailability(DateTime.MinValue, DateTime.MinValue);
 
             _context.JusticeUsers.Add(_justiceUser);
             _context.SaveChangesAsync();
@@ -54,7 +54,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
         [Test]
         public async Task should_delete_slot_for_valid_id()
         {
-            var slot = _justiceUser.VhoNonAvailability.First();
+            var slot = _justiceUser.VhoNonAvailability[0];
             var command = new DeleteNonWorkingHoursCommand(_justiceUser.Username, slot.Id);
 
             await _handler.Handle(command);

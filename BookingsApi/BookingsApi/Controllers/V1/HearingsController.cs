@@ -12,7 +12,7 @@ namespace BookingsApi.Controllers.V1
     [Route("hearings")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class HearingsController : Controller
+    public class HearingsController : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
@@ -587,6 +587,10 @@ namespace BookingsApi.Controllers.V1
             request.HearingRoomName ??= videoHearing.HearingRoomName;
             request.OtherInformation ??= videoHearing.OtherInformation;
 
+            if (videoHearing.SourceId != null)
+            {
+                await _bookingService.ValidateScheduleUpdateForHearingInGroup(videoHearing, request.ScheduledDateTime);
+            }
             var updatedHearing = await UpdateHearingDetails(hearingId, request.ScheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
                 request.UpdatedBy, cases, request.AudioRecordingRequired.Value, videoHearing);
@@ -804,8 +808,8 @@ namespace BookingsApi.Controllers.V1
         {
             var caseNumber = WebUtility.UrlDecode(searchQuery.CaseNumber);
 
-            var query = new GetHearingsBySearchQuery(caseNumber, searchQuery.Date);
-            var hearings = await _queryHandler.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(query);
+            var query = new GetAudioRecordedHearingsBySearchQuery(caseNumber, searchQuery.Date);
+            var hearings = await _queryHandler.Handle<GetAudioRecordedHearingsBySearchQuery, List<VideoHearing>>(query);
 
             var hearingMapper = new AudioRecordedHearingsBySearchResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);

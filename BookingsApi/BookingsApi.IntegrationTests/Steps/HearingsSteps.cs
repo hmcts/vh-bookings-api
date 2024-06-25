@@ -192,7 +192,8 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have an (.*) get hearings by username request")]
         public async Task GivenIHaveAGetHearingByUsernameRequest(Scenario scenario)
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            var seededHearing =
+                await Context.TestDataManager.SeedVideoHearing(options => options.AudioRecordingRequired = true);
             Context.TestData.NewHearingId = seededHearing.Id;
             _hearingId = seededHearing.Id;
             var username = scenario switch

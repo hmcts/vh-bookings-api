@@ -1,15 +1,20 @@
+using BookingsApi.Client;
 using BookingsApi.Common;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Requests.Enums;
+using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.Validations;
+using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
 using FizzWare.NBuilder;
+using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 {
@@ -95,6 +100,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Add(judiciaryPanelMemberToRemove.PersonalCode);
                 requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.Remove(judiciaryPanelMemberToRemove);
 
+                // Update a judiciary participant
+                var judiciaryPanelMemberToUpdate = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.PanelMember);
+                judiciaryPanelMemberToUpdate.DisplayName += " EDITED";
+                
                 // Reassign a judge
                 requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Add(newJudiciaryJudge);
                 var judiciaryJudgeToReassign = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.Judge);
@@ -166,6 +175,60 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             
             var groupId = hearings[0].SourceId.Value;
             
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent, result.Content.ReadAsStringAsync().Result);
+        }
+
+        [Test]
+        public async Task should_update_hearings_in_group_within_30_minutes_of_hearing_starting_when_no_changes_made()
+        {
+            // Arrange
+            var startDate = DateTime.UtcNow.AddMinutes(20);
+            var dates = new List<DateTime>
+            {
+                startDate,
+                startDate.AddDays(1),
+                startDate.AddDays(2)
+            };
+            var hearings = await SeedHearingsInGroup(dates);
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent, result.Content.ReadAsStringAsync().Result);
+        }
+        
+        [Test]
+        public async Task should_update_hearings_in_group_when_existing_judiciary_participants_in_request_do_not_exist_in_hearing()
+        {
+            // For consistency with the update participants functionality, non-existing judiciary participants are skipped in the update
+            
+            // Arrange
+            var hearings = await SeedHearingsInGroup();
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+
+            var nonExistingJudiciaryParticipantPersonalCode = Guid.NewGuid().ToString();
+            request.Hearings[0].JudiciaryParticipants.ExistingJudiciaryParticipants[0].PersonalCode = nonExistingJudiciaryParticipantPersonalCode;
+
+            var groupId = hearings[0].SourceId.Value;
+
             // Act
             using var client = Application.CreateClient();
             var result = await client
@@ -468,7 +531,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             validationProblemDetails.Errors["Hearings[0].JudiciaryParticipants.NewJudiciaryParticipants[0].PersonalCode"][0].Should().Be(
                 JudiciaryParticipantRequestValidationV2.NoPersonalCodeErrorMessage);
         }
-        
+
         [Test]
         public async Task should_return_bad_request_when_invalid_details_in_request()
         {
@@ -549,6 +612,46 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             validationProblemDetails.Errors["Hearings[0]"][0].Should()
                 .Be($"Hearing venue code {request.Hearings[0].HearingVenueCode} does not exist");
         }
+
+        [Test]
+        public async Task should_return_bad_request_when_a_scheduled_date_is_same_as_another_hearing_in_the_group_not_in_the_request()
+        {
+            // Scenario - day 1 of a multi-day hearing has been re-scheduled to a particular date. When subsequently updating the other days of the hearing as a group,
+            // they should not be allowed to be moved to the same date as the day 1 hearing
+            
+            // Arrange
+            var dates = new List<DateTime>
+            {
+                DateTime.Today.AddDays(14).AddHours(19).ToUniversalTime(),
+                DateTime.Today.AddDays(15).AddHours(19).ToUniversalTime(),
+                DateTime.Today.AddDays(16).AddHours(19).ToUniversalTime(),
+                DateTime.Today.AddDays(17).AddHours(19).ToUniversalTime(),
+                DateTime.Today.AddDays(18).AddHours(19).ToUniversalTime()
+            };
+            var hearings = await SeedHearingsInGroup(dates: dates);
+
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            var day1Hearing = await db.VideoHearings.SingleAsync(h => h.Id == hearings[0].Id);
+            day1Hearing.SetProtected(nameof(day1Hearing.ScheduledDateTime), day1Hearing.ScheduledDateTime.AddDays(-7));
+            await db.SaveChangesAsync();
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Where(h => h.Id != day1Hearing.Id).Select(MapHearingRequest).ToList();
+            request.Hearings[0].ScheduledDateTime = day1Hearing.ScheduledDateTime;
+            
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["ScheduledDateTime"].Should().Contain(DomainRuleErrorMessages.CannotBeOnSameDateAsOtherHearingInGroup);
+        }
         
         private static UpdateHearingsInGroupRequestV2 BuildRequest() =>
             new()
@@ -566,13 +669,13 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 CaseNumber = "CaseNumber"
             };
 
-        private async Task<List<VideoHearing>> SeedHearingsInGroup()
+        private async Task<List<VideoHearing>> SeedHearingsInGroup(List<DateTime> dates = null)
         {
-            var dates = new List<DateTime>
+            dates ??= new List<DateTime>
             {
-                DateTime.Today.AddDays(5).AddHours(10),
-                DateTime.Today.AddDays(6).AddHours(10),
-                DateTime.Today.AddDays(7).AddHours(10)
+                DateTime.Today.AddDays(5).AddHours(10).ToUniversalTime(),
+                DateTime.Today.AddDays(6).AddHours(10).ToUniversalTime(),
+                DateTime.Today.AddDays(7).AddHours(10).ToUniversalTime()
             };
 
             var multiDayHearings = await Hooks.SeedMultiDayHearing(useV2: true, dates, addPanelMember: true);
@@ -597,7 +700,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             new()
             {
                 HearingId = hearing.Id,
-                CaseNumber = hearing.GetCases().FirstOrDefault().Number,
+                CaseNumber = hearing.GetCases().First().Number,
                 ScheduledDateTime = hearing.ScheduledDateTime,
                 ScheduledDuration = hearing.ScheduledDuration,
                 HearingVenueCode = hearing.HearingVenue.VenueCode,
@@ -613,7 +716,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                         TelephoneNumber = p.Person.TelephoneNumber,
                         DisplayName = p.DisplayName,
                         OrganisationName = p.Person.Organisation?.Name,
-                        Representee = p is Representative ? (p as Representative).Representee : null,
+                        Representee = (p as Representative)?.Representee,
                         FirstName = p.Person.FirstName,
                         MiddleNames = p.Person.MiddleNames,
                         LastName = p.Person.LastName,
@@ -622,7 +725,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                             ParticipantContactEmail = lp.Participant.Person.ContactEmail,
                             LinkedParticipantContactEmail = lp.Linked.Person.ContactEmail,
                             Type = LinkedParticipantTypeV2.Interpreter
-                        }).ToList()
+                        }).ToList(),
+                        ContactEmail = p.Person.ContactEmail
                     }).ToList()
                 },
                 Endpoints = new UpdateHearingEndpointsRequestV2
@@ -682,6 +786,12 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             foreach (var newJudiciaryParticipant in requestHearing.JudiciaryParticipants.NewJudiciaryParticipants)
             {
                 judiciaryParticipants.Should().Contain(p => p.JudiciaryPerson.PersonalCode == newJudiciaryParticipant.PersonalCode);
+            }
+            foreach (var judiciaryParticipant in requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants)
+            {
+                judiciaryParticipants.Should().Contain(p => p.JudiciaryPerson.PersonalCode == judiciaryParticipant.PersonalCode && 
+                                                            p.DisplayName == judiciaryParticipant.DisplayName && 
+                                                            p.HearingRoleCode == judiciaryParticipant.HearingRoleCode.MapToDomainEnum());
             }
             judiciaryParticipants.Should().NotContain(p => requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Contains(p.JudiciaryPerson.PersonalCode));
             var newJudge = requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Find(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.Judge);

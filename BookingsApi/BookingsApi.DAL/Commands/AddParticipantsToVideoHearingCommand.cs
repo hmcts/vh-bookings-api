@@ -41,6 +41,7 @@ namespace BookingsApi.DAL.Commands
         public async Task Handle(AddParticipantsToVideoHearingCommand command)
         {
             var hearing = await _context.VideoHearings
+                .Include(x => x.CaseType)
                 .Include(x => x.Participants).ThenInclude(x=> x.Person.Organisation)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)

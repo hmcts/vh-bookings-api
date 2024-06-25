@@ -14,6 +14,7 @@ namespace BookingsApi.DAL.Commands
         public string FirstName { get; private set; }
         public string MiddleNames { get; set; }
         public string LastName { get; private set; }
+        public bool IsContactEmailNew { get; set; }
 
         public AdditionalInformation(string firstName, string lastName)
         {
@@ -101,9 +102,18 @@ namespace BookingsApi.DAL.Commands
                     participant.ChangePerson(existingPerson);
                 }
             }
-            
-            participant.UpdateParticipantDetails(command.Title, command.DisplayName, command.TelephoneNumber,
-                command.OrganisationName, command.ContactEmail);
+
+            if (command.AdditionalInformation?.IsContactEmailNew == true)
+            {
+                participant.UpdateParticipantDetails(command.Title, command.DisplayName, command.TelephoneNumber,
+                    command.OrganisationName, command.ContactEmail);
+                participant.Person.UpdateUsername(command.ContactEmail);
+            }
+            else
+            {
+                participant.UpdateParticipantDetails(command.Title, command.DisplayName, command.TelephoneNumber,
+                    command.OrganisationName, command.ContactEmail);
+            }
 
             if (command.AdditionalInformation != null)
             {

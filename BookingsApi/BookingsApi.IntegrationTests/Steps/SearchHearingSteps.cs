@@ -18,7 +18,7 @@ namespace BookingsApi.IntegrationTests.Steps
         public void GivenIHaveASearchHearingsByCaseNumberRequest()
         {
             var seededHearing = Context.TestData.SeededHearing;
-            var caseData = seededHearing.HearingCases.First();
+            var caseData = seededHearing.HearingCases[0];
             var caseNumber = caseData.Case.Number;
 
             var query =  new SearchForHearingsQuery
@@ -48,7 +48,7 @@ namespace BookingsApi.IntegrationTests.Steps
         public void GivenIHaveASearchHearingsByCaseNumberDateRequest()
         {
             var seededHearing = Context.TestData.SeededHearing;
-            var caseData = seededHearing.HearingCases.First();
+            var caseData = seededHearing.HearingCases[0];
             var caseNumber = caseData.Case.Number;
             var query =  new SearchForHearingsQuery
             {
@@ -64,7 +64,7 @@ namespace BookingsApi.IntegrationTests.Steps
         public void GivenIHaveASearchHearingsByCaseNumberWrongDateRequest()
         {
             var seededHearing = Context.TestData.SeededHearing;
-            var caseData = seededHearing.HearingCases.First();
+            var caseData = seededHearing.HearingCases[0];
             var caseNumber = caseData.Case.Number;
             var query =  new SearchForHearingsQuery
             {
@@ -80,7 +80,7 @@ namespace BookingsApi.IntegrationTests.Steps
         public void GivenIHaveASearchHearingsByWrongCaseNumberRightDateRequest()
         {
             var seededHearing = Context.TestData.SeededHearing;
-            var caseData = seededHearing.HearingCases.First();
+            var caseData = seededHearing.HearingCases[0];
             var caseNumber = caseData.Case.Number;
             var query =  new SearchForHearingsQuery
             {

@@ -3,7 +3,6 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
-using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.IntegrationTests.Api.V2.HearingParticipants;
 
@@ -31,19 +30,20 @@ public class AddParticipantsToHearingV2Tests : ApiTest
     }
     
     [Test]
-    public async Task should_fail_to_add_an_interpreter_participant_to_hearing_when_hearing_is_close_to_start_time_and_return_400()
+    public async Task should_add_an_interpreter_participant_to_hearing_when_hearing_is_close_to_start_time_and_return_200()
     {
         // arrange
         var hearing = await Hooks.SeedVideoHearingV2(options =>
             {
                 options.Case = new Case("Case1 Num", "Case1 Name");
                 options.ScheduledDate = DateTime.UtcNow.AddMinutes(25);
+                options.AudioRecordingRequired = false;
             },
             BookingStatus.Created);
         
         var request = BuildRequestObject();
         var participant = hearing.Participants.First(x => x is Individual);
-        request.Participants[0].HearingRoleCode = "INTP";
+        request.Participants[0].HearingRoleCode = HearingRoleCodes.Interpreter;
         request.LinkedParticipants = new List<LinkedParticipantRequestV2>
         {
             new ()
@@ -60,11 +60,8 @@ public class AddParticipantsToHearingV2Tests : ApiTest
             .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.AddParticipantsToHearing(hearing.Id),RequestBody.Set(request));
 
         // assert
-        result.IsSuccessStatusCode.Should().BeFalse();
-        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors.SelectMany(x => x.Value).Should()
-            .Contain(DomainRuleErrorMessages.CannotAddInterpreterToHearingCloseToStartTime);
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
     }
     
     private static AddParticipantsToHearingRequestV2 BuildRequestObject()

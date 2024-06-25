@@ -69,13 +69,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             db.Attach(justiceUser);
             
             justiceUser.AddOrUpdateNonAvailability(
-                new DateTime(2022, 1, 1, 8, 0, 0),
-                new DateTime(2022, 1, 1, 17, 0, 0)
+                new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc),
+                new DateTime(2022, 1, 1, 17, 0, 0, DateTimeKind.Utc)
                 );
             
             justiceUser.AddOrUpdateNonAvailability(
-                new DateTime(2022, 1, 2, 8, 0, 0),
-                new DateTime(2022, 1, 2, 17, 0, 0)
+                new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc),
+                new DateTime(2022, 1, 2, 17, 0, 0, DateTimeKind.Utc)
             );
             
             // Allocations

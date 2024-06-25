@@ -1,3 +1,4 @@
+using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -25,11 +26,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task Should_return_empty_list_when_no_user_is_found()
+        public async Task Should_throw_exception_when_no_user_is_found()
         {
             var query = new GetVhoWorkHoursQuery("doesnt.existatall@hmcts.net");
-            var vhoWorkHours = await _handler.Handle(query);
-            vhoWorkHours.Should().BeNull();
+            var action = async() => await _handler.Handle(query);
+            await action.Should().ThrowAsync<JusticeUserNotFoundException>()
+                .WithMessage($"Justice user with username {query.UserName} not found");
         }
         
         [Test]
@@ -52,11 +54,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task Should_return_null_when_user_is_deleted()
+        public async Task Should_throw_exception_when_user_is_deleted()
         {
             var query = new GetVhoWorkHoursQuery(DeletedUser);
-            var vhoWorkHours = await _handler.Handle(query);
-            vhoWorkHours.Should().BeNull();
+            var action = async() => await _handler.Handle(query);
+            await action.Should().ThrowAsync<JusticeUserNotFoundException>()
+                .WithMessage($"Justice user with username {query.UserName} not found");
         }
 
         [Test]

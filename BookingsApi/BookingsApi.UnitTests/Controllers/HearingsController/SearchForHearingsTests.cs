@@ -20,7 +20,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 CaseNumber = caseNumber
             };
             QueryHandlerMock
-                .Setup(x => x.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetHearingsBySearchQuery>()))
+                .Setup(x => x.Handle<GetAudioRecordedHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAudioRecordedHearingsBySearchQuery>()))
                 .ReturnsAsync((List<VideoHearing>)null);
 
             var result = await Controller.SearchForHearingsAsync(query);
@@ -36,7 +36,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             hearingDetailsResponse.Should().NotBeNull();
 
             QueryHandlerMock
-                .Verify(x => x.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetHearingsBySearchQuery>()), Times.Once);
+                .Verify(x => x.Handle<GetAudioRecordedHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAudioRecordedHearingsBySearchQuery>()), Times.Once);
         }
 
         [TestCase("123")]
@@ -52,7 +52,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var hearingsByCaseNumber = new List<VideoHearing> { GetHearing(caseNumber) };
 
             QueryHandlerMock
-                .Setup(x => x.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetHearingsBySearchQuery>()))
+                .Setup(x => x.Handle<GetAudioRecordedHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAudioRecordedHearingsBySearchQuery>()))
                 .ReturnsAsync(hearingsByCaseNumber);
 
             var result = await Controller.SearchForHearingsAsync(query);
@@ -70,7 +70,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             hearingDetailsResponse[0].CaseNumber.Should().Be(caseNumber);
 
             QueryHandlerMock
-                .Verify(x => x.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetHearingsBySearchQuery>()), Times.Once);
+                .Verify(x => x.Handle<GetAudioRecordedHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAudioRecordedHearingsBySearchQuery>()), Times.Once);
         }
     }
 }

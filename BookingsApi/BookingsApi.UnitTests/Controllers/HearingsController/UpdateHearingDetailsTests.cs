@@ -17,6 +17,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             var videoHearing = GetHearing("Original Hearing");
             videoHearing.UpdateStatus(BookingStatus.Created, "initial", null);
+            var sourceId = videoHearing.Id;
+            videoHearing.SourceId = sourceId;
+            var videoHearingInGroup = GetHearing("Original Hearing Day 2");
+            videoHearingInGroup.SourceId = sourceId;
             var request = new UpdateHearingRequest
             {
                 OtherInformation = videoHearing.OtherInformation + " Updated",
@@ -44,6 +48,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
                 .ReturnsAsync(new List<HearingVenue> { hearingVenueOriginal, newVenue });
+            
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(It.IsAny<GetHearingsByGroupIdQuery>()))
+                .ReturnsAsync(new List<VideoHearing> { videoHearing, videoHearingInGroup });
+            
             var expectedResult = HearingToDetailsResponseMapper.Map(updatedHearing);
             
             var controller = GetControllerObject(true);

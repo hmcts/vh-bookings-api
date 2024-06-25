@@ -41,7 +41,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             _newHearingId = seededHearing.Id;
 
             var allVenues = await _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery());
-            var newVenue = allVenues.Last();
+            var newVenue = allVenues[allVenues.Count - 1];
             var newDuration = seededHearing.ScheduledDuration + 10;
             var newDateTime = seededHearing.ScheduledDateTime.AddDays(1);
             var newHearingRoomName = "Room02 edit";
@@ -63,8 +63,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             returnedVideoHearing.ScheduledDateTime.Should().Be(newDateTime);
             returnedVideoHearing.HearingRoomName.Should().Be(newHearingRoomName);
             returnedVideoHearing.OtherInformation.Should().Be(newOtherInformation);
-            returnedVideoHearing.GetCases().First().Name.Should().Be(caseName);
-            returnedVideoHearing.GetCases().First().Number.Should().Be(caseNumber);
+            returnedVideoHearing.GetCases()[0].Name.Should().Be(caseName);
+            returnedVideoHearing.GetCases()[0].Number.Should().Be(caseNumber);
             returnedVideoHearing.AudioRecordingRequired.Should().BeTrue();
             returnedVideoHearing.UpdatedDate.Should().BeAfter(returnedVideoHearing.CreatedDate);
         }
@@ -92,7 +92,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             hearing.AllocatedTo.Id.Should().Be(allocatedUser.Id);
 
             var allVenues = await _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery());
-            var newVenue = allVenues.Last();
+            var newVenue = allVenues[allVenues.Count - 1];
             var newDateTime = seededHearing.ScheduledDateTime.AddDays(1);
             var updatedBy = "testuser";
             var casesToUpdate = new List<Case>();
@@ -114,8 +114,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test", initWorkHours: false);
             await Hooks.AddAllocation(seededHearing, allocatedUser);
             allocatedUser.AddOrUpdateNonAvailability(
-                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 0, 0, 0),
-                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 23, 59, 59)
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 0, 0, 0, DateTimeKind.Utc),
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 23, 59, 59, DateTimeKind.Utc)
                 );
 
             await _context.SaveChangesAsync();
@@ -124,7 +124,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             hearing.AllocatedTo.Id.Should().Be(allocatedUser.Id);
 
             var allVenues = await _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery());
-            var newVenue = allVenues.Last();
+            var newVenue = allVenues[allVenues.Count - 1];
             var newDateTime = seededHearing.ScheduledDateTime.AddDays(1);
             var updatedBy = "testuser";
             var casesToUpdate = new List<Case>();
@@ -153,8 +153,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 allocatedUser.AddOrUpdateWorkHour(dayOfWeek, new TimeSpan(0, 0, 0), new TimeSpan(23, 59, 59));
             }
             allocatedUser.AddOrUpdateNonAvailability(
-                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 1, 0, 0),
-                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 2, 0, 0)
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 1, 0, 0, DateTimeKind.Utc),
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 2, 0, 0, DateTimeKind.Utc)
             );
             
             await _context.SaveChangesAsync();
@@ -163,7 +163,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             hearing.AllocatedTo.Id.Should().Be(allocatedUser.Id);
 
             var allVenues = await _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery());
-            var newVenue = allVenues.Last();
+            var newVenue = allVenues[allVenues.Count - 1];
             var newDateTime = GetNextWorkingDay(seededHearing.ScheduledDateTime);
             var updatedBy = "testuser";
             var casesToUpdate = new List<Case>();
@@ -190,7 +190,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             hearing.AllocatedTo.Id.Should().Be(allocatedUser.Id);
             
             var allVenues = await _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery());
-            var newVenue = allVenues.Last();
+            var newVenue = allVenues[allVenues.Count - 1];
             var updatedBy = "testuser";
             var casesToUpdate = new List<Case>();
             

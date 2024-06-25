@@ -184,7 +184,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var hearingVenue = await db.Venues.FirstOrDefaultAsync(x => x.Id == venue.Id);
             var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
             
-            var videoHearing = InitVideoHearing(scheduledDate, hearingVenue, caseType, hearingType, options.Case, options.ScheduledDuration);
+            var videoHearing = InitVideoHearing(scheduledDate, hearingVenue, caseType, hearingType, options.Case, options.ScheduledDuration, options.AudioRecordingRequired);
 
             await AddParticipantsToVideoHearing(videoHearing, caseType, useFlatHearingRoles, options);
             videoHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
@@ -336,12 +336,11 @@ namespace BookingsApi.IntegrationTests.Helper
         }
 
         private VideoHearing InitVideoHearing(DateTime scheduledDate, HearingVenue venue, CaseType caseType,
-            HearingType hearingType, Case @case, int duration)
+            HearingType hearingType, Case @case, int duration, bool audioRecordingRequired)
         {
             const string hearingRoomName = "Room02";
             const string otherInformation = "OtherInformation02";
             const string createdBy = "test@hmcts.net";
-            const bool audioRecordingRequired = true;
             const string cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
@@ -591,7 +590,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
             // create a hearing in the future to avoid validation failures and use reflection to update the scheduled date
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
-            var videoHearing = InitVideoHearing(scheduledDate, hearingVenue, caseType, hearingType, options.Case, options.ScheduledDuration);
+            var videoHearing = InitVideoHearing(scheduledDate, hearingVenue, caseType, hearingType, options.Case, options.ScheduledDuration, options.AudioRecordingRequired);
             var videoHearingType = typeof(VideoHearing);
             videoHearingType.GetProperty("ScheduledDateTime")?.SetValue(videoHearing, pastScheduledDate);
 

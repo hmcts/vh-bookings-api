@@ -15,6 +15,19 @@ namespace BookingsApi.Validations.V2
 
             RuleForEach(x => x.Hearings)
                 .SetValidator(new HearingRequestRefDataValidationV2(hearingRoles));
+            
+            RuleFor(x => x).Custom((request, context) =>
+            {
+                var hearingsInGroupNotInRequest = hearingsInGroup
+                    .Where(h => request.Hearings.TrueForAll(rh => rh.HearingId != h.Id))
+                    .ToList();
+
+                if (request.Hearings.Exists(rh => hearingsInGroupNotInRequest.Exists(h => h.ScheduledDateTime.Date == rh.ScheduledDateTime.Date)))
+                {
+                    context.AddFailure("ScheduledDateTime", 
+                        DomainRuleErrorMessages.CannotBeOnSameDateAsOtherHearingInGroup);
+                }
+            });
         }
 
         private static void ValidateHearing(HearingRequestV2 requestHearing, 

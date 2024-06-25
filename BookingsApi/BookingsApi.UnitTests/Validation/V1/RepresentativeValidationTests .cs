@@ -32,7 +32,7 @@ namespace BookingsApi.UnitTests.Validation.V1
         }
      
         [Test]
-        public async Task Should_return_missing_organisation_error()
+        public async Task Should_not_return_missing_organisation_error()
         {
             var request = BuildRequest();
             request.HearingRoleName = "Representative";
@@ -40,10 +40,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             var result = await _representativeValidator.ValidateAsync(request);
 
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
-            result.Errors.Exists(x => x.ErrorMessage == RepresentativeValidation.NoOrganisation)
-                .Should().BeTrue();
+            result.IsValid.Should().BeTrue();
         }
 
         private static ParticipantRequest BuildRequest()

@@ -13,27 +13,24 @@ namespace BookingsApi.UnitTests.Services
     public class FirstdayOfMultidayHearingAsynchronousProcessTest
     {
         private readonly FirstdayOfMultidayHearingAsynchronousProcess _firstdayOfMultidayHearingAsynchronousProcess;
-        private readonly IEventPublisher _eventPublisher;
         private readonly ServiceBusQueueClientFake _serviceBusQueueClient;
-        private readonly IEventPublisherFactory _eventPublisherFactory;
-        private readonly IFeatureToggles _featureToggles;
+
         public FirstdayOfMultidayHearingAsynchronousProcessTest()
         {
             _serviceBusQueueClient = new ServiceBusQueueClientFake();
-            _eventPublisher = new EventPublisher(_serviceBusQueueClient);
-            _eventPublisherFactory = EventPublisherFactoryInstance.Get(_eventPublisher);
-            _featureToggles = new FeatureTogglesStub();
-            _firstdayOfMultidayHearingAsynchronousProcess = new FirstdayOfMultidayHearingAsynchronousProcess(_eventPublisherFactory, _featureToggles);
+            IEventPublisher eventPublisher = new EventPublisher(_serviceBusQueueClient);
+            IEventPublisherFactory eventPublisherFactory = EventPublisherFactoryInstance.Get(eventPublisher);
+            IFeatureToggles featureToggles = new FeatureTogglesStub();
+            _firstdayOfMultidayHearingAsynchronousProcess = new FirstdayOfMultidayHearingAsynchronousProcess(eventPublisherFactory, featureToggles);
         }
 
         [Test]
         public async Task Should_publish_messages_for_first_day_of_multiday_booking()
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
-            hearing.Participants[0].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[0].Person,
-                hearing.Participants[0].Person.CreatedDate.AddDays(-10), null);
-            hearing.Participants[1].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[1].Person,
-                hearing.Participants[1].Person.CreatedDate.AddDays(-10), null);
+            // treat the first 2 participants an existing person
+            hearing.Participants[0].ChangePerson(new PersonBuilder(true, treatPersonAsNew: false).Build());
+            hearing.Participants[1].ChangePerson(new PersonBuilder(true, treatPersonAsNew: false).Build());
 
             var createConfereceMessageCount = 1;
             var newParticipantWelcomeMessageCount = 1;

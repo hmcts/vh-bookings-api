@@ -70,7 +70,7 @@ namespace BookingsApi.IntegrationTests.Steps
             for (var i = 0; i < hearingsFromDb.Count-1; i++)
             {
                 var hearingDay = i + 1;
-                hearingsFromDb[i].GetCases().First().Name.Should().EndWith($"Day {hearingDay} of {totalDays}");
+                hearingsFromDb[i].GetCases()[0].Name.Should().EndWith($"Day {hearingDay} of {totalDays}");
             }
         }
 

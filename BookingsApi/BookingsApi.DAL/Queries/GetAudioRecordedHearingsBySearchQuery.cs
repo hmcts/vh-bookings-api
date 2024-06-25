@@ -1,27 +1,27 @@
 ﻿namespace BookingsApi.DAL.Queries
 {
-    public class GetHearingsBySearchQuery : IQuery
+    public class GetAudioRecordedHearingsBySearchQuery : IQuery
     {
         public string CaseNumber { get; }
         public DateTime? Date { get;}
 
-        public GetHearingsBySearchQuery(string caseNumber, DateTime? date = null)
+        public GetAudioRecordedHearingsBySearchQuery(string caseNumber, DateTime? date = null)
         {
             CaseNumber = caseNumber;
             Date = date;
         }
     }
 
-    public class GetHearingsBySearchQueryHandler : IQueryHandler<GetHearingsBySearchQuery, List<VideoHearing>>
+    public class GetAudioRecordedHearingsBySearchQueryHandler : IQueryHandler<GetAudioRecordedHearingsBySearchQuery, List<VideoHearing>>
     {
         private readonly BookingsDbContext _context;
 
-        public GetHearingsBySearchQueryHandler(BookingsDbContext context)
+        public GetAudioRecordedHearingsBySearchQueryHandler(BookingsDbContext context)
         {
             _context = context;
         }
 
-        public async Task<List<VideoHearing>> Handle(GetHearingsBySearchQuery query)
+        public async Task<List<VideoHearing>> Handle(GetAudioRecordedHearingsBySearchQuery query)
         {
             var efQuery = _context.VideoHearings
                 .Include(x=> x.Participants).ThenInclude(x=> x.Person).ThenInclude(x=> x.Organisation)

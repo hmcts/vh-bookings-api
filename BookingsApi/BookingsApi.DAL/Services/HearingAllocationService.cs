@@ -294,9 +294,10 @@ namespace BookingsApi.DAL.Services
             var csos = _context.JusticeUsers
                 .Include(u => u.JusticeUserRoles).ThenInclude(ur => ur.UserRole)
                 .Include(u => u.VhoWorkHours)
-                .Include(u => u.VhoNonAvailability)
+                .Include(u => u.VhoNonAvailability.Where(na => na.EndTime >= hearing.ScheduledDateTime)) // Filter here to reduce our fetch from the db
                 .Include(u => u.Allocations).ThenInclude(a => a.Hearing)
                 .Where(ju => ju.JusticeUserRoles.Any(jur => jur.UserRole.Id == (int)UserRoleId.Vho))
+                .AsSplitQuery()
                 .ToList();
 
             return csos

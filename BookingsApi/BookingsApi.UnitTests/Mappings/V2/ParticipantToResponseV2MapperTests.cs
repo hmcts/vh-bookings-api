@@ -32,13 +32,13 @@ namespace BookingsApi.UnitTests.Mappings.V2
 
             var response = _mapper.MapParticipantToResponse(judge);
             
-            AssertParticipantCommonDetails(response, judge, caseRole, hearingRole);
+            AssertParticipantCommonDetails(response, judge, hearingRole);
         }
 
-        
+
 
         private static void AssertParticipantCommonDetails(ParticipantResponseV2 response, Participant participant,
-            CaseRole caseRole, HearingRole hearingRole)
+            HearingRole hearingRole)
         {
             response.Id.Should().Be(participant.Id);
             response.DisplayName.Should().Be(participant.DisplayName);
@@ -52,7 +52,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             response.FirstName.Should().Be(person.FirstName);
             response.MiddleNames.Should().Be(person.MiddleNames);
             response.LastName.Should().Be(person.LastName);
-            
+
             response.ContactEmail.Should().Be(person.ContactEmail);
             response.TelephoneNumber.Should().Be(person.TelephoneNumber);
             response.Username.Should().Be(person.Username);

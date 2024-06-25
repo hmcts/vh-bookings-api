@@ -23,7 +23,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await Hooks.CloneVideoHearing(hearing1.Id, new List<System.DateTime> { System.DateTime.UtcNow}, BookingStatus.Created);
             await Hooks.CloneVideoHearing(hearing1.Id, new List<System.DateTime> { System.DateTime.UtcNow }, BookingStatus.Created);
             await Hooks.CloneVideoHearing(hearing1.Id, new List<System.DateTime> { System.DateTime.UtcNow.AddDays(1) }, BookingStatus.Created);
-            var username = hearing1.Participants.First().Person.Username;
+            var username = hearing1.Participants[0].Person.Username;
 
             var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
 
@@ -37,7 +37,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var hearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked);
             await Hooks.CloneVideoHearing(hearing1.Id, new List<System.DateTime> { System.DateTime.UtcNow });
 
-            var username = hearing1.GetPersons().First().Username;
+            var username = hearing1.GetPersons()[0].Username;
 
             var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
 

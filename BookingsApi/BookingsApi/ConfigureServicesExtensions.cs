@@ -87,7 +87,7 @@ namespace BookingsApi
                 .GetService<FluentValidationSchemaProcessor>();
 
             // Add the fluent validations schema processor
-            settings.SchemaProcessors.Add(fluentValidationSchemaProcessor);
+            settings.SchemaSettings.SchemaProcessors.Add(fluentValidationSchemaProcessor);
 
         }
 

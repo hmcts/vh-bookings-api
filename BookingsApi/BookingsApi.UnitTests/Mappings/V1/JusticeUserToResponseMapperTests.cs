@@ -54,7 +54,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var actualJusticeUserResponseJson = JsonConvert.SerializeObject(result);
 
             // Assert
-            Assert.AreEqual(expectedJusticeUserResponseJson, actualJusticeUserResponseJson);
+            actualJusticeUserResponseJson.Should().BeEquivalentTo(expectedJusticeUserResponseJson);
         }
     }
 }
