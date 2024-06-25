@@ -22,7 +22,6 @@ using BookingsApi.DAL.Services;
 using BookingsApi.Services;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.Publishers;
-using Testing.Common.Stubs;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
@@ -33,20 +32,18 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected Mock<ICommandHandler> CommandHandlerMock;
         protected Mock<IRandomGenerator> RandomGenerator;
         protected Mock<IHearingService> HearingServiceMock;
-        protected KinlyConfiguration KinlyConfiguration;
-        protected Mock<IVhLogger> Logger;
+        private KinlyConfiguration _kinlyConfiguration;
+        private Mock<IVhLogger> _logger;
 
         private IEventPublisher _eventPublisher;
         protected Mock<IEventPublisher> EventPublisherMock;
         protected ServiceBusQueueClientFake SbQueueClient;
 
-        protected IBookingAsynchronousProcess BookingAsynchronousProcess;
-        protected IFirstdayOfMultidayBookingAsynchronousProcess FirstdayOfMultidayBookingAsyncProcess;
-        protected IClonedBookingAsynchronousProcess ClonedBookingAsynchronousProcess;
-        protected ICreateConferenceAsynchronousProcess CreateConferenceAsynchronousProcess;
-        protected IEventPublisherFactory PublisherFactory;
-        protected Mock<IEventPublisherFactory> PublisherFactoryMock;
-        protected IFeatureToggles FeatureToggles;
+        private IBookingAsynchronousProcess _bookingAsynchronousProcess;
+        private IFirstdayOfMultidayBookingAsynchronousProcess _firstdayOfMultidayBookingAsyncProcess;
+        private IClonedBookingAsynchronousProcess _clonedBookingAsynchronousProcess;
+        private ICreateConferenceAsynchronousProcess _createConferenceAsynchronousProcess;
+        private IEventPublisherFactory _publisherFactory;
 
         [SetUp]
         public void Setup()
@@ -55,18 +52,16 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             QueryHandlerMock = new Mock<IQueryHandler>();
             CommandHandlerMock = new Mock<ICommandHandler>();
             HearingServiceMock = new Mock<IHearingService>();
-            KinlyConfiguration = new KinlyConfiguration { SipAddressStem = "@WhereAreYou.com" };
+            _kinlyConfiguration = new KinlyConfiguration { SipAddressStem = "@WhereAreYou.com" };
             RandomGenerator = new Mock<IRandomGenerator>();
             _eventPublisher = new EventPublisher(SbQueueClient);
             EventPublisherMock = new Mock<IEventPublisher>();
-            Logger = new Mock<IVhLogger>();
-            PublisherFactoryMock = new Mock<IEventPublisherFactory>();
-            PublisherFactory = EventPublisherFactoryInstance.Get(EventPublisherMock.Object);
-            FeatureToggles = new FeatureTogglesStub();
-            BookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
-            FirstdayOfMultidayBookingAsyncProcess = new FirstdayOfMultidayHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
-            ClonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(PublisherFactory, FeatureToggles);
-            CreateConferenceAsynchronousProcess = new CreateConferenceAsynchronousProcess(PublisherFactory);
+            _logger = new Mock<IVhLogger>();
+            _publisherFactory = EventPublisherFactoryInstance.Get(EventPublisherMock.Object);
+            _bookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(_publisherFactory);
+            _firstdayOfMultidayBookingAsyncProcess = new FirstdayOfMultidayHearingAsynchronousProcess(_publisherFactory);
+            _clonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_publisherFactory);
+            _createConferenceAsynchronousProcess = new CreateConferenceAsynchronousProcess(_publisherFactory);
             Controller = GetControllerObject(false);
         }
 
@@ -74,10 +69,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             var eventPublisher = withQueueClient ? _eventPublisher : EventPublisherMock.Object;
             var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object,
-                BookingAsynchronousProcess, FirstdayOfMultidayBookingAsyncProcess, ClonedBookingAsynchronousProcess, 
-                CreateConferenceAsynchronousProcess);
-            var participantAddedToHearingAsynchronousProcess = new ParticipantAddedToHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
-            var newJudiciaryAddedAsynchronousProcess = new NewJudiciaryAddedAsynchronousProcesses(PublisherFactory);
+                _bookingAsynchronousProcess, _firstdayOfMultidayBookingAsyncProcess, _clonedBookingAsynchronousProcess, 
+                _createConferenceAsynchronousProcess);
+            var participantAddedToHearingAsynchronousProcess = new ParticipantAddedToHearingAsynchronousProcess(_publisherFactory);
+            var newJudiciaryAddedAsynchronousProcess = new NewJudiciaryAddedAsynchronousProcesses(_publisherFactory);
             var hearingParticipantService = new HearingParticipantService(CommandHandlerMock.Object, EventPublisherMock.Object,
                 participantAddedToHearingAsynchronousProcess, newJudiciaryAddedAsynchronousProcess, QueryHandlerMock.Object);
             var endpointService = new EndpointService(QueryHandlerMock.Object, CommandHandlerMock.Object,
@@ -85,11 +80,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var judiciaryParticipantService = new JudiciaryParticipantService(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 hearingParticipantService, EventPublisherMock.Object);
             var updateHearingService = new UpdateHearingService(hearingParticipantService, endpointService, RandomGenerator.Object,
-                new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration), judiciaryParticipantService);
+                new OptionsWrapper<KinlyConfiguration>(_kinlyConfiguration), judiciaryParticipantService);
 
             return new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
-                bookingService, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object, Logger.Object, updateHearingService);
+                bookingService, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(_kinlyConfiguration),
+                HearingServiceMock.Object, _logger.Object, updateHearingService);
         }
 
         [Test]
@@ -110,7 +105,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             // Assert
             QueryHandlerMock.Verify(
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
-                    It.Is<GetBookingsByCaseTypesQuery>(x => x.StartDate == expectedDate)), Times.Once);
+                    It.Is<GetBookingsByCaseTypesQuery>(y => y.StartDate == expectedDate)), Times.Once);
         }
 
         [Test]
@@ -138,7 +133,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             // Assert
             QueryHandlerMock.Verify(
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
-                    It.Is<GetBookingsByCaseTypesQuery>(x => x.StartDate == expectedDate)), Times.Once);
+                    It.Is<GetBookingsByCaseTypesQuery>(y => y.StartDate == expectedDate)), Times.Once);
         }
 
         [Test]
@@ -160,7 +155,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
-            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("Hearing types",
+            ((ValidationProblemDetails)objectResult?.Value).ContainsKeyAndErrorMessage("Hearing types",
                 "Invalid value for hearing types");
         }
 
@@ -188,10 +183,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            var response = (BookingsResponse)((ObjectResult)result.Result).Value;
-            response.PrevPageUrl.Should().StartWith("hearings/types?types=&cursor=0&limit=2");
-            response.NextPageUrl.Should().StartWith("hearings/types?types=&cursor=next cursor&limit=2");
+            objectResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            var response = (BookingsResponse)((ObjectResult)result.Result)?.Value;
+            response?.PrevPageUrl.Should().StartWith("hearings/types?types=&cursor=0&limit=2");
+            response?.NextPageUrl.Should().StartWith("hearings/types?types=&cursor=next cursor&limit=2");
             QueryHandlerMock.Verify(q => q.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
                 (It.Is<GetBookingsByCaseTypesQuery>(g => g.Cursor == null)), Times.Once);
         }
@@ -219,9 +214,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                });
 
             result.Should().NotBeNull();
-            var response = (BookingsResponse)((ObjectResult)result.Result).Value;
-            response.PrevPageUrl.Should().StartWith("hearings/types?types=1&types=2&cursor=0&limit=2");
-            response.NextPageUrl.Should().StartWith("hearings/types?types=1&types=2&cursor=next-cursor&limit=2");
+            var response = (BookingsResponse)((ObjectResult)result.Result)?.Value;
+            response?.PrevPageUrl.Should().StartWith("hearings/types?types=1&types=2&cursor=0&limit=2");
+            response?.NextPageUrl.Should().StartWith("hearings/types?types=1&types=2&cursor=next-cursor&limit=2");
         }
 
         [Test]
@@ -318,7 +313,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             var response = await Controller.AnonymiseParticipantAndCaseByHearingId(hearingIds) as OkResult;
 
-            response.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            response?.StatusCode.Should().Be((int)HttpStatusCode.OK);
             CommandHandlerMock
                 .Verify(c =>
                         c.Handle(It.Is<AnonymiseCaseAndParticipantCommand>(prop =>
@@ -335,7 +330,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             QueryHandlerMock
                 .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
-                .ReturnsAsync(new List<CaseType> { new CaseType(1, "Financial"), new CaseType(2, "Civil") });
+                .ReturnsAsync([new CaseType(1, "Financial"), new CaseType(2, "Civil")]);
 
             QueryHandlerMock
                 .Setup(x =>
@@ -353,14 +348,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                }))
                .Result as ObjectResult;
 
-            var response = (BookingsResponse)objectResult.Value;
+            var response = (BookingsResponse)objectResult?.Value;
 
             objectResult.Should().NotBeNull();
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            response.Limit.Should().Be(2);
-            response.NextCursor.Should().Be("next-cursor");
-            response.PrevPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=0&limit=2&caseNumber={searchTerm}&venueIds=");
-            response.NextPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=next-cursor&limit=2&caseNumber={searchTerm}&venueIds=");
+            objectResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            response?.Limit.Should().Be(2);
+            response?.NextCursor.Should().Be("next-cursor");
+            response?.PrevPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=0&limit=2&caseNumber={searchTerm}&venueIds=");
+            response?.NextPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=next-cursor&limit=2&caseNumber={searchTerm}&venueIds=");
 
             QueryHandlerMock.Verify(
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
@@ -393,14 +388,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
               }))
               .Result as ObjectResult;
 
-            var response = (BookingsResponse)objectResult.Value;
+            var response = (BookingsResponse)objectResult?.Value;
 
             objectResult.Should().NotBeNull();
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            response.Limit.Should().Be(2);
-            response.NextCursor.Should().Be("next-cursor");
-            response.PrevPageUrl.Should().Be($"hearings/types?types=&cursor=0&limit=2&venueIds=1&venueIds=2&venueIds=3");
-            response.NextPageUrl.Should().Be($"hearings/types?types=&cursor=next-cursor&limit=2&venueIds=1&venueIds=2&venueIds=3");
+            objectResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            response?.Limit.Should().Be(2);
+            response?.NextCursor.Should().Be("next-cursor");
+            response?.PrevPageUrl.Should().Be($"hearings/types?types=&cursor=0&limit=2&venueIds=1&venueIds=2&venueIds=3");
+            response?.NextPageUrl.Should().Be($"hearings/types?types=&cursor=next-cursor&limit=2&venueIds=1&venueIds=2&venueIds=3");
 
             QueryHandlerMock.Verify(
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
@@ -428,7 +423,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
-            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("Venue ids",
+            ((ValidationProblemDetails)objectResult?.Value).ContainsKeyAndErrorMessage("Venue ids",
                 "Invalid value for venue ids");
         }
 
@@ -459,14 +454,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
               }))
               .Result as ObjectResult;
 
-            var response = (BookingsResponse)objectResult.Value;
+            var response = (BookingsResponse)objectResult?.Value;
 
             objectResult.Should().NotBeNull();
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            response.Limit.Should().Be(2);
-            response.NextCursor.Should().Be("next-cursor");
-            response.PrevPageUrl.Should().Be($"hearings/types?types=&cursor=0&limit=2&venueIds=&lastName={lastName}");
-            response.NextPageUrl.Should().Be($"hearings/types?types=&cursor=next-cursor&limit=2&venueIds=&lastName={lastName}");
+            objectResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            response?.Limit.Should().Be(2);
+            response?.NextCursor.Should().Be("next-cursor");
+            response?.PrevPageUrl.Should().Be($"hearings/types?types=&cursor=0&limit=2&venueIds=&lastName={lastName}");
+            response?.NextPageUrl.Should().Be($"hearings/types?types=&cursor=next-cursor&limit=2&venueIds=&lastName={lastName}");
 
             QueryHandlerMock.Verify(
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
@@ -497,14 +492,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                }))
                .Result as ObjectResult;
 
-            var response = (BookingsResponse)objectResult.Value;
+            var response = (BookingsResponse)objectResult?.Value;
 
             objectResult.Should().NotBeNull();
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            response.Limit.Should().Be(2);
-            response.NextCursor.Should().Be("next-cursor");
-            response.PrevPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=0&limit=2&venueIds=");
-            response.NextPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=next-cursor&limit=2&venueIds=");
+            objectResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            response?.Limit.Should().Be(2);
+            response?.NextCursor.Should().Be("next-cursor");
+            response?.PrevPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=0&limit=2&venueIds=");
+            response?.NextPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=next-cursor&limit=2&venueIds=");
 
             QueryHandlerMock.Verify(
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(

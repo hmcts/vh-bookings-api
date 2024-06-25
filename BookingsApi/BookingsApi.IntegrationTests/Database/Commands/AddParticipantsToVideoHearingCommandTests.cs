@@ -139,7 +139,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             personsListAfter.Count.Should().Be(personListBefore.Count);
 
             var existingPersonInDb =
-                personsListAfter.Single(p => p.ContactEmail.Equals(seededRepresentative.ContactEmail));
+                personsListAfter.Single(p => p.ContactEmail == seededRepresentative.ContactEmail);
             existingPersonInDb.Organisation.Name.Should().Be(seededRepresentative.Organisation.Name);
             CheckPersonDetails(existingPersonInDb, seededRepresentative);
         }
@@ -153,7 +153,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             personsListAfter.Count.Should().Be(personListBefore.Count);
 
             var existingPersonInDb =
-                personsListAfter.Single(p => p.ContactEmail.Equals(seededRepresentative.ContactEmail));
+                personsListAfter.Single(p => p.ContactEmail == seededRepresentative.ContactEmail);
             existingPersonInDb.Organisation.Should().NotBeNull();
             existingPersonInDb.Organisation.Name.Should().Be(seededRepresentative.Organisation.Name);
             CheckPersonDetails(existingPersonInDb, seededRepresentative);

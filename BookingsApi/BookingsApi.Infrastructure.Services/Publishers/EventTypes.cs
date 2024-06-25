@@ -8,10 +8,6 @@
         CreateConferenceEvent,
         NewParticipantMultidayHearingConfirmationEvent,
         ExistingParticipantMultidayHearingConfirmationEvent,
-        ParticipantAddedEvent,
-        CreateAndNotifyUserEvent,
-        HearingNotificationEvent,
-        MultiDayHearingIntegrationEvent,
         HearingNotificationForJudiciaryParticipantEvent,
         HearingNotificationForNewJudicialOfficersEvent,
         JudiciaryParticipantAddedEvent

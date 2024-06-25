@@ -5,13 +5,8 @@ namespace BookingsApi.UnitTests.Services
     [TestFixture]
     public class RandomGeneratorTests
     {
-        private readonly RandomGenerator _randomGenerator;
+        private readonly RandomGenerator _randomGenerator = new();
 
-        public RandomGeneratorTests()
-        {
-            _randomGenerator = new RandomGenerator();
-        }
-        
         [Test]
         public void Should_throw_exception_on_skip_greater_than_ticks_length()
         {
