@@ -40,6 +40,9 @@ namespace BookingsApi.Domain.Participants
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public string Discriminator { get; set; }
+        public int? InterpreterLanguageId { get; protected set; }
+        public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
+        public string OtherLanguage { get; set; }
         public IList<LinkedParticipant> LinkedParticipants { get; set; }
 
 

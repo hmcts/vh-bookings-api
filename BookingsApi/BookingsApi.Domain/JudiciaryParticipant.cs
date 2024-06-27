@@ -1,5 +1,6 @@
 using System;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
@@ -44,6 +45,10 @@ namespace BookingsApi.Domain
         /// Do not use GETTER for this property. Use GetTelephone() instead
         /// </summary>
         public string ContactTelephone { get; set; }
+        
+        public int? InterpreterLanguageId { get; protected set; }
+        public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
+        public string OtherLanguage { get; set; }
         
         public string GetEmail() => JudiciaryPerson.IsGeneric 
             ? ContactEmail ?? JudiciaryPerson.Email 

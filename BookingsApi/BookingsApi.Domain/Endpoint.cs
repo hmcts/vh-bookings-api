@@ -1,6 +1,6 @@
 using System;
-using BookingsApi.Domain.Ddd;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 
 namespace BookingsApi.Domain
 {
@@ -12,6 +12,9 @@ namespace BookingsApi.Domain
         public Participant DefenceAdvocate { get; private set; }
         public Guid HearingId { get; set; }
         public virtual Hearing Hearing { get; protected set; }
+        public int? InterpreterLanguageId { get; protected set; }
+        public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
+        public string OtherLanguage { get; set; }
         protected Endpoint(){}
 
         public Endpoint(string displayName, string sip, string pin, Participant defenceAdvocate)
