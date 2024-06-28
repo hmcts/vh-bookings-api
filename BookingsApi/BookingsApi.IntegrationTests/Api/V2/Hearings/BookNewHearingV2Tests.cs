@@ -63,6 +63,46 @@ public class BookNewHearingV2Tests : ApiTest
     }
 
     [Test]
+    public async Task should_book_a_hearing_with_interpreter_languages()
+    {
+        // arrange
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
+        const string languageCode = "spa";
+        request.JudiciaryParticipants[0].InterpreterLanguageCode = languageCode;
+        request.Participants[0].InterpreterLanguageCode = languageCode;
+        request.Endpoints.Add(new EndpointRequestV2
+        {
+            DisplayName = "Endpoint A",
+            InterpreterLanguageCode = languageCode
+        });
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
+        _hearingIds.Add(hearingResponse.Id);
+
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        createdResponse.JudiciaryParticipants.Should().Contain(x => x.InterpreterLanguageCode == languageCode);
+        createdResponse.Participants.Should().Contain(x => x.InterpreterLanguageCode == languageCode);
+        createdResponse.Endpoints.Should().Contain(x => x.InterpreterLanguageCode == languageCode);
+    }
+
+    [Test]
+    public async Task should_book_a_hearing_with_other_languages()
+    {
+        
+    }
+
+    [Test]
     public async Task should_return_validation_error_when_flat_structure_hearing_role_not_found()
     {
         // arrange
@@ -142,6 +182,18 @@ public class BookNewHearingV2Tests : ApiTest
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         validationProblemDetails.Errors[nameof(request.HearingVenueCode)][0].Should()
             .MatchRegex("HearingVenueCode [A-Za-z0-9]+ does not exist");
+    }
+
+    [Test]
+    public async Task should_return_validation_error_when_interpreter_language_code_is_not_found()
+    {
+        // TODO
+    }
+
+    [Test]
+    public async Task should_return_validation_error_when_both_interpreter_language_code_and_other_language_are_specified()
+    {
+        // TODO
     }
 
     [Test]

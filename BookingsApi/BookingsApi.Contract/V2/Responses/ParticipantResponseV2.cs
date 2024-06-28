@@ -76,6 +76,16 @@ namespace BookingsApi.Contract.V2.Responses
         public string Representee { get; set; }
         
         /// <summary>
+        /// The code of the interpreter language
+        /// </summary>
+        public string InterpreterLanguageCode { get; set; }
+        
+        /// <summary>
+        /// Interpreter language, for when the interpreter language code is not available
+        /// </summary>
+        public string OtherLanguage { get; set; }
+        
+        /// <summary>
         ///     The participant linked to this participant response
         /// </summary>
         public List<LinkedParticipantResponseV2> LinkedParticipants { get; set; }
