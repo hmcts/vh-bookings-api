@@ -127,7 +127,7 @@ namespace BookingsApi.Controllers.V1
                 await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
             if (hearing == null) throw new HearingNotFoundException(hearingId);
             await _endpointService.UpdateEndpoint(hearing, endpointId,
-                updateEndpointRequest.DefenceAdvocateContactEmail, updateEndpointRequest.DisplayName);
+                updateEndpointRequest.DefenceAdvocateContactEmail, updateEndpointRequest.DisplayName, null, null);
 
 
             return NoContent();

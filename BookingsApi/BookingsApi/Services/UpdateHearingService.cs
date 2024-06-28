@@ -59,7 +59,8 @@ namespace BookingsApi.Services
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName);
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id,
+                    endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName, null, null);
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)
@@ -80,7 +81,9 @@ namespace BookingsApi.Services
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName);
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id,
+                    endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName,
+                    endpointToUpdate.InterpreterLanguageCode, endpointToUpdate.OtherLanguage);
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)

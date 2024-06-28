@@ -330,7 +330,7 @@ namespace BookingsApi.Domain
         }
 
         public JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
-            JudiciaryParticipantHearingRoleCode newHearingRoleCode)
+            JudiciaryParticipantHearingRoleCode newHearingRoleCode, InterpreterLanguage interpreterLanguage, string otherLanguage)
         {
             if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
             {

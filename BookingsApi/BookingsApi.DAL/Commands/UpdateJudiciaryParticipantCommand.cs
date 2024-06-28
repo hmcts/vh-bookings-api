@@ -1,3 +1,5 @@
+using BookingsApi.Domain.Validations;
+
 namespace BookingsApi.DAL.Commands
 {
     public class UpdatedJudiciaryParticipant
@@ -5,6 +7,8 @@ namespace BookingsApi.DAL.Commands
         public string DisplayName { get; set; }
         public string PersonalCode { get; set; }
         public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; set; }
+        public string InterpreterLanguageCode { get; set; }
+        public string OtherLanguage { get; set; }
     }
     
     public class UpdateJudiciaryParticipantCommand : ICommand
@@ -40,11 +44,25 @@ namespace BookingsApi.DAL.Commands
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
-            
-            hearing.UpdateJudiciaryParticipantByPersonalCode(command.UpdatedJudiciaryParticipant.PersonalCode, 
-                command.UpdatedJudiciaryParticipant.DisplayName, command.UpdatedJudiciaryParticipant.HearingRoleCode);
-            
+
+            var languages = await _context.InterpreterLanguages.ToListAsync();
+            hearing.UpdateJudiciaryParticipantByPersonalCode(command.UpdatedJudiciaryParticipant.PersonalCode,
+                command.UpdatedJudiciaryParticipant.DisplayName, command.UpdatedJudiciaryParticipant.HearingRoleCode,
+                GetLanguage(languages, command.UpdatedJudiciaryParticipant.InterpreterLanguageCode),
+                command.UpdatedJudiciaryParticipant.OtherLanguage);
             await _context.SaveChangesAsync();
+        }
+        
+        private InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
+        {
+            if(string.IsNullOrWhiteSpace(languageCode)) return null;
+            var language = languages.Find(x=> x.Code == languageCode);
+
+            if (language == null)
+            {
+                throw new DomainRuleException("Hearing", $"Language code {languageCode} does not exist");
+            }
+            return language;
         }
     }
 }

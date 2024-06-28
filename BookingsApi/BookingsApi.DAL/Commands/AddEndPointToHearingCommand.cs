@@ -1,4 +1,5 @@
 ﻿using BookingsApi.DAL.Helper;
+using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -46,12 +47,25 @@ namespace BookingsApi.DAL.Commands
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
-
+            var languages = await _context.InterpreterLanguages.Where(x => x.Live).ToListAsync();
             var dto = command.Endpoint;
             var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, hearing.GetParticipants());
             var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
+            endpoint.UpdateLanguagePreferences(GetLanguage(languages, dto.LanguageCode), dto.OtherLanguage);
             hearing.AddEndpoint(endpoint);
             await _context.SaveChangesAsync();
+        }
+        
+        private InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
+        {
+            if(string.IsNullOrWhiteSpace(languageCode)) return null;
+            var language = languages.Find(x=> x.Code == languageCode);
+
+            if (language == null)
+            {
+                throw new DomainRuleException("Hearing", $"Language code {languageCode} does not exist");
+            }
+            return language;
         }
     }
 }

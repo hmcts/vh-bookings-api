@@ -99,9 +99,11 @@ namespace BookingsApi.DAL.Commands
                 var newEndpoints = new List<Endpoint>();
                 foreach (var dto in dtos)
                 {
-                    var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, videoHearing.GetParticipants());
+                    var defenceAdvocate =
+                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail,
+                            videoHearing.GetParticipants());
                     var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
-                       endpoint.UpdateLanguagePreferences(GetLanguage(languages, dto.LanguageCode), dto.OtherLanguage);
+                    endpoint.UpdateLanguagePreferences(GetLanguage(languages, dto.LanguageCode), dto.OtherLanguage);
                     newEndpoints.Add(endpoint);
                 }
 
