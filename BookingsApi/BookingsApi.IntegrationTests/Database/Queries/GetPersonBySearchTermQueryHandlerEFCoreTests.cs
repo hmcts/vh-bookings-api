@@ -38,11 +38,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             StaffMemberPerson = new Person("mr", "luffy", "duffy", "luffy@staff.net", "luffy@staffmember.net") {  Organisation = organisation };
 
             //participants record
-            IndividualParticipant = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };
-            var IndividualParticipant2 = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };
-            JudgeParticipant = new Judge(JudgePerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Judge" };
-            JudicialOfficeHolderParticipant = new JudicialOfficeHolder(JudicialOfficeHolderPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "JudicialOfficeHolder" };
-            StaffMemberParticipant = new JudicialOfficeHolder(StaffMemberPerson, new HearingRole(719, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "StaffMember" };
+            IndividualParticipant = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole"));
+            var IndividualParticipant2 = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole"));
+            JudgeParticipant = new Judge(JudgePerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole"));
+            JudicialOfficeHolderParticipant = new JudicialOfficeHolder(JudicialOfficeHolderPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole"));
+            StaffMemberParticipant = new JudicialOfficeHolder(StaffMemberPerson, new HearingRole(719, "hearingrole"), new CaseRole(345, "caserole"));
             
             _context.Persons.AddRange(IndividualPerson, JudgePerson, JudicialOfficeHolderPerson, StaffMemberPerson);
             _context.Participants.AddRange(IndividualParticipant, IndividualParticipant2, JudgeParticipant, JudicialOfficeHolderParticipant, StaffMemberParticipant);

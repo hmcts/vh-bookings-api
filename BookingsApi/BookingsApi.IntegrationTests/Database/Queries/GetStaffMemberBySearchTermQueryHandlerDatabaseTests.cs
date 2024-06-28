@@ -36,11 +36,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             _staffMemberPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email()) {  Organisation = _organisation };
             _repPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email()) {  Organisation = _organisation };
 
-            _judgeParticipant = new Judge(_judgePerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Judge" };
-            _individualParticipant = new Individual(_individualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };
-            _judicialOfficeHolderParticipant = new JudicialOfficeHolder(_judicialOfficeHolderPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "JudicialOfficeHolder" };
-            _staffMemberParticipant = new JudicialOfficeHolder(_staffMemberPerson, new HearingRole(719, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "StaffMember" };
-            _repParticipant = new Representative(_repPerson, new HearingRole(719, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Representative" };
+            _judgeParticipant = new Judge(_judgePerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole"));
+            _individualParticipant = new Individual(_individualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole"));
+            _judicialOfficeHolderParticipant = new JudicialOfficeHolder(_judicialOfficeHolderPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole"));
+            _staffMemberParticipant = new JudicialOfficeHolder(_staffMemberPerson, new HearingRole(719, "hearingrole"), new CaseRole(345, "caserole"));
+            _repParticipant = new Representative(_repPerson, new HearingRole(719, "hearingrole"), new CaseRole(345, "caserole"));
 
             _context.Persons.AddRange(_individualPerson, _judgePerson, _judicialOfficeHolderPerson, _staffMemberPerson, _repPerson);
             _context.Participants.AddRange(_individualParticipant, _judgeParticipant, _judicialOfficeHolderParticipant, _staffMemberParticipant, _repParticipant);
