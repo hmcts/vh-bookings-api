@@ -373,7 +373,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Arrange
             await UpdateHearingScheduledDateTime(DateTime.UtcNow.AddMinutes(15));
 
-            var participantToRemove = _hearing.GetParticipants().First(x => x.Discriminator == "Individual");
+            var participantToRemove = _hearing.GetParticipants().OfType<Individual>().First();
             _personsToRemove.Add(participantToRemove.Person.ContactEmail);
             var participantToRemoveId = participantToRemove.Id;
 
