@@ -188,12 +188,14 @@ public class BookNewHearingV2Tests : ApiTest
     public async Task should_return_validation_error_when_interpreter_language_code_is_not_found()
     {
         // TODO
+        Assert.Fail();
     }
 
     [Test]
     public async Task should_return_validation_error_when_both_interpreter_language_code_and_other_language_are_specified()
     {
         // TODO
+        Assert.Fail();
     }
 
     [Test]
