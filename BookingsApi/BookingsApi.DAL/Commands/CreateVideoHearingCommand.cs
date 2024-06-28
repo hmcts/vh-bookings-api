@@ -1,6 +1,7 @@
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -114,7 +115,14 @@ namespace BookingsApi.DAL.Commands
         
         private InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
         {
-            return languages.Find(x=> x.Code == languageCode);
+            if(string.IsNullOrWhiteSpace(languageCode)) return null;
+            var language = languages.Find(x=> x.Code == languageCode);
+
+            if (language == null)
+            {
+                throw new DomainRuleException("Hearing", $"Language code {languageCode} does not exist");
+            }
+            return language;
         }
     }
 }

@@ -2,9 +2,9 @@ using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Domain.Validations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using BookingsApi.Validations.V1;
 using BookingsApi.Validations.V2;
 using Testing.Common.Builders.Api.V2;
 
@@ -216,7 +216,27 @@ public class BookNewHearingV2Tests : ApiTest
     [Test]
     public async Task should_return_validation_error_when_interpreter_language_code_is_not_found()
     {
-        Assert.Fail("Not implemented");
+        // arrange
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
+        const string languageCode = "madeup";
+        request.JudiciaryParticipants[0].InterpreterLanguageCode = languageCode;
+        request.Participants[0].InterpreterLanguageCode = languageCode;
+        request.Endpoints.Add(new EndpointRequestV2
+        {
+            DisplayName = "Endpoint A",
+            InterpreterLanguageCode = languageCode
+        });
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        validationProblemDetails.Errors["Hearing"][0].Should()
+            .Be($"Language code {languageCode} does not exist");
     }
 
     [Test]
@@ -228,14 +248,9 @@ public class BookNewHearingV2Tests : ApiTest
         {
             DisplayName = "Endpoint A"
         });
-        request.JudiciaryParticipants[0].InterpreterLanguageCode = "fra";
-        request.JudiciaryParticipants[0].OtherLanguage = "French";
         
         request.Participants[0].InterpreterLanguageCode = "fra";
         request.Participants[0].OtherLanguage = "French";
-        
-        request.Endpoints[0].InterpreterLanguageCode = "fra";
-        request.Endpoints[0].OtherLanguage = "French";
         
         // act
         using var client = Application.CreateClient();
@@ -245,17 +260,8 @@ public class BookNewHearingV2Tests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        
-        Assert.Fail("Not implemented");
-        
-        // validationProblemDetails.Errors["JudiciaryParticipants[0].InterpreterLanguageCode"][0].Should()
-        //     .Be(JudiciaryParticipantRequestValidation.LanguageCodeAndOtherLanguageSetErrorMessage);
-        //
-        // validationProblemDetails.Errors["Participants[0].InterpreterLanguageCode"][0].Should()
-        //     .Be(ParticipantRequestValidationV2.LanguageCodeAndOtherLanguageSetErrorMessage);
-        //
-        // validationProblemDetails.Errors["Endpoints[0].InterpreterLanguageCode"][0].Should()
-        //     .Be(EndpointRequestValidationV2.LanguageCodeAndOtherLanguageSetErrorMessage);
+        validationProblemDetails.Errors["Participant"][0].Should()
+            .Be(DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
     }
 
     [Test]

@@ -131,7 +131,14 @@ namespace BookingsApi.DAL.Services
 
         private InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
         {
-            return languages.Find(x=> x.Code == languageCode);
+            if(string.IsNullOrWhiteSpace(languageCode)) return null;
+            var language = languages.Find(x=> x.Code == languageCode);
+
+            if (language == null)
+            {
+                throw new DomainRuleException("Hearing", $"Language code {languageCode} does not exist");
+            }
+            return language;
         }
         
         public async Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant)
@@ -225,7 +232,7 @@ namespace BookingsApi.DAL.Services
             if (judiciaryPerson == null)
                 throw new JudiciaryPersonNotFoundException(participant.PersonalCode);
 
-            var interpreterLanguage = languages.Find(x => x.Code == participant.InterpreterLanguageCode);
+            var interpreterLanguage = GetLanguage(languages, participant.InterpreterLanguageCode);
             var otherLanguage = participant.OtherLanguage;
             switch (participant.HearingRoleCode)
             {
