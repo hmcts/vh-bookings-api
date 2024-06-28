@@ -46,7 +46,10 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
         var dtos = requestV2.Endpoints.Select(x => new NewEndpointRequestDto()
         {
             DisplayName = x.DisplayName,
-            DefenceAdvocateContactEmail = x.DefenceAdvocateContactEmail
+            DefenceAdvocateContactEmail = x.DefenceAdvocateContactEmail,
+            OtherLanguage = x.OtherLanguage,
+            InterpreterLanguageCode = x.InterpreterLanguageCode
+            
         }).ToList();
         return NewEndpointGenerator.GenerateNewEndpoints(dtos, randomGenerator, sipAddressStem);
     }

@@ -20,7 +20,9 @@ namespace BookingsApi.Mappings.Common
                 WorkPhone = judiciaryParticipant.JudiciaryPerson.WorkPhone,
                 IsGeneric = judiciaryParticipant.JudiciaryPerson.IsGeneric,
                 OptionalContactEmail = judiciaryParticipant.GetEmail(),
-                OptionalContactTelephone = judiciaryParticipant.GetTelephone()
+                OptionalContactTelephone = judiciaryParticipant.GetTelephone(),
+                InterpreterLanguageCode = judiciaryParticipant.InterpreterLanguage?.Code,
+                OtherLanguage = judiciaryParticipant.OtherLanguage
             };
 
             return response;

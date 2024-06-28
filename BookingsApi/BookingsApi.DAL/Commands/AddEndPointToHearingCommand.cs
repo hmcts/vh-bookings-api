@@ -8,6 +8,8 @@ namespace BookingsApi.DAL.Commands
         public string Sip { get; set; }
         public string Pin { get; set; }
         public string ContactEmail { get; set; } 
+        public string LanguageCode { get; set; }
+        public string OtherLanguage { get; set; }
     }
     
     public class AddEndPointToHearingCommand : ICommand
@@ -35,7 +37,9 @@ namespace BookingsApi.DAL.Commands
         {
             var hearing = await _context.VideoHearings
                 .Include(h => h.Participants).ThenInclude(x => x.Person)
+                .Include(x=> x.Participants).ThenInclude(x=> x.InterpreterLanguage)
                 .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(x=> x.Endpoints).ThenInclude(x=> x.InterpreterLanguage)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)

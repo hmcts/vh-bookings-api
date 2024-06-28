@@ -76,5 +76,17 @@ namespace BookingsApi.Domain
             
             UpdatedDate = _currentUTC;
         }
+        
+        public void UpdateLanguagePreferences(InterpreterLanguage language, string otherLanguage)
+        {
+            if (language != null && !string.IsNullOrEmpty(otherLanguage))
+            {
+                throw new DomainRuleException(nameof(JudiciaryParticipant), DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
+            }
+            InterpreterLanguage = language;
+            OtherLanguage = otherLanguage;
+            
+            UpdatedDate = DateTime.UtcNow;
+        }
     }
 }

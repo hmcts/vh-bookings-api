@@ -26,6 +26,7 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.Participants).ThenInclude(x=> x.CaseRole)
                 .Include(x => x.Participants).ThenInclude(x=> x.HearingRole).ThenInclude(x => x.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
+                .Include(x=> x.Participants).ThenInclude(x=> x.InterpreterLanguage)
                 .Include("HearingCases.Case")
                 .Include(x => x.CaseType)
                 .ThenInclude(x => x.CaseRoles)
@@ -34,8 +35,10 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.HearingType)
                 .Include(x => x.HearingVenue)
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate).ThenInclude(x => x.Person)
+                .Include(x=> x.Endpoints).ThenInclude(x=> x.InterpreterLanguage)
                 .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser)
                 .Include(x => x.JudiciaryParticipants).ThenInclude(x => x.JudiciaryPerson)
+                .Include(x=> x.JudiciaryParticipants).ThenInclude(x=> x.InterpreterLanguage)
                 .AsNoTracking()
                 .AsSplitQuery()
                 .SingleOrDefaultAsync(x => x.Id == query.HearingId);

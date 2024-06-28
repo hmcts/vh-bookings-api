@@ -1,6 +1,7 @@
 using System;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
 {
@@ -38,6 +39,18 @@ namespace BookingsApi.Domain
             }
 
             DisplayName = displayName;
+        }
+        
+        public void UpdateLanguagePreferences(InterpreterLanguage language, string otherLanguage)
+        {
+            if (language != null && !string.IsNullOrEmpty(otherLanguage))
+            {
+                throw new DomainRuleException(nameof(Endpoint), DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
+            }
+            InterpreterLanguage = language;
+            OtherLanguage = otherLanguage;
+
+            UpdatedDate = DateTime.UtcNow;
         }
     }
 }

@@ -82,23 +82,27 @@ namespace BookingsApi.DAL.Commands
                 videoHearing.SourceId = command.SourceId;
 
             await _context.VideoHearings.AddAsync(videoHearing);
-            
-            var participants = await _hearingService.AddParticipantToService(videoHearing, command.Participants);
+            var languages = await _context.InterpreterLanguages.Where(x => x.Live).ToListAsync();
+            var participants = await _hearingService.AddParticipantToService(videoHearing, command.Participants, languages);
 
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
 
             foreach (var newJudiciaryParticipant in command.JudiciaryParticipants)
-                await _hearingService.AddJudiciaryParticipantToVideoHearing(videoHearing, newJudiciaryParticipant);
+                await _hearingService.AddJudiciaryParticipantToVideoHearing(videoHearing, newJudiciaryParticipant, languages);
             
             videoHearing.AddCases(command.Cases);
 
             if (command.Endpoints != null && command.Endpoints.Count > 0)
             {
                 var dtos = command.Endpoints;
-                var newEndpoints = (from dto in dtos
-                    let defenceAdvocate =
-                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, videoHearing.GetParticipants())
-                    select new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate)).ToList();
+                var newEndpoints = new List<Endpoint>();
+                foreach (var dto in dtos)
+                {
+                    var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, videoHearing.GetParticipants());
+                    var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
+                       endpoint.UpdateLanguagePreferences(GetLanguage(languages, dto.LanguageCode), dto.OtherLanguage);
+                    newEndpoints.Add(endpoint);
+                }
 
                 videoHearing.AddEndpoints(newEndpoints);
             }
@@ -106,6 +110,11 @@ namespace BookingsApi.DAL.Commands
             videoHearing.UpdateBookingStatusJudgeRequirement();
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;
+        }
+        
+        private InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
+        {
+            return languages.Find(x=> x.Code == languageCode);
         }
     }
 }

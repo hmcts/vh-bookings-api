@@ -23,7 +23,9 @@ namespace BookingsApi.Mappings.V2
                 TelephoneNumber = participant.Person.TelephoneNumber,
                 Organisation = participant.Person.Organisation?.Name,
                 LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponseV2
-                    {LinkedId = x.LinkedId, TypeV2 = x.Type.MapToContractEnum()}).ToList()
+                    {LinkedId = x.LinkedId, TypeV2 = x.Type.MapToContractEnum()}).ToList(),
+                InterpreterLanguageCode = participant.InterpreterLanguage?.Code,
+                OtherLanguage = participant.OtherLanguage
             };
 
             switch (participant.HearingRole.UserRole.Name)
