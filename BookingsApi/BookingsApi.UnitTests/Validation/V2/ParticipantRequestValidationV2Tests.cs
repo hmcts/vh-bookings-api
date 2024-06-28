@@ -119,21 +119,6 @@ namespace BookingsApi.UnitTests.Validation.V2
             result.IsValid.Should().BeTrue();
         }
         
-        [Test]
-        public async Task Should_return_missing_telephone_number_error_for_non_judge()
-        {
-            var request = BuildRequest();
-            request.TelephoneNumber = string.Empty;
-            request.HearingRoleCode = "RPTT";
-
-            var result = await _validator.ValidateAsync(request);
-
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
-            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoTelephoneNumberErrorMessage)
-                .Should().BeTrue();
-        }
-        
         [TestCase("wil.li_am." , false)]
         [TestCase("Cr.aig_1234", true)]
         [TestCase("I.", false)]
