@@ -2,6 +2,7 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Validations;
 using BookingsApi.Mappings.Common;
 using BookingsApi.Validations.V1;
 
@@ -201,6 +202,138 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors[nameof(request.DisplayName)][0].Should().Be(ReassignJudiciaryJudgeRequestValidation.NoDisplayNameErrorMessage);
             validationProblemDetails.Errors[nameof(request.PersonalCode)][0].Should().Be(ReassignJudiciaryJudgeRequestValidation.NoPersonalCodeErrorMessage);
+        }
+        
+        [Test]
+        public async Task Should_reassign_judiciary_judge_with_interpreter_languages()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
+            {
+                options.AddJudge = true;
+            }, status: BookingStatus.Created);
+            var personalCodeNewJudge = Guid.NewGuid().ToString();
+            const string languageCode = "spa";
+            await Hooks.AddJudiciaryPerson(personalCode: personalCodeNewJudge);
+
+            var request = new ReassignJudiciaryJudgeRequest
+            {
+                DisplayName = "DisplayName",
+                PersonalCode = personalCodeNewJudge,
+                InterpreterLanguageCode = languageCode
+            };
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PutAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.ReassignJudiciaryJudge(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+            var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
+            response.Should().NotBeNull();
+            response.InterpreterLanguageCode.Should().Be(request.InterpreterLanguageCode);
+        }
+
+        [Test]
+        public async Task Should_reassign_judiciary_judge_with_other_languages()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
+            {
+                options.AddJudge = true;
+            }, status: BookingStatus.Created);
+            var personalCodeNewJudge = Guid.NewGuid().ToString();
+            const string otherLanguage = "made up";
+            await Hooks.AddJudiciaryPerson(personalCode: personalCodeNewJudge);
+
+            var request = new ReassignJudiciaryJudgeRequest
+            {
+                DisplayName = "DisplayName",
+                PersonalCode = personalCodeNewJudge,
+                OtherLanguage = otherLanguage
+            };
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PutAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.ReassignJudiciaryJudge(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+            var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
+            response.Should().NotBeNull();
+            response.OtherLanguage.Should().Be(request.OtherLanguage);
+        }
+
+        [Test]
+        public async Task should_return_validation_error_when_interpreter_language_code_is_not_found()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
+            {
+                options.AddJudge = true;
+            }, status: BookingStatus.Created);
+            var personalCodeNewJudge = Guid.NewGuid().ToString();
+            const string languageCode = "non existing";
+            await Hooks.AddJudiciaryPerson(personalCode: personalCodeNewJudge);
+
+            var request = new ReassignJudiciaryJudgeRequest
+            {
+                DisplayName = "DisplayName",
+                PersonalCode = personalCodeNewJudge,
+                InterpreterLanguageCode = languageCode
+            };
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PutAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.ReassignJudiciaryJudge(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["Hearing"][0].Should().Be($"Language code {languageCode} does not exist");
+        }
+
+        [Test]
+        public async Task should_return_validation_error_when_both_interpreter_language_code_and_other_language_are_specified()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
+            {
+                options.AddJudge = true;
+            }, status: BookingStatus.Created);
+            var personalCodeNewJudge = Guid.NewGuid().ToString();
+            const string languageCode = "spa";
+            const string otherLanguage = "made up";
+            await Hooks.AddJudiciaryPerson(personalCode: personalCodeNewJudge);
+
+            var request = new ReassignJudiciaryJudgeRequest
+            {
+                DisplayName = "DisplayName",
+                PersonalCode = personalCodeNewJudge,
+                InterpreterLanguageCode = languageCode,
+                OtherLanguage = otherLanguage
+            };
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PutAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.ReassignJudiciaryJudge(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["JudiciaryParticipant"][0].Should().Be(DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
         }
     }
 }

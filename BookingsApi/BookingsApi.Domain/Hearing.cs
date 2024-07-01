@@ -349,7 +349,9 @@ namespace BookingsApi.Domain
             }
             
             var hasChanged = newDisplayName != participant.DisplayName ||
-                             newHearingRoleCode != participant.HearingRoleCode;
+                             newHearingRoleCode != participant.HearingRoleCode ||
+                             interpreterLanguage?.Code != participant.InterpreterLanguage?.Code ||
+                             otherLanguage != participant.OtherLanguage;
             if (!hasChanged)
                 return participant;
             
@@ -357,6 +359,7 @@ namespace BookingsApi.Domain
             
             participant.UpdateDisplayName(newDisplayName);
             participant.UpdateHearingRoleCode(newHearingRoleCode);
+            participant.UpdateLanguagePreferences(interpreterLanguage, otherLanguage);
             ValidateHostCount();
             UpdatedDate = DateTime.UtcNow;
             
@@ -805,7 +808,8 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        public void ReassignJudiciaryJudge(JudiciaryJudge newJudge)
+        public void ReassignJudiciaryJudge(JudiciaryJudge newJudge, InterpreterLanguage interpreterLanguage = null,
+            string otherLanguage = null)
         {
             if (newJudge == null)
             {
@@ -827,7 +831,8 @@ namespace BookingsApi.Domain
             {
                 JudiciaryParticipants.Remove(existingJudge);
             }
-
+            
+            newJudge.UpdateLanguagePreferences(interpreterLanguage, otherLanguage);
             JudiciaryParticipants.Add(newJudge);
             
             UpdatedDate = DateTime.UtcNow;

@@ -1,6 +1,6 @@
 using BookingsApi.DAL.Dtos;
-using BookingsApi.DAL.Services;
 using BookingsApi.Domain.JudiciaryParticipants;
+using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -46,10 +46,25 @@ namespace BookingsApi.DAL.Commands
             }
             
             var newJudge = new JudiciaryJudge(command.NewJudiciaryJudge.DisplayName, judiciaryPerson, command.NewJudiciaryJudge.OptionalContactEmail);
+            var languages = await _context.InterpreterLanguages.Where(x=> x.Live).ToListAsync();
+            var interpreterLanguage = GetLanguage(languages, command.NewJudiciaryJudge.InterpreterLanguageCode);
+            var otherLanguage = command.NewJudiciaryJudge.OtherLanguage;
             
-            hearing.ReassignJudiciaryJudge(newJudge);
+            hearing.ReassignJudiciaryJudge(newJudge, interpreterLanguage, otherLanguage);
 
             await _context.SaveChangesAsync();
+        }
+        
+        private InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
+        {
+            if(string.IsNullOrWhiteSpace(languageCode)) return null;
+            var language = languages.Find(x=> x.Code == languageCode);
+
+            if (language == null)
+            {
+                throw new DomainRuleException("Hearing", $"Language code {languageCode} does not exist");
+            }
+            return language;
         }
     }
 }
