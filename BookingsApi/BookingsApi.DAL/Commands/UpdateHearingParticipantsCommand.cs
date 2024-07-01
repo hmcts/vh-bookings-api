@@ -117,14 +117,14 @@ namespace BookingsApi.DAL.Commands
             await _context.SaveChangesAsync();
         }
         
-        private InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
+        private static InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
         {
             if(string.IsNullOrWhiteSpace(languageCode)) return null;
             var language = languages.Find(x=> x.Code == languageCode);
 
             if (language == null)
             {
-                throw new DomainRuleException("Hearing", $"Language code {languageCode} does not exist");
+                throw new DomainRuleException("Participant", $"Language code {languageCode} does not exist");
             }
             return language;
         }
