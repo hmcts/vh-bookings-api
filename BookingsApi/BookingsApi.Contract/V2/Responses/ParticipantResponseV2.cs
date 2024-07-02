@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BookingsApi.Contract.V1.Responses;
 
 namespace BookingsApi.Contract.V2.Responses
 {
@@ -76,9 +77,9 @@ namespace BookingsApi.Contract.V2.Responses
         public string Representee { get; set; }
         
         /// <summary>
-        /// The code of the interpreter language
+        /// The participant's interpreter language details
         /// </summary>
-        public string InterpreterLanguageCode { get; set; }
+        public InterpreterLanguagesResponse InterpreterLanguage { get; set; }
         
         /// <summary>
         /// Interpreter language, for when the interpreter language code is not available

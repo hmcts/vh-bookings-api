@@ -65,9 +65,9 @@ namespace BookingsApi.Contract.V1.Responses
         public string OptionalContactTelephone { get; set; }
         
         /// <summary>
-        /// The code of the interpreter language
+        /// The judiciary person's interpreter language details
         /// </summary>
-        public string InterpreterLanguageCode { get; set; }
+        public InterpreterLanguagesResponse InterpreterLanguage { get; set; }
         
         /// <summary>
         /// Interpreter language, for when the interpreter language code is not available

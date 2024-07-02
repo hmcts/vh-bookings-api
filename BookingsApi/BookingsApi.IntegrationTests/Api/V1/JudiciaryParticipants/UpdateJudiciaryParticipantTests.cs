@@ -51,7 +51,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             judiciaryParticipants[0].HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.Judge.MapToDomainEnum());
 
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
-            response.Should().BeEquivalentTo(request);
+            response.Should().BeEquivalentTo(request, options => options.ExcludingMissingMembers());
             
             var serviceBusStub =
                 Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
@@ -100,7 +100,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             judiciaryParticipants[0].HearingRoleCode.Should().Be(newHearingRoleCode.MapToDomainEnum());
 
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
-            response.Should().BeEquivalentTo(request);
+            response.Should().BeEquivalentTo(request, options => options.ExcludingMissingMembers());
             
             var serviceBusStub =
                 Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
@@ -326,7 +326,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             result.IsSuccessStatusCode.Should().BeTrue();
             result.StatusCode.Should().Be(HttpStatusCode.OK);
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
-            response.InterpreterLanguageCode.Should().Be(languageCode);
+            response.InterpreterLanguage.Code.Should().Be(languageCode);
         }
 
         [Test]

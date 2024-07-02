@@ -234,7 +234,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             result.StatusCode.Should().Be(HttpStatusCode.OK);
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().NotBeNull();
-            response.InterpreterLanguageCode.Should().Be(request.InterpreterLanguageCode);
+            response.InterpreterLanguage.Code.Should().Be(request.InterpreterLanguageCode);
         }
 
         [Test]

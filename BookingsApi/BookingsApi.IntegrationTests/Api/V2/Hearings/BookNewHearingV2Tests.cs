@@ -69,13 +69,16 @@ public class BookNewHearingV2Tests : ApiTest
         // arrange
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
         const string languageCode = "spa";
-        request.JudiciaryParticipants[0].InterpreterLanguageCode = languageCode;
-        request.Participants[0].InterpreterLanguageCode = languageCode;
-        request.Endpoints.Add(new EndpointRequestV2
+        var judiciaryParticipant = request.JudiciaryParticipants[0];
+        judiciaryParticipant.InterpreterLanguageCode = languageCode;
+        var participant = request.Participants[0];
+        participant.InterpreterLanguageCode = languageCode;
+        var endpoint = new EndpointRequestV2
         {
             DisplayName = "Endpoint A",
             InterpreterLanguageCode = languageCode
-        });
+        };
+        request.Endpoints.Add(endpoint);
         
         // act
         using var client = Application.CreateClient();
@@ -92,9 +95,15 @@ public class BookNewHearingV2Tests : ApiTest
         _hearingIds.Add(hearingResponse.Id);
 
         createdResponse.Should().BeEquivalentTo(hearingResponse);
-        createdResponse.JudiciaryParticipants.Should().Contain(x => x.InterpreterLanguageCode == languageCode);
-        createdResponse.Participants.Should().Contain(x => x.InterpreterLanguageCode == languageCode);
-        createdResponse.Endpoints.Should().Contain(x => x.InterpreterLanguageCode == languageCode);
+        createdResponse.JudiciaryParticipants.Should().Contain(x => 
+            x.PersonalCode == judiciaryParticipant.PersonalCode && 
+            x.InterpreterLanguage.Code == languageCode);
+        createdResponse.Participants.Should().Contain(x => 
+            x.ContactEmail == participant.ContactEmail && 
+            x.InterpreterLanguage.Code == languageCode);
+        createdResponse.Endpoints.Should().Contain(x => 
+            x.DisplayName == endpoint.DisplayName && 
+            x.InterpreterLanguage.Code == languageCode);
     }
 
     [Test]
@@ -103,13 +112,16 @@ public class BookNewHearingV2Tests : ApiTest
         // arrange
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
         const string otherLanguage = "made up";
-        request.JudiciaryParticipants[0].OtherLanguage = otherLanguage;
-        request.Participants[0].OtherLanguage = otherLanguage;
-        request.Endpoints.Add(new EndpointRequestV2
+        var judiciaryParticipant = request.JudiciaryParticipants[0];
+        judiciaryParticipant.OtherLanguage = otherLanguage;
+        var participant = request.Participants[0];
+        participant.OtherLanguage = otherLanguage;
+        var endpoint = new EndpointRequestV2
         {
             DisplayName = "Endpoint A",
             OtherLanguage = otherLanguage
-        });
+        };
+        request.Endpoints.Add(endpoint);
         
         // act
         using var client = Application.CreateClient();
@@ -126,9 +138,15 @@ public class BookNewHearingV2Tests : ApiTest
         _hearingIds.Add(hearingResponse.Id);
 
         createdResponse.Should().BeEquivalentTo(hearingResponse);
-        createdResponse.JudiciaryParticipants.Should().Contain(x => x.OtherLanguage == otherLanguage);
-        createdResponse.Participants.Should().Contain(x => x.OtherLanguage == otherLanguage);
-        createdResponse.Endpoints.Should().Contain(x => x.OtherLanguage == otherLanguage);
+        createdResponse.JudiciaryParticipants.Should().Contain(x => 
+            x.PersonalCode == judiciaryParticipant.PersonalCode && 
+            x.OtherLanguage == otherLanguage);
+        createdResponse.Participants.Should().Contain(x => 
+            x.ContactEmail == participant.ContactEmail && 
+            x.OtherLanguage == otherLanguage);
+        createdResponse.Endpoints.Should().Contain(x => 
+            x.DisplayName == endpoint.DisplayName && 
+            x.OtherLanguage == otherLanguage);
     }
 
     [Test]

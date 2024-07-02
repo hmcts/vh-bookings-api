@@ -328,10 +328,10 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var response = await ApiClientResponse.GetResponses<List<JudiciaryParticipantResponse>>(result.Content);
             var judgeResponse = response.Find(x => x.PersonalCode == requestJudge.PersonalCode);
             judgeResponse.Should().NotBeNull();
-            judgeResponse.InterpreterLanguageCode.Should().Be(requestJudge.InterpreterLanguageCode);
+            judgeResponse.InterpreterLanguage.Code.Should().Be(requestJudge.InterpreterLanguageCode);
             var panelMemberResponse = response.Find(x => x.PersonalCode == requestPanelMember.PersonalCode);
             panelMemberResponse.Should().NotBeNull();
-            panelMemberResponse.InterpreterLanguageCode.Should().Be(requestPanelMember.InterpreterLanguageCode);
+            panelMemberResponse.InterpreterLanguage.Code.Should().Be(requestPanelMember.InterpreterLanguageCode);
         }
         
         [Test]

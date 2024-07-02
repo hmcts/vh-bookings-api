@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V2.Responses;
+using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2.Extensions;
 
 namespace BookingsApi.Mappings.V2
@@ -24,7 +25,9 @@ namespace BookingsApi.Mappings.V2
                 Organisation = participant.Person.Organisation?.Name,
                 LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponseV2
                     {LinkedId = x.LinkedId, TypeV2 = x.Type.MapToContractEnum()}).ToList(),
-                InterpreterLanguageCode = participant.InterpreterLanguage?.Code,
+                InterpreterLanguage = participant.InterpreterLanguage != null ?
+                    InterpreterLanguageToResponseMapper.MapInterpreterLanguageToResponse(participant.InterpreterLanguage) :
+                    null,
                 OtherLanguage = participant.OtherLanguage
             };
 

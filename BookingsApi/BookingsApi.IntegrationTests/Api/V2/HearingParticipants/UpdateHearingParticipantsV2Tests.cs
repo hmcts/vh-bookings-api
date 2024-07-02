@@ -447,10 +447,10 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(updatedHearing.Content);
         var updatedParticipant = hearingResponse.Participants.Find(x => x.Id == existingParticipant.Id);
         updatedParticipant.Should().NotBeNull();
-        updatedParticipant.InterpreterLanguageCode.Should().Be(languageCode);
+        updatedParticipant.InterpreterLanguage.Code.Should().Be(languageCode);
         var addedParticipant = hearingResponse.Participants.Find(x => x.ContactEmail == newParticipant.ContactEmail);
         addedParticipant.Should().NotBeNull();
-        addedParticipant.InterpreterLanguageCode.Should().Be(languageCode);
+        addedParticipant.InterpreterLanguage.Code.Should().Be(languageCode);
     }
 
     [Test]
