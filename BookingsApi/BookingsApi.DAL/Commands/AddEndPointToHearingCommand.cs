@@ -1,5 +1,5 @@
 ﻿using BookingsApi.DAL.Helper;
-using BookingsApi.Domain.Validations;
+using BookingsApi.Domain.Extensions;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -51,21 +51,10 @@ namespace BookingsApi.DAL.Commands
             var dto = command.Endpoint;
             var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, hearing.GetParticipants());
             var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
-            endpoint.UpdateLanguagePreferences(GetLanguage(languages, dto.LanguageCode), dto.OtherLanguage);
+            var language = languages.GetLanguage(dto.LanguageCode, "Endpoint");
+            endpoint.UpdateLanguagePreferences(language, dto.OtherLanguage);
             hearing.AddEndpoint(endpoint);
             await _context.SaveChangesAsync();
-        }
-        
-        private static InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
-        {
-            if(string.IsNullOrWhiteSpace(languageCode)) return null;
-            var language = languages.Find(x=> x.Code == languageCode);
-
-            if (language == null)
-            {
-                throw new DomainRuleException("Endpoint", $"Language code {languageCode} does not exist");
-            }
-            return language;
         }
     }
 }

@@ -299,7 +299,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["Hearing"][0].Should().Be($"Language code {languageCode} does not exist");
+            validationProblemDetails.Errors["JudiciaryParticipant"][0].Should().Be($"Language code {languageCode} does not exist");
         }
 
         [Test]

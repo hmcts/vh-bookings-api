@@ -567,7 +567,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors["Hearing"][0].Should().Contain($"Language code {languageCode} does not exist");
+        validationProblemDetails.Errors["Participant"][0].Should().Contain($"Language code {languageCode} does not exist");
     }
 
     [Test]

@@ -1,5 +1,5 @@
-﻿using BookingsApi.Domain.Participants;
-using BookingsApi.Domain.Validations;
+﻿using BookingsApi.Domain.Extensions;
+using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -64,21 +64,9 @@ namespace BookingsApi.DAL.Commands
             }
             
             var languages = await _context.InterpreterLanguages.Where(x => x.Live).ToListAsync();
-            endpoint.UpdateLanguagePreferences(GetLanguage(languages, command.LanguageCode), command.OtherLanguage);
+            var language = languages.GetLanguage(command.LanguageCode, "Endpoint");
+            endpoint.UpdateLanguagePreferences(language, command.OtherLanguage);
             await _context.SaveChangesAsync();
         }
-        
-        private static InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
-        {
-            if(string.IsNullOrWhiteSpace(languageCode)) return null;
-            var language = languages.Find(x=> x.Code == languageCode);
-
-            if (language == null)
-            {
-                throw new DomainRuleException("Endpoint", $"Language code {languageCode} does not exist");
-            }
-            return language;
-        }
-        
     }
 }

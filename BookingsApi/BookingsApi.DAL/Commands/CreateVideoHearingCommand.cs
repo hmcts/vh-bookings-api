@@ -1,7 +1,7 @@
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Services;
-using BookingsApi.Domain.Validations;
+using BookingsApi.Domain.Extensions;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -103,7 +103,8 @@ namespace BookingsApi.DAL.Commands
                         DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail,
                             videoHearing.GetParticipants());
                     var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
-                    endpoint.UpdateLanguagePreferences(GetLanguage(languages, dto.LanguageCode), dto.OtherLanguage);
+                    var language = languages.GetLanguage(dto.LanguageCode, "Hearing");
+                    endpoint.UpdateLanguagePreferences(language, dto.OtherLanguage);
                     newEndpoints.Add(endpoint);
                 }
 
@@ -113,18 +114,6 @@ namespace BookingsApi.DAL.Commands
             videoHearing.UpdateBookingStatusJudgeRequirement();
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;
-        }
-        
-        private InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
-        {
-            if(string.IsNullOrWhiteSpace(languageCode)) return null;
-            var language = languages.Find(x=> x.Code == languageCode);
-
-            if (language == null)
-            {
-                throw new DomainRuleException("Hearing", $"Language code {languageCode} does not exist");
-            }
-            return language;
         }
     }
 }

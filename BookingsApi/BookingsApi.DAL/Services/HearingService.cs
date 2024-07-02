@@ -1,5 +1,6 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
+using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
 
@@ -75,14 +76,15 @@ namespace BookingsApi.DAL.Services
                     var person = participantToAdd.Person;
                     existingPerson.UpdatePerson(person.FirstName, person.LastName, person.Title, person.TelephoneNumber);
                 }
+                
+                var language = languages.GetLanguage(participantToAdd.InterpreterLanguageCode, "Participant");
 
                 switch (participantToAdd.HearingRole.UserRole.Name)
                 {
                     case "Individual":
                         var individual = hearing.AddIndividual(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName);
-                        individual.UpdateLanguagePreferences(GetLanguage(languages, participantToAdd.InterpreterLanguageCode),
-                            participantToAdd.OtherLanguage);
+                        individual.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
                         
                         UpdateOrganisationDetails(participantToAdd.Person, individual);
                         participantList.Add(individual);
@@ -93,8 +95,7 @@ namespace BookingsApi.DAL.Services
                                 participantToAdd.HearingRole,
                                 participantToAdd.CaseRole, participantToAdd.DisplayName,
                                 participantToAdd.Representee);
-                            representative.UpdateLanguagePreferences(GetLanguage(languages, participantToAdd.InterpreterLanguageCode),
-                                participantToAdd.OtherLanguage);
+                            representative.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
 
                             UpdateOrganisationDetails(participantToAdd.Person, representative);
                             participantList.Add(representative);
@@ -104,8 +105,7 @@ namespace BookingsApi.DAL.Services
                         {
                             var joh = hearing.AddJudicialOfficeHolder(existingPerson ?? participantToAdd.Person,
                                 participantToAdd.HearingRole, participantToAdd.CaseRole, participantToAdd.DisplayName);
-                            joh.UpdateLanguagePreferences(GetLanguage(languages, participantToAdd.InterpreterLanguageCode),
-                                participantToAdd.OtherLanguage);
+                            joh.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
                             participantList.Add(joh);
                             break;
                         }
@@ -115,8 +115,7 @@ namespace BookingsApi.DAL.Services
                                     participantToAdd.HearingRole, 
                                     participantToAdd.CaseRole, 
                                     participantToAdd.DisplayName);
-                            judge.UpdateLanguagePreferences(GetLanguage(languages, participantToAdd.InterpreterLanguageCode),
-                                participantToAdd.OtherLanguage);
+                            judge.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
                             participantList.Add(judge);
                             break;
                         }
@@ -129,18 +128,6 @@ namespace BookingsApi.DAL.Services
             return participantList;
         }
 
-        private InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
-        {
-            if(string.IsNullOrWhiteSpace(languageCode)) return null;
-            var language = languages.Find(x=> x.Code == languageCode);
-
-            if (language == null)
-            {
-                throw new DomainRuleException("Hearing", $"Language code {languageCode} does not exist");
-            }
-            return language;
-        }
-        
         public async Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant)
         {
             var person = await _context.Persons.FirstAsync(x => x.ContactEmail == newJudgeParticipant.Person.ContactEmail);
@@ -232,7 +219,7 @@ namespace BookingsApi.DAL.Services
             if (judiciaryPerson == null)
                 throw new JudiciaryPersonNotFoundException(participant.PersonalCode);
 
-            var interpreterLanguage = GetLanguage(languages, participant.InterpreterLanguageCode);
+            var interpreterLanguage = languages.GetLanguage(participant.InterpreterLanguageCode, "JudiciaryParticipant");
             var otherLanguage = participant.OtherLanguage;
             switch (participant.HearingRoleCode)
             {

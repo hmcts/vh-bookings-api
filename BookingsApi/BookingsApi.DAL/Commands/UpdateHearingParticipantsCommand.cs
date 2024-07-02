@@ -1,7 +1,7 @@
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.Participants;
-using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -108,25 +108,12 @@ namespace BookingsApi.DAL.Commands
                         newExistingParticipantDetails.RepresentativeInformation.Representee);
                 }
 
-                existingParticipant.UpdateLanguagePreferences(
-                    GetLanguage(languages, newExistingParticipantDetails.InterpreterLanguageCode),
-                    newExistingParticipantDetails.OtherLanguage);
+                var language = languages.GetLanguage(newExistingParticipantDetails.InterpreterLanguageCode, "Participant");
+                existingParticipant.UpdateLanguagePreferences(language, newExistingParticipantDetails.OtherLanguage);
             }
             hearing.UpdateBookingStatusJudgeRequirement();
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
             await _context.SaveChangesAsync();
-        }
-        
-        private static InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
-        {
-            if(string.IsNullOrWhiteSpace(languageCode)) return null;
-            var language = languages.Find(x=> x.Code == languageCode);
-
-            if (language == null)
-            {
-                throw new DomainRuleException("Participant", $"Language code {languageCode} does not exist");
-            }
-            return language;
         }
     }
 

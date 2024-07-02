@@ -1,4 +1,4 @@
-using BookingsApi.Domain.Validations;
+using BookingsApi.Domain.Extensions;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -46,23 +46,11 @@ namespace BookingsApi.DAL.Commands
             }
 
             var languages = await _context.InterpreterLanguages.ToListAsync();
+            var language = languages.GetLanguage(command.UpdatedJudiciaryParticipant.InterpreterLanguageCode, "JudiciaryParticipant");
             hearing.UpdateJudiciaryParticipantByPersonalCode(command.UpdatedJudiciaryParticipant.PersonalCode,
                 command.UpdatedJudiciaryParticipant.DisplayName, command.UpdatedJudiciaryParticipant.HearingRoleCode,
-                GetLanguage(languages, command.UpdatedJudiciaryParticipant.InterpreterLanguageCode),
-                command.UpdatedJudiciaryParticipant.OtherLanguage);
+                language, command.UpdatedJudiciaryParticipant.OtherLanguage);
             await _context.SaveChangesAsync();
-        }
-        
-        private InterpreterLanguage GetLanguage(List<InterpreterLanguage> languages, string languageCode)
-        {
-            if(string.IsNullOrWhiteSpace(languageCode)) return null;
-            var language = languages.Find(x=> x.Code == languageCode);
-
-            if (language == null)
-            {
-                throw new DomainRuleException("Hearing", $"Language code {languageCode} does not exist");
-            }
-            return language;
         }
     }
 }
