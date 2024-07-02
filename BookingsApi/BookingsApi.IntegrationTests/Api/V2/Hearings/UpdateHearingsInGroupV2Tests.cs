@@ -1,9 +1,8 @@
-using BookingsApi.Client;
 using BookingsApi.Common;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.Contract.V2.Requests.Enums;
-using BookingsApi.DAL.Commands;
+using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
@@ -12,9 +11,12 @@ using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
+using BookingsApi.Validations.V1;
 using BookingsApi.Validations.V2;
 using FizzWare.NBuilder;
 using Testing.Common.Builders.Domain;
+using ContractJudiciaryRoleCode = BookingsApi.Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode;
+using DomainJudiciaryRoleCode = BookingsApi.Domain.Enumerations.JudiciaryParticipantHearingRoleCode;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 {
@@ -48,21 +50,29 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var newParticipant = new Builder(new BuilderSettings()).CreateNew<ParticipantRequestV2>()
                 .With(p => p.ContactEmail, Faker.Internet.Email())
                 .With(p => p.HearingRoleCode, "APPL")
+                .With(x=> x.InterpreterLanguageCode = null)
+                .With(x=> x.OtherLanguage = null)
                 .Build();
             var newEndpoint = new Builder(new BuilderSettings()).CreateNew<EndpointRequestV2>()
                 .With(e => e.DefenceAdvocateContactEmail, null)
+                .With(x=> x.InterpreterLanguageCode = null)
+                .With(x=> x.OtherLanguage = null)
                 .Build();
             var newJudiciaryPanelMemberPerson = await Hooks.AddJudiciaryPerson(personalCode: Guid.NewGuid().ToString());
-            var newJudiciaryPanelMember = new Builder(new BuilderSettings()).CreateNew<JudiciaryParticipantRequestV2>()
-                .With(x => x.HearingRoleCode, JudiciaryParticipantHearingRoleCodeV2.PanelMember)
+            var newJudiciaryPanelMember = new Builder(new BuilderSettings()).CreateNew<JudiciaryParticipantRequest>()
+                .With(x => x.HearingRoleCode, ContractJudiciaryRoleCode.PanelMember)
                 .With(x => x.ContactEmail, newJudiciaryPanelMemberPerson.Email)
                 .With(x => x.PersonalCode, newJudiciaryPanelMemberPerson.PersonalCode)
+                .With(x=> x.InterpreterLanguageCode = null)
+                .With(x=> x.OtherLanguage = null)
                 .Build();
             var newJudiciaryJudgePerson = await Hooks.AddJudiciaryPerson(personalCode: Guid.NewGuid().ToString());
-            var newJudiciaryJudge = new Builder(new BuilderSettings()).CreateNew<JudiciaryParticipantRequestV2>()
-                .With(x => x.HearingRoleCode, JudiciaryParticipantHearingRoleCodeV2.Judge)
+            var newJudiciaryJudge = new Builder(new BuilderSettings()).CreateNew<JudiciaryParticipantRequest>()
+                .With(x => x.HearingRoleCode, ContractJudiciaryRoleCode.Judge)
                 .With(x => x.ContactEmail, newJudiciaryJudgePerson.Email)
                 .With(x => x.PersonalCode, newJudiciaryJudgePerson.PersonalCode)
+                .With(x=> x.InterpreterLanguageCode = null)
+                .With(x=> x.OtherLanguage = null)
                 .Build();
             
             foreach (var requestHearing in request.Hearings)
@@ -96,17 +106,17 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Add(newJudiciaryPanelMember);
                 
                 // Remove a judiciary participant
-                var judiciaryPanelMemberToRemove = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.PanelMember);
+                var judiciaryPanelMemberToRemove = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == ContractJudiciaryRoleCode.PanelMember);
                 requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Add(judiciaryPanelMemberToRemove.PersonalCode);
                 requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.Remove(judiciaryPanelMemberToRemove);
 
                 // Update a judiciary participant
-                var judiciaryPanelMemberToUpdate = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.PanelMember);
+                var judiciaryPanelMemberToUpdate = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == ContractJudiciaryRoleCode.PanelMember);
                 judiciaryPanelMemberToUpdate.DisplayName += " EDITED";
                 
                 // Reassign a judge
                 requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Add(newJudiciaryJudge);
-                var judiciaryJudgeToReassign = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.Judge);
+                var judiciaryJudgeToReassign = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == ContractJudiciaryRoleCode.Judge);
                 requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Add(judiciaryJudgeToReassign.PersonalCode);
                 requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.Remove(judiciaryJudgeToReassign);
             }
@@ -399,7 +409,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             foreach (var requestHearing in request.Hearings)
             {
                 requestHearing.JudiciaryParticipants = judiciaryParticipantsContents == ObjectContents.Empty ? 
-                    new UpdateJudiciaryParticipantsRequestV2() 
+                    new UpdateJudiciaryParticipantsRequest() 
                     : null;
             }
 
@@ -439,6 +449,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 
             var newParticipant = new Builder(new BuilderSettings()).CreateNew<ParticipantRequestV2>()
                 .With(p => p.ContactEmail, Faker.Internet.Email())
+                .With(x=> x.InterpreterLanguageCode = null)
+                .With(x=> x.OtherLanguage = null)
                 .With(p => p.HearingRoleCode, invalidHearingRoleCode)
                 .Build();
             
@@ -506,8 +518,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             var newJudiciaryPanelMemberPerson = await Hooks.AddJudiciaryPerson(personalCode: Guid.NewGuid().ToString());
-            var newJudiciaryPanelMember = new Builder(new BuilderSettings()).CreateNew<JudiciaryParticipantRequestV2>()
-                .With(x => x.HearingRoleCode, JudiciaryParticipantHearingRoleCodeV2.PanelMember)
+            var newJudiciaryPanelMember = new Builder(new BuilderSettings()).CreateNew<JudiciaryParticipantRequest>()
+                .With(x => x.HearingRoleCode, ContractJudiciaryRoleCode.PanelMember)
                 .With(x => x.ContactEmail, newJudiciaryPanelMemberPerson.Email)
                 .With(x => x.PersonalCode, "") // Invalid personal code
                 .Build();
@@ -529,7 +541,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors["Hearings[0].JudiciaryParticipants.NewJudiciaryParticipants[0].PersonalCode"][0].Should().Be(
-                JudiciaryParticipantRequestValidationV2.NoPersonalCodeErrorMessage);
+                JudiciaryParticipantRequestValidation.NoPersonalCodeErrorMessage);
         }
 
         [Test]
@@ -738,15 +750,15 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                         DefenceAdvocateContactEmail = e.DefenceAdvocate?.Person.ContactEmail
                     }).ToList()
                 },
-                JudiciaryParticipants = new UpdateJudiciaryParticipantsRequestV2
+                JudiciaryParticipants = new UpdateJudiciaryParticipantsRequest
                 {
-                    ExistingJudiciaryParticipants = hearing.JudiciaryParticipants.Select(jp => new EditableUpdateJudiciaryParticipantRequestV2
+                    ExistingJudiciaryParticipants = hearing.JudiciaryParticipants.Select(jp => new EditableUpdateJudiciaryParticipantRequest
                     {
                         DisplayName = jp.DisplayName,
                         PersonalCode = jp.JudiciaryPerson.PersonalCode,
-                        HearingRoleCode = jp.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge ?
-                            JudiciaryParticipantHearingRoleCodeV2.Judge
-                            : JudiciaryParticipantHearingRoleCodeV2.PanelMember
+                        HearingRoleCode = jp.HearingRoleCode == DomainJudiciaryRoleCode.Judge ?
+                            ContractJudiciaryRoleCode.Judge
+                            : ContractJudiciaryRoleCode.PanelMember
                     }).ToList()
                 }
             };
@@ -794,7 +806,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                                                             p.HearingRoleCode == judiciaryParticipant.HearingRoleCode.MapToDomainEnum());
             }
             judiciaryParticipants.Should().NotContain(p => requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Contains(p.JudiciaryPerson.PersonalCode));
-            var newJudge = requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Find(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.Judge);
+            var newJudge = requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Find(jp => jp.HearingRoleCode == ContractJudiciaryRoleCode.Judge);
             if (newJudge != null)
             {
                 ((JudiciaryParticipant)hearing.GetJudge()).JudiciaryPerson.PersonalCode.Should().Be(newJudge.PersonalCode);

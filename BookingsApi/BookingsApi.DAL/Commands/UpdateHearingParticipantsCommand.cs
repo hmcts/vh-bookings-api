@@ -1,5 +1,6 @@
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.DAL.Commands
@@ -40,10 +41,13 @@ namespace BookingsApi.DAL.Commands
                 .Include(x=> x.CaseType)
                 .Include(x => x.Participants).ThenInclude(x=> x.Person.Organisation)
                 .Include(x => x.JudiciaryParticipants).ThenInclude(x=> x.JudiciaryPerson)
+                .Include(x=> x.JudiciaryParticipants).ThenInclude(x=> x.InterpreterLanguage)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
+                .Include(x=> x.Participants).ThenInclude(x=> x.InterpreterLanguage)
                 .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(x=> x.Endpoints).ThenInclude(x=> x.InterpreterLanguage)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
                         
             if (hearing == null)
@@ -69,7 +73,8 @@ namespace BookingsApi.DAL.Commands
                 hearing.RemoveParticipantById(removedParticipantId, false);
             }
             
-            await _hearingService.AddParticipantToService(hearing, command.NewParticipants);
+            var languages = await _context.InterpreterLanguages.Where(x=> x.Live).ToListAsync();
+            await _hearingService.AddParticipantToService(hearing, command.NewParticipants, languages);
             
             var participants = hearing.GetParticipants().ToList();
             foreach (var newExistingParticipantDetails in command.ExistingParticipants)
@@ -102,6 +107,9 @@ namespace BookingsApi.DAL.Commands
                    ((Representative)existingParticipant).UpdateRepresentativeDetails(
                         newExistingParticipantDetails.RepresentativeInformation.Representee);
                 }
+
+                var language = languages.GetLanguage(newExistingParticipantDetails.InterpreterLanguageCode, "Participant");
+                existingParticipant.UpdateLanguagePreferences(language, newExistingParticipantDetails.OtherLanguage);
             }
             hearing.UpdateBookingStatusJudgeRequirement();
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
@@ -121,5 +129,7 @@ namespace BookingsApi.DAL.Commands
         public Person Person { get; set; }
         public RepresentativeInformation RepresentativeInformation { get; set; }
         public bool IsContactEmailNew { get; set; }
+        public string InterpreterLanguageCode { get; set; }
+        public string OtherLanguage { get; set; }
     }
 }

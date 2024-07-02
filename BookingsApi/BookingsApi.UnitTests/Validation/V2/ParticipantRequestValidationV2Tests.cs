@@ -157,6 +157,8 @@ namespace BookingsApi.UnitTests.Validation.V2
             return Builder<ParticipantRequestV2>.CreateNew()
                  .With(x => x.HearingRoleCode = "RPTT")
                  .With(x => x.TelephoneNumber = "020 7946 0101")
+                 .With(x=> x.OtherLanguage = null)
+                 .With(x => x.InterpreterLanguageCode = null)
                  .With(x => x.ContactEmail = "mm@mm.com")
                  .Build();
         }

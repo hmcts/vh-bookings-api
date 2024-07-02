@@ -29,7 +29,9 @@ public static class NewEndpointGenerator
                 Pin = pin,
                 Sip = $"{sip}{sipAddressStem}",
                 DisplayName = endpointRequest.DisplayName,
-                ContactEmail = endpointRequest.DefenceAdvocateContactEmail
+                ContactEmail = endpointRequest.DefenceAdvocateContactEmail,
+                OtherLanguage = endpointRequest.OtherLanguage,
+                LanguageCode = endpointRequest.InterpreterLanguageCode
             });
         }
 
@@ -41,4 +43,6 @@ public class NewEndpointRequestDto
 {
     public string DisplayName { get; set; }
     public string DefenceAdvocateContactEmail { get; set; }
+    public string InterpreterLanguageCode { get; set; }
+    public string OtherLanguage { get; set; }
 }

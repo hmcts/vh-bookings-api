@@ -1,5 +1,6 @@
 using System;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
@@ -45,6 +46,10 @@ namespace BookingsApi.Domain
         /// </summary>
         public string ContactTelephone { get; set; }
         
+        public int? InterpreterLanguageId { get; protected set; }
+        public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
+        public string OtherLanguage { get; set; }
+        
         public string GetEmail() => JudiciaryPerson.IsGeneric 
             ? ContactEmail ?? JudiciaryPerson.Email 
             : JudiciaryPerson.Email;
@@ -70,6 +75,18 @@ namespace BookingsApi.Domain
             HearingRoleCode = hearingRoleCode;
             
             UpdatedDate = _currentUTC;
+        }
+        
+        public void UpdateLanguagePreferences(InterpreterLanguage language, string otherLanguage)
+        {
+            if (language != null && !string.IsNullOrEmpty(otherLanguage))
+            {
+                throw new DomainRuleException(nameof(JudiciaryParticipant), DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
+            }
+            InterpreterLanguage = language;
+            OtherLanguage = otherLanguage;
+            
+            UpdatedDate = DateTime.UtcNow;
         }
     }
 }

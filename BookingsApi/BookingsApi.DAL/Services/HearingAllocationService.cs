@@ -240,7 +240,6 @@ namespace BookingsApi.DAL.Services
         /// </summary>
         /// <param name="hearing"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public void CheckAndDeallocateHearing(Hearing hearing)
         {
             var allocatedUser = hearing.AllocatedTo;

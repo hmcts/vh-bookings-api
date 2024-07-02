@@ -1,3 +1,5 @@
+using BookingsApi.Domain.Extensions;
+
 namespace BookingsApi.DAL.Commands
 {
     public class UpdatedJudiciaryParticipant
@@ -5,6 +7,8 @@ namespace BookingsApi.DAL.Commands
         public string DisplayName { get; set; }
         public string PersonalCode { get; set; }
         public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; set; }
+        public string InterpreterLanguageCode { get; set; }
+        public string OtherLanguage { get; set; }
     }
     
     public class UpdateJudiciaryParticipantCommand : ICommand
@@ -32,6 +36,7 @@ namespace BookingsApi.DAL.Commands
         {
             var hearing = await _context.VideoHearings
                 .Include(x => x.JudiciaryParticipants).ThenInclude(x => x.JudiciaryPerson)
+                .Include(x=> x.JudiciaryParticipants).ThenInclude(x=> x.InterpreterLanguage)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
@@ -39,10 +44,12 @@ namespace BookingsApi.DAL.Commands
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
-            
-            hearing.UpdateJudiciaryParticipantByPersonalCode(command.UpdatedJudiciaryParticipant.PersonalCode, 
-                command.UpdatedJudiciaryParticipant.DisplayName, command.UpdatedJudiciaryParticipant.HearingRoleCode);
-            
+
+            var languages = await _context.InterpreterLanguages.ToListAsync();
+            var language = languages.GetLanguage(command.UpdatedJudiciaryParticipant.InterpreterLanguageCode, "JudiciaryParticipant");
+            hearing.UpdateJudiciaryParticipantByPersonalCode(command.UpdatedJudiciaryParticipant.PersonalCode,
+                command.UpdatedJudiciaryParticipant.DisplayName, command.UpdatedJudiciaryParticipant.HearingRoleCode,
+                language, command.UpdatedJudiciaryParticipant.OtherLanguage);
             await _context.SaveChangesAsync();
         }
     }

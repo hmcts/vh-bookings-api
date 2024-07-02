@@ -4,6 +4,7 @@ using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.Validations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
@@ -389,5 +390,243 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
         hearingResponse.Participants.Should().NotContain(p => p.Id == judge.Id);
         hearingResponse.Status.Should().Be(BookingStatusV2.ConfirmedWithoutJudge);
+    }
+    
+    [Test]
+    public async Task should_update_hearing_participants_with_interpreter_languages()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options
+            => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
+        var existingParticipant = hearing.Participants.First(e => e.HearingRole.Name == "Litigant in person");
+        var newParticipant = new { ContactEmail = "newcontact@test.email.com" };
+        const string languageCode = "spa";
+        var request = new UpdateHearingParticipantsRequestV2
+        {
+            ExistingParticipants =
+            [
+                new UpdateParticipantRequestV2
+                {
+                    ParticipantId = existingParticipant.Id, 
+                    DisplayName = "NewDisplayName",
+                    FirstName = existingParticipant.Person?.FirstName,
+                    LastName = existingParticipant.Person?.LastName,
+                    OrganisationName = existingParticipant.Person?.Organisation?.Name,
+                    TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
+                    Title = existingParticipant.Person?.Title,
+                    InterpreterLanguageCode = languageCode
+                }
+            ],
+            NewParticipants =
+            [
+                new ParticipantRequestV2
+                {
+                    DisplayName = "DisplayName",
+                    FirstName = "NewFirstName",
+                    HearingRoleCode = HearingRoleCodes.Applicant,
+                    LastName = "NewLastName",
+                    MiddleNames = "NewMiddleNames",
+                    OrganisationName = "OrganisationName",
+                    ContactEmail = newParticipant.ContactEmail,
+                    TelephoneNumber = "0123456789",
+                    Title = "Title",
+                    Representee = "Representee",
+                    InterpreterLanguageCode = languageCode
+                }
+            ]
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
+
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var updatedHearing = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(hearing.Id.ToString()));
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(updatedHearing.Content);
+        var updatedParticipant = hearingResponse.Participants.Find(x => x.Id == existingParticipant.Id);
+        updatedParticipant.Should().NotBeNull();
+        updatedParticipant.InterpreterLanguage.Code.Should().Be(languageCode);
+        var addedParticipant = hearingResponse.Participants.Find(x => x.ContactEmail == newParticipant.ContactEmail);
+        addedParticipant.Should().NotBeNull();
+        addedParticipant.InterpreterLanguage.Code.Should().Be(languageCode);
+    }
+
+    [Test]
+    public async Task should_update_hearing_participants_with_other_languages()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options
+            => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
+        var existingParticipant = hearing.Participants.First(e => e.HearingRole.Name == "Litigant in person");
+        var newParticipant = new { ContactEmail = "newcontact@test.email.com" };
+        const string otherLanguage = "made up";
+        var request = new UpdateHearingParticipantsRequestV2
+        {
+            ExistingParticipants =
+            [
+                new UpdateParticipantRequestV2
+                {
+                    ParticipantId = existingParticipant.Id, 
+                    DisplayName = "NewDisplayName",
+                    FirstName = existingParticipant.Person?.FirstName,
+                    LastName = existingParticipant.Person?.LastName,
+                    OrganisationName = existingParticipant.Person?.Organisation?.Name,
+                    TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
+                    Title = existingParticipant.Person?.Title,
+                    OtherLanguage = otherLanguage
+                }
+            ],
+            NewParticipants =
+            [
+                new ParticipantRequestV2
+                {
+                    DisplayName = "DisplayName",
+                    FirstName = "NewFirstName",
+                    HearingRoleCode = HearingRoleCodes.Applicant,
+                    LastName = "NewLastName",
+                    MiddleNames = "NewMiddleNames",
+                    OrganisationName = "OrganisationName",
+                    ContactEmail = newParticipant.ContactEmail,
+                    TelephoneNumber = "0123456789",
+                    Title = "Title",
+                    Representee = "Representee",
+                    OtherLanguage = otherLanguage
+                }
+            ]
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
+
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var updatedHearing = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(hearing.Id.ToString()));
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(updatedHearing.Content);
+        var updatedParticipant = hearingResponse.Participants.Find(x => x.Id == existingParticipant.Id);
+        updatedParticipant.Should().NotBeNull();
+        updatedParticipant.OtherLanguage.Should().Be(otherLanguage);
+        var addedParticipant = hearingResponse.Participants.Find(x => x.ContactEmail == newParticipant.ContactEmail);
+        addedParticipant.Should().NotBeNull();
+        addedParticipant.OtherLanguage.Should().Be(otherLanguage);
+    }
+    
+    [Test]
+    public async Task should_return_validation_error_when_interpreter_language_code_is_not_found()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options
+            => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
+        var existingParticipant = hearing.Participants.First(e => e.HearingRole.Name == "Litigant in person");
+        var newParticipant = new { ContactEmail = "newcontact@test.email.com" };
+        const string languageCode = "non existing";
+        var request = new UpdateHearingParticipantsRequestV2
+        {
+            ExistingParticipants =
+            [
+                new UpdateParticipantRequestV2
+                {
+                    ParticipantId = existingParticipant.Id, 
+                    DisplayName = "NewDisplayName",
+                    FirstName = existingParticipant.Person?.FirstName,
+                    LastName = existingParticipant.Person?.LastName,
+                    OrganisationName = existingParticipant.Person?.Organisation?.Name,
+                    TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
+                    Title = existingParticipant.Person?.Title,
+                    InterpreterLanguageCode = languageCode
+                }
+            ],
+            NewParticipants =
+            [
+                new ParticipantRequestV2
+                {
+                    DisplayName = "DisplayName",
+                    FirstName = "NewFirstName",
+                    HearingRoleCode = HearingRoleCodes.Applicant,
+                    LastName = "NewLastName",
+                    MiddleNames = "NewMiddleNames",
+                    OrganisationName = "OrganisationName",
+                    ContactEmail = newParticipant.ContactEmail,
+                    TelephoneNumber = "0123456789",
+                    Title = "Title",
+                    Representee = "Representee",
+                    InterpreterLanguageCode = languageCode
+                }
+            ]
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        validationProblemDetails.Errors["Participant"][0].Should().Contain($"Language code {languageCode} does not exist");
+    }
+
+    [Test]
+    public async Task should_return_validation_error_when_both_interpreter_language_code_and_other_language_are_specified()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options
+            => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
+        var existingParticipant = hearing.Participants.First(e => e.HearingRole.Name == "Litigant in person");
+        var newParticipant = new { ContactEmail = "newcontact@test.email.com" };
+        const string languageCode = "spa";
+        const string otherLanguage = "made up";
+        var request = new UpdateHearingParticipantsRequestV2
+        {
+            ExistingParticipants =
+            [
+                new UpdateParticipantRequestV2
+                {
+                    ParticipantId = existingParticipant.Id, 
+                    DisplayName = "NewDisplayName",
+                    FirstName = existingParticipant.Person?.FirstName,
+                    LastName = existingParticipant.Person?.LastName,
+                    OrganisationName = existingParticipant.Person?.Organisation?.Name,
+                    TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
+                    Title = existingParticipant.Person?.Title,
+                    InterpreterLanguageCode = languageCode,
+                    OtherLanguage = otherLanguage
+                }
+            ],
+            NewParticipants =
+            [
+                new ParticipantRequestV2
+                {
+                    DisplayName = "DisplayName",
+                    FirstName = "NewFirstName",
+                    HearingRoleCode = HearingRoleCodes.Applicant,
+                    LastName = "NewLastName",
+                    MiddleNames = "NewMiddleNames",
+                    OrganisationName = "OrganisationName",
+                    ContactEmail = newParticipant.ContactEmail,
+                    TelephoneNumber = "0123456789",
+                    Title = "Title",
+                    Representee = "Representee",
+                    InterpreterLanguageCode = languageCode,
+                    OtherLanguage = otherLanguage
+                }
+            ]
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        validationProblemDetails.Errors["Participant"][0].Should()
+            .Be(DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
     }
 }

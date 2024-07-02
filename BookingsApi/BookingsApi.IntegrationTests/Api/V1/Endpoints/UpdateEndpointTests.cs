@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Validations;
 using BookingsApi.Validations.V1;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Endpoints;
@@ -128,5 +129,135 @@ public class UpdateEndpointTests : ApiTest
         endpoint.DisplayName.Should().Be(request.DisplayName);
         endpoint.DefenceAdvocate.Should().NotBeNull();
         endpoint.DefenceAdvocate.Person.ContactEmail.Should().Be(request.DefenceAdvocateContactEmail);
+    }
+    
+    [Test]
+    public async Task should_update_endpoint_with_interpreter_languages()
+    {
+        // arrange
+        var seededHearing = await Hooks.SeedVideoHearing(options =>
+        {
+            options.EndpointsToAdd = 1;
+        }, BookingStatus.Created);
+        var ep = seededHearing.Endpoints[0];
+        var hearingId = seededHearing.Id;
+        var endpointId = ep.Id;
+        const string languageCode = "spa";
+        var request = new UpdateEndpointRequest
+        {
+            DisplayName = "Auto Updated Endpoint",
+            InterpreterLanguageCode = languageCode
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PatchAsync(ApiUriFactory.JVEndPointEndpoints.UpdateEndpoint(hearingId, endpointId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        
+        await using var db = new BookingsDbContext(BookingsDbContextOptions);
+        var hearingFromDb = await db.VideoHearings
+            .Include(x => x.Endpoints)
+            .ThenInclude(x => x.InterpreterLanguage)
+            .FirstAsync(x => x.Id == hearingId);
+        var endpoint = hearingFromDb.Endpoints.First(x=>x.DisplayName == request.DisplayName);
+        endpoint.InterpreterLanguage.Should().NotBeNull();
+        endpoint.InterpreterLanguage.Code.Should().Be(languageCode);
+    }
+    
+    [Test]
+    public async Task should_update_endpoint_with_other_languages()
+    {
+        // arrange
+        var seededHearing = await Hooks.SeedVideoHearing(options =>
+        {
+            options.EndpointsToAdd = 1;
+        }, BookingStatus.Created);
+        var ep = seededHearing.Endpoints[0];
+        var hearingId = seededHearing.Id;
+        var endpointId = ep.Id;
+        const string otherLanguage = "made up";
+        var request = new UpdateEndpointRequest
+        {
+            DisplayName = "Auto Updated Endpoint",
+            OtherLanguage = otherLanguage
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PatchAsync(ApiUriFactory.JVEndPointEndpoints.UpdateEndpoint(hearingId, endpointId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        
+        await using var db = new BookingsDbContext(BookingsDbContextOptions);
+        var hearingFromDb = await db.VideoHearings.Include(x => x.Endpoints).FirstAsync(x => x.Id == hearingId);
+        var endpoint = hearingFromDb.Endpoints.First(x=>x.DisplayName == request.DisplayName);
+        endpoint.OtherLanguage.Should().Be(otherLanguage);
+    }
+
+    [Test]
+    public async Task should_return_validation_error_when_interpreter_language_code_is_not_found()
+    {
+        // arrange
+        var seededHearing = await Hooks.SeedVideoHearing(options =>
+        {
+            options.EndpointsToAdd = 1;
+        }, BookingStatus.Created);
+        var ep = seededHearing.Endpoints[0];
+        var hearingId = seededHearing.Id;
+        var endpointId = ep.Id;
+        const string languageCode = "non existing";
+        var request = new UpdateEndpointRequest
+        {
+            DisplayName = "Auto Updated Endpoint",
+            InterpreterLanguageCode = languageCode
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PatchAsync(ApiUriFactory.JVEndPointEndpoints.UpdateEndpoint(hearingId, endpointId), RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+
+        validationProblemDetails.Errors["Endpoint"][0].Should()
+            .Be($"Language code {languageCode} does not exist");
+    }
+
+    [Test]
+    public async Task should_return_validation_error_when_both_interpreter_language_code_and_other_language_are_specified()
+    {
+        // arrange
+        var seededHearing = await Hooks.SeedVideoHearing(options =>
+        {
+            options.EndpointsToAdd = 1;
+        }, BookingStatus.Created);
+        var ep = seededHearing.Endpoints[0];
+        var hearingId = seededHearing.Id;
+        var endpointId = ep.Id;
+        var request = new UpdateEndpointRequest
+        {
+            DisplayName = "Auto Updated Endpoint",
+            InterpreterLanguageCode = "fra",
+            OtherLanguage = "French"
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PatchAsync(ApiUriFactory.JVEndPointEndpoints.UpdateEndpoint(hearingId, endpointId), RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+
+        validationProblemDetails.Errors["Endpoint"][0].Should()
+            .Be(DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
     }
 }

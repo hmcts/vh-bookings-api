@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
+using BookingsApi.Mappings.V1;
 
 namespace BookingsApi.Mappings.V2
 {
@@ -13,7 +14,11 @@ namespace BookingsApi.Mappings.V2
                 DisplayName = endpoint.DisplayName,
                 Sip = endpoint.Sip,
                 Pin = endpoint.Pin,
-                DefenceAdvocateId = endpoint.DefenceAdvocate?.Id
+                DefenceAdvocateId = endpoint.DefenceAdvocate?.Id,
+                InterpreterLanguage = endpoint.InterpreterLanguage != null ?
+                    InterpreterLanguageToResponseMapper.MapInterpreterLanguageToResponse(endpoint.InterpreterLanguage) :
+                    null,
+                OtherLanguage = endpoint.OtherLanguage
             };
         }
 
@@ -27,7 +32,9 @@ namespace BookingsApi.Mappings.V2
                 Pin = pin,
                 Sip = sipComplete,
                 DisplayName = requestV2.DisplayName,
-                ContactEmail = requestV2.DefenceAdvocateContactEmail
+                ContactEmail = requestV2.DefenceAdvocateContactEmail,
+                OtherLanguage = requestV2.OtherLanguage,
+                LanguageCode = requestV2.InterpreterLanguageCode
             };
         }
     }

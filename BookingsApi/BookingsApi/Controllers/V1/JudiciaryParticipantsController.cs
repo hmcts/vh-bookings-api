@@ -160,7 +160,9 @@ namespace BookingsApi.Controllers.V1
                 DisplayName = request.DisplayName,
                 PersonalCode = request.PersonalCode,
                 OptionalContactEmail = request.OptionalContactEmail,
-                OptionalContactTelephone = request.OptionalContactTelephone
+                OptionalContactTelephone = request.OptionalContactTelephone,
+                InterpreterLanguageCode = request.InterpreterLanguageCode,
+                OtherLanguage = request.OtherLanguage
             };
             
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));

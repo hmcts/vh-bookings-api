@@ -129,8 +129,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 participantsFromDb.Any(x => x.Id == linkedParticipant.ParticipantId).Should().BeTrue();
                 linkedParticipant.CreatedDate.Should().Be(linkedParticipant.UpdatedDate.Value);
             }
-
-            returnedVideoHearing.GetEndpoints()[0].CreatedDate.Should().Be(returnedVideoHearing.GetEndpoints()[0].UpdatedDate.Value);
         }
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)

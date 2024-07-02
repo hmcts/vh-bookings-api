@@ -7,4 +7,6 @@ public class NewJudiciaryParticipant
     public string OptionalContactEmail { get; set; }
     public string OptionalContactTelephone { get; set; }
     public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; set; }
+    public string InterpreterLanguageCode { get; set; }
+    public string OtherLanguage { get; set; }
 }

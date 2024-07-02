@@ -13,7 +13,9 @@ namespace BookingsApi.Mappings.V1
                 DisplayName = endpoint.DisplayName,
                 Sip = endpoint.Sip,
                 Pin = endpoint.Pin,
-                DefenceAdvocateId = endpoint.DefenceAdvocate?.Id
+                DefenceAdvocateId = endpoint.DefenceAdvocate?.Id,
+                InterpreterLanguageCode = endpoint.InterpreterLanguage?.Code,
+                OtherLanguage = endpoint.OtherLanguage
             };
         }
 
@@ -27,7 +29,9 @@ namespace BookingsApi.Mappings.V1
                 Pin = pin,
                 Sip = sipComplete,
                 DisplayName = request.DisplayName,
-                ContactEmail = request.DefenceAdvocateContactEmail
+                ContactEmail = request.DefenceAdvocateContactEmail,
+                LanguageCode = request.InterpreterLanguageCode,
+                OtherLanguage = request.OtherLanguage
             };
         }
     }

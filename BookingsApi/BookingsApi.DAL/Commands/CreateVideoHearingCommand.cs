@@ -1,6 +1,7 @@
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Extensions;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -82,23 +83,30 @@ namespace BookingsApi.DAL.Commands
                 videoHearing.SourceId = command.SourceId;
 
             await _context.VideoHearings.AddAsync(videoHearing);
-            
-            var participants = await _hearingService.AddParticipantToService(videoHearing, command.Participants);
+            var languages = await _context.InterpreterLanguages.Where(x => x.Live).ToListAsync();
+            var participants = await _hearingService.AddParticipantToService(videoHearing, command.Participants, languages);
 
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
 
             foreach (var newJudiciaryParticipant in command.JudiciaryParticipants)
-                await _hearingService.AddJudiciaryParticipantToVideoHearing(videoHearing, newJudiciaryParticipant);
+                await _hearingService.AddJudiciaryParticipantToVideoHearing(videoHearing, newJudiciaryParticipant, languages);
             
             videoHearing.AddCases(command.Cases);
 
             if (command.Endpoints != null && command.Endpoints.Count > 0)
             {
                 var dtos = command.Endpoints;
-                var newEndpoints = (from dto in dtos
-                    let defenceAdvocate =
-                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, videoHearing.GetParticipants())
-                    select new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate)).ToList();
+                var newEndpoints = new List<Endpoint>();
+                foreach (var dto in dtos)
+                {
+                    var defenceAdvocate =
+                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail,
+                            videoHearing.GetParticipants());
+                    var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
+                    var language = languages.GetLanguage(dto.LanguageCode, "Hearing");
+                    endpoint.UpdateLanguagePreferences(language, dto.OtherLanguage);
+                    newEndpoints.Add(endpoint);
+                }
 
                 videoHearing.AddEndpoints(newEndpoints);
             }

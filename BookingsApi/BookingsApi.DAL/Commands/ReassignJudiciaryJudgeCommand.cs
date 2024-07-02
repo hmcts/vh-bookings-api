@@ -1,5 +1,5 @@
 using BookingsApi.DAL.Dtos;
-using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.JudiciaryParticipants;
 
 namespace BookingsApi.DAL.Commands
@@ -46,8 +46,11 @@ namespace BookingsApi.DAL.Commands
             }
             
             var newJudge = new JudiciaryJudge(command.NewJudiciaryJudge.DisplayName, judiciaryPerson, command.NewJudiciaryJudge.OptionalContactEmail);
+            var languages = await _context.InterpreterLanguages.Where(x=> x.Live).ToListAsync();
+            var interpreterLanguage = languages.GetLanguage(command.NewJudiciaryJudge.InterpreterLanguageCode, "JudiciaryParticipant");
+            var otherLanguage = command.NewJudiciaryJudge.OtherLanguage;
             
-            hearing.ReassignJudiciaryJudge(newJudge);
+            hearing.ReassignJudiciaryJudge(newJudge, interpreterLanguage, otherLanguage);
 
             await _context.SaveChangesAsync();
         }

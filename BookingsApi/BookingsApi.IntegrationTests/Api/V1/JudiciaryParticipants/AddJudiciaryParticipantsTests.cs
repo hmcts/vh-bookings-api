@@ -296,6 +296,147 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors["judiciaryPerson"][0].Should().Be("A participant with Judge role already exists in the hearing");
         }
+        
+        [Test]
+        public async Task Should_add_judiciary_participants_with_interpreter_languages()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
+            {
+                options.AddJudge = false;
+                options.AddPanelMember = false;
+            }, status: BookingStatus.Created);
+            var judiciaryPersonJudge = await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
+            var judiciaryPersonPanelMember = await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
+            
+            var request = BuildValidAddJudiciaryParticipantsRequest();
+            const string languageCode = "spa";
+            var requestJudge = request.Find(x => x.PersonalCode == judiciaryPersonJudge.PersonalCode);
+            requestJudge.InterpreterLanguageCode = languageCode;
+            var requestPanelMember = request.Find(x => x.PersonalCode == judiciaryPersonPanelMember.PersonalCode);
+            requestPanelMember.InterpreterLanguageCode = languageCode;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PostAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.AddJudiciaryParticipantsToHearing(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+            var response = await ApiClientResponse.GetResponses<List<JudiciaryParticipantResponse>>(result.Content);
+            var judgeResponse = response.Find(x => x.PersonalCode == requestJudge.PersonalCode);
+            judgeResponse.Should().NotBeNull();
+            judgeResponse.InterpreterLanguage.Code.Should().Be(requestJudge.InterpreterLanguageCode);
+            var panelMemberResponse = response.Find(x => x.PersonalCode == requestPanelMember.PersonalCode);
+            panelMemberResponse.Should().NotBeNull();
+            panelMemberResponse.InterpreterLanguage.Code.Should().Be(requestPanelMember.InterpreterLanguageCode);
+        }
+        
+        [Test]
+        public async Task Should_add_judiciary_participants_with_other_languages()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
+            {
+                options.AddJudge = false;
+                options.AddPanelMember = false;
+            }, status: BookingStatus.Created);
+            var judiciaryPersonJudge = await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
+            var judiciaryPersonPanelMember = await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
+            
+            var request = BuildValidAddJudiciaryParticipantsRequest();
+            const string otherLanguage = "made up";
+            var requestJudge = request.Find(x => x.PersonalCode == judiciaryPersonJudge.PersonalCode);
+            requestJudge.OtherLanguage = otherLanguage;
+            var requestPanelMember = request.Find(x => x.PersonalCode == judiciaryPersonPanelMember.PersonalCode);
+            requestPanelMember.OtherLanguage = otherLanguage;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PostAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.AddJudiciaryParticipantsToHearing(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+            var response = await ApiClientResponse.GetResponses<List<JudiciaryParticipantResponse>>(result.Content);
+            var judgeResponse = response.Find(x => x.PersonalCode == requestJudge.PersonalCode);
+            judgeResponse.Should().NotBeNull();
+            judgeResponse.OtherLanguage.Should().Be(requestJudge.OtherLanguage);
+            var panelMemberResponse = response.Find(x => x.PersonalCode == requestPanelMember.PersonalCode);
+            panelMemberResponse.Should().NotBeNull();
+            panelMemberResponse.OtherLanguage.Should().Be(requestPanelMember.OtherLanguage);
+        }
+
+        [Test]
+        public async Task Should_return_validation_error_when_interpreter_language_code_is_not_found()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
+            {
+                options.AddJudge = false;
+                options.AddPanelMember = false;
+            }, status: BookingStatus.Created);
+            var judiciaryPersonJudge = await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
+            var judiciaryPersonPanelMember = await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
+            
+            var request = BuildValidAddJudiciaryParticipantsRequest();
+            const string languageCode = "non existing";
+            var requestJudge = request.Find(x => x.PersonalCode == judiciaryPersonJudge.PersonalCode);
+            requestJudge.InterpreterLanguageCode = languageCode;
+            var requestPanelMember = request.Find(x => x.PersonalCode == judiciaryPersonPanelMember.PersonalCode);
+            requestPanelMember.InterpreterLanguageCode = languageCode;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PostAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.AddJudiciaryParticipantsToHearing(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["JudiciaryParticipant"][0].Should().Be($"Language code {languageCode} does not exist");
+        }
+
+        [Test]
+        public async Task Should_return_validation_error_when_both_interpreter_language_code_and_other_language_are_specified()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
+            {
+                options.AddJudge = false;
+                options.AddPanelMember = false;
+            }, status: BookingStatus.Created);
+            var judiciaryPersonJudge = await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
+            var judiciaryPersonPanelMember = await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
+            
+            var request = BuildValidAddJudiciaryParticipantsRequest();
+            const string languageCode = "spa";
+            const string otherLanguage = "made up";
+            var requestJudge = request.Find(x => x.PersonalCode == judiciaryPersonJudge.PersonalCode);
+            requestJudge.InterpreterLanguageCode = languageCode;
+            requestJudge.OtherLanguage = otherLanguage;
+            var requestPanelMember = request.Find(x => x.PersonalCode == judiciaryPersonPanelMember.PersonalCode);
+            requestPanelMember.InterpreterLanguageCode = languageCode;
+            requestPanelMember.OtherLanguage = otherLanguage;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PostAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.AddJudiciaryParticipantsToHearing(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["JudiciaryParticipant"][0].Should().Be(DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
+        }
 
         private List<JudiciaryParticipantRequest> BuildValidAddJudiciaryParticipantsPanelMemberRequest()
         {

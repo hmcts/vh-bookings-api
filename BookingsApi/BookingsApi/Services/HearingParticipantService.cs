@@ -205,7 +205,7 @@ public class HearingParticipantService : IHearingParticipantService
 
         foreach (var existingParticipantRequest in request.ExistingParticipants)
         {
-            var updatedParticipantRequest = UpdateExistingParticipantDetailsFromRequest(existingParticipants, existingParticipantRequest);
+            var updatedParticipantRequest = UpdateExistingParticipantDetailsFromV2Request(existingParticipants, existingParticipantRequest);
             if (updatedParticipantRequest == null) continue;
             var existingParticipant = existingParticipants.First(ep => ep.Id == existingParticipantRequest.ParticipantId);
             // if a contact email is not being added, use the existing contact email 
@@ -332,6 +332,18 @@ public class HearingParticipantService : IHearingParticipantService
     {
         var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updatedBy, cancelReason);
         await _commandHandler.Handle(command);
+    }
+
+    private static ExistingParticipantDetails UpdateExistingParticipantDetailsFromV2Request(List<Participant> existingParticipants, UpdateParticipantRequestV2 existingParticipantRequestV2)
+    {
+        var updatedDetails = UpdateExistingParticipantDetailsFromRequest(existingParticipants, existingParticipantRequestV2);
+        if (updatedDetails == null)
+            return null;
+        
+        updatedDetails.InterpreterLanguageCode = existingParticipantRequestV2.InterpreterLanguageCode;
+        updatedDetails.OtherLanguage = existingParticipantRequestV2.OtherLanguage;
+
+        return updatedDetails;
     }
     
     private static ExistingParticipantDetails UpdateExistingParticipantDetailsFromRequest<T>(List<Participant> existingParticipants, T existingParticipantRequest) where T : IUpdateParticipantRequest

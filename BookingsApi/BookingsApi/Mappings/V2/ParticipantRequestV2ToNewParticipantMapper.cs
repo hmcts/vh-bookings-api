@@ -35,7 +35,9 @@ namespace BookingsApi.Mappings.V2
                 CaseRole = null,
                 HearingRole = hearingRole,
                 DisplayName = requestV2Participant.DisplayName,
-                Representee = requestV2Participant.Representee
+                Representee = requestV2Participant.Representee,
+                OtherLanguage = requestV2Participant.OtherLanguage,
+                InterpreterLanguageCode = requestV2Participant.InterpreterLanguageCode
             };
         }
     }

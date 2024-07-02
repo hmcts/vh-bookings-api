@@ -11,6 +11,8 @@ namespace BookingsApi.DAL.Commands
         public HearingRole HearingRole { get; set; }
         public string Representee { get; set; }
         public string DisplayName { get; set; }
+        public string InterpreterLanguageCode { get; set; }
+        public string OtherLanguage { get; set; }
     }
     
     public class AddParticipantsToVideoHearingCommand : ICommand
@@ -46,6 +48,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
+                .Include(x => x.Participants).ThenInclude(x => x.InterpreterLanguage)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
             if (hearing == null)
@@ -54,8 +57,9 @@ namespace BookingsApi.DAL.Commands
             }
 
             _context.Update(hearing);
-
-            await _hearingService.AddParticipantToService(hearing, command.Participants);
+            
+            var languages = await _context.InterpreterLanguages.Where(x => x.Live).ToListAsync();
+            await _hearingService.AddParticipantToService(hearing, command.Participants, languages);
             await _hearingService.CreateParticipantLinks(hearing.Participants.ToList(), command.LinkedParticipants);
             hearing.UpdateBookingStatusJudgeRequirement();
             await _context.SaveChangesAsync();
