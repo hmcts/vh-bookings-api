@@ -9,7 +9,6 @@ namespace BookingsApi.Validations.V2
         public static readonly string NoDisplayNameErrorMessage = "Display name is required";
         public static readonly string InvalidDisplayNameErrorMessage = "Display name will accept upto 255 alphanumeric characters, spaces, and the following special characters: ',._-";
         public static readonly string NoHearingRoleCodeErrorMessage = "Hearing role code is required";
-        public static readonly string NoTelephoneNumberErrorMessage = "Telephone Number is required";
         public static readonly string InvalidContactEmailErrorMessage = "Contact Email is Invalid";
 
         public ParticipantRequestValidationV2()
@@ -26,7 +25,6 @@ namespace BookingsApi.Validations.V2
                 .NotEmpty().WithMessage(NoDisplayNameErrorMessage)
                 .Matches(regex).WithMessage(InvalidDisplayNameErrorMessage);
             RuleFor(x => x.HearingRoleCode).NotEmpty().WithMessage(NoHearingRoleCodeErrorMessage);
-            RuleFor(x => x.TelephoneNumber).NotEmpty().WithMessage(NoTelephoneNumberErrorMessage);
         }
     }
 }
