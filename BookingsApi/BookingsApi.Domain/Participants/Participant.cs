@@ -39,7 +39,6 @@ namespace BookingsApi.Domain.Participants
         public DateTime UpdatedDate { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
-        public string Discriminator { get; set; }
         public IList<LinkedParticipant> LinkedParticipants { get; set; }
 
 
