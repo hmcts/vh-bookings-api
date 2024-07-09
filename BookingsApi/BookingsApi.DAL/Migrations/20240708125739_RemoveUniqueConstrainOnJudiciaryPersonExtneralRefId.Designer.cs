@@ -4,6 +4,7 @@ using BookingsApi.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240708125739_RemoveUniqueConstrainOnJudiciaryPersonExtneralRefId")]
+    partial class RemoveUniqueConstrainOnJudiciaryPersonExtneralRefId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,12 +128,6 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<Guid>("HearingId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("InterpreterLanguageId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OtherLanguage")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Pin")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -146,8 +143,6 @@ namespace BookingsApi.DAL.Migrations
                     b.HasIndex("DefenceAdvocateId");
 
                     b.HasIndex("HearingId");
-
-                    b.HasIndex("InterpreterLanguageId");
 
                     b.HasIndex("Sip")
                         .IsUnique()
@@ -358,14 +353,8 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<int>("HearingRoleCode")
                         .HasColumnType("int");
 
-                    b.Property<int?>("InterpreterLanguageId")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("JudiciaryPersonId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("OtherLanguage")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
@@ -373,8 +362,6 @@ namespace BookingsApi.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("HearingId");
-
-                    b.HasIndex("InterpreterLanguageId");
 
                     b.HasIndex("JudiciaryPersonId");
 
@@ -672,12 +659,6 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<int>("HearingRoleId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("InterpreterLanguageId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OtherLanguage")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("PersonId")
                         .HasColumnType("uniqueidentifier");
 
@@ -694,8 +675,6 @@ namespace BookingsApi.DAL.Migrations
                     b.HasIndex("HearingId");
 
                     b.HasIndex("HearingRoleId");
-
-                    b.HasIndex("InterpreterLanguageId");
 
                     b.HasIndex("PersonId", "HearingId")
                         .IsUnique();
@@ -946,7 +925,7 @@ namespace BookingsApi.DAL.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -970,9 +949,6 @@ namespace BookingsApi.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
 
                     b.ToTable("InterpreterLanguage", (string)null);
                 });
@@ -1177,15 +1153,9 @@ namespace BookingsApi.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookingsApi.Domain.RefData.InterpreterLanguage", "InterpreterLanguage")
-                        .WithMany()
-                        .HasForeignKey("InterpreterLanguageId");
-
                     b.Navigation("DefenceAdvocate");
 
                     b.Navigation("Hearing");
-
-                    b.Navigation("InterpreterLanguage");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.Hearing", b =>
@@ -1238,10 +1208,6 @@ namespace BookingsApi.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookingsApi.Domain.RefData.InterpreterLanguage", "InterpreterLanguage")
-                        .WithMany()
-                        .HasForeignKey("InterpreterLanguageId");
-
                     b.HasOne("BookingsApi.Domain.JudiciaryPerson", "JudiciaryPerson")
                         .WithMany()
                         .HasForeignKey("JudiciaryPersonId")
@@ -1249,8 +1215,6 @@ namespace BookingsApi.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Hearing");
-
-                    b.Navigation("InterpreterLanguage");
 
                     b.Navigation("JudiciaryPerson");
                 });
@@ -1311,10 +1275,6 @@ namespace BookingsApi.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookingsApi.Domain.RefData.InterpreterLanguage", "InterpreterLanguage")
-                        .WithMany()
-                        .HasForeignKey("InterpreterLanguageId");
-
                     b.HasOne("BookingsApi.Domain.Person", "Person")
                         .WithMany()
                         .HasForeignKey("PersonId")
@@ -1326,8 +1286,6 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("Hearing");
 
                     b.Navigation("HearingRole");
-
-                    b.Navigation("InterpreterLanguage");
 
                     b.Navigation("Person");
                 });
