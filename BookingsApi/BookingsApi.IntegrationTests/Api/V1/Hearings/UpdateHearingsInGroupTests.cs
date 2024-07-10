@@ -40,6 +40,8 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                 .Build();
             var newEndpoint = new Builder(new BuilderSettings()).CreateNew<AddEndpointRequest>()
                 .With(e => e.DefenceAdvocateContactEmail, null)
+                .With(e => e.InterpreterLanguageCode, null)
+                .With(e => e.OtherLanguage, null)
                 .Build();
 
             foreach (var requestHearing in request.Hearings)

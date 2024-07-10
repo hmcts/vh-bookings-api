@@ -16,7 +16,7 @@ namespace BookingsApi.Domain.Participants
 
         }
 
-        protected override void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
+        protected override void ValidateParticipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
         {
             ValidateArguments(displayName);
 

@@ -39,10 +39,13 @@ namespace BookingsApi.Domain.Participants
         public DateTime UpdatedDate { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
+        public int? InterpreterLanguageId { get; protected set; }
+        public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
+        public string OtherLanguage { get; set; }
         public IList<LinkedParticipant> LinkedParticipants { get; set; }
 
 
-        protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
+        protected virtual void ValidateParticipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
         {
             ValidateArguments(displayName);
 
@@ -55,7 +58,7 @@ namespace BookingsApi.Domain.Participants
         public virtual void UpdateParticipantDetails(string title, string displayName, string telephoneNumber, string organisationName,
             string contactEmail = null)
         {
-            ValidatePartipantDetails(title, displayName, telephoneNumber, organisationName);
+            ValidateParticipantDetails(title, displayName, telephoneNumber, organisationName);
 
             DisplayName = displayName;
             Person.UpdatePerson(Person.FirstName, Person.LastName, title, telephoneNumber, contactEmail: contactEmail);
@@ -125,6 +128,18 @@ namespace BookingsApi.Domain.Participants
         public void ChangePerson(Person newPerson)
         {
             Person = newPerson;
+        }
+        
+        public void UpdateLanguagePreferences(InterpreterLanguage language, string otherLanguage)
+        {
+            if (language != null && !string.IsNullOrEmpty(otherLanguage))
+            {
+                throw new DomainRuleException(nameof(Participant), DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
+            }
+            InterpreterLanguage = language;
+            OtherLanguage = otherLanguage;
+            
+            UpdatedDate = DateTime.UtcNow;
         }
     }
 }

@@ -26,4 +26,5 @@ public static class DomainRuleErrorMessages
     public const string CannotAddJudiciaryJudgeWhenJudgeAlreadyExists = "Cannot add judiciary judge when non-judiciary judge already exists";
     public const string HearingNotMultiDay = "Hearing is not multi-day";
     public const string CannotBeOnSameDateAsOtherHearingInGroup = "Hearing cannot be on the same date as another day of the multi-day hearing";
+    public const string LanguageAndOtherLanguageCannotBeSet = "Language and OtherLanguage cannot be set at the same time";
 }

@@ -12,7 +12,9 @@ namespace BookingsApi.Mappings.V1
                 PersonalCode = requestParticipant.PersonalCode,
                 HearingRoleCode = requestParticipant.HearingRoleCode.MapToDomainEnum(),
                 OptionalContactEmail = requestParticipant.ContactEmail,
-                OptionalContactTelephone = requestParticipant.ContactTelephone
+                OptionalContactTelephone = requestParticipant.ContactTelephone,
+                InterpreterLanguageCode = requestParticipant.InterpreterLanguageCode,
+                OtherLanguage = requestParticipant.OtherLanguage
             };
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using BookingsApi.Contract.V1.Requests;
 
 namespace BookingsApi.Contract.V2.Requests
 {
@@ -57,6 +58,6 @@ namespace BookingsApi.Contract.V2.Requests
         /// <summary>
         /// Judiciary participants for the hearing
         /// </summary>
-        public UpdateJudiciaryParticipantsRequestV2 JudiciaryParticipants { get; set; }
+        public UpdateJudiciaryParticipantsRequest JudiciaryParticipants { get; set; }
     }
 }
