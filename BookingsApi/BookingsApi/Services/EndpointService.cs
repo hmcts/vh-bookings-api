@@ -3,7 +3,9 @@ namespace BookingsApi.Services
     public interface IEndpointService
     {
         Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint);
-        Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName);
+
+        Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName,
+            string languageCode, string otherLanguage);
         Task RemoveEndpoint(VideoHearing hearing, Guid id);
     }
     
@@ -38,12 +40,13 @@ namespace BookingsApi.Services
             return endpoint;
         }
 
-        public async Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName)
+        public async Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName, string languageCode, string otherLanguage)
         {
             var defenceAdvocate =
                 DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(defenceAdvocateContactEmail,
                     hearing.GetParticipants());
-            var command = new UpdateEndPointOfHearingCommand(hearing.Id, id, displayName, defenceAdvocate);
+            var command = new UpdateEndPointOfHearingCommand(hearing.Id, id, displayName, defenceAdvocate, languageCode,
+                otherLanguage);
             await _commandHandler.Handle(command);
 
             var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == id);

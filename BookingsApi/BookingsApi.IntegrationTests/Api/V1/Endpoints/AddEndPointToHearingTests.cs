@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Validations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V1;
@@ -139,5 +140,109 @@ public class AddEndPointToHearingTests : ApiTest
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var message = serviceBusStub!.ReadMessageFromQueue();
         message.Should().BeNull();
+    }
+    
+    [Test]
+    public async Task should_add_endpoint_with_interpreter_languages()
+    {
+        // arrange
+        var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Created);
+        var hearingId = seededHearing.Id;
+        const string languageCode = "spa";
+        var request = new AddEndpointRequest
+        {
+            DisplayName = "Auto Add Endpoint",
+            InterpreterLanguageCode = languageCode
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.JVEndPointEndpoints.AddEndpointToHearing(hearingId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var response = await ApiClientResponse.GetResponses<EndpointResponse>(result.Content);
+        response.Should().NotBeNull();
+        response.InterpreterLanguageCode.Should().Be(languageCode);
+    }
+
+    [Test]
+    public async Task should_add_endpoint_with_other_languages()
+    {
+        // arrange
+        var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Created);
+        var hearingId = seededHearing.Id;
+        const string otherLanguage = "made up";
+        var request = new AddEndpointRequest
+        {
+            DisplayName = "Auto Add Endpoint",
+            OtherLanguage = otherLanguage
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.JVEndPointEndpoints.AddEndpointToHearing(hearingId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var response = await ApiClientResponse.GetResponses<EndpointResponse>(result.Content);
+        response.Should().NotBeNull();
+        response.OtherLanguage.Should().Be(otherLanguage);
+    }
+
+    [Test]
+    public async Task should_return_validation_error_when_interpreter_language_code_is_not_found()
+    {
+        // arrange
+        var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Created);
+        var hearingId = seededHearing.Id;
+        const string languageCode = "non existing";
+        var request = new AddEndpointRequest
+        {
+            DisplayName = "Auto Add Endpoint",
+            InterpreterLanguageCode = languageCode
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.JVEndPointEndpoints.AddEndpointToHearing(hearingId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+
+        validationProblemDetails.Errors["Endpoint"][0].Should()
+            .Be($"Language code {languageCode} does not exist");
+    }
+
+    [Test]
+    public async Task should_return_validation_error_when_both_interpreter_language_code_and_other_language_are_specified()
+    {
+        // arrange
+        var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Created);
+        var hearingId = seededHearing.Id;
+        var request = new AddEndpointRequest
+        {
+            DisplayName = "Auto Add Endpoint",
+            InterpreterLanguageCode = "fra",
+            OtherLanguage = "French"
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.JVEndPointEndpoints.AddEndpointToHearing(hearingId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+
+        validationProblemDetails.Errors["Endpoint"][0].Should()
+            .Be(DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
     }
 }

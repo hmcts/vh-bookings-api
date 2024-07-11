@@ -20,6 +20,8 @@ public class SimpleBookNewHearingRequestV2
         var participants = Builder<ParticipantRequestV2>.CreateListOfSize(4).All()
             .With(x => x.Title = "Mrs")
             .With(x => x.TelephoneNumber = "01234567890")
+            .With(x => x.OtherLanguage = null)
+            .With(x => x.InterpreterLanguageCode = null)
             .With(x => x.OrganisationName = TestUsers.Organisation1)
             .Build().ToList();
 

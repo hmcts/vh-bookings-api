@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BookingsApi.Contract.V1.Responses;
 
 namespace BookingsApi.Contract.V2.Responses
 {
@@ -74,6 +75,16 @@ namespace BookingsApi.Contract.V2.Responses
         ///     Gets or sets the person name that Representative represents.
         /// </summary>
         public string Representee { get; set; }
+        
+        /// <summary>
+        /// The participant's interpreter language details
+        /// </summary>
+        public InterpreterLanguagesResponse InterpreterLanguage { get; set; }
+        
+        /// <summary>
+        /// Interpreter language, for when the interpreter language code is not available
+        /// </summary>
+        public string OtherLanguage { get; set; }
         
         /// <summary>
         ///     The participant linked to this participant response

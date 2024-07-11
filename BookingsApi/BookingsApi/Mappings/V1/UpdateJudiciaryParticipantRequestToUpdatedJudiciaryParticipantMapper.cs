@@ -10,7 +10,9 @@ namespace BookingsApi.Mappings.V1
             {
                 DisplayName = requestParticipant.DisplayName,
                 PersonalCode = personalCode,
-                HearingRoleCode = requestParticipant.HearingRoleCode.MapToDomainEnum()
+                HearingRoleCode = requestParticipant.HearingRoleCode.MapToDomainEnum(),
+                InterpreterLanguageCode = requestParticipant.InterpreterLanguageCode,
+                OtherLanguage = requestParticipant.OtherLanguage
             };
         }
     }

@@ -72,6 +72,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
+                .Include(x=> x.Participants).ThenInclude(x=> x.InterpreterLanguage)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)

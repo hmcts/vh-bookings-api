@@ -1,8 +1,8 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.Contract.V2.Requests.Enums;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
+using ContractJudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode;
 
 namespace BookingsApi.Services
 {
@@ -12,7 +12,7 @@ namespace BookingsApi.Services
         Task UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles);
         Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing);
         Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing);
-        Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, VideoHearing hearing);
+        Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequest request, VideoHearing hearing);
     }
     
     public class UpdateHearingService : IUpdateHearingService
@@ -59,7 +59,8 @@ namespace BookingsApi.Services
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName);
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id,
+                    endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName, null, null);
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)
@@ -80,7 +81,9 @@ namespace BookingsApi.Services
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName);
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id,
+                    endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName,
+                    endpointToUpdate.InterpreterLanguageCode, endpointToUpdate.OtherLanguage);
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)
@@ -89,11 +92,11 @@ namespace BookingsApi.Services
             }
         }
 
-        public async Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, VideoHearing hearing)
+        public async Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequest request, VideoHearing hearing)
         {
             var oldJudge = hearing.GetJudiciaryParticipants().FirstOrDefault(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
             
-            var newJudge = request.NewJudiciaryParticipants.Find(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.Judge);
+            var newJudge = request.NewJudiciaryParticipants.Find(jp => jp.HearingRoleCode == ContractJudiciaryParticipantHearingRoleCode.Judge);
             if (newJudge != null)
             {
                 var newJudiciaryJudge = new NewJudiciaryJudge
@@ -108,15 +111,15 @@ namespace BookingsApi.Services
 
             var judiciaryParticipantsToAdd = request.NewJudiciaryParticipants
                 // Filter out judges, as we reassign them above instead
-                .Where(jp => jp.HearingRoleCode != JudiciaryParticipantHearingRoleCodeV2.Judge)
-                .Select(JudiciaryParticipantRequestV2ToNewJudiciaryParticipantMapper.Map)
+                .Where(jp => jp.HearingRoleCode != ContractJudiciaryParticipantHearingRoleCode.Judge)
+                .Select(JudiciaryParticipantRequestToNewJudiciaryParticipantMapper.Map)
                 .ToList();
 
             await _judiciaryParticipantService.AddJudiciaryParticipants(judiciaryParticipantsToAdd, hearing.Id, sendNotification: false);
 
             foreach (var judiciaryParticipant in request.ExistingJudiciaryParticipants)
             {
-                var judiciaryParticipantToUpdate = UpdateJudiciaryParticipantRequestV2ToUpdatedJudiciaryParticipantMapper.Map(
+                var judiciaryParticipantToUpdate = UpdateJudiciaryParticipantRequestToUpdatedJudiciaryParticipantMapper.Map(
                     judiciaryParticipant.PersonalCode, judiciaryParticipant);
                 
                 var originalJudiciaryParticipant = hearing.JudiciaryParticipants.SingleOrDefault(x => x.JudiciaryPerson.PersonalCode == judiciaryParticipant.PersonalCode);

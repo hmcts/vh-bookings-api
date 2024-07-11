@@ -8,6 +8,7 @@ public class InterpreterLanguageMap : IEntityTypeConfiguration<InterpreterLangua
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Code).IsRequired();
+        builder.HasIndex(x => x.Code).IsUnique();
         builder.Property(x => x.Value).IsRequired();
         builder.Property(x => x.WelshValue);
         builder.Property(x => x.Type).IsRequired();

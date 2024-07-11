@@ -1,6 +1,7 @@
 using System;
-using BookingsApi.Domain.Ddd;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
 {
@@ -12,6 +13,9 @@ namespace BookingsApi.Domain
         public Participant DefenceAdvocate { get; private set; }
         public Guid HearingId { get; set; }
         public virtual Hearing Hearing { get; protected set; }
+        public int? InterpreterLanguageId { get; protected set; }
+        public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
+        public string OtherLanguage { get; set; }
         protected Endpoint(){}
 
         public Endpoint(string displayName, string sip, string pin, Participant defenceAdvocate)
@@ -35,6 +39,18 @@ namespace BookingsApi.Domain
             }
 
             DisplayName = displayName;
+        }
+        
+        public void UpdateLanguagePreferences(InterpreterLanguage language, string otherLanguage)
+        {
+            if (language != null && !string.IsNullOrEmpty(otherLanguage))
+            {
+                throw new DomainRuleException(nameof(Endpoint), DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
+            }
+            InterpreterLanguage = language;
+            OtherLanguage = otherLanguage;
+
+            UpdatedDate = DateTime.UtcNow;
         }
     }
 }
