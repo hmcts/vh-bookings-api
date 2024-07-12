@@ -1,6 +1,6 @@
-namespace BookingsApi.Contract.V2.Requests
+namespace BookingsApi.Contract.V1.Requests
 {
-    public class EditableUpdateJudiciaryParticipantRequestV2 : UpdateJudiciaryParticipantRequestV2
+    public class EditableUpdateJudiciaryParticipantRequest : UpdateJudiciaryParticipantRequest
     {
         /// <summary>
         /// The participant's judicial personal code

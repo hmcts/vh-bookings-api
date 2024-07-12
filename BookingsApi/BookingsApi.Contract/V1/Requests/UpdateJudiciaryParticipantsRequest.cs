@@ -1,18 +1,18 @@
 using System.Collections.Generic;
 
-namespace BookingsApi.Contract.V2.Requests
+namespace BookingsApi.Contract.V1.Requests
 {
-    public class UpdateJudiciaryParticipantsRequestV2
+    public class UpdateJudiciaryParticipantsRequest
     {
         /// <summary>
         ///     List of new judiciary participants
         /// </summary>
-        public List<JudiciaryParticipantRequestV2> NewJudiciaryParticipants { get; set; } = new();
+        public List<JudiciaryParticipantRequest> NewJudiciaryParticipants { get; set; } = new();
 
         /// <summary>
         ///     List of existing judiciary participants
         /// </summary>
-        public List<EditableUpdateJudiciaryParticipantRequestV2> ExistingJudiciaryParticipants { get; set; } = new();
+        public List<EditableUpdateJudiciaryParticipantRequest> ExistingJudiciaryParticipants { get; set; } = new();
 
         /// <summary>
         ///     List of removed judiciary participant personal codes

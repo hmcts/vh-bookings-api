@@ -1,5 +1,6 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
+using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
 
@@ -14,7 +15,7 @@ namespace BookingsApi.DAL.Services
         /// <param name="hearing">Hearing to amend</param>
         /// <param name="participants">List of participants to add</param>
         /// <returns></returns>
-        Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants);
+        Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants, List<InterpreterLanguage> languages);
 
         /// <summary>
         /// Update the case name of a hearing directly
@@ -48,7 +49,7 @@ namespace BookingsApi.DAL.Services
         /// <returns></returns>
         Task RemoveParticipantLinks(List<Participant> participants, Participant participant);
 
-        Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant);
+        Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant, List<InterpreterLanguage> languages);
 
         Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant);
     }
@@ -60,8 +61,8 @@ namespace BookingsApi.DAL.Services
         {
             _context = context;
         }
-
-        public async Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants)
+        
+        public async Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants, List<InterpreterLanguage> languages)
         {
             var participantList = new List<Participant>();
             foreach (var participantToAdd in participants)
@@ -75,13 +76,16 @@ namespace BookingsApi.DAL.Services
                     var person = participantToAdd.Person;
                     existingPerson.UpdatePerson(person.FirstName, person.LastName, person.Title, person.TelephoneNumber);
                 }
+                
+                var language = languages.GetLanguage(participantToAdd.InterpreterLanguageCode, "Participant");
 
                 switch (participantToAdd.HearingRole.UserRole.Name)
                 {
                     case "Individual":
                         var individual = hearing.AddIndividual(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName);
-
+                        individual.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
+                        
                         UpdateOrganisationDetails(participantToAdd.Person, individual);
                         participantList.Add(individual);
                         break;
@@ -91,6 +95,7 @@ namespace BookingsApi.DAL.Services
                                 participantToAdd.HearingRole,
                                 participantToAdd.CaseRole, participantToAdd.DisplayName,
                                 participantToAdd.Representee);
+                            representative.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
 
                             UpdateOrganisationDetails(participantToAdd.Person, representative);
                             participantList.Add(representative);
@@ -100,7 +105,7 @@ namespace BookingsApi.DAL.Services
                         {
                             var joh = hearing.AddJudicialOfficeHolder(existingPerson ?? participantToAdd.Person,
                                 participantToAdd.HearingRole, participantToAdd.CaseRole, participantToAdd.DisplayName);
-
+                            joh.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
                             participantList.Add(joh);
                             break;
                         }
@@ -110,7 +115,7 @@ namespace BookingsApi.DAL.Services
                                     participantToAdd.HearingRole, 
                                     participantToAdd.CaseRole, 
                                     participantToAdd.DisplayName);
-
+                            judge.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
                             participantList.Add(judge);
                             break;
                         }
@@ -206,7 +211,7 @@ namespace BookingsApi.DAL.Services
             return Task.CompletedTask;
         }
 
-        public async Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant)
+        public async Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant, List<InterpreterLanguage> languages)
         {
             var judiciaryPerson = await _context.JudiciaryPersons
                 .SingleOrDefaultAsync(x => x.PersonalCode == participant.PersonalCode);
@@ -214,13 +219,15 @@ namespace BookingsApi.DAL.Services
             if (judiciaryPerson == null)
                 throw new JudiciaryPersonNotFoundException(participant.PersonalCode);
 
+            var interpreterLanguage = languages.GetLanguage(participant.InterpreterLanguageCode, "JudiciaryParticipant");
+            var otherLanguage = participant.OtherLanguage;
             switch (participant.HearingRoleCode)
             {
                 case JudiciaryParticipantHearingRoleCode.Judge:
-                    videoHearing.AddJudiciaryJudge(judiciaryPerson, participant.DisplayName, participant.OptionalContactEmail, participant.OptionalContactTelephone);
+                    videoHearing.AddJudiciaryJudge(judiciaryPerson, participant.DisplayName, participant.OptionalContactEmail, participant.OptionalContactTelephone, interpreterLanguage, otherLanguage);
                     break;
                 case JudiciaryParticipantHearingRoleCode.PanelMember:
-                    videoHearing.AddJudiciaryPanelMember(judiciaryPerson, participant.DisplayName);
+                    videoHearing.AddJudiciaryPanelMember(judiciaryPerson, participant.DisplayName, otherLanguage:otherLanguage, interpreterLanguage:interpreterLanguage);
                     break;
                 default:
                     throw new ArgumentException($"Role {participant.HearingRoleCode} not recognised");

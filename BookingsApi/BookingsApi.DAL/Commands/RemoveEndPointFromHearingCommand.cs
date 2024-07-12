@@ -25,7 +25,9 @@
         {
             var hearing = await _context.VideoHearings
                 .Include(h => h.Participants).ThenInclude(x => x.Person)
+                .Include(x=> x.Participants).ThenInclude(x=> x.InterpreterLanguage)
                 .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(x=> x.Endpoints).ThenInclude(x=> x.InterpreterLanguage)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)

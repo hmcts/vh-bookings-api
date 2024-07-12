@@ -177,11 +177,5 @@ namespace Testing.Common.Builders.Api
             public static string UpdateJudiciaryParticipant(Guid hearingId, string personalCode) => $"{ApiRoot}/{hearingId}/joh/{personalCode}";
             public static string ReassignJudiciaryJudge(Guid hearingId) => $"{ApiRoot}/{hearingId}/joh/judge";
         }
-
-        public static class StaffMemberEndpoints
-        {
-            private const string ApiRoot = "staffmember";
-            public static string GetStaffMemberBySearchTerm(string term) => $"{ApiRoot}?term={term}";
-        }
     }
 }

@@ -6,6 +6,7 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
+using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
 
 namespace BookingsApi.UnitTests.Mappings.V2
@@ -29,13 +30,38 @@ namespace BookingsApi.UnitTests.Mappings.V2
             };
             judge.SetProtected(nameof(judge.CaseRole), caseRole);
             judge.SetProtected(nameof(judge.HearingRole), hearingRole);
+            var interpreterLanguage = new InterpreterLanguage(1, "spa", "Spanish", "WelshValue", InterpreterType.Verbal, true);
+            judge.UpdateLanguagePreferences(interpreterLanguage, null);
 
             var response = _mapper.MapParticipantToResponse(judge);
             
             AssertParticipantCommonDetails(response, judge, hearingRole);
         }
 
+        [Test]
+        public void Should_map_participant_judge_without_interpreter_language()
+        {
+            // Arrange
+            var caseRole = new CaseRole(5, "Judge");
+            var hearingRole = new HearingRole(13, "Judge") { UserRole = new UserRole(4, "Judge")};
 
+            var person = new PersonBuilder().Build();
+            var judge = new Judge(person, hearingRole, caseRole)
+            {
+                DisplayName = "Judge",
+                CreatedBy = "unit@hmcts.net"
+            };
+            judge.SetProtected(nameof(judge.CaseRole), caseRole);
+            judge.SetProtected(nameof(judge.HearingRole), hearingRole);
+            judge.UpdateLanguagePreferences(null, "OtherLanguage");
+            
+            // Act
+            var response = _mapper.MapParticipantToResponse(judge);
+            
+            // Assert
+            response.InterpreterLanguage.Should().BeNull();
+            response.OtherLanguage.Should().Be(judge.OtherLanguage);
+        }
 
         private static void AssertParticipantCommonDetails(ParticipantResponseV2 response, Participant participant,
             HearingRole hearingRole)
@@ -58,6 +84,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             response.Username.Should().Be(person.Username);
             response.Organisation.Should().BeNullOrWhiteSpace();
             response.LinkedParticipants.Should().BeEquivalentTo(participant.LinkedParticipants);
+            response.InterpreterLanguage.Should().BeEquivalentTo(InterpreterLanguageToResponseMapper.MapInterpreterLanguageToResponse(participant.InterpreterLanguage));
         }
     }
 }
