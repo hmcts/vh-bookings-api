@@ -15,8 +15,11 @@ public static class HealthCheckExtensions
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddDbContextCheck<BookingsDbContext>(name: "Database VhBookings", tags: new[] {"startup", "readiness"})
-            .AddAzureServiceBusQueue(serviceBusSettings!.ConnectionString, serviceBusSettings.QueueName,
-                name: "Booking Service Bus Queue", tags: new[] {"startup", "readiness"});
+            .AddAzureServiceBusQueue(serviceBusSettings!.ConnectionString, 
+                serviceBusSettings.QueueName,
+                name: "Booking Service Bus Queue", 
+                tags: new[] {"startup", "readiness"},
+                failureStatus: HealthStatus.Degraded);
             
         return services;
     }
