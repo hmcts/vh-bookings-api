@@ -14,5 +14,6 @@ namespace BookingsApi.Contract.V1.Requests
         public bool HasLeft { get; set; }
         public bool Leaver { get; set; }
         public string LeftOn { get; set; }
+        public bool Deleted { get; set; }
     }
 }
