@@ -9,6 +9,7 @@ namespace BookingsApi.Common.Services
     public interface IFeatureToggles
     {
         bool UsePostMay2023Template();
+        bool UseVodafoneToggle();
     }
 
     public class FeatureToggles : IFeatureToggles
@@ -17,6 +18,7 @@ namespace BookingsApi.Common.Services
         private readonly Context _context;
         private const string LdUser = "vh-booking-api";
         private const string NewNotifyTemplatesToggleKey = "notify-post-may-2023-templates";
+        private const string VodafoneToggleKey = "vodafone";
 
         public FeatureToggles(string sdkKey, string environmentName)
         {
@@ -27,6 +29,8 @@ namespace BookingsApi.Common.Services
         }
         
         public bool UsePostMay2023Template() => GetBoolToggle(NewNotifyTemplatesToggleKey);
+        
+        public bool UseVodafoneToggle() => GetBoolToggle(VodafoneToggleKey);
         
         private bool GetBoolToggle(string key)
         {
