@@ -42,6 +42,7 @@ namespace BookingsApi.Domain
         public bool Leaver { get; set; }
         public string LeftOn { get; set; }
         public bool IsGeneric { get; set; }
+        public bool Deleted { get; private set; }
 
         public void Update(string personalCode, string title, string knownAs, string surname, string fullname, 
             string postNominals, string email, string workPhone, bool hasLeft, bool leaver, string leftOn)
