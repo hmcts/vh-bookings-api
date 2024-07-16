@@ -2,6 +2,7 @@ using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Services;
+using BookingsApi.Helpers;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
 using Microsoft.ApplicationInsights.DataContracts;
@@ -18,18 +19,17 @@ namespace BookingsApi.Controllers.V1
         private readonly ICommandHandler _commandHandler;
         private readonly IBookingService _bookingService;
         private readonly IRandomGenerator _randomGenerator;
-        private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IHearingService _hearingService;
         private readonly IVhLogger _ivhLogger;
         private readonly IUpdateHearingService _updateHearingService;
+        private readonly IEndpointService _endpointService;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
             IBookingService bookingService,
             IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
             IVhLogger ivhLogger,
-            IUpdateHearingService updateHearingService)
+            IUpdateHearingService updateHearingService, IEndpointService endpointService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -37,9 +37,8 @@ namespace BookingsApi.Controllers.V1
             _randomGenerator = randomGenerator;
             _hearingService = hearingService;
             _ivhLogger = ivhLogger;
-
-            _kinlyConfiguration = kinlyConfiguration.Value;
             _updateHearingService = updateHearingService;
+            _endpointService = endpointService;
         }
 
         /// <summary>
@@ -377,8 +376,9 @@ namespace BookingsApi.Controllers.V1
                     {keyCases, string.Join(", ", cases.Select(x => new {x.Name, x.Number}))}
                 });
 
+                var sipAddressStem = _endpointService.GetSipAddressStem();
                 var createVideoHearingCommand = BookNewHearingRequestToCreateVideoHearingCommandMapper.Map(
-                    request, caseType, hearingType, venue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem);
+                    request, caseType, hearingType, venue, cases, _randomGenerator, sipAddressStem);
 
                 const string logCallingDb = "BookNewHearing Calling DB...";
                 const string dbCommand = "createVideoHearingCommand";
@@ -518,11 +518,12 @@ namespace BookingsApi.Controllers.V1
 
             var orderedDates = request.Dates.OrderBy(x => x).ToList();
             var totalDays = orderedDates.Count + 1; // include original hearing
+            var sipAddressStem = _endpointService.GetSipAddressStem();
             var commands = orderedDates.Select((newDate, index) =>
             {
                 var hearingDay = index + 2; // zero index including original hearing
                 return CloneHearingToCommandMapper.CloneToCommand(videoHearing, newDate, _randomGenerator,
-                    _kinlyConfiguration.SipAddressStem, totalDays, hearingDay, request.ScheduledDuration);
+                    sipAddressStem, totalDays, hearingDay, request.ScheduledDuration);
             }).ToList();
 
             var existingCase = videoHearing.GetCases()[0];

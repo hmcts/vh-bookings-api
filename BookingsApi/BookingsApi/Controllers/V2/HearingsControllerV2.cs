@@ -14,20 +14,19 @@ namespace BookingsApi.Controllers.V2
         private readonly IQueryHandler _queryHandler;
         private readonly IBookingService _bookingService;
         private readonly IRandomGenerator _randomGenerator;
-        private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly ILogger<HearingsControllerV2> _logger;
         private readonly IUpdateHearingService _updateHearingService;
+        private readonly IEndpointService _endpointService;
 
         public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
-            ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfigurationOption, IUpdateHearingService updateHearingService)
+            ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator, IUpdateHearingService updateHearingService, IEndpointService endpointService)
         {
             _queryHandler = queryHandler;
             _bookingService = bookingService;
             _logger = logger;
             _randomGenerator = randomGenerator;
-            _kinlyConfiguration = kinlyConfigurationOption.Value;
             _updateHearingService = updateHearingService;
+            _endpointService = endpointService;
         }
 
         /// <summary>
@@ -62,9 +61,10 @@ namespace BookingsApi.Controllers.V2
             }
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
-            
+
+            var sipAddressStem = _endpointService.GetSipAddressStem();
             var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
-                request, caseType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem, hearingRoles);
+                request, caseType, hearingVenue, cases, _randomGenerator, sipAddressStem, hearingRoles);
 
             var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
             
