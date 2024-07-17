@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using LaunchDarkly.Logging;
 using LaunchDarkly.Sdk;
 using LaunchDarkly.Sdk.Server;
@@ -8,7 +8,6 @@ namespace BookingsApi.Common.Services
 {
     public interface IFeatureToggles
     {
-        bool UsePostMay2023Template();
     }
 
     public class FeatureToggles : IFeatureToggles
@@ -16,7 +15,6 @@ namespace BookingsApi.Common.Services
         private readonly ILdClient _ldClient;
         private readonly Context _context;
         private const string LdUser = "vh-booking-api";
-        private const string NewNotifyTemplatesToggleKey = "notify-post-may-2023-templates";
 
         public FeatureToggles(string sdkKey, string environmentName)
         {
@@ -25,8 +23,6 @@ namespace BookingsApi.Common.Services
             _context = Context.Builder(LdUser).Name(environmentName).Build();
             _ldClient = new LdClient(config);
         }
-        
-        public bool UsePostMay2023Template() => GetBoolToggle(NewNotifyTemplatesToggleKey);
         
         private bool GetBoolToggle(string key)
         {
