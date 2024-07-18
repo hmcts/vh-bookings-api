@@ -449,7 +449,7 @@ namespace BookingsApi.UnitTests.Controllers
             data.ErroredRequests.Count.Should().Be(1);
             data.ErroredRequests[0].JudiciaryPersonRequest.Should().BeEquivalentTo(item1);
 
-            _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonCommand>()), Times.Never);
+            _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonByPersonalCodeCommand>()), Times.Never);
         }
 
         [Test]
@@ -479,7 +479,7 @@ namespace BookingsApi.UnitTests.Controllers
             data.ErroredRequests.Count.Should().Be(1);
             data.ErroredRequests[0].JudiciaryLeaverRequest.Should().BeEquivalentTo(item1);
 
-            _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonCommand>()), Times.Never);
+            _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonByPersonalCodeCommand>()), Times.Never);
         }
 
         [Test]

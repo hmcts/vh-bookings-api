@@ -132,6 +132,12 @@ namespace Testing.Common.Builders.Api
             public static string BulkJudiciaryPersons() => $"{ApiRoot}/BulkJudiciaryPersons";
         }
 
+        public static class JudiciaryPersonsStagingEndpoints
+        {
+            private const string ApiRoot = "judiciarypersonstaging";
+            public static string BulkJudiciaryPersonsStaging() => $"{ApiRoot}/BulkJudiciaryPersonsStaging";
+        }
+
         public static class WorkAllocationEndpoints
         {
             private const string ApiRoot = "hearings";

@@ -41,7 +41,7 @@ namespace BookingsApi.Controllers.V1
 
             foreach (var item in judiciaryPersonRequests)
             {
-                var validation = item.Leaver
+                var validation = item.Leaver || item.Deleted
                     ? await new JudiciaryLeaverPersonRequestValidation().ValidateAsync(item)
                     : await new JudiciaryNonLeaverPersonRequestValidation().ValidateAsync(item);
                 if (!validation.IsValid)
@@ -66,7 +66,8 @@ namespace BookingsApi.Controllers.V1
                     {
                         await _commandHandler.Handle(new AddJudiciaryPersonByPersonalCodeCommand(item.Id,
                             item.PersonalCode, item.Title, item.KnownAs, item.Surname,
-                            item.Fullname, item.PostNominals, item.Email, item.WorkPhone, item.HasLeft, item.Leaver, item.LeftOn));
+                            item.Fullname, item.PostNominals, item.Email, item.WorkPhone, item.HasLeft, item.Leaver, item.LeftOn, 
+                            item.Deleted, item.DeletedOn));
                     }
                     else
                     {

@@ -8,7 +8,8 @@ namespace BookingsApi.Domain
     {
         private readonly DateTime _currentUTC = DateTime.UtcNow;
         public JudiciaryPerson(string externalRefId, string personalCode, string title, string knownAs, string surname,
-            string fullname, string postNominals, string email, string workPhone, bool hasLeft, bool leaver, string leftOn)
+            string fullname, string postNominals, string email, string workPhone, bool hasLeft, bool leaver, string leftOn,
+            bool deleted = false, string deletedOn = null)
         {
             Id = Guid.NewGuid();
             ExternalRefId = externalRefId;
@@ -25,6 +26,8 @@ namespace BookingsApi.Domain
             HasLeft = hasLeft;
             Leaver = leaver;
             LeftOn = leftOn;
+            Deleted = deleted;
+            DeletedOn = deletedOn;
         }
 
         public string ExternalRefId { get; set; }
@@ -43,6 +46,7 @@ namespace BookingsApi.Domain
         public string LeftOn { get; set; }
         public bool IsGeneric { get; set; }
         public bool Deleted { get; private set; }
+        public string DeletedOn { get; private set; }
 
         public void Update(string personalCode, string title, string knownAs, string surname, string fullname, 
             string postNominals, string email, string workPhone, bool hasLeft, bool leaver, string leftOn)
@@ -76,6 +80,8 @@ namespace BookingsApi.Domain
             HasLeft = command.HasLeft;
             Leaver = command.Leaver;
             LeftOn = command.LeftOn;
+            Deleted = command.Deleted;
+            DeletedOn = command.DeletedOn;
         }
 
         public void Update(bool hasLeft)

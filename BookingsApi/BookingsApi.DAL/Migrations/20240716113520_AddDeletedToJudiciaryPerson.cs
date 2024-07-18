@@ -16,6 +16,12 @@ namespace BookingsApi.DAL.Migrations
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
+            
+            migrationBuilder.AddColumn<string>(
+                name: "DeletedOn",
+                table: "JudiciaryPersonsStaging",
+                type: "nvarchar(max)",
+                nullable: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "Deleted",
@@ -28,6 +34,12 @@ namespace BookingsApi.DAL.Migrations
                 name: "IX_JudiciaryPerson_Deleted",
                 table: "JudiciaryPerson",
                 column: "Deleted");
+            
+            migrationBuilder.AddColumn<string>(
+                name: "DeletedOn",
+                table: "JudiciaryPerson",
+                type: "nvarchar(max)",
+                nullable: true);
         }
 
         /// <inheritdoc />
@@ -36,6 +48,10 @@ namespace BookingsApi.DAL.Migrations
             migrationBuilder.DropColumn(
                 name: "Deleted",
                 table: "JudiciaryPersonsStaging");
+            
+            migrationBuilder.DropColumn(
+                name: "DeletedOn",
+                table: "JudiciaryPersonsStaging");
 
             migrationBuilder.DropIndex(
                 name: "IX_JudiciaryPerson_Deleted",
@@ -43,6 +59,10 @@ namespace BookingsApi.DAL.Migrations
             
             migrationBuilder.DropColumn(
                 name: "Deleted",
+                table: "JudiciaryPerson");
+
+            migrationBuilder.DropColumn(
+                name: "DeletedOn",
                 table: "JudiciaryPerson");
         }
     }

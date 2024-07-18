@@ -13,6 +13,8 @@
         public string WorkPhone { get; set; }
         public string Leaver { get; set; }
         public string LeftOn { get; set; }
+        public bool Deleted { get; set; }
+        public string DeletedOn { get; set; }
     }
 
     public class AddJudiciaryPersonStagingCommandHandler : ICommandHandler<AddJudiciaryPersonStagingCommand>
@@ -27,7 +29,8 @@
         {
             await _context.JudiciaryPersonsStaging.AddAsync(new JudiciaryPersonStaging(command.ExternalRefId,
                 command.PersonalCode, command.Title, command.KnownAs, command.Surname, command.Fullname,
-                command.PostNominals, command.Email, command.WorkPhone, command.Leaver, command.LeftOn));
+                command.PostNominals, command.Email, command.WorkPhone, command.Leaver, command.LeftOn, 
+                command.Deleted, command.DeletedOn));
 
             await _context.SaveChangesAsync();
         }

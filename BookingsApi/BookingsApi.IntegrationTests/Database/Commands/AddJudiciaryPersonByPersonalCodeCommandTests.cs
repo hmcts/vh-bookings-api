@@ -23,7 +23,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var personalCode = Guid.NewGuid().ToString();
 
             var insertCommand = new AddJudiciaryPersonByPersonalCodeCommand(externalRefId, personalCode, "Title",
-                "KnownAs", "Surname", "FullName", "PostNominals", "Email", "01234567890", true, true, "2022-06-08");
+                "KnownAs", "Surname", "FullName", "PostNominals", "Email", "01234567890", true, true, "2022-06-08", 
+                true, "2023-01-01");
             await _commandHandler.Handle(insertCommand);
 
             var judiciaryPerson = await _getJudiciaryPersonByPersonalCodeQueryHandler.Handle(new GetJudiciaryPersonByPersonalCodeQuery(personalCode));
@@ -40,6 +41,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             judiciaryPerson.CreatedDate.Should().Be(judiciaryPerson.UpdatedDate);
             judiciaryPerson.Leaver.Should().BeTrue();
             judiciaryPerson.LeftOn.Should().Be("2022-06-08");
+            judiciaryPerson.Deleted.Should().Be(insertCommand.Deleted);
         }
     }
 }
