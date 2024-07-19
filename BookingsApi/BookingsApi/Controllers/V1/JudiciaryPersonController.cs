@@ -41,9 +41,11 @@ namespace BookingsApi.Controllers.V1
 
             foreach (var item in judiciaryPersonRequests)
             {
-                var validation = item.Leaver || item.Deleted
+                var validation = item.Leaver
                     ? await new JudiciaryLeaverPersonRequestValidation().ValidateAsync(item)
                     : await new JudiciaryNonLeaverPersonRequestValidation().ValidateAsync(item);
+                if (item.Deleted)
+                    validation = await new JudiciaryDeletedPersonRequestValidation().ValidateAsync(item);
                 if (!validation.IsValid)
                 {
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
