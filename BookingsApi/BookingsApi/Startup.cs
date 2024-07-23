@@ -88,7 +88,7 @@ namespace BookingsApi
             services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd", options));
             services.Configure<ServiceBusSettings>(options => Configuration.Bind("ServiceBusQueue", options));
             services.Configure<ServicesConfiguration>(options => Configuration.Bind("Services", options));
-            services.Configure<KinlyConfiguration>(options => Configuration.Bind("KinlyConfiguration", options));
+            services.Configure<SupplierConfiguration>(options => Configuration.Bind("SupplierConfiguration", options));
             services.Configure<AllocateHearingConfiguration>(options => Configuration.Bind("AllocateHearing", options));
         }
 
