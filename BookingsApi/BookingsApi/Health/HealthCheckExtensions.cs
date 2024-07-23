@@ -8,15 +8,19 @@ namespace BookingsApi.Health;
 
 public static class HealthCheckExtensions
 {
+    private static readonly string[] HealthCheckTags = ["startup", "readiness"];
     public static IServiceCollection AddVhHealthChecks(this IServiceCollection services, IConfiguration configuration)
     {
         var serviceBusSettings = new ServiceBusSettings();
         configuration.GetSection("ServiceBusQueue").Bind(serviceBusSettings);
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddDbContextCheck<BookingsDbContext>(name: "Database VhBookings", tags: new[] {"startup", "readiness"})
-            .AddAzureServiceBusQueue(serviceBusSettings!.ConnectionString, serviceBusSettings.QueueName,
-                name: "Booking Service Bus Queue", tags: new[] {"startup", "readiness"});
+            .AddDbContextCheck<BookingsDbContext>(name: "Database VhBookings", tags: HealthCheckTags)
+            .AddAzureServiceBusQueue(serviceBusSettings!.ConnectionString, 
+                serviceBusSettings.QueueName,
+                name: "Booking Service Bus Queue", 
+                tags: HealthCheckTags,
+                failureStatus: HealthStatus.Degraded);
             
         return services;
     }
