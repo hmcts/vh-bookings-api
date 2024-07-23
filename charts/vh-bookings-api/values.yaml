@@ -33,6 +33,10 @@ java:
           alias: azuread--bookingsapiresourceid
         - name: azuread--identifieruri
           alias: services--bookingsapiresourceid
+        - name: kinlyconfiguration--sipaddressstem
+          alias: supplierconfiguration--sipaddressstemkinly
+        - name: vodafoneconfiguration--sipaddressstem
+          alias: supplierconfiguration--sipaddressstemvodafone
   environment:
     ASPNETCORE_URLS: http://+:8080
     DISABLEHTTPSREDIRECTION: true
