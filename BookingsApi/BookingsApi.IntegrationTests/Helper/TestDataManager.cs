@@ -654,12 +654,14 @@ namespace BookingsApi.IntegrationTests.Helper
             return judiciaryPersonStaging;
         }
 
-        public async Task<JudiciaryPerson> AddJudiciaryPerson(string personalCode = null, bool isGeneric = false)
+        public async Task<JudiciaryPerson> AddJudiciaryPerson(string personalCode = null, bool isGeneric = false, string email = null)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
             var judiciaryPerson = new JudiciaryPersonBuilder(personalCode).Build();
             judiciaryPerson.IsGeneric = isGeneric;
+            if (!string.IsNullOrEmpty(email))
+                judiciaryPerson.Email = email;
             await db.JudiciaryPersons.AddAsync(judiciaryPerson);
 
             await db.SaveChangesAsync();
@@ -679,6 +681,37 @@ namespace BookingsApi.IntegrationTests.Helper
             var person = db.JudiciaryPersons.FirstOrDefault(x => x.PersonalCode == personalCode);
 
             return person;
+        }
+
+        public async Task AddDeletedJudiciaryPerson(string personalCode, string deletedOn, string email = null)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode).Build();
+            judiciaryPerson.SetProtected(nameof(judiciaryPerson.Deleted), true);
+            judiciaryPerson.SetProtected(nameof(judiciaryPerson.DeletedOn), deletedOn);
+            if (!string.IsNullOrEmpty(email))
+                judiciaryPerson.Email = email;
+            await db.JudiciaryPersons.AddAsync(judiciaryPerson);
+
+            await db.SaveChangesAsync();
+            AddJudiciaryPersonsForCleanup(judiciaryPerson.PersonalCode);
+        }
+        
+        public async Task AddLeaverJudiciaryPerson(string personalCode, string leftOn, string email = null)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode).Build();
+            judiciaryPerson.Leaver = true;
+            judiciaryPerson.HasLeft = true;
+            judiciaryPerson.LeftOn = leftOn;
+            if (!string.IsNullOrEmpty(email))
+                judiciaryPerson.Email = email;
+            await db.JudiciaryPersons.AddAsync(judiciaryPerson);
+
+            await db.SaveChangesAsync();
+            AddJudiciaryPersonsForCleanup(judiciaryPerson.PersonalCode);
         }
 
         public async Task RemoveJudiciaryPersonAsync(JudiciaryPerson judiciaryPerson)

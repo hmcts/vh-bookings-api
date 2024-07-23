@@ -376,7 +376,12 @@ namespace BookingsApi.Domain
 
             if (judiciaryPerson.IsALeaver())
             {
-                throw new DomainRuleException(nameof(judiciaryPerson), "Cannot add a participant who is a leaver");
+                throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.CannotAddLeaverJudiciaryPerson);
+            }
+
+            if (judiciaryPerson.Deleted)
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.CannotAddDeletedJudiciaryPerson);
             }
         }
 

@@ -19,6 +19,8 @@ namespace BookingsApi.Mappings.V1
                 WorkPhone = request.WorkPhone,
                 Leaver = request.Leaver,
                 LeftOn = request.LeftOn,
+                Deleted = request.Deleted,
+                DeletedOn = request.DeletedOn
             };
         }
     }

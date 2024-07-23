@@ -43,7 +43,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 Email ="Email",
                 Leaver = true,
                 LeftOn ="LeftOn",
-                    
+                Deleted = true,
+                DeletedOn = "2023-01-01"
             };
             await _commandHandler.Handle(updateCommand);
 
@@ -59,6 +60,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatePerson.Email.Should().Be(updateCommand.Email);
             updatePerson.LeftOn.Should().Be(updateCommand.LeftOn);
             updatePerson.HasLeft.Should().BeTrue();
+            updatePerson.Deleted.Should().Be(updateCommand.Deleted);
+            updatePerson.DeletedOn.Should().Be(updateCommand.DeletedOn);
         }
     }
 }

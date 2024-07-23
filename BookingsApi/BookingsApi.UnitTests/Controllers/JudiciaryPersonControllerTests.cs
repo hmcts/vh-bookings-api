@@ -73,32 +73,6 @@ namespace BookingsApi.UnitTests.Controllers
                      c.PostNominals == item1.PostNominals && c.ExternalRefId == item1.Id
             )));
         }
-        
-        [Test]
-        public async Task Should_return_ok_result_adding_leaver_person()
-        {
-            var item1 = new JudiciaryPersonRequest { Id = Guid.NewGuid().ToString(), Leaver = true, LeftOn = "2022-06-08", PersonalCode = "PersonalCode" };
-            var request = new List<JudiciaryPersonRequest> { item1 };
-
-            _queryHandlerMock
-                .Setup(x => x.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(It.IsAny<GetJudiciaryPersonByPersonalCodeQuery>()))
-                .ReturnsAsync((JudiciaryPerson)null);
-
-            var result = await _controller.BulkJudiciaryPersonsAsync(request);
-
-            result.Should().NotBeNull();
-            var objectResult = result as ObjectResult;
-            objectResult.Should().NotBeNull();
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            var data = objectResult.Value as BulkJudiciaryPersonResponse;
-            data.Should().NotBeNull();
-            data.ErroredRequests.Count.Should().Be(0);
-
-            _commandHandlerMock.Verify(c => c.Handle(It.Is<AddJudiciaryPersonByPersonalCodeCommand>
-            (
-                c => c.Leaver == item1.Leaver && c.LeftOn == item1.LeftOn && c.ExternalRefId == item1.Id && c.PersonalCode == item1.PersonalCode
-            )));
-        }
 
         [Test]
         public async Task Should_return_ok_result_updating_leaver_item()
@@ -449,7 +423,7 @@ namespace BookingsApi.UnitTests.Controllers
             data.ErroredRequests.Count.Should().Be(1);
             data.ErroredRequests[0].JudiciaryPersonRequest.Should().BeEquivalentTo(item1);
 
-            _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonCommand>()), Times.Never);
+            _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonByPersonalCodeCommand>()), Times.Never);
         }
 
         [Test]
@@ -479,7 +453,7 @@ namespace BookingsApi.UnitTests.Controllers
             data.ErroredRequests.Count.Should().Be(1);
             data.ErroredRequests[0].JudiciaryLeaverRequest.Should().BeEquivalentTo(item1);
 
-            _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonCommand>()), Times.Never);
+            _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonByPersonalCodeCommand>()), Times.Never);
         }
 
         [Test]

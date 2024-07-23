@@ -106,7 +106,25 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 hearing.AddJudiciaryJudge(newJudiciaryPerson, "Display Name");
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Exists(x => x.Message == "Cannot add a participant who is a leaver").Should().BeTrue();
+                .Exists(x => x.Message == DomainRuleErrorMessages.CannotAddLeaverJudiciaryPerson).Should().BeTrue();
+            var afterAddCount = hearing.GetJudiciaryParticipants().Count;
+            afterAddCount.Should().Be(beforeAddCount);
+        }
+
+        [Test]
+        public void Should_raise_exception_if_judiciary_judge_has_been_deleted()
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false).Build();
+            var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
+            newJudiciaryPerson.SetProtected(nameof(newJudiciaryPerson.Deleted), true);
+            newJudiciaryPerson.SetProtected(nameof(newJudiciaryPerson.DeletedOn), "2023-01-01");
+            var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+            
+            var action = () => 
+                hearing.AddJudiciaryJudge(newJudiciaryPerson, "Display Name");
+            
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures
+                .Exists(x => x.Message == DomainRuleErrorMessages.CannotAddDeletedJudiciaryPerson).Should().BeTrue();
             var afterAddCount = hearing.GetJudiciaryParticipants().Count;
             afterAddCount.Should().Be(beforeAddCount);
         }
@@ -158,7 +176,25 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 hearing.AddJudiciaryPanelMember(newJudiciaryPerson, "Display Name");
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Exists(x => x.Message == "Cannot add a participant who is a leaver").Should().BeTrue();
+                .Exists(x => x.Message == DomainRuleErrorMessages.CannotAddLeaverJudiciaryPerson).Should().BeTrue();
+            var afterAddCount = hearing.GetJudiciaryParticipants().Count;
+            afterAddCount.Should().Be(beforeAddCount);
+        }
+
+        [Test]
+        public void Should_raise_exception_if_judiciary_panel_member_has_been_deleted()
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false).Build();
+            var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
+            newJudiciaryPerson.SetProtected(nameof(newJudiciaryPerson.Deleted), true);
+            newJudiciaryPerson.SetProtected(nameof(newJudiciaryPerson.DeletedOn), "2023-01-01");
+            var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+            
+            var action = () => 
+                hearing.AddJudiciaryPanelMember(newJudiciaryPerson, "Display Name");
+            
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures
+                .Exists(x => x.Message == DomainRuleErrorMessages.CannotAddDeletedJudiciaryPerson).Should().BeTrue();
             var afterAddCount = hearing.GetJudiciaryParticipants().Count;
             afterAddCount.Should().Be(beforeAddCount);
         }

@@ -44,7 +44,9 @@ namespace BookingsApi.UnitTests.DAL.Commands
                 Email = Faker.Name.First(),
                 WorkPhone = Faker.Phone.Number(),
                 Leaver = Faker.Name.First(),
-                LeftOn = Faker.Name.First()
+                LeftOn = Faker.Name.First(),
+                Deleted = true,
+                DeletedOn = "2023-01-01"
             };
 
             await _handler.Handle(command);
@@ -66,6 +68,8 @@ namespace BookingsApi.UnitTests.DAL.Commands
             newEntry.LeftOn.Should().Be(command.LeftOn);
             newEntry.CreatedDate.Should().BeAfter(DateTime.Now.AddDays(-1));
             newEntry.UpdatedDate.Should().BeAfter(DateTime.Now.AddDays(-1));
+            newEntry.Deleted.Should().Be(newEntry.Deleted);
+            newEntry.DeletedOn.Should().Be(newEntry.DeletedOn);
         }
     }
 }

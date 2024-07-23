@@ -17,7 +17,8 @@ namespace BookingsApi.DAL.Commands
 
         public bool HasLeft => Leaver;
         public string LeftOn { get; set; }
-        
+        public bool Deleted { get; set; }
+        public string DeletedOn { get; set; }
     }
 
     public class UpdateJudiciaryPersonByPersonalCodeHandler : ICommandHandler<UpdateJudiciaryPersonByPersonalCodeCommand>
