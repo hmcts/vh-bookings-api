@@ -4,7 +4,7 @@ namespace BookingsApi.DAL.Commands
     {
         protected JudiciaryPersonCommandBase(string externalRefId, string personalCode, string title,
             string knownAs, string surname, string fullname, string postNominals, string email, string workPhone, bool hasLeft,
-            bool leaver, string leftOn)
+            bool leaver, string leftOn, bool deleted, string deletedOn)
         {
             ExternalRefId = externalRefId;
             PersonalCode = personalCode;
@@ -18,6 +18,8 @@ namespace BookingsApi.DAL.Commands
             HasLeft = hasLeft;
             Leaver = leaver;
             LeftOn = leftOn;
+            Deleted = deleted;
+            DeletedOn = deletedOn;
         }
 
         public string ExternalRefId { get; }
@@ -32,5 +34,7 @@ namespace BookingsApi.DAL.Commands
         public bool HasLeft { get; set; }
         public bool Leaver { get; }
         public string LeftOn { get; }
+        public bool Deleted { get; set; }
+        public string DeletedOn { get; set; }
     }
 }

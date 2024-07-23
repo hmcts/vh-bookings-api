@@ -19,7 +19,9 @@ namespace BookingsApi.Mappings.V1
                 Email = judiciaryPersonStagingRequest.Email,
                 WorkPhone = judiciaryPersonStagingRequest.WorkPhone,
                 Leaver = judiciaryPersonStagingRequest.Leaver,
-                LeftOn = judiciaryPersonStagingRequest.LeftOn
+                LeftOn = judiciaryPersonStagingRequest.LeftOn,
+                Deleted = judiciaryPersonStagingRequest.Deleted,
+                DeletedOn = judiciaryPersonStagingRequest.DeletedOn
             };
         }
     }

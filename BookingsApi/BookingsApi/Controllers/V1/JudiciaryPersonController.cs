@@ -41,9 +41,12 @@ namespace BookingsApi.Controllers.V1
 
             foreach (var item in judiciaryPersonRequests)
             {
-                var validation = item.Leaver
-                    ? await new JudiciaryLeaverPersonRequestValidation().ValidateAsync(item)
-                    : await new JudiciaryNonLeaverPersonRequestValidation().ValidateAsync(item);
+                var validation = item switch
+                {
+                    { Leaver: true } => await new JudiciaryLeaverPersonRequestValidation().ValidateAsync(item),
+                    { Deleted: true } => await new JudiciaryDeletedPersonRequestValidation().ValidateAsync(item),
+                    _ => await new JudiciaryNonLeaverPersonRequestValidation().ValidateAsync(item)
+                };
                 if (!validation.IsValid)
                 {
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
@@ -64,9 +67,11 @@ namespace BookingsApi.Controllers.V1
 
                     if (judiciaryPerson == null)
                     {
-                        await _commandHandler.Handle(new AddJudiciaryPersonByPersonalCodeCommand(item.Id,
-                            item.PersonalCode, item.Title, item.KnownAs, item.Surname,
-                            item.Fullname, item.PostNominals, item.Email, item.WorkPhone, item.HasLeft, item.Leaver, item.LeftOn));
+                        if (!item.Leaver && !item.Deleted)
+                            await _commandHandler.Handle(new AddJudiciaryPersonByPersonalCodeCommand(item.Id,
+                                item.PersonalCode, item.Title, item.KnownAs, item.Surname,
+                                item.Fullname, item.PostNominals, item.Email, item.WorkPhone, item.HasLeft, item.Leaver, item.LeftOn, 
+                                item.Deleted, item.DeletedOn));
                     }
                     else
                     {
