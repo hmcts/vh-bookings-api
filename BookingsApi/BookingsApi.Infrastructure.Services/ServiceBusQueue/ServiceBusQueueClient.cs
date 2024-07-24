@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using BookingsApi.Common.Helpers;
@@ -13,6 +14,7 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         Task PublishMessageAsync(EventMessage eventMessage);
     }
 
+    [ExcludeFromCodeCoverage]
     public class ServiceBusQueueClient(IOptions<ServiceBusSettings> serviceBusSettings) : IServiceBusQueueClient
     {
         private readonly ServiceBusSettings _serviceBusSettings = serviceBusSettings.Value;
