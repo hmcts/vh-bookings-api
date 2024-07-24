@@ -1,12 +1,10 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
 using BookingsApi.Common.Helpers;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
-using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 
 namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
 {
@@ -15,24 +13,19 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         Task PublishMessageAsync(EventMessage eventMessage);
     }
 
-    public class ServiceBusQueueClient : IServiceBusQueueClient
+    public class ServiceBusQueueClient(IOptions<ServiceBusSettings> serviceBusSettings) : IServiceBusQueueClient
     {
-        private readonly ServiceBusSettings _serviceBusSettings;
-        public JsonSerializerSettings SerializerSettings { get; set; }
-
-        public ServiceBusQueueClient(IOptions<ServiceBusSettings> serviceBusSettings)
-        {
-            _serviceBusSettings = serviceBusSettings.Value;
-            SerializerSettings = DefaultSerializerSettings.DefaultNewtonsoftSerializerSettings();
-        }
+        private readonly ServiceBusSettings _serviceBusSettings = serviceBusSettings.Value;
+        public JsonSerializerSettings SerializerSettings { get; } = DefaultSerializerSettings.DefaultNewtonsoftSerializerSettings();
 
         public async Task PublishMessageAsync(EventMessage eventMessage)
         {
-            var queueClient = new QueueClient(_serviceBusSettings.ConnectionString, _serviceBusSettings.QueueName);
+            await using var client = new ServiceBusClient(_serviceBusSettings.ConnectionString);
+            var sender = client.CreateSender(_serviceBusSettings.QueueName); 
             var jsonObjectString = JsonConvert.SerializeObject(eventMessage, SerializerSettings);
             
             var messageBytes = Encoding.UTF8.GetBytes(jsonObjectString);
-            await queueClient.SendAsync(new Message(messageBytes)).ConfigureAwait(false);
+            await sender.SendMessageAsync(new ServiceBusMessage(messageBytes)).ConfigureAwait(false);
         }
     }
 }
