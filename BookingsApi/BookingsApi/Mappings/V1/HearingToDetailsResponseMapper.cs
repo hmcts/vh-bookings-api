@@ -27,6 +27,14 @@ namespace BookingsApi.Mappings.V1
             var judiciaryParticipants = videoHearing.GetJudiciaryParticipants()
                 .Select(x => judiciaryParticipantMapper.MapJudiciaryParticipantToResponse(x))
                 .ToList();
+
+            Guid? allocatedToId = null;
+            string allocatedToUsername = null;
+            if (videoHearing.AllocatedTo != null)
+            {
+                allocatedToId = videoHearing.AllocatedTo.Id;
+                allocatedToUsername = videoHearing.AllocatedTo.Username;
+            }
             
             var response = new HearingDetailsResponse
             {
@@ -51,7 +59,9 @@ namespace BookingsApi.Mappings.V1
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints,
-                JudiciaryParticipants = judiciaryParticipants
+                JudiciaryParticipants = judiciaryParticipants,
+                AllocatedToId = allocatedToId,
+                AllocatedToUsername = allocatedToUsername
             };
             response.TrimAllStringsRecursively();
             return response;
