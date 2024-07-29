@@ -138,19 +138,19 @@ namespace BookingsApi.Client
         /// <summary>
         /// Retrieve a list of hearing allocated to a given list of CSOs
         /// </summary>
-        /// <param name="csoIds">List of CSO ids</param>
+        /// <param name="request">A filter, either CSO ids or unallocated</param>
         /// <returns>List of hearings that match the cso ids. If no ids provided an empty list is returned</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayByCsosAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayByCsosAsync(HearingsForTodayByAllocationRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of hearing allocated to a given list of CSOs
         /// </summary>
-        /// <param name="csoIds">List of CSO ids</param>
+        /// <param name="request">A filter, either CSO ids or unallocated</param>
         /// <returns>List of hearings that match the cso ids. If no ids provided an empty list is returned</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayByCsosAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayByCsosAsync(HearingsForTodayByAllocationRequest request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get participants in a hearing
@@ -2282,25 +2282,25 @@ namespace BookingsApi.Client
         /// <summary>
         /// Retrieve a list of hearing allocated to a given list of CSOs
         /// </summary>
-        /// <param name="csoIds">List of CSO ids</param>
+        /// <param name="request">A filter, either CSO ids or unallocated</param>
         /// <returns>List of hearings that match the cso ids. If no ids provided an empty list is returned</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayByCsosAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayByCsosAsync(HearingsForTodayByAllocationRequest request)
         {
-            return GetHearingsForTodayByCsosAsync(csoIds, System.Threading.CancellationToken.None);
+            return GetHearingsForTodayByCsosAsync(request, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of hearing allocated to a given list of CSOs
         /// </summary>
-        /// <param name="csoIds">List of CSO ids</param>
+        /// <param name="request">A filter, either CSO ids or unallocated</param>
         /// <returns>List of hearings that match the cso ids. If no ids provided an empty list is returned</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayByCsosAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayByCsosAsync(HearingsForTodayByAllocationRequest request, System.Threading.CancellationToken cancellationToken)
         {
-            if (csoIds == null)
-                throw new System.ArgumentNullException("csoIds");
+            if (request == null)
+                throw new System.ArgumentNullException("request");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2308,7 +2308,7 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(csoIds, _settings.Value);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;

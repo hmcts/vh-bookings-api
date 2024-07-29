@@ -1,8 +1,9 @@
 namespace BookingsApi.DAL.Queries;
 
-public class GetHearingsForTodayQueryAllocatedToQuery(List<Guid> allocatedTo) : IQuery
+public class GetHearingsForTodayQueryAllocatedToQuery(List<Guid> allocatedTo, bool? unallocated) : IQuery
 {
     public List<Guid> AllocatedTo { get; } = allocatedTo;
+    public bool? Unallocated { get; set; } = unallocated;
 }
 
 public class GetHearingsForTodayQueryAllocatedToQueryHandler : IQueryHandler<GetHearingsForTodayQueryAllocatedToQuery, List<VideoHearing>>
@@ -23,11 +24,19 @@ public class GetHearingsForTodayQueryAllocatedToQueryHandler : IQueryHandler<Get
             .Include(x => x.HearingVenue)
             .Where(x => x.ScheduledDateTime.Date == DateTime.UtcNow.Date)
             .AsQueryable();
-        
-        hearingQuery = hearingQuery
-            .Where(hearing => hearing.Allocations
-                .Any(a => query.AllocatedTo.Contains(a.JusticeUser.Id)));
-        
+
+        if (query.Unallocated.HasValue && query.Unallocated.Value)
+        {
+            hearingQuery = hearingQuery
+                .Where(hearing => !hearing.Allocations.Any());
+        }
+        else
+        {
+            hearingQuery = hearingQuery
+                .Where(hearing => hearing.Allocations
+                    .Any(a => query.AllocatedTo.Contains(a.JusticeUser.Id)));
+        }
+
         return await hearingQuery.OrderBy(x => x.ScheduledDateTime).AsNoTracking().AsSplitQuery().ToListAsync();
     }
         
