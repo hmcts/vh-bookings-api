@@ -30,12 +30,15 @@ namespace BookingsApi.Mappings.V1
 
             Guid? allocatedToId = null;
             string allocatedToUsername = null;
+            string allocatedToName = null;
             if (videoHearing.AllocatedTo != null)
             {
-                allocatedToId = videoHearing.AllocatedTo.Id;
-                allocatedToUsername = videoHearing.AllocatedTo.Username;
+                var allocatedTo = videoHearing.AllocatedTo;
+                allocatedToId = allocatedTo.Id;
+                allocatedToUsername = allocatedTo.Username;
+                allocatedToName = $"{allocatedTo.FirstName} {allocatedTo.Lastname}";
             }
-            
+
             var response = new HearingDetailsResponse
             {
                 Id = videoHearing.Id,
@@ -62,7 +65,8 @@ namespace BookingsApi.Mappings.V1
                 JudiciaryParticipants = judiciaryParticipants,
                 SupportsWorkAllocation = videoHearing.HearingVenue.IsWorkAllocationEnabled,
                 AllocatedToId = allocatedToId,
-                AllocatedToUsername = allocatedToUsername
+                AllocatedToUsername = allocatedToUsername,
+                AllocatedToName = allocatedToName
             };
             response.TrimAllStringsRecursively();
             return response;
