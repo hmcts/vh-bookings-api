@@ -127,5 +127,10 @@ namespace BookingsApi.Contract.V1.Responses
         /// The username of the user who the hearing is allocated to, if allocated
         /// </summary>
         public string AllocatedToUsername { get; set; }
+
+        /// <summary>
+        /// Does the hearing venue support work allocation
+        /// </summary>
+        public bool SupportsWorkAllocation { get; set; }
     }
 }

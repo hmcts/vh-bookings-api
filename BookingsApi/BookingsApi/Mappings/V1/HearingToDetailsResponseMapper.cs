@@ -60,6 +60,7 @@ namespace BookingsApi.Mappings.V1
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints,
                 JudiciaryParticipants = judiciaryParticipants,
+                SupportsWorkAllocation = videoHearing.HearingVenue.IsWorkAllocationEnabled,
                 AllocatedToId = allocatedToId,
                 AllocatedToUsername = allocatedToUsername
             };
