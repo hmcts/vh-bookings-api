@@ -127,6 +127,8 @@ namespace BookingsApi.UnitTests.Mappings.V1
                 .ToList());
             response.AllocatedToId.Should().Be(justiceUser.Id);
             response.AllocatedToUsername.Should().Be(justiceUser.Username);
+            response.AllocatedToName.Should().Be($"{justiceUser.FirstName} {justiceUser.Lastname}");
+            response.SupportsWorkAllocation.Should().Be(_videoHearing.HearingVenue.IsWorkAllocationEnabled);
         }
     }
 }

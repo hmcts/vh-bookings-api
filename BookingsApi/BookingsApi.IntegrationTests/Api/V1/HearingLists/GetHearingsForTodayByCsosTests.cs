@@ -52,6 +52,7 @@ public class GetHearingsForTodayByCsosTests : ApiTest
         hearings[0].Id.Should().Be(hearing.Id);
         hearings[0].AllocatedToId.Should().Be(justiceUser.Id);
         hearings[0].AllocatedToUsername.Should().Be(justiceUser.Username);
+        hearings[0].AllocatedToName.Should().Be($"{justiceUser.FirstName} {justiceUser.Lastname}");
         hearings.Exists(x => x.Id == hearingUnallocated.Id).Should().BeFalse();
     }
     
