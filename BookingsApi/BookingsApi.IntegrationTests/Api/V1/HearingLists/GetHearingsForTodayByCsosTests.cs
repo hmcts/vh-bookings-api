@@ -84,4 +84,31 @@ public class GetHearingsForTodayByCsosTests : ApiTest
         hearings.Exists(x => x.Id == hearing.Id).Should().BeFalse();
         hearings.Exists(x => x.Id == hearingUnallocated.Id).Should().BeTrue();
     }
+
+    [Test]
+    public async Task should_return_hearings_allocated_to_cso_and_unallocated_hearings()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(status: BookingStatus.Created,
+            configureOptions: options => { options.ScheduledDate = DateTime.UtcNow; });
+        var justiceUser = await Hooks.SeedJusticeUser("user@test.com", "Test", "User");
+        await Hooks.AddAllocation(hearing, justiceUser);
+        var csoIds = new List<Guid> {justiceUser.Id};
+
+        var hearingUnallocated = await Hooks.SeedVideoHearing(status: BookingStatus.Created,
+            configureOptions: options => { options.ScheduledDate = DateTime.UtcNow; });
+        var request = new HearingsForTodayByAllocationRequest { CsoIds = csoIds, Unallocated = true };
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingListsEndpoints.GetHearingsForTodayByCsos, RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        var hearings = await ApiClientResponse.GetResponses<List<HearingDetailsResponse>>(result.Content);
+        hearings.Should().NotBeEmpty();
+        hearings.Exists(x => x.Id == hearing.Id).Should().BeTrue();
+        hearings.Exists(x => x.Id == hearingUnallocated.Id).Should().BeTrue();
+    }
 }
