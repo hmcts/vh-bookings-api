@@ -13,6 +13,7 @@ namespace BookingsApi.Validations.V2
         public const string CasesErrorMessage = "Please provide at least one case";
         public const string CaseDuplicationErrorMessage = "Please make sure there are no duplicated cases";
         public const string HearingVenueCodeErrorMessage = "Please provide a hearing venue code";
+        public const string BookingSupplierErrorMessage = "Please provide a booking supplier";
 
         public BookNewHearingRequestInputValidationV2()
         {
@@ -29,6 +30,8 @@ namespace BookingsApi.Validations.V2
                     context.AddFailure(ScheduleDateTimeInPastErrorMessage);
                 }
             });
+
+            RuleFor(x => x.BookingSupplier).IsInEnum().WithMessage(BookingSupplierErrorMessage);
 
             RuleFor(x => x.ScheduledDuration)
                 .GreaterThan(0).WithMessage(ScheduleDurationErrorMessage);
