@@ -16,7 +16,7 @@ public class OverrideSupplierTests
         hearing.OverrideSupplier(newSupplier);
         
         // assert
-        hearing.GetConferenceSupplier().Should().Be(newSupplier);
+        hearing.ConferenceSupplier.Should().Be(newSupplier);
     }
     
     [Test]
@@ -31,7 +31,7 @@ public class OverrideSupplierTests
         hearing.OverrideSupplier(newSupplier);
         
         // assert
-        hearing.GetConferenceSupplier().Should().Be(newSupplier);
+        hearing.ConferenceSupplier.Should().Be(newSupplier);
     }
     
     [TestCase(BookingStatus.Created)]

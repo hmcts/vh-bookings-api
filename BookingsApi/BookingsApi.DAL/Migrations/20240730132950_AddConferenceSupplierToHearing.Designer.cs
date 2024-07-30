@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    [Migration("20240730091344_AddConferenceSupplierColumn")]
-    partial class AddConferenceSupplierColumn
+    [Migration("20240730132950_AddConferenceSupplierToHearing")]
+    partial class AddConferenceSupplierToHearing
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -174,8 +174,11 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<int>("CaseTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ConferenceSupplier")
-                        .HasColumnType("int");
+                    b.Property<int>("ConferenceSupplier")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("ConferenceSupplier");
 
                     b.Property<string>("ConfirmedBy")
                         .HasColumnType("nvarchar(max)");

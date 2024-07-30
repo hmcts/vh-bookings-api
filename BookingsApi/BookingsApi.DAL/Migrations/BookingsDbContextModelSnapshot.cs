@@ -171,8 +171,11 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<int>("CaseTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ConferenceSupplier")
-                        .HasColumnType("int");
+                    b.Property<int>("ConferenceSupplier")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("ConferenceSupplier");
 
                     b.Property<string>("ConfirmedBy")
                         .HasColumnType("nvarchar(max)");

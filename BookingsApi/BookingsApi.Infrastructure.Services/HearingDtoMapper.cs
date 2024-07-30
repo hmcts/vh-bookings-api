@@ -22,7 +22,7 @@ namespace BookingsApi.Infrastructure.Services
                 RecordAudio = hearing.AudioRecordingRequired,
                 HearingType = hearing.HearingType?.Name,
                 CaseTypeServiceId = hearing.CaseType.ServiceId ?? RefData.DefaultCaseTypeServiceId,
-                VideoSupplier = hearing.GetConferenceSupplier()
+                VideoSupplier = hearing.ConferenceSupplier
             };
         }
         

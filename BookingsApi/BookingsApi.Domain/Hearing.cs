@@ -28,6 +28,7 @@ namespace BookingsApi.Domain
             Endpoints = new List<Endpoint>();
             Allocations = new List<Allocation>();
             JudiciaryParticipants = new List<JudiciaryParticipant>();
+            ConferenceSupplier = VideoSupplier.Kinly;
         }
 
         /// <summary>
@@ -104,7 +105,7 @@ namespace BookingsApi.Domain
         public bool AudioRecordingRequired { get; set; }
         public string CancelReason { get; set; }
         public Guid? SourceId { get; set; }
-        protected VideoSupplier? ConferenceSupplier { get; set; }
+        public VideoSupplier ConferenceSupplier { get; protected set; }
 
         // Ideally, the domain object would implement the clone method and so this change is a work around.
         public bool IsFirstDayOfMultiDayHearing
@@ -570,11 +571,6 @@ namespace BookingsApi.Domain
         public bool IsJusticeUserAllocated()
         {
             return Allocations.Any();
-        }
-        
-        public VideoSupplier GetConferenceSupplier()
-        {
-            return ConferenceSupplier ?? VideoSupplier.Kinly;
         }
         
         public void AllocateJusticeUser(JusticeUser user)

@@ -5,7 +5,7 @@
 namespace BookingsApi.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class AddConferenceSupplierColumn : Migration
+    public partial class AddConferenceSupplierToHearing : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,7 +14,8 @@ namespace BookingsApi.DAL.Migrations
                 name: "ConferenceSupplier",
                 table: "Hearing",
                 type: "int",
-                nullable: true);
+                nullable: false,
+                defaultValue: 1);
         }
 
         /// <inheritdoc />

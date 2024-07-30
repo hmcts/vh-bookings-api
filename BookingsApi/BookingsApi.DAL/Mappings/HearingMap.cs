@@ -26,7 +26,7 @@ namespace BookingsApi.DAL.Mappings
             builder.Property(x => x.CancelReason).HasMaxLength(255);
             builder.Property(x => x.SourceId);
             
-            builder.Property<VideoSupplier?>("ConferenceSupplier").HasColumnName("ConferenceSupplier");
+            builder.Property<VideoSupplier>("ConferenceSupplier").HasColumnName("ConferenceSupplier").HasDefaultValue(VideoSupplier.Kinly);
             builder.Ignore(x => x.IsFirstDayOfMultiDayHearing);
 
             builder.HasMany<HearingCase>("HearingCases").WithOne(x => x.Hearing).HasForeignKey(x => x.HearingId);

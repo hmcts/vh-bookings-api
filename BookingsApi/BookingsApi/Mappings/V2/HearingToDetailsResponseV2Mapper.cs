@@ -55,7 +55,7 @@ namespace BookingsApi.Mappings.V2
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints,
                 JudiciaryParticipants = judiciaryParticipants,
-                BookingSupplier = (BookingSupplier)videoHearing.GetConferenceSupplier()
+                BookingSupplier = (BookingSupplier)videoHearing.ConferenceSupplier
             };
             
             response.TrimAllStringsRecursively();
