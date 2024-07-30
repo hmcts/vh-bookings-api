@@ -26,6 +26,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
             result.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
             result.CaseTypeServiceId.Should().Be(hearing.CaseType.ServiceId);
+            result.VideoSupplier.Should().Be(hearing.GetConferenceSupplier());
         }
         
         [Test]
@@ -156,6 +157,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             }
             individuals[0].AddLink(individuals[1].Id, LinkedParticipantType.Interpreter);
             hearing.CaseType.ServiceId = "ZZY1";
+            hearing.OverrideSupplier(VideoSupplier.Vodafone);
 
             return hearing;
         }

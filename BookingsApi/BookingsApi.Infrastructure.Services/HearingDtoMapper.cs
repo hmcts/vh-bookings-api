@@ -21,7 +21,8 @@ namespace BookingsApi.Infrastructure.Services
                 HearingVenueName = hearing.HearingVenue.Name,
                 RecordAudio = hearing.AudioRecordingRequired,
                 HearingType = hearing.HearingType?.Name,
-                CaseTypeServiceId = hearing.CaseType.ServiceId ?? RefData.DefaultCaseTypeServiceId
+                CaseTypeServiceId = hearing.CaseType.ServiceId ?? RefData.DefaultCaseTypeServiceId,
+                VideoSupplier = hearing.GetConferenceSupplier()
             };
         }
         

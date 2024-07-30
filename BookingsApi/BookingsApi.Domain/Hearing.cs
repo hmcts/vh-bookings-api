@@ -104,6 +104,7 @@ namespace BookingsApi.Domain
         public bool AudioRecordingRequired { get; set; }
         public string CancelReason { get; set; }
         public Guid? SourceId { get; set; }
+        protected VideoSupplier? ConferenceSupplier { get; set; }
 
         // Ideally, the domain object would implement the clone method and so this change is a work around.
         public bool IsFirstDayOfMultiDayHearing
@@ -571,6 +572,11 @@ namespace BookingsApi.Domain
             return Allocations.Any();
         }
         
+        public VideoSupplier GetConferenceSupplier()
+        {
+            return ConferenceSupplier ?? VideoSupplier.Kinly;
+        }
+        
         public void AllocateJusticeUser(JusticeUser user)
         {
             if (Allocations.Any(x => x.JusticeUserId == user.Id))
@@ -786,7 +792,16 @@ namespace BookingsApi.Domain
                     _ => Status 
                 };
         }
-
+        
+        public void OverrideSupplier(VideoSupplier commandVideoSupplier)
+        {
+            if (ConferenceSupplier != null && (Status is BookingStatus.ConfirmedWithoutJudge or BookingStatus.Created))
+            {
+                throw new DomainRuleException(nameof(ConferenceSupplier), DomainRuleErrorMessages.ConferenceSupplierAlreadyExists);
+            }
+            ConferenceSupplier = commandVideoSupplier;
+        }
+        
         public void ReassignJudge(Judge newJudge)
         {
             if (newJudge == null)

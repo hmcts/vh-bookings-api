@@ -1,3 +1,4 @@
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V2.Extensions;
@@ -53,7 +54,8 @@ namespace BookingsApi.Mappings.V2
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints,
-                JudiciaryParticipants = judiciaryParticipants
+                JudiciaryParticipants = judiciaryParticipants,
+                BookingSupplier = (BookingSupplier)videoHearing.GetConferenceSupplier()
             };
             
             response.TrimAllStringsRecursively();
