@@ -791,7 +791,7 @@ namespace BookingsApi.Domain
         
         public void OverrideSupplier(VideoSupplier commandVideoSupplier)
         {
-            if (ConferenceSupplier != null && (Status is BookingStatus.ConfirmedWithoutJudge or BookingStatus.Created))
+            if (Status is BookingStatus.ConfirmedWithoutJudge or BookingStatus.Created)
             {
                 throw new DomainRuleException(nameof(ConferenceSupplier), DomainRuleErrorMessages.ConferenceSupplierAlreadyExists);
             }
