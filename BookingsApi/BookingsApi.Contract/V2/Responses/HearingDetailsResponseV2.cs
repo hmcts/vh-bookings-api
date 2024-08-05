@@ -127,4 +127,9 @@ public class HearingDetailsResponseV2
         /// </summary>
         [JsonProperty("judicial_office_holders")]
         public List<JudiciaryParticipantResponse> JudiciaryParticipants { get; set; }
+        
+        /// <summary>
+        /// The supplier with whom a conference has been booked with
+        /// </summary>
+        public BookingSupplier BookingSupplier { get; set; }
 }

@@ -29,4 +29,5 @@ public static class DomainRuleErrorMessages
     public const string LanguageAndOtherLanguageCannotBeSet = "Language and OtherLanguage cannot be set at the same time";
     public const string CannotAddLeaverJudiciaryPerson = "Cannot add a participant who is a leaver";
     public const string CannotAddDeletedJudiciaryPerson = "Cannot add a participant who has been deleted";
+    public const string ConferenceSupplierAlreadyExists = "Confirmed hearings cannot be updated to use a different conference supplier";
 }
