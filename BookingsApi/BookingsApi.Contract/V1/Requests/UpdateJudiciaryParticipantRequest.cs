@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using BookingsApi.Contract.V1.Requests.Enums;
 
 namespace BookingsApi.Contract.V1.Requests
@@ -7,6 +8,8 @@ namespace BookingsApi.Contract.V1.Requests
         /// <summary>
         /// The participant's display name
         /// </summary>
+        [StringLength(255, ErrorMessage = "Display name max length is 255 characters")]
+        [RegularExpression(@"^[\p{L}\p{N}\s',._-]+$")]
         public string DisplayName { get; set; }
         
         /// <summary>
