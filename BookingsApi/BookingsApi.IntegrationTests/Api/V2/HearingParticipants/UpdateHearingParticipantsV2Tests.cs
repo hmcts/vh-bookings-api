@@ -404,36 +404,38 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         var request = new UpdateHearingParticipantsRequestV2
         {
             ExistingParticipants =
-            [
-                new UpdateParticipantRequestV2
+                new List<UpdateParticipantRequestV2>
                 {
-                    ParticipantId = existingParticipant.Id, 
-                    DisplayName = "NewDisplayName",
-                    FirstName = existingParticipant.Person?.FirstName,
-                    LastName = existingParticipant.Person?.LastName,
-                    OrganisationName = existingParticipant.Person?.Organisation?.Name,
-                    TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
-                    Title = existingParticipant.Person?.Title,
-                    InterpreterLanguageCode = languageCode
-                }
-            ],
+                    new UpdateParticipantRequestV2
+                    {
+                        ParticipantId = existingParticipant.Id,
+                        DisplayName = "NewDisplayName",
+                        FirstName = existingParticipant.Person?.FirstName,
+                        LastName = existingParticipant.Person?.LastName,
+                        OrganisationName = existingParticipant.Person?.Organisation?.Name,
+                        TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
+                        Title = existingParticipant.Person?.Title,
+                        InterpreterLanguageCode = languageCode
+                    }
+                },
             NewParticipants =
-            [
-                new ParticipantRequestV2
+                new List<ParticipantRequestV2>
                 {
-                    DisplayName = "DisplayName",
-                    FirstName = "NewFirstName",
-                    HearingRoleCode = HearingRoleCodes.Applicant,
-                    LastName = "NewLastName",
-                    MiddleNames = "NewMiddleNames",
-                    OrganisationName = "OrganisationName",
-                    ContactEmail = newParticipant.ContactEmail,
-                    TelephoneNumber = "0123456789",
-                    Title = "Title",
-                    Representee = "Representee",
-                    InterpreterLanguageCode = languageCode
+                    new ParticipantRequestV2
+                    {
+                        DisplayName = "DisplayName",
+                        FirstName = "NewFirstName",
+                        HearingRoleCode = HearingRoleCodes.Applicant,
+                        LastName = "NewLastName",
+                        MiddleNames = "NewMiddleNames",
+                        OrganisationName = "OrganisationName",
+                        ContactEmail = newParticipant.ContactEmail,
+                        TelephoneNumber = "0123456789",
+                        Title = "Title",
+                        Representee = "Representee",
+                        InterpreterLanguageCode = languageCode
+                    }
                 }
-            ]
         };
         
         // act
@@ -465,36 +467,38 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         var request = new UpdateHearingParticipantsRequestV2
         {
             ExistingParticipants =
-            [
-                new UpdateParticipantRequestV2
+                new List<UpdateParticipantRequestV2>
                 {
-                    ParticipantId = existingParticipant.Id, 
-                    DisplayName = "NewDisplayName",
-                    FirstName = existingParticipant.Person?.FirstName,
-                    LastName = existingParticipant.Person?.LastName,
-                    OrganisationName = existingParticipant.Person?.Organisation?.Name,
-                    TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
-                    Title = existingParticipant.Person?.Title,
-                    OtherLanguage = otherLanguage
-                }
-            ],
+                    new UpdateParticipantRequestV2
+                    {
+                        ParticipantId = existingParticipant.Id,
+                        DisplayName = "NewDisplayName",
+                        FirstName = existingParticipant.Person?.FirstName,
+                        LastName = existingParticipant.Person?.LastName,
+                        OrganisationName = existingParticipant.Person?.Organisation?.Name,
+                        TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
+                        Title = existingParticipant.Person?.Title,
+                        OtherLanguage = otherLanguage
+                    }
+                },
             NewParticipants =
-            [
-                new ParticipantRequestV2
+                new List<ParticipantRequestV2>
                 {
-                    DisplayName = "DisplayName",
-                    FirstName = "NewFirstName",
-                    HearingRoleCode = HearingRoleCodes.Applicant,
-                    LastName = "NewLastName",
-                    MiddleNames = "NewMiddleNames",
-                    OrganisationName = "OrganisationName",
-                    ContactEmail = newParticipant.ContactEmail,
-                    TelephoneNumber = "0123456789",
-                    Title = "Title",
-                    Representee = "Representee",
-                    OtherLanguage = otherLanguage
+                    new ParticipantRequestV2
+                    {
+                        DisplayName = "DisplayName",
+                        FirstName = "NewFirstName",
+                        HearingRoleCode = HearingRoleCodes.Applicant,
+                        LastName = "NewLastName",
+                        MiddleNames = "NewMiddleNames",
+                        OrganisationName = "OrganisationName",
+                        ContactEmail = newParticipant.ContactEmail,
+                        TelephoneNumber = "0123456789",
+                        Title = "Title",
+                        Representee = "Representee",
+                        OtherLanguage = otherLanguage
+                    }
                 }
-            ]
         };
         
         // act
@@ -526,36 +530,38 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         var request = new UpdateHearingParticipantsRequestV2
         {
             ExistingParticipants =
-            [
-                new UpdateParticipantRequestV2
+                new List<UpdateParticipantRequestV2>
                 {
-                    ParticipantId = existingParticipant.Id, 
-                    DisplayName = "NewDisplayName",
-                    FirstName = existingParticipant.Person?.FirstName,
-                    LastName = existingParticipant.Person?.LastName,
-                    OrganisationName = existingParticipant.Person?.Organisation?.Name,
-                    TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
-                    Title = existingParticipant.Person?.Title,
-                    InterpreterLanguageCode = languageCode
-                }
-            ],
+                    new UpdateParticipantRequestV2
+                    {
+                        ParticipantId = existingParticipant.Id,
+                        DisplayName = "NewDisplayName",
+                        FirstName = existingParticipant.Person?.FirstName,
+                        LastName = existingParticipant.Person?.LastName,
+                        OrganisationName = existingParticipant.Person?.Organisation?.Name,
+                        TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
+                        Title = existingParticipant.Person?.Title,
+                        InterpreterLanguageCode = languageCode
+                    }
+                },
             NewParticipants =
-            [
-                new ParticipantRequestV2
+                new List<ParticipantRequestV2>
                 {
-                    DisplayName = "DisplayName",
-                    FirstName = "NewFirstName",
-                    HearingRoleCode = HearingRoleCodes.Applicant,
-                    LastName = "NewLastName",
-                    MiddleNames = "NewMiddleNames",
-                    OrganisationName = "OrganisationName",
-                    ContactEmail = newParticipant.ContactEmail,
-                    TelephoneNumber = "0123456789",
-                    Title = "Title",
-                    Representee = "Representee",
-                    InterpreterLanguageCode = languageCode
+                    new ParticipantRequestV2
+                    {
+                        DisplayName = "DisplayName",
+                        FirstName = "NewFirstName",
+                        HearingRoleCode = HearingRoleCodes.Applicant,
+                        LastName = "NewLastName",
+                        MiddleNames = "NewMiddleNames",
+                        OrganisationName = "OrganisationName",
+                        ContactEmail = newParticipant.ContactEmail,
+                        TelephoneNumber = "0123456789",
+                        Title = "Title",
+                        Representee = "Representee",
+                        InterpreterLanguageCode = languageCode
+                    }
                 }
-            ]
         };
         
         // act
@@ -583,38 +589,40 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         var request = new UpdateHearingParticipantsRequestV2
         {
             ExistingParticipants =
-            [
-                new UpdateParticipantRequestV2
+                new List<UpdateParticipantRequestV2>
                 {
-                    ParticipantId = existingParticipant.Id, 
-                    DisplayName = "NewDisplayName",
-                    FirstName = existingParticipant.Person?.FirstName,
-                    LastName = existingParticipant.Person?.LastName,
-                    OrganisationName = existingParticipant.Person?.Organisation?.Name,
-                    TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
-                    Title = existingParticipant.Person?.Title,
-                    InterpreterLanguageCode = languageCode,
-                    OtherLanguage = otherLanguage
-                }
-            ],
+                    new UpdateParticipantRequestV2
+                    {
+                        ParticipantId = existingParticipant.Id,
+                        DisplayName = "NewDisplayName",
+                        FirstName = existingParticipant.Person?.FirstName,
+                        LastName = existingParticipant.Person?.LastName,
+                        OrganisationName = existingParticipant.Person?.Organisation?.Name,
+                        TelephoneNumber = existingParticipant.Person?.TelephoneNumber,
+                        Title = existingParticipant.Person?.Title,
+                        InterpreterLanguageCode = languageCode,
+                        OtherLanguage = otherLanguage
+                    }
+                },
             NewParticipants =
-            [
-                new ParticipantRequestV2
+                new List<ParticipantRequestV2>
                 {
-                    DisplayName = "DisplayName",
-                    FirstName = "NewFirstName",
-                    HearingRoleCode = HearingRoleCodes.Applicant,
-                    LastName = "NewLastName",
-                    MiddleNames = "NewMiddleNames",
-                    OrganisationName = "OrganisationName",
-                    ContactEmail = newParticipant.ContactEmail,
-                    TelephoneNumber = "0123456789",
-                    Title = "Title",
-                    Representee = "Representee",
-                    InterpreterLanguageCode = languageCode,
-                    OtherLanguage = otherLanguage
+                    new ParticipantRequestV2
+                    {
+                        DisplayName = "DisplayName",
+                        FirstName = "NewFirstName",
+                        HearingRoleCode = HearingRoleCodes.Applicant,
+                        LastName = "NewLastName",
+                        MiddleNames = "NewMiddleNames",
+                        OrganisationName = "OrganisationName",
+                        ContactEmail = newParticipant.ContactEmail,
+                        TelephoneNumber = "0123456789",
+                        Title = "Title",
+                        Representee = "Representee",
+                        InterpreterLanguageCode = languageCode,
+                        OtherLanguage = otherLanguage
+                    }
                 }
-            ]
         };
         
         // act

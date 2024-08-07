@@ -8,7 +8,7 @@ namespace BookingsApi.Health;
 
 public static class HealthCheckExtensions
 {
-    private static readonly string[] HealthCheckTags = ["startup", "readiness"];
+    private static readonly string[] HealthCheckTags = {"startup", "readiness"};
     public static IServiceCollection AddVhHealthChecks(this IServiceCollection services, IConfiguration configuration)
     {
         var serviceBusSettings = new ServiceBusSettings();

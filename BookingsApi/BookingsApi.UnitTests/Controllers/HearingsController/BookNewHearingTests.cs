@@ -101,7 +101,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         public async Task Should_successfully_book_hearing_without_endpoint()
         {
             var newRequest = RequestBuilderV1.Build();
-            newRequest.Endpoints = [];
+            newRequest.Endpoints = new List<EndpointRequest> { };
             var response = await Controller.BookNewHearing(newRequest);
 
             response.Should().NotBeNull();
