@@ -234,7 +234,6 @@ namespace BookingsApi.DAL.Migrations
 
                     b.HasDiscriminator<int>("HearingMediumType");
 
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.HearingCase", b =>
@@ -683,7 +682,6 @@ namespace BookingsApi.DAL.Migrations
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("Participant");
 
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.Person", b =>

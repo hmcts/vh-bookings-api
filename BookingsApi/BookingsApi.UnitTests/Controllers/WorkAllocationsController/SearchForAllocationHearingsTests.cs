@@ -14,11 +14,11 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         [Test]
         public async Task Should_return_an_empty_list_if_no_records_found_for_the_given_parameters()
         {
-            var query = new SearchForAllocationHearingsRequest()
+            var query = new SearchForAllocationHearingsRequest
             {
                 CaseNumber = "caseNumber",
-                Cso = [Guid.NewGuid()],
-                CaseType = ["caseType"],
+                Cso = new []{Guid.NewGuid()},
+                CaseType = new []{"caseType"},
                 FromDate = DateTime.MinValue,
                 ToDate = DateTime.MinValue
             };
@@ -52,8 +52,8 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
             var query = new SearchForAllocationHearingsRequest()
             {
                 CaseNumber = cNumber,
-                Cso = [Guid.NewGuid()],
-                CaseType = ["caseType"],
+                Cso = new []{Guid.NewGuid()},
+                CaseType = new []{"caseType"},
                 FromDate = DateTime.MinValue,
                 ToDate = DateTime.MinValue
             };

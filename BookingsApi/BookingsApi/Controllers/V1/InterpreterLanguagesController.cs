@@ -7,10 +7,15 @@ namespace BookingsApi.Controllers.V1;
 [Route("InterpreterLanguages")]
 [ApiVersion("1.0")]
 [ApiController]
-public class InterpreterLanguagesController(IQueryHandler queryHandler) : ControllerBase
+public class InterpreterLanguagesController : ControllerBase
 {
-    private readonly IQueryHandler _queryHandler = queryHandler;
-    
+    private readonly IQueryHandler _queryHandler;
+
+    public InterpreterLanguagesController(IQueryHandler queryHandler)
+    {
+        _queryHandler = queryHandler;
+    }
+
     [HttpGet]
     [OpenApiOperation("GetAvailableInterpreterLanguages")]
     [ProducesResponseType(typeof(List<InterpreterLanguagesResponse>), (int)HttpStatusCode.OK)]
