@@ -1,3 +1,4 @@
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
@@ -17,9 +18,12 @@ namespace BookingsApi.Controllers.V2
         private readonly ILogger<HearingsControllerV2> _logger;
         private readonly IUpdateHearingService _updateHearingService;
         private readonly IEndpointService _endpointService;
+        private readonly IFeatureToggles _featureToggles;
 
         public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
-            ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator, IUpdateHearingService updateHearingService, IEndpointService endpointService)
+            ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
+            IUpdateHearingService updateHearingService, IEndpointService endpointService,
+            IFeatureToggles featureToggles)
         {
             _queryHandler = queryHandler;
             _bookingService = bookingService;
@@ -27,6 +31,7 @@ namespace BookingsApi.Controllers.V2
             _randomGenerator = randomGenerator;
             _updateHearingService = updateHearingService;
             _endpointService = endpointService;
+            _featureToggles = featureToggles;
         }
 
         /// <summary>
@@ -42,6 +47,7 @@ namespace BookingsApi.Controllers.V2
         public async Task<IActionResult> BookNewHearingWithCode(BookNewHearingRequestV2 request)
         {
             request.SanitizeRequest();
+            request.BookingSupplier ??= _featureToggles.UseVodafoneToggle() ? BookingSupplier.Vodafone : BookingSupplier.Kinly;
             var result = await new BookNewHearingRequestInputValidationV2().ValidateAsync(request);
             if (!result.IsValid)
             {

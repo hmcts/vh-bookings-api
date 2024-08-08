@@ -82,6 +82,6 @@ namespace BookingsApi.Contract.V2.Requests
         /// <summary>
         /// The supplier with whom to book a conference with
         /// </summary>
-        public BookingSupplier BookingSupplier { get; set; }
+        public BookingSupplier? BookingSupplier { get; set; }
     }
 }
