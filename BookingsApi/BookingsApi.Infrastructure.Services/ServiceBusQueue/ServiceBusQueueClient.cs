@@ -15,9 +15,15 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
     }
 
     [ExcludeFromCodeCoverage]
-    public class ServiceBusQueueClient(IOptions<ServiceBusSettings> serviceBusSettings) : IServiceBusQueueClient
+    public class ServiceBusQueueClient : IServiceBusQueueClient
     {
-        private readonly ServiceBusSettings _serviceBusSettings = serviceBusSettings.Value;
+        private readonly ServiceBusSettings _serviceBusSettings;
+
+        public ServiceBusQueueClient(IOptions<ServiceBusSettings> serviceBusSettings)
+        {
+            _serviceBusSettings = serviceBusSettings.Value;
+        }
+
         public JsonSerializerSettings SerializerSettings { get; } = DefaultSerializerSettings.DefaultNewtonsoftSerializerSettings();
 
         public async Task PublishMessageAsync(EventMessage eventMessage)
