@@ -34,6 +34,7 @@ public class BookNewHearingV2Tests : ApiTest
     {
         // arrange
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
+        request.BookingSupplier = null;
 
         // act
         using var client = Application.CreateClient();
