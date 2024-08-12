@@ -14,6 +14,7 @@ namespace BookingsApi.DAL.Commands
             ScheduledDuration = requiredDto.ScheduledDuration;
             Venue = requiredDto.Venue;
             Cases = requiredDto.Cases;
+            ConferenceSupplier = requiredDto.Supplier;
             
             HearingType = optionalDto.HearingType;
             Participants = optionalDto.Participants ?? new List<NewParticipant>();
@@ -31,7 +32,7 @@ namespace BookingsApi.DAL.Commands
 
             SourceId = optionalDto.SourceId;
         }
-
+        
         public Guid NewHearingId { get; set; }
         public CaseType CaseType { get; }
         public HearingType HearingType { get; }
@@ -50,6 +51,7 @@ namespace BookingsApi.DAL.Commands
         public List<LinkedParticipantDto> LinkedParticipants { get; }
         public List<NewJudiciaryParticipant> JudiciaryParticipants { get; }
         public bool IsMultiDayFirstHearing { get; }
+        public VideoSupplier? ConferenceSupplier { get; set; }
     }
 
     public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>
@@ -110,7 +112,11 @@ namespace BookingsApi.DAL.Commands
 
                 videoHearing.AddEndpoints(newEndpoints);
             }
-            
+
+            if (command.ConferenceSupplier.HasValue)
+            {
+                videoHearing.OverrideSupplier(command.ConferenceSupplier.Value);
+            }
             videoHearing.UpdateBookingStatusJudgeRequirement();
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;

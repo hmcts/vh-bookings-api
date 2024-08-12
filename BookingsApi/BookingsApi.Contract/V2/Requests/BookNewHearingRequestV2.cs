@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V2.Enums;
 using Newtonsoft.Json;
 
 namespace BookingsApi.Contract.V2.Requests
@@ -77,5 +78,10 @@ namespace BookingsApi.Contract.V2.Requests
         /// </summary>
         [JsonProperty("judicial_office_holders")]
         public List<JudiciaryParticipantRequest> JudiciaryParticipants { get; set; } = new();
+        
+        /// <summary>
+        /// The supplier with whom to book a conference with
+        /// </summary>
+        public BookingSupplier? BookingSupplier { get; set; }
     }
 }

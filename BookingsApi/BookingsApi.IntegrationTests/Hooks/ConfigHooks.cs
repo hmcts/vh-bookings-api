@@ -34,8 +34,9 @@ namespace BookingsApi.IntegrationTests.Hooks
             RegisterHearingServices(context);
             RegisterTestSettings(context);
             RegisterDefaultData(context);
-            RegisterDatabaseSettings(context);
             RegisterServer(context);
+            // must be run after register server to retrieve the feature toggle from the ioc container
+            RegisterDatabaseSettings(context);
             RegisterApiSettings(context);
         }
 
@@ -68,7 +69,9 @@ namespace BookingsApi.IntegrationTests.Hooks
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
             dbContextOptionsBuilder.UseSqlServer(context.Config.ConnectionStrings.VhBookings);
             context.BookingsDbContextOptions = dbContextOptionsBuilder.Options;
-            context.TestDataManager = new TestDataManager(context.BookingsDbContextOptions, context.TestData.CaseName);
+            var featureToggles = (FeatureTogglesStub)context.Server.Services.GetService(typeof(IFeatureToggles));
+            context.TestDataManager = new TestDataManager(context.BookingsDbContextOptions, context.TestData.CaseName,
+                featureToggles!.UseVodafoneToggle());
         }
 
         private static void RegisterServer(TestContext context)

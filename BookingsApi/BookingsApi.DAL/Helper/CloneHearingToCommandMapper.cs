@@ -54,7 +54,7 @@ namespace BookingsApi.DAL.Helper
             var newJudiciaryParticipants = GetNewJudiciaryParticipants(hearing);
 
             var command = new CreateVideoHearingCommand(new CreateVideoHearingRequiredDto(
-                    hearing.CaseType, newDate, duration, hearing.HearingVenue, cases),
+                    hearing.CaseType, newDate, duration, hearing.HearingVenue, cases, hearing.ConferenceSupplier),
                 new CreateVideoHearingOptionalDto(participants, hearing.HearingRoomName, hearing.OtherInformation,
                     hearing.CreatedBy, hearing.AudioRecordingRequired, newEndpoints, null, linkedParticipantDtos,
                     newJudiciaryParticipants, false, hearing.Id, hearing.HearingType));

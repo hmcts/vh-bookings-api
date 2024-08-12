@@ -25,11 +25,13 @@ namespace BookingsApi.IntegrationTests.Helper
         private readonly List<long> _seededAllocationIds = new();
         public static string CaseNumber => "2222/3511";
         private readonly string _defaultCaseName;
+        private readonly bool _useVodafoneFeatureToggle;
 
-        public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions, string defaultCaseName)
+        public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions, string defaultCaseName, bool useVodafone)
         {
             _dbContextOptions = dbContextOptions;
             _defaultCaseName = defaultCaseName;
+            _useVodafoneFeatureToggle = useVodafone;
         }
 
         public void AddHearingForCleanup(Guid id)
@@ -371,8 +373,11 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 var config = ConfigRootBuilder.Build();
                 var hearingDay = index + 2;
-                return CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, new RandomGenerator(),
-                    config.GetValue<string>("KinlyConfiguration:SipAddressStem"), totalDays, hearingDay, duration);
+                var stem = _useVodafoneFeatureToggle
+                    ? config.GetValue<string>("SupplierConfiguration:SipAddressStemKinly")
+                    : config.GetValue<string>("SupplierConfiguration:SipAddressStemVodafone");
+                return CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, new RandomGenerator(), stem,
+                    totalDays, hearingDay, duration);
             }).ToList();
 
             foreach (var command in commands)
@@ -649,12 +654,14 @@ namespace BookingsApi.IntegrationTests.Helper
             return judiciaryPersonStaging;
         }
 
-        public async Task<JudiciaryPerson> AddJudiciaryPerson(string personalCode = null, bool isGeneric = false)
+        public async Task<JudiciaryPerson> AddJudiciaryPerson(string personalCode = null, bool isGeneric = false, string email = null)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
             var judiciaryPerson = new JudiciaryPersonBuilder(personalCode).Build();
             judiciaryPerson.IsGeneric = isGeneric;
+            if (!string.IsNullOrEmpty(email))
+                judiciaryPerson.Email = email;
             await db.JudiciaryPersons.AddAsync(judiciaryPerson);
 
             await db.SaveChangesAsync();
@@ -674,6 +681,37 @@ namespace BookingsApi.IntegrationTests.Helper
             var person = db.JudiciaryPersons.FirstOrDefault(x => x.PersonalCode == personalCode);
 
             return person;
+        }
+
+        public async Task AddDeletedJudiciaryPerson(string personalCode, string deletedOn, string email = null)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode).Build();
+            judiciaryPerson.SetProtected(nameof(judiciaryPerson.Deleted), true);
+            judiciaryPerson.SetProtected(nameof(judiciaryPerson.DeletedOn), deletedOn);
+            if (!string.IsNullOrEmpty(email))
+                judiciaryPerson.Email = email;
+            await db.JudiciaryPersons.AddAsync(judiciaryPerson);
+
+            await db.SaveChangesAsync();
+            AddJudiciaryPersonsForCleanup(judiciaryPerson.PersonalCode);
+        }
+        
+        public async Task AddLeaverJudiciaryPerson(string personalCode, string leftOn, string email = null)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode).Build();
+            judiciaryPerson.Leaver = true;
+            judiciaryPerson.HasLeft = true;
+            judiciaryPerson.LeftOn = leftOn;
+            if (!string.IsNullOrEmpty(email))
+                judiciaryPerson.Email = email;
+            await db.JudiciaryPersons.AddAsync(judiciaryPerson);
+
+            await db.SaveChangesAsync();
+            AddJudiciaryPersonsForCleanup(judiciaryPerson.PersonalCode);
         }
 
         public async Task RemoveJudiciaryPersonAsync(JudiciaryPerson judiciaryPerson)

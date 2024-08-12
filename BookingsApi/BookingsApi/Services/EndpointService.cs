@@ -7,6 +7,8 @@ namespace BookingsApi.Services
         Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName,
             string languageCode, string otherLanguage);
         Task RemoveEndpoint(VideoHearing hearing, Guid id);
+        
+        string GetSipAddressStem();
     }
     
     public class EndpointService : IEndpointService
@@ -14,13 +16,17 @@ namespace BookingsApi.Services
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly IEventPublisher _eventPublisher;
+        private readonly SupplierConfiguration _supplierConfiguration;
+        private readonly IFeatureToggles _featureToggles;
 
         public EndpointService(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher, IOptions<SupplierConfiguration> supplierConfiguration, IFeatureToggles featureToggles)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _eventPublisher = eventPublisher;
+            _supplierConfiguration = supplierConfiguration.Value;
+            _featureToggles = featureToggles;
         }
         
         public async Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint)
@@ -67,6 +73,13 @@ namespace BookingsApi.Services
             {
                 await _eventPublisher.PublishAsync(new EndpointRemovedIntegrationEvent(hearing.Id, ep.Sip));
             }
+        }
+
+        public string GetSipAddressStem()
+        {
+            return _featureToggles.UseVodafoneToggle()
+                ? _supplierConfiguration.SipAddressStemVodafone
+                : _supplierConfiguration.SipAddressStemKinly;
         }
     }
 }

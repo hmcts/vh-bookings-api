@@ -8,6 +8,7 @@ namespace BookingsApi.Common.Services
 {
     public interface IFeatureToggles
     {
+        bool UseVodafoneToggle();
     }
 
     public class FeatureToggles : IFeatureToggles
@@ -15,6 +16,7 @@ namespace BookingsApi.Common.Services
         private readonly ILdClient _ldClient;
         private readonly Context _context;
         private const string LdUser = "vh-booking-api";
+        private const string VodafoneToggleKey = "vodafone";
 
         public FeatureToggles(string sdkKey, string environmentName)
         {
@@ -23,6 +25,8 @@ namespace BookingsApi.Common.Services
             _context = Context.Builder(LdUser).Name(environmentName).Build();
             _ldClient = new LdClient(config);
         }
+        
+        public bool UseVodafoneToggle() => GetBoolToggle(VodafoneToggleKey);
         
         private bool GetBoolToggle(string key)
         {

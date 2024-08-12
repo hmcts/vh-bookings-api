@@ -1,4 +1,5 @@
 ﻿using System;
+using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.Infrastructure.Services.Dtos
 {
@@ -15,5 +16,6 @@ namespace BookingsApi.Infrastructure.Services.Dtos
         public bool RecordAudio { get; set; }
         public string HearingType { get; set; }
         public string CaseTypeServiceId { get; set; }
+        public VideoSupplier VideoSupplier { get; set; }
     }
 }

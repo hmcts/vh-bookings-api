@@ -74,14 +74,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var endpoints = new List<NewEndpoint>
             {
-                new NewEndpoint
+                new()
                 {
                     DisplayName = "display 1",
                     Sip = Guid.NewGuid().ToString(),
                     Pin = "1234",
                     ContactEmail = null
                 },
-                new NewEndpoint
+                new()
                 {
                     DisplayName = "display 2",
                     Sip = Guid.NewGuid().ToString(),
@@ -92,13 +92,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var linkedParticipants = new List<LinkedParticipantDto>
             {
-                new LinkedParticipantDto(
+                new(
                     newParticipant.Person.ContactEmail,
                     newJudgeParticipant.Person.ContactEmail,
                     LinkedParticipantType.Interpreter)
             };
 
-            var requiredDto = new CreateVideoHearingRequiredDto(caseType, scheduledDate, duration, hearingVenue, cases);
+            var requiredDto = new CreateVideoHearingRequiredDto(caseType, scheduledDate, duration, hearingVenue, cases, VideoSupplier.Vodafone);
             var optionalDto = new CreateVideoHearingOptionalDto(participants, hearingRoomName, otherInformation,
                 createdBy, audioRecordingRequired, endpoints, null, linkedParticipants,
                 null, false, null, hearingType);
