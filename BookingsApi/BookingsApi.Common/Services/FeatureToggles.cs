@@ -7,13 +7,13 @@ using LaunchDarkly.Sdk.Server.Interfaces;
 namespace BookingsApi.Common.Services
 {
     public interface IFeatureToggles
-    {
+    { 
         bool UseVodafoneToggle();
     }
 
     public class FeatureToggles : IFeatureToggles
     {
-        private readonly ILdClient _ldClient;
+        private readonly LdClient _ldClient;
         private readonly Context _context;
         private const string LdUser = "vh-booking-api";
         private const string VodafoneToggleKey = "vodafone";
