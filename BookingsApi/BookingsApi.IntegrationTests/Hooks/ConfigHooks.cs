@@ -99,6 +99,7 @@ namespace BookingsApi.IntegrationTests.Hooks
         private static void RegisterStubs(IServiceCollection services)
         {
             services.AddSingleton<IServiceBusQueueClient, ServiceBusQueueClientFake>();
+            services.AddSingleton<IFeatureToggles, FeatureTogglesStub>();
         }
 
         private static void RegisterApiSettings(TestContext context)
