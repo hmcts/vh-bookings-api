@@ -1,3 +1,5 @@
+using BookingsApi.Contract.V2.Enums;
+
 namespace BookingsApi.Services
 {
     public interface IEndpointService
@@ -8,7 +10,7 @@ namespace BookingsApi.Services
             string languageCode, string otherLanguage);
         Task RemoveEndpoint(VideoHearing hearing, Guid id);
         
-        string GetSipAddressStem();
+        string GetSipAddressStem(BookingSupplier? supplier);
     }
     
     public class EndpointService : IEndpointService
@@ -75,8 +77,15 @@ namespace BookingsApi.Services
             }
         }
 
-        public string GetSipAddressStem()
+        public string GetSipAddressStem(BookingSupplier? supplier)
         {
+            if (supplier.HasValue)
+            {
+                return supplier == BookingSupplier.Vodafone
+                    ? _supplierConfiguration.SipAddressStemVodafone
+                    : _supplierConfiguration.SipAddressStemKinly;
+            }
+
             return _featureToggles.UseVodafoneToggle()
                 ? _supplierConfiguration.SipAddressStemVodafone
                 : _supplierConfiguration.SipAddressStemKinly;

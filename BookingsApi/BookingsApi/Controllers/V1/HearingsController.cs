@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.DAL.Services;
 using BookingsApi.Helpers;
 using BookingsApi.Mappings.V1;
@@ -376,7 +377,7 @@ namespace BookingsApi.Controllers.V1
                     {keyCases, string.Join(", ", cases.Select(x => new {x.Name, x.Number}))}
                 });
 
-                var sipAddressStem = _endpointService.GetSipAddressStem();
+                var sipAddressStem = _endpointService.GetSipAddressStem(null);
                 var createVideoHearingCommand = BookNewHearingRequestToCreateVideoHearingCommandMapper.Map(
                     request, caseType, hearingType, venue, cases, _randomGenerator, sipAddressStem);
 
@@ -518,7 +519,7 @@ namespace BookingsApi.Controllers.V1
 
             var orderedDates = request.Dates.OrderBy(x => x).ToList();
             var totalDays = orderedDates.Count + 1; // include original hearing
-            var sipAddressStem = _endpointService.GetSipAddressStem();
+            var sipAddressStem = _endpointService.GetSipAddressStem((BookingSupplier?)videoHearing.ConferenceSupplier);
             var commands = orderedDates.Select((newDate, index) =>
             {
                 var hearingDay = index + 2; // zero index including original hearing

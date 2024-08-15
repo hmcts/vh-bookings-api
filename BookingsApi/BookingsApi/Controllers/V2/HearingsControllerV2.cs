@@ -68,7 +68,7 @@ namespace BookingsApi.Controllers.V2
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
 
-            var sipAddressStem = _endpointService.GetSipAddressStem();
+            var sipAddressStem = _endpointService.GetSipAddressStem(request.BookingSupplier);
             var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
                 request, caseType, hearingVenue, cases, _randomGenerator, sipAddressStem, hearingRoles);
 
