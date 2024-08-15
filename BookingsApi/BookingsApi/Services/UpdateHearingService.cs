@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Helpers;
 using BookingsApi.Mappings.V1;
@@ -48,7 +49,7 @@ namespace BookingsApi.Services
         
         public async Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing)
         {
-            var sipAddressStem = _endpointService.GetSipAddressStem();
+            var sipAddressStem = _endpointService.GetSipAddressStem((BookingSupplier)hearing.ConferenceSupplier);
             foreach (var endpointToAdd in request.NewEndpoints)
             {
                 var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
@@ -71,7 +72,7 @@ namespace BookingsApi.Services
         
         public async Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing)
         {
-            var sipAddressStem = _endpointService.GetSipAddressStem();
+            var sipAddressStem = _endpointService.GetSipAddressStem((BookingSupplier)hearing.ConferenceSupplier);
             foreach (var endpointToAdd in request.NewEndpoints)
             {
                 var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,

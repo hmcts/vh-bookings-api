@@ -1,6 +1,7 @@
 using Autofac.Extras.Moq;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Services;
+using BookingsApi.Contract.V2.Enums;
 using Microsoft.Extensions.Options;
 
 namespace BookingsApi.IntegrationTests.Services.EndpointService;
@@ -31,7 +32,7 @@ public class GetSipAddressStemTests
         _mocker.Mock<IFeatureToggles>().Setup(x=> x.UseVodafoneToggle()).Returns(false);
         
         // act
-        var result = _sut.GetSipAddressStem();
+        var result = _sut.GetSipAddressStem(null);
         
         // assert
         result.Should().Be("KinlyConfigStem");
@@ -44,7 +45,7 @@ public class GetSipAddressStemTests
         _mocker.Mock<IFeatureToggles>().Setup(x=> x.UseVodafoneToggle()).Returns(true);
         
         // act
-        var result = _sut.GetSipAddressStem();
+        var result = _sut.GetSipAddressStem(null);
         
         // assert
         result.Should().Be("VodaConfigStem");

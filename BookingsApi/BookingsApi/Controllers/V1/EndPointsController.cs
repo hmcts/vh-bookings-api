@@ -1,5 +1,6 @@
 ﻿using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
 
@@ -52,8 +53,9 @@ namespace BookingsApi.Controllers.V1
                 ModelState.AddFluentValidationErrors(result.Errors);
                 return ValidationProblem(ModelState);
             }
-
-            var sipAddressStem = _endpointService.GetSipAddressStem();
+            
+            var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            var sipAddressStem = _endpointService.GetSipAddressStem((BookingSupplier?)hearing?.ConferenceSupplier);
             var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(addEndpointRequest, _randomGenerator, sipAddressStem);
             var endpoint = await _endpointService.AddEndpoint(hearingId, newEp);
             var endpointResponse = EndpointToResponseMapper.MapEndpointToResponse(endpoint);
