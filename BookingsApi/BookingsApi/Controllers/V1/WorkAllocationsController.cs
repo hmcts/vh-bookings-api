@@ -2,6 +2,7 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Services;
 using BookingsApi.Mappings.V1;
+using BookingsApi.Mappings.V2;
 
 namespace BookingsApi.Controllers.V1
 {
@@ -11,10 +12,10 @@ namespace BookingsApi.Controllers.V1
     [ApiController]
     public class WorkAllocationsController : ControllerBase
     {
-        private readonly IQueryHandler _queryHandler;
+        private readonly IEventPublisher _eventPublisher;
         private readonly IHearingAllocationService _hearingAllocationService;
         private readonly ILogger<WorkAllocationsController> _logger;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly IQueryHandler _queryHandler;
 
         public WorkAllocationsController(IHearingAllocationService hearingAllocationService, 
             IQueryHandler queryHandler, ILogger<WorkAllocationsController> logger,
@@ -25,6 +26,7 @@ namespace BookingsApi.Controllers.V1
             _logger = logger;
             _eventPublisher = eventPublisher;
         }
+
         /// <summary>
         /// Automatically allocates a user to a hearing
         /// </summary>
@@ -47,7 +49,7 @@ namespace BookingsApi.Controllers.V1
 
             return Ok(justiceUserResponse);
         }
-        
+
         /// <summary>
         /// Get all the unallocated hearings
         /// </summary>
@@ -68,7 +70,7 @@ namespace BookingsApi.Controllers.V1
             var response = results.Select(HearingToDetailsResponseMapper.Map).ToList();
             return Ok(response);
         }
-         
+
         /// <summary>
         /// Get the allocated cso for the provided hearing Ids
         /// </summary>
@@ -85,12 +87,12 @@ namespace BookingsApi.Controllers.V1
             
             return Ok(allocatedHearings.Select(e => new AllocatedCsoResponse
             {
-                HearingId = e.Id,
+                Hearing = HearingToDetailsResponseV2Mapper.Map(e),
                 Cso = e.AllocatedTo != null ? JusticeUserToResponseMapper.Map(e.AllocatedTo) : null,
                 SupportsWorkAllocation = e.HearingVenue.IsWorkAllocationEnabled
             }));
         }
-        
+
         /// <summary>
         /// Get the allocated cso for the hearings of today by venue
         /// </summary>
@@ -106,7 +108,7 @@ namespace BookingsApi.Controllers.V1
             var hearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(query);
             return Ok(hearings.Select(e => new AllocatedCsoResponse
             {
-                HearingId = e.Id,
+                Hearing = HearingToDetailsResponseV2Mapper.Map(e),
                 Cso = e.AllocatedTo != null ? JusticeUserToResponseMapper.Map(e.AllocatedTo) : null
             }));
         }
@@ -160,7 +162,7 @@ namespace BookingsApi.Controllers.V1
             
             return Ok(hearingAllocationClashResultDtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
         }
-        
+
         private async Task PublishAllocationsToServiceBus(List<VideoHearing> hearings, JusticeUser justiceUser)
         {
             var todaysHearing = hearings.Where(x => x.ScheduledDateTime.Date == DateTime.UtcNow.Date).ToList();

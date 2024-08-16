@@ -17,7 +17,7 @@ public class GetAllocationsForHearingsTests : ApiTest
             await Hooks.ClearSeededJusticeUsersAsync();
         }
     }
-    
+
     [Test]
     public async Task should_return_allocations_for_given_hearings()
     {
@@ -68,18 +68,18 @@ public class GetAllocationsForHearingsTests : ApiTest
 
 
         hearingAllocationSearchResponse.Should().Contain(response =>
-            response.HearingId == hearingWithWorkAllocationVenue.Id && 
+            response.Hearing.Id == hearingWithWorkAllocationVenue.Id && 
             response.Cso == null &&
             response.SupportsWorkAllocation);
         
         hearingAllocationSearchResponse.Should().Contain(response =>
-            response.HearingId == hearingWithWorkAllocationVenueAndAllocation.Id && 
+            response.Hearing.Id == hearingWithWorkAllocationVenueAndAllocation.Id && 
             response.Cso.Username == justiceUser.Username &&
             response.SupportsWorkAllocation);
         
         
         hearingAllocationSearchResponse.Should().Contain(response =>
-            response.HearingId == hearingWithoutWorkAllocationVenue.Id && 
+            response.Hearing.Id == hearingWithoutWorkAllocationVenue.Id && 
             response.Cso == null &&
             !response.SupportsWorkAllocation);
     }
