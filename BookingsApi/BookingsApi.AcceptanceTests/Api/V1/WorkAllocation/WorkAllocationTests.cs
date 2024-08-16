@@ -5,17 +5,16 @@ using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using FluentAssertions;
-using NUnit.Framework;
 using Testing.Common.Builders.Api.V1.Request;
 
 namespace BookingsApi.AcceptanceTests.Api.V1.WorkAllocation;
 
 public class WorkAllocationTests : ApiTest
 {
-    private HearingDetailsResponse _hearing;
-    private JusticeUserResponse _cso;
     private const string CaseName = "Bookings Api AC Automated";
-    
+    private JusticeUserResponse _cso;
+    private HearingDetailsResponse _hearing;
+
     [SetUp]
     public async Task Setup()
     {
@@ -106,10 +105,10 @@ public class WorkAllocationTests : ApiTest
         
         // assert
         results.Count.Should().BeGreaterThan(0);
-        results.Should().Contain(e => e.HearingId == _hearing.Id);
+        results.Should().Contain(e => e.Hearing.Id == _hearing.Id);
     }
 
-    
+
     [Test]
     public async Task should_call_get_allocation_by_hearing_venue_and_return_valid_hearing()
     {
@@ -129,13 +128,13 @@ public class WorkAllocationTests : ApiTest
         var results = await BookingsApiClient.GetAllocationsForHearingsByVenueAsync(new[]{_hearing.HearingVenueName});
         
         // assert
-        var result = results.FirstOrDefault(e => e.HearingId == allocation.HearingId);
+        var result = results.FirstOrDefault(e => e.Hearing.Id == allocation.HearingId);
         result.Should().NotBeNull();
         result.Cso?.Username.Should().Be(allocation.AllocatedCso);
         
     }
 
-    
+
     private void AssertHearingAllocationResponse(HearingAllocationsResponse hearing, BookNewHearingRequest bookNewHearingRequest)
     {
         hearing.HearingId.Should().Be(_hearing.Id);
@@ -146,7 +145,7 @@ public class WorkAllocationTests : ApiTest
         hearing.Duration.Should().Be(_hearing.ScheduledDuration);
         hearing.HasWorkHoursClash.Should().Be(false);
     }
-    
+
     private async Task UpdateCsoWorkingHoursTo(List<UploadWorkHoursRequest> workHoursRequests)
     {
         var failed = await BookingsApiClient.SaveWorkHoursAsync(workHoursRequests);
@@ -164,7 +163,7 @@ public class WorkAllocationTests : ApiTest
             await BookingsApiClient.DeleteVhoNonAvailabilityHoursAsync(_cso.Username, na.Id);
         }
     }
-    
+
     private async Task<JusticeUserResponse> GetJusticeUserForTest()
     {
         // get all justice users, including deleted ones

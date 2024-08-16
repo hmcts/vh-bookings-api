@@ -26,6 +26,6 @@ public class GetAllocationsForHearingsByVenueTests : WorkAllocationsControllerTe
         //ASSERT
         result.StatusCode.Should().NotBeNull().And.Be((int)HttpStatusCode.OK);
         var allocatedCsoResponse = result.Value as IEnumerable<AllocatedCsoResponse>;
-        allocatedCsoResponse.First().HearingId.Should().Be(hearing.Id);
+        allocatedCsoResponse.First().Hearing.Id.Should().Be(hearing.Id);
     }
 }
