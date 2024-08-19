@@ -171,6 +171,12 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<int>("CaseTypeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ConferenceSupplier")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("ConferenceSupplier");
+
                     b.Property<string>("ConfirmedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -389,6 +395,12 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("DeletedOn")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
@@ -448,6 +460,12 @@ namespace BookingsApi.DAL.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("DeletedOn")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");

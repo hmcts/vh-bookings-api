@@ -1,5 +1,7 @@
 using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Helpers;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
 using ContractJudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode;
@@ -20,19 +22,17 @@ namespace BookingsApi.Services
         private readonly IHearingParticipantService _hearingParticipantService;
         private readonly IEndpointService _endpointService;
         private readonly IRandomGenerator _randomGenerator;
-        private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IJudiciaryParticipantService _judiciaryParticipantService;
 
         public UpdateHearingService(IHearingParticipantService hearingParticipantService,
             IEndpointService endpointService,
             IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfiguration,
-            IJudiciaryParticipantService judiciaryParticipantService)
+            IOptions<SupplierConfiguration> supplierConfiguration,
+            IJudiciaryParticipantService judiciaryParticipantService, IFeatureToggles featureToggles)
         {
             _hearingParticipantService = hearingParticipantService;
             _endpointService = endpointService;
             _randomGenerator = randomGenerator;
-            _kinlyConfiguration = kinlyConfiguration.Value;
             _judiciaryParticipantService = judiciaryParticipantService;
         }
 
@@ -49,10 +49,11 @@ namespace BookingsApi.Services
         
         public async Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing)
         {
+            var sipAddressStem = _endpointService.GetSipAddressStem((BookingSupplier)hearing.ConferenceSupplier);
             foreach (var endpointToAdd in request.NewEndpoints)
             {
                 var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
-                    _kinlyConfiguration.SipAddressStem);
+                    sipAddressStem);
 
                 await _endpointService.AddEndpoint(hearing.Id, newEp);
             }
@@ -71,10 +72,11 @@ namespace BookingsApi.Services
         
         public async Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing)
         {
+            var sipAddressStem = _endpointService.GetSipAddressStem((BookingSupplier)hearing.ConferenceSupplier);
             foreach (var endpointToAdd in request.NewEndpoints)
             {
                 var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
-                    _kinlyConfiguration.SipAddressStem);
+                    sipAddressStem);
 
                 await _endpointService.AddEndpoint(hearing.Id, newEp);
             }

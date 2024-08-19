@@ -19,9 +19,10 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
         var linkedParticipants = MapLinkedParticipants(requestV2);
         var judiciaryParticipants = MapJudiciaryParticipants(requestV2);
 
+        var conferenceSupplier = (VideoSupplier)requestV2.BookingSupplier;
         return new CreateVideoHearingCommand(
             new CreateVideoHearingRequiredDto(caseType, requestV2.ScheduledDateTime,
-                requestV2.ScheduledDuration, venue, cases),
+                requestV2.ScheduledDuration, venue, cases, conferenceSupplier),
             new CreateVideoHearingOptionalDto(newParticipants, requestV2.HearingRoomName, requestV2.OtherInformation,
                 requestV2.CreatedBy, requestV2.AudioRecordingRequired, newEndpoints, null, linkedParticipants,
                 judiciaryParticipants, requestV2.IsMultiDayHearing, null, HearingType:null)

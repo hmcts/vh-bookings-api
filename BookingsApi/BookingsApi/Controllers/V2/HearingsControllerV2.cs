@@ -1,3 +1,4 @@
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
@@ -14,20 +15,23 @@ namespace BookingsApi.Controllers.V2
         private readonly IQueryHandler _queryHandler;
         private readonly IBookingService _bookingService;
         private readonly IRandomGenerator _randomGenerator;
-        private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly ILogger<HearingsControllerV2> _logger;
         private readonly IUpdateHearingService _updateHearingService;
+        private readonly IEndpointService _endpointService;
+        private readonly IFeatureToggles _featureToggles;
 
         public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
             ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfigurationOption, IUpdateHearingService updateHearingService)
+            IUpdateHearingService updateHearingService, IEndpointService endpointService,
+            IFeatureToggles featureToggles)
         {
             _queryHandler = queryHandler;
             _bookingService = bookingService;
             _logger = logger;
             _randomGenerator = randomGenerator;
-            _kinlyConfiguration = kinlyConfigurationOption.Value;
             _updateHearingService = updateHearingService;
+            _endpointService = endpointService;
+            _featureToggles = featureToggles;
         }
 
         /// <summary>
@@ -43,6 +47,7 @@ namespace BookingsApi.Controllers.V2
         public async Task<IActionResult> BookNewHearingWithCode(BookNewHearingRequestV2 request)
         {
             request.SanitizeRequest();
+            request.BookingSupplier ??= _featureToggles.UseVodafoneToggle() ? BookingSupplier.Vodafone : BookingSupplier.Kinly;
             var result = await new BookNewHearingRequestInputValidationV2().ValidateAsync(request);
             if (!result.IsValid)
             {
@@ -62,9 +67,10 @@ namespace BookingsApi.Controllers.V2
             }
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
-            
+
+            var sipAddressStem = _endpointService.GetSipAddressStem(request.BookingSupplier);
             var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
-                request, caseType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem, hearingRoles);
+                request, caseType, hearingVenue, cases, _randomGenerator, sipAddressStem, hearingRoles);
 
             var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
             

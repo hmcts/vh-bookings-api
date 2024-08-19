@@ -1,5 +1,6 @@
 ﻿using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
 
@@ -14,16 +15,13 @@ namespace BookingsApi.Controllers.V1
     {
         private readonly IRandomGenerator _randomGenerator;
         private readonly IQueryHandler _queryHandler;
-        private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IEndpointService _endpointService;
 
-        public EndPointsController(IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfiguration, IQueryHandler queryHandler,
+        public EndPointsController(IRandomGenerator randomGenerator, IQueryHandler queryHandler,
             IEndpointService endpointService)
         {
             _randomGenerator = randomGenerator;
             _queryHandler = queryHandler;
-            _kinlyConfiguration = kinlyConfiguration.Value;
             _endpointService = endpointService;
         }
 
@@ -55,9 +53,10 @@ namespace BookingsApi.Controllers.V1
                 ModelState.AddFluentValidationErrors(result.Errors);
                 return ValidationProblem(ModelState);
             }
-
-            var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(addEndpointRequest, _randomGenerator,
-                _kinlyConfiguration.SipAddressStem);
+            
+            var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            var sipAddressStem = _endpointService.GetSipAddressStem((BookingSupplier?)hearing?.ConferenceSupplier);
+            var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(addEndpointRequest, _randomGenerator, sipAddressStem);
             var endpoint = await _endpointService.AddEndpoint(hearingId, newEp);
             var endpointResponse = EndpointToResponseMapper.MapEndpointToResponse(endpoint);
 
@@ -116,7 +115,7 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
 
-            var result = new UpdateEndpointRequestValidation().Validate(updateEndpointRequest);
+            var result = await new UpdateEndpointRequestValidation().ValidateAsync(updateEndpointRequest);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);

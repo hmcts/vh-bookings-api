@@ -109,6 +109,24 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == "Cannot add a participant who is a leaver").Should().BeTrue();
         }
+        
+        [Test]
+        public void should_throw_exception_when_judiciary_person_has_been_deleted()
+        {
+            // Arrange
+            var hearing = new VideoHearingBuilder(addJudge: false).Build();
+            var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
+            newJudiciaryPerson.SetProtected(nameof(newJudiciaryPerson.Deleted), true);
+            newJudiciaryPerson.SetProtected(nameof(newJudiciaryPerson.DeletedOn), "2023-01-01");
+            var newJudiciaryJudge = new JudiciaryJudge("DisplayName", newJudiciaryPerson);
+            
+            // Act
+            var action = () => hearing.ReassignJudiciaryJudge(newJudiciaryJudge);
+            
+            // Assert
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures
+                .Exists(x => x.Message == DomainRuleErrorMessages.CannotAddDeletedJudiciaryPerson).Should().BeTrue();
+        }
 
         [Test]
         public void should_throw_exception_when_judiciary_person_already_exists_on_hearing_with_different_role()
