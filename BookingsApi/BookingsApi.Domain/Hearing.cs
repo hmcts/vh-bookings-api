@@ -183,7 +183,7 @@ namespace BookingsApi.Domain
 
         public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (DoesParticipantExistByContactEmail(person.ContactEmail))
+            if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), $"Participant {person.ContactEmail} already exists in the hearing");
             }
@@ -207,7 +207,7 @@ namespace BookingsApi.Domain
         public Participant AddRepresentative(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
             string representee)
         {
-            if (DoesParticipantExistByContactEmail(person.ContactEmail))
+            if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), "Participant already exists in the hearing");
             }
@@ -255,7 +255,7 @@ namespace BookingsApi.Domain
 
         public Participant AddJudicialOfficeHolder(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (DoesParticipantExistByContactEmail(person.ContactEmail))
+            if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), "Judicial office holder already exists in the hearing");
             }
