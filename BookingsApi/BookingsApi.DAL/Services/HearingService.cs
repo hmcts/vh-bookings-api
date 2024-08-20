@@ -67,9 +67,13 @@ namespace BookingsApi.DAL.Services
             var participantList = new List<Participant>();
             foreach (var participantToAdd in participants)
             {
-                var existingPerson = await _context.Persons
-                    .Include("Organisation")
-                    .SingleOrDefaultAsync(x => x.ContactEmail == participantToAdd.Person.ContactEmail);
+                Person existingPerson = null;
+                if (participantToAdd.Person.ContactEmail != null)
+                {
+                    existingPerson = await _context.Persons
+                        .Include("Organisation")
+                        .SingleOrDefaultAsync(x => x.ContactEmail == participantToAdd.Person.ContactEmail);
+                }
 
                 if(existingPerson != null)
                 {

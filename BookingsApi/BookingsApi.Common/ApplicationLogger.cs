@@ -78,10 +78,7 @@ namespace BookingsApi.Common
 
         public static void TraceException(string traceCategory, string eventTitle, Exception exception, IPrincipal user, IDictionary<string, string> properties)
         {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
+            ArgumentNullException.ThrowIfNull(exception);
 
             var telematryException = new ExceptionTelemetry(exception);
 
