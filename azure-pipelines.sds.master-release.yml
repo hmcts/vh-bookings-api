@@ -60,7 +60,7 @@ stages:
   - stage: Run_Entity_Framework_${{ env }}
     displayName: ${{ env }} EF Release
     dependsOn: Pre_Run_Tasks
-    variables:@
+    variables:
     - template: variables/${{ lower(env) }}.yaml
     - template: variables/shared.yaml
       parameters:
