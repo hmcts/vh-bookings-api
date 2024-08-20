@@ -25,6 +25,26 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
         }
+        
+        [Test]
+        public void Should_skip_validation_when_adding_new_participant_to_hearing_without_contact_email()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var applicantCaseRole = new CaseRole(1, "Applicant");
+            var applicantRepresentativeHearingRole = new HearingRole(2, "Representative");
+
+            var newPerson = new PersonBuilder(true).Build();
+            newPerson.ContactEmail = null;
+            var beforeAddCount = hearing.GetParticipants().Count;
+            hearing.AddRepresentative(newPerson, applicantRepresentativeHearingRole, applicantCaseRole, "Display Name",
+                string.Empty);
+            
+            hearing.AddIndividual(newPerson, applicantRepresentativeHearingRole, applicantCaseRole, "Display Name 22");
+
+            var afterAddCount = hearing.GetParticipants().Count;
+
+            afterAddCount.Should().Be(beforeAddCount+2);
+        }
 
         [Test]
         public void Should_not_add_existing_participant_to_hearing()
