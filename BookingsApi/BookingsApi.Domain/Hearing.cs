@@ -515,7 +515,7 @@ namespace BookingsApi.Domain
 
             HearingVenue = hearingVenue;
 
-            if (cases.Any())
+            if (cases.Count > 0)
             {
                 UpdateCase(cases[0]);
             }
@@ -754,17 +754,17 @@ namespace BookingsApi.Domain
             var judge = GetNonJudiciaryJudge();
             var judiciaryJudge = GetJudiciaryJudge();
 
-            return judge ?? judiciaryJudge;
+            return (ParticipantBase)judge ?? judiciaryJudge;
         }
 
-        private ParticipantBase GetNonJudiciaryJudge()
+        private Participant GetNonJudiciaryJudge()
         {
             var judge = Participants.FirstOrDefault(p => p is Judge);
 
             return judge;
         }
         
-        private ParticipantBase GetJudiciaryJudge()
+        private JudiciaryParticipant GetJudiciaryJudge()
         {
             var judiciaryJudge = JudiciaryParticipants?.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
@@ -800,11 +800,8 @@ namespace BookingsApi.Domain
         
         public void ReassignJudge(Judge newJudge)
         {
-            if (newJudge == null)
-            {
-                throw new ArgumentNullException(nameof(newJudge));
-            }
-            
+            ArgumentNullException.ThrowIfNull(newJudge);
+
             ValidateReassignJudgeAllowed();
 
             var judiciaryJudge = GetJudiciaryJudge();
@@ -827,11 +824,8 @@ namespace BookingsApi.Domain
         public void ReassignJudiciaryJudge(JudiciaryJudge newJudge, InterpreterLanguage interpreterLanguage = null,
             string otherLanguage = null)
         {
-            if (newJudge == null)
-            {
-                throw new ArgumentNullException(nameof(newJudge));
-            }
-            
+            ArgumentNullException.ThrowIfNull(newJudge);
+
             ValidateReassignJudgeAllowed();
             
             var nonJudiciaryJudge = GetNonJudiciaryJudge();
