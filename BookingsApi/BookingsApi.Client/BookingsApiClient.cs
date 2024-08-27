@@ -368,6 +368,7 @@ namespace BookingsApi.Client
         /// <param name="request">Details of a new hearing to book</param>
         /// <returns>Details of the newly booked hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<HearingDetailsResponse> BookNewHearingAsync(BookNewHearingRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -377,6 +378,7 @@ namespace BookingsApi.Client
         /// <param name="request">Details of a new hearing to book</param>
         /// <returns>Details of the newly booked hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<HearingDetailsResponse> BookNewHearingAsync(BookNewHearingRequest request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
@@ -3736,6 +3738,7 @@ namespace BookingsApi.Client
         /// <param name="request">Details of a new hearing to book</param>
         /// <returns>Details of the newly booked hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual System.Threading.Tasks.Task<HearingDetailsResponse> BookNewHearingAsync(BookNewHearingRequest request)
         {
             return BookNewHearingAsync(request, System.Threading.CancellationToken.None);
@@ -3748,6 +3751,7 @@ namespace BookingsApi.Client
         /// <param name="request">Details of a new hearing to book</param>
         /// <returns>Details of the newly booked hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual async System.Threading.Tasks.Task<HearingDetailsResponse> BookNewHearingAsync(BookNewHearingRequest request, System.Threading.CancellationToken cancellationToken)
         {
             if (request == null)

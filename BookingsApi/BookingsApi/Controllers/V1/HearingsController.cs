@@ -313,6 +313,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [MapToApiVersion("1.0")]
+        [Obsolete("Deprecated use V2")]
         public async Task<IActionResult> BookNewHearing(BookNewHearingRequest request)
         {
             try
