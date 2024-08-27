@@ -26,4 +26,23 @@ public class GetHearingsByVenueNameTests : ApiTest
         hearings.Should().Contain(h => h.Id == hearing.Id);
         
     }
+
+    [Test]
+    public async Task should_return_not_found_for_hearings_by_venue_name()
+    {
+        // arrange
+        var startingDate = DateTime.UtcNow.AddMinutes(5);
+        await Hooks.SeedVideoHearingV2(configureOptions: options =>
+        {
+            options.ScheduledDate = startingDate;
+        });
+        var request = new List<string> { "None existing court name" };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingsForTodayByVenue(), RequestBody.Set(request));
+
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.NotFound, result.Content.ReadAsStringAsync().Result);
+    }
 }
