@@ -247,7 +247,45 @@ namespace BookingsApi.Controllers.V2
 
             return NoContent();
         }
+        
+        /// <summary>
+        /// Return hearing details for todays hearings
+        /// </summary>
+        /// <returns>Booking status</returns>
+        [HttpGet("today")]
+        [OpenApiOperation("GetHearingsForToday")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> GetHearingsForToday()
+        {
+            var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery());
+            if (!videoHearings.Any())
+                return NotFound();
 
+            return Ok(videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
+        }
+
+        /// <summary>
+        /// Return hearing details for todays hearings by venue
+        /// </summary>
+        /// <param name="venueNames">List of hearing venue names provided in payload</param>
+        /// <returns>Booking status</returns>
+        [HttpPost("today/venue")]
+        [OpenApiOperation("GetHearingsForTodayByVenue")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> GetHearingsForTodayByVenue([FromBody] IEnumerable<string> venueNames)
+        {
+            var videoHearings =
+                await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery(venueNames));
+            if (!videoHearings.Any())
+                return NotFound();
+
+            return Ok(videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
+        }
+        
         private async Task<HearingVenue> GetHearingVenue(string venueCode)
         {
             var hearingVenues =

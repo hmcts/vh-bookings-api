@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
 
@@ -57,6 +56,8 @@ namespace Testing.Common.Builders.Api
 
             public static string GetHearingsByGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
             public static string UpdateHearingsInGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
+            public static string GetHearingsForToday() => $"{ApiRoot}/today";
+            public static string GetHearingsForTodayByVenue() => $"{ApiRoot}/today/venue";
         }
         
         public static class HearingParticipantsEndpoints
