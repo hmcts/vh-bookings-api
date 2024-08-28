@@ -93,6 +93,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(List<ConfirmedHearingsTodayResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
+        [Obsolete("Use V2.0")]
         public async Task<IActionResult> GetConfirmedHearingsByUsernameForToday([FromQuery] string username)
         {
             var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
@@ -876,6 +877,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
+        [Obsolete("Use V2.0")]
         public async Task<IActionResult> GetHearingsForTodayByVenue([FromBody]IEnumerable<string> venueNames)
         {
             var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery(venueNames));

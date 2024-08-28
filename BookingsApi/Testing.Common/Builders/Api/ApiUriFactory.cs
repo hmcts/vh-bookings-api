@@ -58,6 +58,7 @@ namespace Testing.Common.Builders.Api
             public static string UpdateHearingsInGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
             public static string GetHearingsForToday() => $"{ApiRoot}/today";
             public static string GetHearingsForTodayByVenue() => $"{ApiRoot}/today/venue";
+            public static string GetConfirmedHearingsByUsernameForToday(string username) => $"{ApiRoot}/today/username?username={username}";
         }
         
         public static class HearingParticipantsEndpoints
