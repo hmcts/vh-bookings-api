@@ -253,16 +253,17 @@ namespace BookingsApi.Controllers.V2
         /// </summary>
         /// <returns>Booking status</returns>
         [HttpGet("today")]
-        [OpenApiOperation("GetHearingsForToday")]
+        [OpenApiOperation("GetHearingsForTodayV2")]
         [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> GetHearingsForToday()
         {
             var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery());
+            
             if (!videoHearings.Any())
-                return NotFound();
-
+                return Ok(new List<HearingDetailsResponseV2>());
+            
             return Ok(videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
         }
 
@@ -272,16 +273,16 @@ namespace BookingsApi.Controllers.V2
         /// <param name="venueNames">List of hearing venue names provided in payload</param>
         /// <returns>Booking status</returns>
         [HttpPost("today/venue")]
-        [OpenApiOperation("GetHearingsForTodayByVenue")]
+        [OpenApiOperation("GetHearingsForTodayByVenueV2")]
         [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> GetHearingsForTodayByVenue([FromBody] IEnumerable<string> venueNames)
         {
             var videoHearings =
                 await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery(venueNames));
+
             if (!videoHearings.Any())
-                return NotFound();
+                return Ok(new List<HearingDetailsResponseV2>());
 
             return Ok(videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
         }

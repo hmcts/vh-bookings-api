@@ -23,6 +23,5 @@ public class GetHearingsForTodayTests : ApiTest
         var hearings = await ApiClientResponse.GetResponses<List<HearingDetailsResponseV2>>(result.Content);
         hearings.Should().NotBeNullOrEmpty();
         hearings.Should().Contain(h => h.Id == hearing.Id);
-        
     }
 }

@@ -28,7 +28,7 @@ public class GetHearingsByVenueNameTests : ApiTest
     }
 
     [Test]
-    public async Task should_return_not_found_for_hearings_by_venue_name()
+    public async Task should_return_empty_list_for_hearings_by_venue_name()
     {
         // arrange
         var startingDate = DateTime.UtcNow.AddMinutes(5);
@@ -43,6 +43,8 @@ public class GetHearingsByVenueNameTests : ApiTest
         var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingsForTodayByVenue(), RequestBody.Set(request));
 
         // assert
-        result.StatusCode.Should().Be(HttpStatusCode.NotFound, result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var hearings = await ApiClientResponse.GetResponses<List<HearingDetailsResponseV2>>(result.Content);
+        hearings.Should().BeEmpty();
     }
 }

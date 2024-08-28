@@ -597,6 +597,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -605,6 +606,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayAsync(System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
@@ -1458,7 +1460,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForToday2Async();
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayV2Async();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -1466,7 +1468,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForToday2Async(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayV2Async(System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Return hearing details for todays hearings by venue
@@ -1474,7 +1476,7 @@ namespace BookingsApi.Client
         /// <param name="venueNames">List of hearing venue names provided in payload</param>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayByVenue2Async(System.Collections.Generic.IEnumerable<string> venueNames);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayByVenueV2Async(System.Collections.Generic.IEnumerable<string> venueNames);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -1483,7 +1485,7 @@ namespace BookingsApi.Client
         /// <param name="venueNames">List of hearing venue names provided in payload</param>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayByVenue2Async(System.Collections.Generic.IEnumerable<string> venueNames, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayByVenueV2Async(System.Collections.Generic.IEnumerable<string> venueNames, System.Threading.CancellationToken cancellationToken);
 
     }
 
@@ -5374,6 +5376,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayAsync()
         {
             return GetHearingsForTodayAsync(System.Threading.CancellationToken.None);
@@ -5385,6 +5388,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForTodayAsync(System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
@@ -11743,9 +11747,9 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForToday2Async()
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayV2Async()
         {
-            return GetHearingsForToday2Async(System.Threading.CancellationToken.None);
+            return GetHearingsForTodayV2Async(System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -11754,7 +11758,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForToday2Async(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayV2Async(System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -11848,9 +11852,9 @@ namespace BookingsApi.Client
         /// <param name="venueNames">List of hearing venue names provided in payload</param>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayByVenue2Async(System.Collections.Generic.IEnumerable<string> venueNames)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayByVenueV2Async(System.Collections.Generic.IEnumerable<string> venueNames)
         {
-            return GetHearingsForTodayByVenue2Async(venueNames, System.Threading.CancellationToken.None);
+            return GetHearingsForTodayByVenueV2Async(venueNames, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -11860,7 +11864,7 @@ namespace BookingsApi.Client
         /// <param name="venueNames">List of hearing venue names provided in payload</param>
         /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayByVenue2Async(System.Collections.Generic.IEnumerable<string> venueNames, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponseV2>> GetHearingsForTodayByVenueV2Async(System.Collections.Generic.IEnumerable<string> venueNames, System.Threading.CancellationToken cancellationToken)
         {
             if (venueNames == null)
                 throw new System.ArgumentNullException("venueNames");
@@ -11924,16 +11928,6 @@ namespace BookingsApi.Client
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             return objectResponse_.Object;
-                        }
-                        else
-                        if (status_ == 404)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new BookingsApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
