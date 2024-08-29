@@ -46,6 +46,7 @@ stages:
         netVersion: ${{ variables.dotnetVersion }}
         vstsFeedId: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
         coreProjectPath: $(projectPath)
+        
 #####################################################
 # Run Entity Framework ITHC. #####################
 - stage: Run_Entity_Framework_ITHC
