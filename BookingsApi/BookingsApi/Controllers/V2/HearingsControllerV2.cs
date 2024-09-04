@@ -247,6 +247,70 @@ namespace BookingsApi.Controllers.V2
 
             return NoContent();
         }
+        
+        /// <summary>
+        /// Return hearing details for todays hearings
+        /// </summary>
+        /// <returns>Booking status</returns>
+        [HttpGet("today")]
+        [OpenApiOperation("GetHearingsForTodayV2")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> GetHearingsForToday()
+        {
+            var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery());
+            
+            if (!videoHearings.Any())
+                return Ok(new List<HearingDetailsResponseV2>());
+            
+            return Ok(videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
+        }
+
+        /// <summary>
+        /// Return hearing details for todays hearings by venue
+        /// </summary>
+        /// <param name="venueNames">List of hearing venue names provided in payload</param>
+        /// <returns>Booking status</returns>
+        [HttpPost("today/venue")]
+        [OpenApiOperation("GetHearingsForTodayByVenueV2")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> GetHearingsForTodayByVenue([FromBody] IEnumerable<string> venueNames)
+        {
+            var videoHearings =
+                await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery(venueNames));
+
+            if (!videoHearings.Any())
+                return Ok(new List<HearingDetailsResponseV2>());
+
+            return Ok(videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
+        }
+        
+        /// <summary>
+        /// Get list of all confirmed hearings for a given username for today
+        /// </summary>
+        /// <param name="username">username of person to search against</param>
+        /// <returns>Hearing details</returns>
+        [HttpGet("today/username")]
+        [OpenApiOperation("GetConfirmedHearingsByUsernameForTodayV2")]
+        [ProducesResponseType(typeof(List<ConfirmedHearingsTodayResponseV2>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> GetConfirmedHearingsByUsernameForToday([FromQuery] string username)
+        {
+            var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
+            var hearings =
+                await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
+            
+            if (!hearings.Any())
+            {
+                return NotFound($"{username.Trim().ToLower()} does not have any confirmed hearings today");
+            }
+
+            var response = hearings.Select(ConfirmedHearingsTodayResponseMapperV2.Map).ToList();
+            return Ok(response);
+        }
 
         private async Task<HearingVenue> GetHearingVenue(string venueCode)
         {
