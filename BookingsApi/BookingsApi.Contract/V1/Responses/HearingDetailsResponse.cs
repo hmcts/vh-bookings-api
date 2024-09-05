@@ -117,25 +117,5 @@ namespace BookingsApi.Contract.V1.Responses
         /// The group id for a hearing
         /// </summary>
         public Guid? GroupId { get; set; }
-
-        /// <summary>
-        /// The UUID of the user who the hearing is allocated to, if allocated
-        /// </summary>
-        public Guid? AllocatedToId { get; set; }
-
-        /// <summary>
-        /// The username of the user who the hearing is allocated to, if allocated
-        /// </summary>
-        public string AllocatedToUsername { get; set; }
-
-        /// <summary>
-        /// The full name of the user who the hearing is allocated to, if allocated
-        /// </summary>
-        public string AllocatedToName { get; set; }
-        
-        /// <summary>
-        /// Does the hearing venue support work allocation
-        /// </summary>
-        public bool SupportsWorkAllocation { get; set; }
     }
 }

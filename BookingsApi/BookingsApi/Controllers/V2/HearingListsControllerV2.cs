@@ -1,14 +1,14 @@
-using BookingsApi.Contract.V1.Requests;
-using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Mappings.V1;
+using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Contract.V2.Responses;
+using BookingsApi.Mappings.V2;
 
-namespace BookingsApi.Controllers.V1;
+namespace BookingsApi.Controllers.V2;
 
 [Produces("application/json")]
-[Route("hearings")]
-[ApiVersion("1.0")]
+[Route(template:"v{version:apiVersion}/hearings")]
+[ApiVersion("2.0")]
 [ApiController]
-public class HearingListsController(IQueryHandler queryHandler) : ControllerBase
+public class HearingListsControllerV2(IQueryHandler queryHandler) : ControllerBase
 {
     /// <summary>
     /// Retrieve a list of hearing allocated to a given list of CSOs
@@ -16,10 +16,10 @@ public class HearingListsController(IQueryHandler queryHandler) : ControllerBase
     /// <param name="request">A filter, either CSO ids or unallocated</param>
     /// <returns>List of hearings that match the cso ids. If no ids provided an empty list is returned</returns>
     [HttpPost("today/csos")]
-    [OpenApiOperation("GetHearingsForTodayByCsos")]
-    [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
-    [MapToApiVersion("1.0")]
-    public async Task<IActionResult> GetHearingsForTodayByCsos([FromBody] HearingsForTodayByAllocationRequest request)
+    [OpenApiOperation("GetHearingsForTodayByCsosV2")]
+    [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
+    [MapToApiVersion("2.0")]
+    public async Task<IActionResult> GetHearingsForTodayByCsosV2([FromBody] HearingsForTodayByAllocationRequestV2 request)
     {
         if (request.CsoIds.Count == 0 && !request.Unallocated.HasValue)
         {
@@ -30,6 +30,6 @@ public class HearingListsController(IQueryHandler queryHandler) : ControllerBase
         var videoHearings =
             await queryHandler.Handle<GetHearingsForTodayQueryAllocatedToQuery, List<VideoHearing>>(
                 new GetHearingsForTodayQueryAllocatedToQuery(request.CsoIds, request.Unallocated));
-        return Ok(videoHearings.Count == 0 ? [] : videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
+        return Ok(videoHearings.Count == 0 ? [] : videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
     }
 }

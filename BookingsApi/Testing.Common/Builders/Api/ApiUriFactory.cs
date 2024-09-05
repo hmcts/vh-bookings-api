@@ -189,7 +189,7 @@ namespace Testing.Common.Builders.Api
 
         public static class HearingListsEndpoints
         {
-            private const string ApiRoot = "hearings";
+            private const string ApiRoot = "v2/hearings";
             public static string GetHearingsForTodayByCsos => $"{ApiRoot}/today/csos";
         }
     }

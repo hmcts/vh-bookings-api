@@ -62,11 +62,7 @@ namespace BookingsApi.Mappings.V1
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints,
-                JudiciaryParticipants = judiciaryParticipants,
-                SupportsWorkAllocation = videoHearing.HearingVenue.IsWorkAllocationEnabled,
-                AllocatedToId = allocatedToId,
-                AllocatedToUsername = allocatedToUsername,
-                AllocatedToName = allocatedToName
+                JudiciaryParticipants = judiciaryParticipants
             };
             response.TrimAllStringsRecursively();
             return response;
