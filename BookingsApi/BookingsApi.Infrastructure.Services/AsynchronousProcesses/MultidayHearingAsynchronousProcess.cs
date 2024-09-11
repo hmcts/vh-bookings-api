@@ -20,10 +20,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 
         public async Task Start(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate, bool sendNotificationNewParticipant = false)
         {
-            if(totalDays <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(totalDays));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(totalDays);
 
             if (sendNotificationNewParticipant)
             {

@@ -99,7 +99,7 @@ namespace BookingsApi.Controllers.V1
             var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
             var hearings =
                 await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
-            if (!hearings.Any())
+            if (hearings.Count == 0)
             {
                 return NotFound($"{username.Trim().ToLower()} does not have any confirmed hearings today");
             }
@@ -167,7 +167,7 @@ namespace BookingsApi.Controllers.V1
             var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
             var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
             
-            if (!hearingsInGroup.Any())
+            if (hearingsInGroup.Count == 0)
             {
                 return NotFound();
             }
@@ -245,7 +245,7 @@ namespace BookingsApi.Controllers.V1
             var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
             var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
             
-            if (!hearingsInGroup.Any())
+            if (hearingsInGroup.Count == 0)
             {
                 return NotFound();
             }
@@ -466,7 +466,7 @@ namespace BookingsApi.Controllers.V1
             return NoContent();
         }
 
-        private IActionResult ModelStateErrorLogger(string key, string exception, string logErrorMessage, string errorValue, SeverityLevel severity)
+        private ActionResult ModelStateErrorLogger(string key, string exception, string logErrorMessage, string errorValue, SeverityLevel severity)
         {
             ModelState.AddModelError(key, exception);
             if (errorValue == null)
@@ -862,7 +862,7 @@ namespace BookingsApi.Controllers.V1
         public async Task<IActionResult> GetHearingsForToday()
         {
             var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery());
-            if (!videoHearings.Any())
+            if (videoHearings.Count == 0)
                 return NotFound();
 
             return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
@@ -882,7 +882,7 @@ namespace BookingsApi.Controllers.V1
         public async Task<IActionResult> GetHearingsForTodayByVenue([FromBody]IEnumerable<string> venueNames)
         {
             var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery(venueNames));
-            if (!videoHearings.Any())
+            if (videoHearings.Count == 0)
                 return NotFound();
 
             return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
@@ -901,7 +901,7 @@ namespace BookingsApi.Controllers.V1
             const string resourceUrl = hearingsListsEndpointBaseUrl + bookingsEndpointUrl;
 
             var types = string.Empty;
-            if (caseTypes.Any())
+            if (caseTypes.Count != 0)
             {
                 types = string.Join("&types=", caseTypes);
             }
@@ -914,7 +914,7 @@ namespace BookingsApi.Controllers.V1
             }
 
             var venueIds = string.Empty;
-            if (hearingVenueIds != null && hearingVenueIds.Any())
+            if (hearingVenueIds != null && hearingVenueIds.Count != 0)
             {
                 venueIds = string.Join("&venueIds=", hearingVenueIds);
             }
@@ -932,7 +932,7 @@ namespace BookingsApi.Controllers.V1
 
         private async Task<bool> ValidateCaseTypes(List<int> filterCaseTypes)
         {
-            if (!filterCaseTypes.Any())
+            if (filterCaseTypes.Count == 0)
             {
                 return true;
             }
@@ -947,7 +947,7 @@ namespace BookingsApi.Controllers.V1
 
         private async Task<bool> ValidateVenueIds(List<int> filterVenueIds)
         {
-            if (!filterVenueIds.Any())
+            if (filterVenueIds.Count == 0)
             {
                 return true;
             }

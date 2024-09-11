@@ -33,7 +33,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected Mock<ICommandHandler> CommandHandlerMock;
         protected Mock<IRandomGenerator> RandomGenerator;
         protected Mock<IHearingService> HearingServiceMock;
-        private Mock<IVhLogger> _logger;
         protected SupplierConfiguration SupplierConfiguration;
         protected Mock<IVhLogger> Logger;
 
