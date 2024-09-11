@@ -27,7 +27,18 @@ namespace BookingsApi.Mappings.V1
             var judiciaryParticipants = videoHearing.GetJudiciaryParticipants()
                 .Select(x => judiciaryParticipantMapper.MapJudiciaryParticipantToResponse(x))
                 .ToList();
-            
+
+            Guid? allocatedToId = null;
+            string allocatedToUsername = null;
+            string allocatedToName = null;
+            if (videoHearing.AllocatedTo != null)
+            {
+                var allocatedTo = videoHearing.AllocatedTo;
+                allocatedToId = allocatedTo.Id;
+                allocatedToUsername = allocatedTo.Username;
+                allocatedToName = $"{allocatedTo.FirstName} {allocatedTo.Lastname}";
+            }
+
             var response = new HearingDetailsResponse
             {
                 Id = videoHearing.Id,

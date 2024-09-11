@@ -69,6 +69,16 @@ namespace BookingsApi.UnitTests.Mappings.V1
             
             var judiciaryPanelMemberPerson = new JudiciaryPersonBuilder(Guid.NewGuid().ToString()).Build();
             _videoHearing.AddJudiciaryPanelMember(judiciaryPanelMemberPerson, "Judiciary Panel Member");
+
+            var justiceUser = new JusticeUser("JName", "JLastName", "JEmail", "JUsername");
+            _videoHearing.AllocateJusticeUser(justiceUser);
+            _videoHearing.SetProtected(nameof(_videoHearing.Allocations), new List<Allocation> { new()
+            {
+                Hearing = _videoHearing,
+                JusticeUser = justiceUser,
+                HearingId = _videoHearing.Id,
+                JusticeUserId = justiceUser.Id
+            } });
             
             // Set the navigation properties as well since these would've been set if we got the hearing from DB
             _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);
