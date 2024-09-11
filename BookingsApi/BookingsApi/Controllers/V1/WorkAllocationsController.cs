@@ -76,6 +76,7 @@ namespace BookingsApi.Controllers.V1
         /// <returns>list of hearing Ids with the allocated cso</returns>
         [HttpPost("get-allocation")]
         [OpenApiOperation("GetAllocationsForHearings")]
+        [Obsolete("This method is deprecated, v2 operations provide the allocation details for the hearings")]
         [ProducesResponseType(typeof(IList<AllocatedCsoResponse>), (int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetAllocationsForHearings([FromBody]Guid[] hearingIds)
