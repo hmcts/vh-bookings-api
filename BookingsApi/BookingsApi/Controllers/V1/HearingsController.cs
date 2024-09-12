@@ -8,7 +8,6 @@ using BookingsApi.Validations.V1;
 using Microsoft.ApplicationInsights.DataContracts;
 
 namespace BookingsApi.Controllers.V1;
-#pragma warning disable CS0612 // Disable warning about using obsolete code
 [Produces("application/json")]
 [Route("hearings")]
 [ApiVersion("1.0")]
