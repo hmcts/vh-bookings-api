@@ -49,10 +49,10 @@ stages:
                 sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
                 sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*
                 sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*, **/BookingsApi.DAL/Migrations/**/*
-                sonar.issue.ignore.multicriteria=e1
                 sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S107
-                sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S1133
                 sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.cs
+                sonar.issue.ignore.multicriteria.e2.ruleKey=csharpsquid:S1133
+                sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.cs
 
   ####################################################
   # Pre Release Tasks. ###############################
