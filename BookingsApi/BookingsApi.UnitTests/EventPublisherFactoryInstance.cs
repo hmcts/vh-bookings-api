@@ -12,14 +12,10 @@ namespace BookingsApi.UnitTests
             return new EventPublisherFactory(new List<IPublishEvent> {
                 new WelcomeEmailForNewParticipantsPublisher(eventPublisher),
                 new CreateConferencePublisher(eventPublisher),
-                new ParticipantAddedPublisher(eventPublisher),
                 new HearingConfirmationforNewParticipantsPublisher(eventPublisher),
                 new HearingConfirmationforExistingParticipantsPublisher(eventPublisher),
                 new MultidayHearingConfirmationforNewParticipantsPublisher(eventPublisher),
                 new MultidayHearingConfirmationforExistingParticipantsPublisher(eventPublisher),
-                new CreateAndNotifyUserPublisher(eventPublisher),
-                new HearingNotoficationEventPublisher(eventPublisher),
-                new MultidayHearingNotificationEventPublisher(eventPublisher),
                 new HearingNotificationEventForJudiciaryParticipantPublisher(eventPublisher),
                 new HearingNotificationEventForNewJudicialOfficersPublisher(eventPublisher),
                 new JudiciaryParticipantAddedPublisher(eventPublisher)

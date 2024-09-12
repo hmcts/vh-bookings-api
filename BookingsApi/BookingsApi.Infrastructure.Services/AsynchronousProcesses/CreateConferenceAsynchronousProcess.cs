@@ -1,11 +1,5 @@
-﻿using BookingsApi.Common;
-using BookingsApi.Common.Services;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Participants;
-using BookingsApi.Infrastructure.Services.IntegrationEvents;
-using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+﻿using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.Publishers;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses

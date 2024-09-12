@@ -1,5 +1,4 @@
-﻿using BookingsApi.Common.Services;
-using BookingsApi.Domain;
+﻿using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.Publishers;
 using System;
 using System.Threading.Tasks;
@@ -14,29 +13,14 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
     public class ClonedMultidaysAsynchronousProcess: IClonedBookingAsynchronousProcess
     {
         private readonly IEventPublisherFactory _publisherFactory;
-        private readonly IFeatureToggles _featureToggles;
-        public ClonedMultidaysAsynchronousProcess(IEventPublisherFactory publisherFactory, IFeatureToggles featureToggles)
+        public ClonedMultidaysAsynchronousProcess(IEventPublisherFactory publisherFactory)
         {
-            _publisherFactory = publisherFactory;
-            _featureToggles = featureToggles;
+            _publisherFactory = publisherFactory; 
         }
 
         public async Task Start(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate, bool sendNotificationNewParticipant = false)
         {
-            if(totalDays <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(totalDays));
-            }
-            if (!_featureToggles.UsePostMay2023Template())
-            {
-                await _publisherFactory.Get(EventType.CreateAndNotifyUserEvent).PublishAsync(videoHearing);
-
-                var publisherForMultiDayEvent = (IPublishMultidayEvent)_publisherFactory.Get(EventType.MultiDayHearingIntegrationEvent);
-                publisherForMultiDayEvent.TotalDays = totalDays;
-                await publisherForMultiDayEvent.PublishAsync(videoHearing);
-                
-                return;
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(totalDays);
 
             if (sendNotificationNewParticipant)
             {

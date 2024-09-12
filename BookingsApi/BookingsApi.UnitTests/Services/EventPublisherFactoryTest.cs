@@ -1,7 +1,6 @@
 ﻿using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using System.Collections.Generic;
 
 namespace BookingsApi.UnitTests.Services
 {

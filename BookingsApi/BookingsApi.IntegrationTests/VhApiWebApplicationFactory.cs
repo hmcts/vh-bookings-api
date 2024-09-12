@@ -26,18 +26,18 @@ namespace BookingsApi.IntegrationTests
             });
             builder.UseEnvironment("Development");
         }
-        
+
         private static void RegisterStubs(IServiceCollection services)
         {
             services.AddSingleton<IServiceBusQueueClient, ServiceBusQueueClientFake>();
             services.AddSingleton<IFeatureToggles, FeatureTogglesStub>();
         }
-        
+
         protected override void ConfigureClient(HttpClient client)
         {
             base.ConfigureClient(client);
             client.Timeout = System.TimeSpan.FromMinutes(20); // this should stop timeouts and cancelled ops when debugging
-            client.SetFakeBearerToken("admin", new[] { "ROLE_ADMIN", "ROLE_GENTLEMAN" });
+            client.SetFakeBearerToken("admin", ["ROLE_ADMIN", "ROLE_GENTLEMAN"]);
         }
     }
 }
