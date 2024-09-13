@@ -803,9 +803,6 @@ namespace BookingsApi.Domain
         {
             ArgumentNullException.ThrowIfNull(participantContactEmail);
             ArgumentNullException.ThrowIfNull(endpointDisplayNames);
-            // var screening = CreateScreening(screeningType, participantContactEmail, endpointDisplayNames, participant,
-            //     null);
-            // participant.AssignScreening(screening);
             
             var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
             var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
@@ -827,28 +824,7 @@ namespace BookingsApi.Domain
             var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
             var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
             endpoint.AssignScreening(screeningType, participants, endpoints);
-            // endpoint.AssignScreening(screening);
         }
-
-        // private Screening CreateScreening(ScreeningType screeningType,
-        //     List<string> participantContactEmail, List<string> endpointDisplayNames, Participant participant, Endpoint endpoint)
-        // {
-        //     Screening screening;
-        //     if (screeningType == ScreeningType.All)
-        //     {
-        //         screening = new Screening(ScreeningType.All);
-        //     }
-        //     else
-        //     {
-        //         var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
-        //         var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
-        //         screening = participant != null
-        //             ? Screening.CreateSpecificScreening(participant, participants, endpoints)
-        //             : Screening.CreateSpecificScreening(endpoint, participants, endpoints);
-        //     }
-        //
-        //     return screening;
-        // }
 
         private Participant GetParticipantByContactEmail(string contactEmail)
         {

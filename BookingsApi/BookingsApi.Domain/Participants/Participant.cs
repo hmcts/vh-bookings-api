@@ -47,8 +47,6 @@ namespace BookingsApi.Domain.Participants
         
         public Guid? ScreeningId { get; protected set; }
         public virtual Screening Screening { get; protected set; }
-        // public ICollection<ParticipantScreening> ParticipantScreenings { get; set; }
-        
 
         protected virtual void ValidateParticipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
         {

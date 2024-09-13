@@ -16,10 +16,6 @@ namespace BookingsApi.DAL.Mappings
             builder.HasOne(x => x.DefenceAdvocate);
             builder.HasOne(x => x.InterpreterLanguage).WithMany().HasForeignKey(x => x.InterpreterLanguageId).IsRequired(false);
             
-            // builder.HasOne(x => x.Screening)
-            //     .WithMany(x=> x.EndpointsToScreenFrom).HasForeignKey(x => x.ScreeningId)
-            //     .IsRequired(false);
-
             builder.HasOne(participant => participant.Screening)
                 .WithOne(screening => screening.Endpoint)
                 .HasForeignKey<Screening>(screening => screening.EndpointId);

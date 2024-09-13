@@ -14,7 +14,7 @@ namespace BookingsApi.Contract.V2.Responses
         public string OtherLanguage { get; set; }
         
         /// <summary>
-        ///   The participant's screening needs (optional)
+        ///   The endpoint's screening needs (optional)
         /// </summary>
         public ScreeningResponseV2 Screening { get; set; }
     }
