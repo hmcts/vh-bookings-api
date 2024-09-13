@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V2.Enums;
+using ScreeningType = BookingsApi.Contract.V2.Enums.ScreeningType;
 
 namespace BookingsApi.Mappings.V2.Extensions
 {
@@ -17,6 +18,16 @@ namespace BookingsApi.Mappings.V2.Extensions
         public static Domain.Enumerations.LinkedParticipantType MapToDomainEnum(this LinkedParticipantTypeV2 typeV2)
         {
             return Enum.Parse<Domain.Enumerations.LinkedParticipantType>(typeV2.ToString());
+        }
+        
+        public static Domain.Enumerations.ScreeningType MapToDomainEnum(this ScreeningType type)
+        {
+            return Enum.Parse<Domain.Enumerations.ScreeningType>(type.ToString());
+        }
+        
+        public static ScreeningType MapToContractEnum(this Domain.Enumerations.ScreeningType type)
+        {
+            return Enum.Parse<ScreeningType>(type.ToString());
         }
     }
 }

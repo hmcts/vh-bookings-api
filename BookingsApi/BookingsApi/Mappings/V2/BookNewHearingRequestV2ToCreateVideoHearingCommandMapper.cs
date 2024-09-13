@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Mappings.V1;
+using BookingsApi.Mappings.V2.Extensions;
 
 namespace BookingsApi.Mappings.V2;
 
@@ -49,7 +50,13 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
             DisplayName = x.DisplayName,
             DefenceAdvocateContactEmail = x.DefenceAdvocateContactEmail,
             OtherLanguage = x.OtherLanguage,
-            InterpreterLanguageCode = x.InterpreterLanguageCode
+            InterpreterLanguageCode = x.InterpreterLanguageCode,
+            Screening = x.Screening == null ? null : new ScreeningDto()
+            {
+                ProtectFromParticipants = x.Screening.ProtectFromParticipants,
+                ProtectFromEndpoints = x.Screening.ProtectFromEndpoints,
+                ScreeningType = x.Screening.Type.MapToDomainEnum()
+            }
             
         }).ToList();
         return NewEndpointGenerator.GenerateNewEndpoints(dtos, randomGenerator, sipAddressStem);

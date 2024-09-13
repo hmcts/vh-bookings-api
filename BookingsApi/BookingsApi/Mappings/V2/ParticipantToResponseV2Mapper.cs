@@ -44,6 +44,18 @@ namespace BookingsApi.Mappings.V2
                     break;
             }
 
+            if (participant.Screening != null)
+            {
+                var screeningResponse = new ScreeningResponseV2
+                {
+                    Type = participant.Screening.Type.MapToContractEnum(),
+                    ProtectFromEndpointsIds = participant.Screening.GetEndpoints().Select(x=> x.EndpointId!.Value).ToList(),
+                    ProtectFromParticipantsIds = participant.Screening.GetParticipants().Select(x=> x.ParticipantId!.Value).ToList()
+                };
+
+                participantResponse.Screening = screeningResponse;
+            }
+
             participantResponse.TrimAllStringsRecursively();
             return participantResponse;
         }

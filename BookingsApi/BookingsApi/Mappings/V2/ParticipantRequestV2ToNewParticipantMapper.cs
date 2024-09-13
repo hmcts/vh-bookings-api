@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Mappings.V2.Extensions;
 
 namespace BookingsApi.Mappings.V2
 {
@@ -42,7 +43,7 @@ namespace BookingsApi.Mappings.V2
                 {
                    ProtectFromEndpoints = requestV2Participant.Screening.ProtectFromEndpoints,
                    ProtectFromParticipants = requestV2Participant.Screening.ProtectFromParticipants,
-                   ScreeningType = (ScreeningType)requestV2Participant.Screening.Type
+                   ScreeningType = requestV2Participant.Screening.Type.MapToDomainEnum()
                 }
             };
         }

@@ -12,5 +12,10 @@ namespace BookingsApi.Contract.V2.Responses
         public Guid? DefenceAdvocateId { get; set; }
         public InterpreterLanguagesResponse InterpreterLanguage { get; set; }
         public string OtherLanguage { get; set; }
+        
+        /// <summary>
+        ///   The participant's screening needs (optional)
+        /// </summary>
+        public ScreeningResponseV2 Screening { get; set; }
     }
 }

@@ -35,8 +35,6 @@ public class Screening : TrackableEntity<Guid>
     public virtual Endpoint Endpoint { get; set; }
     
     public ScreeningType Type { get; set; }
-    // public virtual ICollection<Endpoint> EndpointsToScreenFrom { get; private set; }
-    // public virtual ICollection<Participant> ParticipantsToScreenFrom { get; private set; }
     public virtual ICollection<ScreeningEntity> ScreeningEntities { get; private set; }
 
     public void AddParticipant(Participant participant)
@@ -56,39 +54,14 @@ public class Screening : TrackableEntity<Guid>
         }
         ScreeningEntities.Add(ScreeningEntity.ForEndpoint(this, endpoint));
     }
-}
-
-public class ScreeningEntity : TrackableEntity<long>
-{
-    public Guid ScreeningId { get; set; }
-    public virtual Screening Screening { get; set; }
     
-    public Guid? ParticipantId { get; set; }
-    public virtual Participant Participant { get; set; }
-    
-    public Guid? EndpointId { get; set; }
-    public virtual Endpoint Endpoint { get; set; }
-    
-    private ScreeningEntity()
+    public List<ScreeningEntity> GetEndpoints()
     {
-        
+        return ScreeningEntities.Where(x => x.EndpointId != null).ToList();
     }
     
-    public static ScreeningEntity ForParticipant(Screening screening, Participant participant)
+    public List<ScreeningEntity> GetParticipants()
     {
-        return new ScreeningEntity
-        {
-            Screening = screening,
-            Participant = participant
-        };
-    }
-    
-    public static ScreeningEntity ForEndpoint(Screening screening, Endpoint endpoint)
-    {
-        return new ScreeningEntity
-        {
-            Screening = screening,
-            Endpoint = endpoint
-        };
+        return ScreeningEntities.Where(x => x.ParticipantId != null).ToList();
     }
 }
