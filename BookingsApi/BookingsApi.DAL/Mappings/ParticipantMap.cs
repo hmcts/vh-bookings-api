@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.SpecialMeasure;
 
 namespace BookingsApi.DAL.Mappings
 {
@@ -21,6 +22,19 @@ namespace BookingsApi.DAL.Mappings
             builder.Property(x => x.CreatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
             builder.Property(x => x.UpdatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
             builder.HasOne(x => x.InterpreterLanguage).WithMany().HasForeignKey(x => x.InterpreterLanguageId).IsRequired(false);
+            
+            // builder.HasOne(x => x.Screening)
+            //     .WithMany(x=> x.ParticipantsToScreenFrom)
+            //     .IsRequired(false);
+            //
+            // builder.HasOne(x => x.Screening)
+            //     .WithMany(x=> x.End)
+            //     .IsRequired(false);
+
+            builder.Property(x => x.ScreeningId);
+            builder.HasOne(participant => participant.Screening)
+                .WithOne(screening => screening.Participant)
+                .HasForeignKey<Screening>(screening => screening.ParticipantId);
         }
     }
 

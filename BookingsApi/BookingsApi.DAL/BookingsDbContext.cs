@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Threading;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.SpecialMeasure;
 
 namespace BookingsApi.DAL
 {
@@ -51,6 +52,10 @@ namespace BookingsApi.DAL
 
             modelBuilder.Entity<JusticeUser>().HasQueryFilter(u => !u.Deleted);
             modelBuilder.Entity<VhoWorkHours>().HasQueryFilter(wh => !wh.Deleted);
+
+            modelBuilder.Entity<Participant>().Navigation(p => p.Screening).AutoInclude();
+            modelBuilder.Entity<Endpoint>().Navigation(p => p.Screening).AutoInclude();
+            modelBuilder.Entity<Screening>().Navigation(s => s.ScreeningEntities).AutoInclude();
         }
         
         public override int SaveChanges()

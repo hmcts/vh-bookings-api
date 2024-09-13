@@ -4,6 +4,7 @@ using System.Linq;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.SpecialMeasure;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain.Participants
@@ -43,7 +44,11 @@ namespace BookingsApi.Domain.Participants
         public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
         public string OtherLanguage { get; set; }
         public IList<LinkedParticipant> LinkedParticipants { get; set; }
-
+        
+        public Guid? ScreeningId { get; protected set; }
+        public virtual Screening Screening { get; protected set; }
+        // public ICollection<ParticipantScreening> ParticipantScreenings { get; set; }
+        
 
         protected virtual void ValidateParticipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
         {
@@ -140,6 +145,22 @@ namespace BookingsApi.Domain.Participants
             OtherLanguage = otherLanguage;
             
             UpdatedDate = DateTime.UtcNow;
+        }
+        
+        public void AssignScreening(ScreeningType type, List<Participant> participants, List<Endpoint> endpoints)
+        {
+            var screening = new Screening(type, this);
+            foreach (var participant in participants)
+            {
+                screening.AddParticipant(participant);
+            }
+
+            foreach (var endpoint in endpoints)
+            {
+                screening.AddEndpoint(endpoint);
+            }
+            Screening = screening;
+            ScreeningId = screening.Id;
         }
     }
 }

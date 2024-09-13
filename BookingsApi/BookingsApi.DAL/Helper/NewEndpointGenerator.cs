@@ -1,5 +1,6 @@
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Dtos;
 
 namespace BookingsApi.DAL.Helper;
 
@@ -31,7 +32,8 @@ public static class NewEndpointGenerator
                 DisplayName = endpointRequest.DisplayName,
                 ContactEmail = endpointRequest.DefenceAdvocateContactEmail,
                 OtherLanguage = endpointRequest.OtherLanguage,
-                LanguageCode = endpointRequest.InterpreterLanguageCode
+                LanguageCode = endpointRequest.InterpreterLanguageCode,
+                Screening = endpointRequest.Screening
             });
         }
 
@@ -45,4 +47,5 @@ public class NewEndpointRequestDto
     public string DefenceAdvocateContactEmail { get; set; }
     public string InterpreterLanguageCode { get; set; }
     public string OtherLanguage { get; set; }
+    public ScreeningDto Screening { get; set; }
 }

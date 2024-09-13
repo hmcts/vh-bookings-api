@@ -7,6 +7,7 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.JudiciaryParticipants;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.SpecialMeasure;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
@@ -159,7 +160,6 @@ namespace BookingsApi.Domain
         {
             if (DoesEndpointExist(endpoint.Sip))
             {
-                
                 throw new DomainRuleException(nameof(endpoint), $"Endpoint {endpoint.Sip} already exists in the hearing");
             }
 
@@ -225,6 +225,7 @@ namespace BookingsApi.Domain
             return participant;
         }
 
+        [Obsolete("Use AddJudiciaryJudge instead")]
         public Participant AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
             if(!hearingRole.IsJudge())
@@ -253,6 +254,7 @@ namespace BookingsApi.Domain
             return participant;
         }
 
+        [Obsolete("Use AddJudiciaryPanelMember instead")]
         public Participant AddJudicialOfficeHolder(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
             if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
@@ -400,7 +402,7 @@ namespace BookingsApi.Domain
             ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
             if (!DoesParticipantExistByContactEmail(participant.Person.ContactEmail))
             {
-                throw new DomainRuleException("Participant", "Participant does not exist on the hearing");
+                throw new DomainRuleException("Participant", DomainRuleErrorMessages.ParticipantDoesNotExist);
             }
 
             if (validateParticipantCount) ValidateHostCount();
@@ -787,6 +789,85 @@ namespace BookingsApi.Domain
                     BookingStatus.ConfirmedWithoutJudge => BookingStatus.Created,
                     _ => Status 
                 };
+        }
+
+        /// <summary>
+        /// Assign the screening (special measure) rules for a participant
+        /// </summary>
+        /// <param name="participant">The participant who needs screening</param>
+        /// <param name="screeningType">The type of screening, blanket (all) or specific participants</param>
+        /// <param name="participantContactEmail">The list of contact emails of participants to screen from</param>
+        /// <param name="endpointDisplayNames">The list of display names of endpoints to screen from</param>
+        public void AssignScreeningForParticipant(Participant participant, ScreeningType screeningType,
+            List<string> participantContactEmail, List<string> endpointDisplayNames)
+        {
+            ArgumentNullException.ThrowIfNull(participantContactEmail);
+            ArgumentNullException.ThrowIfNull(endpointDisplayNames);
+            // var screening = CreateScreening(screeningType, participantContactEmail, endpointDisplayNames, participant,
+            //     null);
+            // participant.AssignScreening(screening);
+            
+            var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
+            var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
+            participant.AssignScreening(screeningType, participants, endpoints);
+        }
+
+        /// <summary>
+        /// Assign the screening (special measure) rules for an endpoint
+        /// </summary>
+        /// <param name="endpoint">The endpoint who needs screening</param>
+        /// <param name="screeningType">The type of screening, blanket (all) or specific participants</param>
+        /// <param name="participantContactEmail">The list of contact emails of participants to screen from</param>
+        /// <param name="endpointDisplayNames">The list of display names of endpoints to screen from</param>
+        public void AssignScreeningForEndpoint(Endpoint endpoint, ScreeningType screeningType,
+            List<string> participantContactEmail, List<string> endpointDisplayNames)
+        {
+            ArgumentNullException.ThrowIfNull(participantContactEmail);
+            ArgumentNullException.ThrowIfNull(endpointDisplayNames);
+            var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
+            var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
+            endpoint.AssignScreening(screeningType, participants, endpoints);
+            // endpoint.AssignScreening(screening);
+        }
+
+        // private Screening CreateScreening(ScreeningType screeningType,
+        //     List<string> participantContactEmail, List<string> endpointDisplayNames, Participant participant, Endpoint endpoint)
+        // {
+        //     Screening screening;
+        //     if (screeningType == ScreeningType.All)
+        //     {
+        //         screening = new Screening(ScreeningType.All);
+        //     }
+        //     else
+        //     {
+        //         var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
+        //         var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
+        //         screening = participant != null
+        //             ? Screening.CreateSpecificScreening(participant, participants, endpoints)
+        //             : Screening.CreateSpecificScreening(endpoint, participants, endpoints);
+        //     }
+        //
+        //     return screening;
+        // }
+
+        private Participant GetParticipantByContactEmail(string contactEmail)
+        {
+            if (!DoesParticipantExistByContactEmail(contactEmail))
+            {
+                throw new DomainRuleException("Participant", $"{DomainRuleErrorMessages.ParticipantDoesNotExist} - {contactEmail}");
+            }
+
+            return Participants.Single(x => x.Person.ContactEmail == contactEmail);
+        }
+
+        private Endpoint GetEndpointByDisplayName(string displayName)
+        {
+            if(!Endpoints.Any(x => x.DisplayName.Equals(displayName, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                throw new DomainRuleException("Endpoint", $"{DomainRuleErrorMessages.EndpointDoesNotExist} - {displayName}");
+            }
+            
+            return Endpoints.Single(x => x.DisplayName == displayName);
         }
         
         public void OverrideSupplier(VideoSupplier commandVideoSupplier)

@@ -37,7 +37,13 @@ namespace BookingsApi.Mappings.V2
                 DisplayName = requestV2Participant.DisplayName,
                 Representee = requestV2Participant.Representee,
                 OtherLanguage = requestV2Participant.OtherLanguage,
-                InterpreterLanguageCode = requestV2Participant.InterpreterLanguageCode
+                InterpreterLanguageCode = requestV2Participant.InterpreterLanguageCode,
+                Screening = requestV2Participant.Screening == null ? null : new ScreeningDto
+                {
+                   ProtectFromEndpoints = requestV2Participant.Screening.ProtectFromEndpoints,
+                   ProtectFromParticipants = requestV2Participant.Screening.ProtectFromParticipants,
+                   ScreeningType = (ScreeningType)requestV2Participant.Screening.Type
+                }
             };
         }
     }

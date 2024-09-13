@@ -1,4 +1,5 @@
-﻿using BookingsApi.DAL.Helper;
+﻿using BookingsApi.DAL.Dtos;
+using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.Extensions;
 
 namespace BookingsApi.DAL.Commands
@@ -11,6 +12,7 @@ namespace BookingsApi.DAL.Commands
         public string ContactEmail { get; set; } 
         public string LanguageCode { get; set; }
         public string OtherLanguage { get; set; }
+        public ScreeningDto Screening { get; set; }
     }
     
     public class AddEndPointToHearingCommand : ICommand
@@ -41,6 +43,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x=> x.Participants).ThenInclude(x=> x.InterpreterLanguage)
                 .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .Include(x=> x.Endpoints).ThenInclude(x=> x.InterpreterLanguage)
+                .Include(x=> x.Participants)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)

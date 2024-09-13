@@ -34,6 +34,10 @@ namespace BookingsApi.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
 
+            _context.RemoveRange(hearingsIncCloned.SelectMany(x => x.Participants).Where(p => p.Screening != null)
+                .Select(s => s.Screening).ToList());
+            _context.RemoveRange(hearingsIncCloned.SelectMany(x => x.Endpoints).Where(p => p.Screening != null)
+                .Select(s => s.Screening).ToList());
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetEndpoints()));
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetCases()));
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.Participants.SelectMany(p => p.LinkedParticipants)));

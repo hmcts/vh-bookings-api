@@ -13,13 +13,18 @@ namespace BookingsApi.Contract.V2.Requests
         public string DefenceAdvocateContactEmail { get; set; }
         
         /// <summary>
-        ///     The code of the interpreter language
+        ///     The code of the interpreter language (optional)
         /// </summary>
         public string InterpreterLanguageCode { get; set; }
         
         /// <summary>
-        ///     Interpreter language, specify this when the interpreter language code is not available
+        ///     Interpreter language, specify this when the interpreter language code is not available (optional)
         /// </summary>
         public string OtherLanguage { get; set; }
+        
+        /// <summary>
+        ///    Screening requirements (special measure) for the endpoint (optional)
+        /// </summary>
+        public ScreeningRequest Screening { get; set; }
     }
 }

@@ -13,6 +13,7 @@ namespace BookingsApi.DAL.Commands
         public string DisplayName { get; set; }
         public string InterpreterLanguageCode { get; set; }
         public string OtherLanguage { get; set; }
+        public ScreeningDto Screening { get; set; }
     }
     
     public class AddParticipantsToVideoHearingCommand : ICommand
