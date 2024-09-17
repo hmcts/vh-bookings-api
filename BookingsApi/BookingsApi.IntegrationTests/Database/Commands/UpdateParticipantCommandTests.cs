@@ -35,7 +35,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var telephoneNumber = "11112222333";
             var organisationName = "Organisation" + editPrefix;
 
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null, null);
+            var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
+            var updateParticipantCommand = new UpdateParticipantCommand(requiredDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
@@ -68,7 +69,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             {
                 Representee = representee
             };
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, representativeParticipant.Id, title, displayName, telephoneNumber, organisationName, repInfo, null);
+            var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, representativeParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
+            var optionalDto = new UpdateParticipantCommandOptionalDto(repInfo, null, null, null, null, null);
+            var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedRepresentative=(Representative) updateParticipantCommand.UpdatedParticipant;
@@ -105,8 +108,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var telephoneNumber = "11112222333";
 
             var links = new List<LinkedParticipantDto> {link};
-            var updateParticipantCommand = new UpdateParticipantCommand(seededHearing.Id, interpreter.Id,
-                title, displayName, telephoneNumber, null, null, links);
+            var requiredDto = new UpdateParticipantCommandRequiredDto(seededHearing.Id, interpreter.Id, title, displayName, telephoneNumber, null, links);
+            var updateParticipantCommand = new UpdateParticipantCommand(requiredDto);
             await _commandHandler.Handle(updateParticipantCommand);
             
             var updatedRepresentative = updateParticipantCommand.UpdatedParticipant;
@@ -137,8 +140,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var telephoneNumber = "11112222333";
 
             var links = new List<LinkedParticipantDto> { link };
-            var updateParticipantCommand = new UpdateParticipantCommand(seededHearing.Id, interpreter.Id,
-                title, displayName, telephoneNumber, null, null, links);
+            var requiredDto = new UpdateParticipantCommandRequiredDto(seededHearing.Id, interpreter.Id, title, displayName, telephoneNumber, null, links);
+            var updateParticipantCommand = new UpdateParticipantCommand(requiredDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedRepresentative = updateParticipantCommand.UpdatedParticipant;
@@ -169,7 +172,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 MiddleNames = middleNames
             };
 
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null, null, additionalInformation: additionalInformation);
+            var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
+            var optionalDto = new UpdateParticipantCommandOptionalDto(null, additionalInformation, null, null, null, null);
+            var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
@@ -193,7 +198,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var telephoneNumber = individualParticipant.Person.TelephoneNumber;
             var organisationName = individualParticipant.Person.Organisation?.Name;
 
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null, null, additionalInformation: null);
+            var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
+            var updateParticipantCommand = new UpdateParticipantCommand(requiredDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
@@ -225,10 +231,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             };
             var contactEmail = "editedContactEmail@email.com";
 
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, 
-                individualParticipant.Id, title, displayName, 
-                telephoneNumber, organisationName, null, 
-                null, additionalInformation: additionalInformation, contactEmail: contactEmail);
+            var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
+            var optionalDto = new UpdateParticipantCommandOptionalDto(null, additionalInformation, contactEmail, null, null, null);
+            var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
@@ -257,10 +262,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 MiddleNames = middleNames
             };
 
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, 
-                individualParticipant.Id, title, displayName, 
-                telephoneNumber, organisationName, null, 
-                null, additionalInformation: additionalInformation);
+            var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
+            var optionalDto = new UpdateParticipantCommandOptionalDto(null, additionalInformation, null, null, null, null);
+            var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
@@ -293,10 +297,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             };
             var contactEmail = individualParticipant2.Person.ContactEmail;
 
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, 
-                individualParticipant.Id, title, displayName, 
-                telephoneNumber, organisationName, null, 
-                null, additionalInformation: additionalInformation, contactEmail: contactEmail);
+            var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
+            var optionalDto = new UpdateParticipantCommandOptionalDto(null, additionalInformation, contactEmail, null, null, null);
+            var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;

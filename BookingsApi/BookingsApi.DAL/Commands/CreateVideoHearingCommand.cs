@@ -123,7 +123,7 @@ namespace BookingsApi.DAL.Commands
             {
                 var participant = videoHearing.GetParticipants().Single(x=> x.Person.ContactEmail == participantForScreening.Person.ContactEmail);
                 var screeningDto = participantForScreening.Screening;
-                videoHearing.AssignScreeningForParticipant(participant, screeningDto.ScreeningType, screeningDto.ProtectFromParticipants, screeningDto.ProtectFromEndpoints);
+                _hearingService.UpdateParticipantScreeningRequirement(videoHearing, participant, screeningDto);
             }
 
             

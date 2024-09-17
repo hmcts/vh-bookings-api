@@ -69,7 +69,7 @@ namespace BookingsApi.Contract.V2.Requests
         public string OtherLanguage { get; set; }
         
         /// <summary>
-        ///     Special measures for the endpoint (optional)
+        ///     Screening requirements (special measure) for the participant (optional)
         /// </summary>
         public ScreeningRequest Screening { get; set; }
     }

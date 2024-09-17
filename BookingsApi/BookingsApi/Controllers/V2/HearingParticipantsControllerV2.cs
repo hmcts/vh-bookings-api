@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
+using BookingsApi.Mappings.V2.Extensions;
 using BookingsApi.Validations.V2;
 
 namespace BookingsApi.Controllers.V2
@@ -85,11 +86,11 @@ namespace BookingsApi.Controllers.V2
         }
 
         /// <summary>
-        /// Update participant details
+        /// Update participant details (Used by external clients)
         /// </summary>
         /// <param name="hearingId">Id of hearing to look up</param>
-        /// <param name="participantId">Id of participant to remove</param>
-        /// <param name="request">The participant information to add</param>
+        /// <param name="participantId">Id of participant to update</param>
+        /// <param name="request">The participant information to update</param>
         /// <returns></returns>
         [HttpPatch("{hearingId}/participants/{participantId}")]
         [OpenApiOperation("UpdateParticipantDetailsV2")]
@@ -147,10 +148,17 @@ namespace BookingsApi.Controllers.V2
             
             request.ContactEmail = request.ContactEmail?.Trim();
 
-            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
-                request.DisplayName, request.TelephoneNumber, request.OrganisationName, representative,
-                linkedParticipants,
-                additionalInformation: additionalInformation, contactEmail: request.ContactEmail);
+            var screening = request.Screening == null
+                ? null
+                : new ScreeningDto
+                {
+                    ProtectFromEndpoints = request.Screening.ProtectFromEndpoints,
+                    ProtectFromParticipants = request.Screening.ProtectFromParticipants,
+                    ScreeningType = request.Screening.Type.MapToDomainEnum()
+                };
+            var requiredDto = new UpdateParticipantCommandRequiredDto(hearingId, participantId, request.Title, request.DisplayName, request.TelephoneNumber, request.OrganisationName, linkedParticipants);
+            var optionalDto = new UpdateParticipantCommandOptionalDto(representative, additionalInformation, request.ContactEmail, request.InterpreterLanguageCode, request.OtherLanguage, screening);
+            var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             var updatedParticipant = await _hearingParticipantService.UpdateParticipantAndPublishEventAsync(videoHearing, updateParticipantCommand);
             
             var response = new ParticipantToResponseV2Mapper().MapParticipantToResponse(updatedParticipant);
@@ -165,7 +173,7 @@ namespace BookingsApi.Controllers.V2
         /// <returns>204 No Content</returns>
         [HttpPost("{hearingId}/updateParticipants")]
         [OpenApiOperation("UpdateHearingParticipants")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<ParticipantResponseV2>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("2.0")]

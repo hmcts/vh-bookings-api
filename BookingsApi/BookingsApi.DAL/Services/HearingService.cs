@@ -52,6 +52,9 @@ namespace BookingsApi.DAL.Services
         Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant, List<InterpreterLanguage> languages);
 
         Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant);
+
+        void UpdateParticipantScreeningRequirement(VideoHearing hearing, Participant participant,
+            ScreeningDto screeningDto);
     }
     public class HearingService : IHearingService
     {
@@ -140,6 +143,26 @@ namespace BookingsApi.DAL.Services
                 DisplayName = newJudgeParticipant.DisplayName
             };
             hearing.ReassignJudge(judge);
+        }
+
+        public void UpdateParticipantScreeningRequirement(VideoHearing hearing, Participant participant, ScreeningDto screeningDto)
+        {
+            if(participant.Screening == null && screeningDto == null) return;
+            if (participant.Screening != null && screeningDto == null)
+            {
+                _context.Entry(participant.Screening).State = EntityState.Deleted;
+                participant.RemoveScreening();
+                return;
+            }
+            
+            var screeningExists = participant.Screening != null;
+            hearing.AssignScreeningForParticipant(participant, screeningDto.ScreeningType, screeningDto.ProtectFromParticipants, screeningDto.ProtectFromEndpoints);
+            // ef core does not automatically track entities created by domain methods
+            _context.Entry(participant.Screening).State = screeningExists? EntityState.Modified : EntityState.Added;
+            foreach (var screeningEntity in participant.Screening.ScreeningEntities)
+            {
+                _context.Entry(screeningEntity).State = EntityState.Added;
+            }
         }
 
         private async Task LoadHearingRoles(List<Participant> participantList)

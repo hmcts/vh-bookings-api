@@ -413,6 +413,16 @@ namespace BookingsApi.Domain
 
             participant.LinkedParticipants.Clear();
 
+            // update screening list
+            Participants
+                .Where(existingPat => existingPat.Screening != null)
+                .ToList()
+                .ForEach(existingPat => existingPat.Screening.RemoveParticipant(participant));
+            
+            Endpoints.Where(existingEndpoint => existingEndpoint.Screening != null)
+                .ToList()
+                .ForEach(existingEndpoint => existingEndpoint.Screening.RemoveParticipant(participant));
+            
             Participants.Remove(existingParticipant);
             UpdatedDate = DateTime.UtcNow;
         }
@@ -453,6 +463,16 @@ namespace BookingsApi.Domain
         {
             ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveAnEndpointCloseToStartTime);
             endpoint.AssignDefenceAdvocate(null);
+            
+            Participants
+                .Where(existingPat => existingPat.Screening != null)
+                .ToList()
+                .ForEach(existingPat => existingPat.Screening.RemoveEndpoint(endpoint));
+            
+            Endpoints.Where(existingEndpoint => existingEndpoint.Screening != null)
+                .ToList()
+                .ForEach(existingEndpoint => existingEndpoint.Screening.RemoveEndpoint(endpoint));
+            
             Endpoints.Remove(endpoint);
             UpdatedDate = DateTime.UtcNow;
         }

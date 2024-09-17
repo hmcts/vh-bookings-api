@@ -217,8 +217,8 @@ namespace BookingsApi.IntegrationTests.Helper
             videoHearing.AddEndpoints(
                 new List<Endpoint>
                 {
-                    new("new endpoint", Guid.NewGuid().ToString(), "pin", null),
-                    new("new endpoint", Guid.NewGuid().ToString(), "pin", defenceAdvocate),
+                    new("new endpoint 01", Guid.NewGuid().ToString(), "pin", null),
+                    new("new endpoint 02", Guid.NewGuid().ToString(), "pin", defenceAdvocate),
                 });
 
             if (status != BookingStatus.Booked)
@@ -236,6 +236,14 @@ namespace BookingsApi.IntegrationTests.Helper
             if (options.AddPanelMember)
             {
                 await AddPanelMemberToVideoHearing(videoHearing, caseType, useFlatHearingRoles, db);
+            }
+
+            if (options.AddScreening)
+            {
+                var individuals = videoHearing.Participants.Where(x => x is Individual).ToList();
+                var endpoints = videoHearing.Endpoints.ToList();
+                videoHearing.AssignScreeningForParticipant(individuals[0], ScreeningType.Specific,
+                    [individuals[1].Person.ContactEmail], [endpoints[0].DisplayName]);
             }
 
             await db.VideoHearings.AddAsync(videoHearing);

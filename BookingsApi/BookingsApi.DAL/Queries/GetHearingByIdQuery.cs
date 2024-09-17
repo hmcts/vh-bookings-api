@@ -40,10 +40,9 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.JudiciaryParticipants).ThenInclude(x => x.JudiciaryPerson)
                 .Include(x=> x.JudiciaryParticipants).ThenInclude(x=> x.InterpreterLanguage)
                 
-                // keep the following includes for the screening entities - cannot auto include due to cylic dependency
+                // keep the following includes for the screening entities - cannot auto include due to cyclic dependency
                 .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
                 .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
-                
                 .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
                 .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
                 .AsNoTracking()

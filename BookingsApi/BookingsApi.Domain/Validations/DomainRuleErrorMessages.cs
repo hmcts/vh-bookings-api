@@ -32,6 +32,8 @@ public static class DomainRuleErrorMessages
     public const string ConferenceSupplierAlreadyExists = "Confirmed hearings cannot be updated to use a different conference supplier";
     public const string ParticipantDoesNotExist = "Participant does not exist on the hearing";
     public const string EndpointDoesNotExist = "Endpoint does not exist on the hearing";
-    public const string ParticipantAlreadyAdded = "Participant already added to the screening";
-    public const string EndpointAlreadyAdded = "Endpoint already added to the screening";
+    public const string ParticipantAlreadyAddedForScreening = "Participant already added to the screening";
+    public const string EndpointAlreadyAddedForScreening = "Endpoint already added to the screening";
+    public const string ParticipantDoesNotExistForScreening = "Participant does not exist in screening list";
+    public const string EndpointDoesNotExistForScreening = "Endpoint does not existing in screening list";
 }

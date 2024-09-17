@@ -147,7 +147,18 @@ namespace BookingsApi.Domain.Participants
         
         public void AssignScreening(ScreeningType type, List<Participant> participants, List<Endpoint> endpoints)
         {
-            var screening = new Screening(type, this);
+            var screening = Screening;
+            if (screening == null)
+            {
+                screening = new Screening(type, this);
+                Screening = screening;
+                ScreeningId = screening.Id;
+            }
+            else
+            {
+                screening.ScreeningEntities.Clear();
+            }
+
             foreach (var participant in participants)
             {
                 screening.AddParticipant(participant);
@@ -157,8 +168,13 @@ namespace BookingsApi.Domain.Participants
             {
                 screening.AddEndpoint(endpoint);
             }
-            Screening = screening;
-            ScreeningId = screening.Id;
+        }
+
+        public void RemoveScreening()
+        {
+            Screening.ScreeningEntities.Clear();
+            Screening = null;
+            ScreeningId = null;
         }
     }
 }

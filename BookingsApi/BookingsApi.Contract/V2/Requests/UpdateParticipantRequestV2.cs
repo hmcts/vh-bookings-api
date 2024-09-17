@@ -71,6 +71,11 @@ namespace BookingsApi.Contract.V2.Requests
         public string OtherLanguage { get; set; }
         
         /// <summary>
+        ///     Screening requirements (special measure) for the participant (optional)
+        /// </summary>
+        public ScreeningRequest Screening { get; set; }
+        
+        /// <summary>
         ///     List of linked participants
         /// </summary>
         public List<LinkedParticipantRequestV2> LinkedParticipants { get; set; }
