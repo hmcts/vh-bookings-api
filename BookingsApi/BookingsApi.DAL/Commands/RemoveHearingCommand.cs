@@ -29,7 +29,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x=> x.JudiciaryParticipants).ThenInclude(x=> x.JudiciaryPerson)
                 .Where(x => x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();
 
-            if (!hearingsIncCloned.Any())
+            if (hearingsIncCloned.Count == 0)
             {
                 throw new HearingNotFoundException(command.HearingId);
             }

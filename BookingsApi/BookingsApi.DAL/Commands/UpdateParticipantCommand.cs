@@ -105,7 +105,7 @@ namespace BookingsApi.DAL.Commands
                 throw new ParticipantNotFoundException(command.ParticipantId);
             }
 
-            if (command.LinkedParticipants.Any() && participant.LinkedParticipants.Any())
+            if (command.LinkedParticipants.Count != 0 && participant.LinkedParticipants.Any())
             {
                 await _hearingService.RemoveParticipantLinks(participants, participant);
             }
