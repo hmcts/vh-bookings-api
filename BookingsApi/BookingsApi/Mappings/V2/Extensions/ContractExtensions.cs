@@ -29,5 +29,10 @@ namespace BookingsApi.Mappings.V2.Extensions
         {
             return Enum.Parse<ScreeningType>(type.ToString());
         }
+        
+        public static BookingSupplier MapToContractEnum(this VideoSupplier supplier)
+        {
+            return Enum.Parse<BookingSupplier>(supplier.ToString());
+        }
     }
 }
