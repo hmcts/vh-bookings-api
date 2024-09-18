@@ -55,6 +55,8 @@ namespace BookingsApi.DAL.Services
 
         void UpdateParticipantScreeningRequirement(VideoHearing hearing, Participant participant,
             ScreeningDto screeningDto);
+
+        void UpdateEndpointScreeningRequirement(VideoHearing hearing, Endpoint endpoint, ScreeningDto screeningDto);
     }
     public class HearingService : IHearingService
     {
@@ -160,6 +162,27 @@ namespace BookingsApi.DAL.Services
             // ef core does not automatically track entities created by domain methods
             _context.Entry(participant.Screening).State = screeningExists? EntityState.Modified : EntityState.Added;
             foreach (var screeningEntity in participant.Screening.ScreeningEntities)
+            {
+                _context.Entry(screeningEntity).State = EntityState.Added;
+            }
+        }
+
+        public void UpdateEndpointScreeningRequirement(VideoHearing hearing, Endpoint endpoint,
+            ScreeningDto screeningDto)
+        {
+            if(endpoint.Screening == null && screeningDto == null) return;
+            if (endpoint.Screening != null && screeningDto == null)
+            {
+                _context.Entry(endpoint.Screening).State = EntityState.Deleted;
+                endpoint.RemoveScreening();
+                return;
+            }
+            
+            var screeningExists = endpoint.Screening != null;
+            hearing.AssignScreeningForEndpoint(endpoint, screeningDto.ScreeningType, screeningDto.ProtectFromParticipants, screeningDto.ProtectFromEndpoints);
+            // ef core does not automatically track entities created by domain methods
+            _context.Entry(endpoint.Screening).State = screeningExists? EntityState.Modified : EntityState.Added;
+            foreach (var screeningEntity in endpoint.Screening.ScreeningEntities)
             {
                 _context.Entry(screeningEntity).State = EntityState.Added;
             }

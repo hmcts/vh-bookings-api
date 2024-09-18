@@ -8,10 +8,10 @@ namespace BookingsApi.Controllers.V2;
 
 [Consumes("application/json")]
 [Produces("application/json")]
-[Route("hearings")]
+[Route(template:"v{version:apiVersion}/hearings")]
 [ApiVersion("2.0")]
 [ApiController]
-public class EndPointsControllerV2(
+public class EndpointsControllerV2(
     IEndpointService endpointService,
     IQueryHandler queryHandler,
     IRandomGenerator randomGenerator)
@@ -26,19 +26,12 @@ public class EndPointsControllerV2(
     [HttpPost("{hearingId}/endpoints/")]
     [OpenApiOperation("AddEndPointToHearingV2")]
     [ProducesResponseType(typeof(EndpointResponseV2), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
     [MapToApiVersion("2.0")]
     public async Task<IActionResult> AddEndPointToHearingV2Async(Guid hearingId,
         EndpointRequestV2 addEndpointRequest)
     {
-        if (hearingId == Guid.Empty)
-        {
-            ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-            return ValidationProblem(ModelState);
-        }
-
         var result = await new EndpointRequestValidationV2().ValidateAsync(addEndpointRequest);
         if (!result.IsValid)
         {
@@ -47,6 +40,11 @@ public class EndPointsControllerV2(
         }
 
         var hearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+        if (hearing == null)
+        {
+            throw new HearingNotFoundException(hearingId);
+        }
+        
         var sipAddressStem = endpointService.GetSipAddressStem(hearing?.ConferenceSupplier.MapToContractEnum());
         var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(addEndpointRequest, randomGenerator,
             sipAddressStem);

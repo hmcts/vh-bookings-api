@@ -75,5 +75,12 @@ namespace BookingsApi.Domain
             }
             Screening = screening;
         }
+
+        public void RemoveScreening()
+        {
+            Screening.ScreeningEntities.Clear();
+            Screening = null;
+            ScreeningId = null;
+        }
     }
 }

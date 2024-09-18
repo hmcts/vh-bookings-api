@@ -49,7 +49,7 @@ namespace BookingsApi.Mappings.V2
                 LanguageCode = requestV2.InterpreterLanguageCode,
                 Screening = requestV2.Screening == null ? null : new ScreeningDto
                 {
-                    ProtectFromEndpoints = requestV2.Screening.ProtectFromParticipants,
+                    ProtectFromEndpoints = requestV2.Screening.ProtectFromEndpoints,
                     ProtectFromParticipants = requestV2.Screening.ProtectFromParticipants,
                     ScreeningType = requestV2.Screening.Type.MapToDomainEnum()
                 }

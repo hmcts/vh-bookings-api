@@ -1,5 +1,6 @@
 ﻿using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
+using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Extensions;
 
 namespace BookingsApi.DAL.Commands
@@ -30,10 +31,12 @@ namespace BookingsApi.DAL.Commands
     public class AddEndPointToHearingCommandHandler : ICommandHandler<AddEndPointToHearingCommand>
     {
         private readonly BookingsDbContext _context;
+        private readonly IHearingService _hearingService;
 
-        public AddEndPointToHearingCommandHandler(BookingsDbContext context)
+        public AddEndPointToHearingCommandHandler(BookingsDbContext context, IHearingService hearingService)
         {
             _context = context;
+            _hearingService = hearingService;
         }
 
         public async Task Handle(AddEndPointToHearingCommand command)
@@ -44,6 +47,11 @@ namespace BookingsApi.DAL.Commands
                 .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .Include(x=> x.Endpoints).ThenInclude(x=> x.InterpreterLanguage)
                 .Include(x=> x.Participants)
+                // keep the following includes for the screening entities - cannot auto include due to cyclic dependency
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
@@ -57,6 +65,10 @@ namespace BookingsApi.DAL.Commands
             var language = languages.GetLanguage(dto.LanguageCode, "Endpoint");
             endpoint.UpdateLanguagePreferences(language, dto.OtherLanguage);
             hearing.AddEndpoint(endpoint);
+
+            // have to get the object added since a new instance is created
+            var addedEndpoint = hearing.GetEndpoints().First(x => x.Sip.Equals(dto.Sip));
+            _hearingService.UpdateEndpointScreeningRequirement(hearing, addedEndpoint, command.Endpoint.Screening);
             await _context.SaveChangesAsync();
         }
     }

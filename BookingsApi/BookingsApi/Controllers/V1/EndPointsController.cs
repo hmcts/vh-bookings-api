@@ -34,7 +34,6 @@ namespace BookingsApi.Controllers.V1
         [HttpPost("{hearingId}/endpoints/")]
         [OpenApiOperation("AddEndPointToHearing")]
         [ProducesResponseType(typeof(EndpointResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
