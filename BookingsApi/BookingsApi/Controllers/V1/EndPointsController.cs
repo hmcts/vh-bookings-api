@@ -37,6 +37,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
+        [Obsolete("This method is deprecated, please use the AddEndPointToHearingV2")]
         public async Task<IActionResult> AddEndPointToHearingAsync(Guid hearingId,
             AddEndpointRequest addEndpointRequest)
         {

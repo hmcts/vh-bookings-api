@@ -88,6 +88,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -97,6 +98,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
@@ -1925,6 +1927,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest)
         {
             return AddEndPointToHearingAsync(hearingId, addEndpointRequest, System.Threading.CancellationToken.None);
@@ -1937,6 +1940,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual async System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)

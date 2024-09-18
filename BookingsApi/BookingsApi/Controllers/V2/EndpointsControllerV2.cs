@@ -45,7 +45,7 @@ public class EndpointsControllerV2(
             throw new HearingNotFoundException(hearingId);
         }
         
-        var sipAddressStem = endpointService.GetSipAddressStem(hearing?.ConferenceSupplier.MapToContractEnum());
+        var sipAddressStem = endpointService.GetSipAddressStem(hearing.ConferenceSupplier.MapToContractEnum());
         var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(addEndpointRequest, randomGenerator,
             sipAddressStem);
         var endpoint = await endpointService.AddEndpoint(hearingId, newEp);
