@@ -108,7 +108,7 @@ namespace BookingsApi.Controllers.V2
         /// <param name="request">Details to update</param>
         /// <returns>Details of updated hearing</returns>
         [HttpPut("{hearingId}")]
-        [OpenApiOperation("UpdateHearingDetails")]
+        [OpenApiOperation("UpdateHearingDetailsV2")]
         [ProducesResponseType(typeof(HearingDetailsResponseV2), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]

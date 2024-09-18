@@ -33,7 +33,7 @@ namespace BookingsApi.Controllers.V2
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
         [HttpPost("{hearingId}/participants")]
-        [OpenApiOperation("AddParticipantsToHearing")]
+        [OpenApiOperation("AddParticipantsToHearingV2")]
         [ProducesResponseType(typeof(List<ParticipantResponseV2>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -172,7 +172,7 @@ namespace BookingsApi.Controllers.V2
         /// <param name="request">The participants information</param>
         /// <returns>204 No Content</returns>
         [HttpPost("{hearingId}/updateParticipants")]
-        [OpenApiOperation("UpdateHearingParticipants")]
+        [OpenApiOperation("UpdateHearingParticipantsV2")]
         [ProducesResponseType(typeof(List<ParticipantResponseV2>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]

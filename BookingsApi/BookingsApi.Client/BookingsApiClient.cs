@@ -1340,7 +1340,7 @@ namespace BookingsApi.Client
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> AddParticipantsToHearing2Async(System.Guid hearingId, AddParticipantsToHearingRequestV2 request);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> AddParticipantsToHearingV2Async(System.Guid hearingId, AddParticipantsToHearingRequestV2 request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -1351,7 +1351,7 @@ namespace BookingsApi.Client
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> AddParticipantsToHearing2Async(System.Guid hearingId, AddParticipantsToHearingRequestV2 request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> AddParticipantsToHearingV2Async(System.Guid hearingId, AddParticipantsToHearingRequestV2 request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Update participant details (Used by external clients)
@@ -1379,7 +1379,7 @@ namespace BookingsApi.Client
         /// <param name="request">The participants information</param>
         /// <returns>204 No Content</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> UpdateHearingParticipants2Async(System.Guid hearingId, UpdateHearingParticipantsRequestV2 request);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> UpdateHearingParticipantsV2Async(System.Guid hearingId, UpdateHearingParticipantsRequestV2 request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -1389,7 +1389,7 @@ namespace BookingsApi.Client
         /// <param name="request">The participants information</param>
         /// <returns>204 No Content</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> UpdateHearingParticipants2Async(System.Guid hearingId, UpdateHearingParticipantsRequestV2 request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> UpdateHearingParticipantsV2Async(System.Guid hearingId, UpdateHearingParticipantsRequestV2 request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Request to book a new hearing
@@ -1432,7 +1432,7 @@ namespace BookingsApi.Client
         /// <param name="request">Details to update</param>
         /// <returns>Details of updated hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<HearingDetailsResponseV2> UpdateHearingDetails2Async(System.Guid hearingId, UpdateHearingRequestV2 request);
+        System.Threading.Tasks.Task<HearingDetailsResponseV2> UpdateHearingDetailsV2Async(System.Guid hearingId, UpdateHearingRequestV2 request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -1442,7 +1442,7 @@ namespace BookingsApi.Client
         /// <param name="request">Details to update</param>
         /// <returns>Details of updated hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<HearingDetailsResponseV2> UpdateHearingDetails2Async(System.Guid hearingId, UpdateHearingRequestV2 request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<HearingDetailsResponseV2> UpdateHearingDetailsV2Async(System.Guid hearingId, UpdateHearingRequestV2 request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get list of all hearings in a group
@@ -10936,9 +10936,9 @@ namespace BookingsApi.Client
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> AddParticipantsToHearing2Async(System.Guid hearingId, AddParticipantsToHearingRequestV2 request)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> AddParticipantsToHearingV2Async(System.Guid hearingId, AddParticipantsToHearingRequestV2 request)
         {
-            return AddParticipantsToHearing2Async(hearingId, request, System.Threading.CancellationToken.None);
+            return AddParticipantsToHearingV2Async(hearingId, request, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -10950,7 +10950,7 @@ namespace BookingsApi.Client
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> AddParticipantsToHearing2Async(System.Guid hearingId, AddParticipantsToHearingRequestV2 request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> AddParticipantsToHearingV2Async(System.Guid hearingId, AddParticipantsToHearingRequestV2 request, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -11201,9 +11201,9 @@ namespace BookingsApi.Client
         /// <param name="request">The participants information</param>
         /// <returns>204 No Content</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> UpdateHearingParticipants2Async(System.Guid hearingId, UpdateHearingParticipantsRequestV2 request)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> UpdateHearingParticipantsV2Async(System.Guid hearingId, UpdateHearingParticipantsRequestV2 request)
         {
-            return UpdateHearingParticipants2Async(hearingId, request, System.Threading.CancellationToken.None);
+            return UpdateHearingParticipantsV2Async(hearingId, request, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -11214,7 +11214,7 @@ namespace BookingsApi.Client
         /// <param name="request">The participants information</param>
         /// <returns>204 No Content</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> UpdateHearingParticipants2Async(System.Guid hearingId, UpdateHearingParticipantsRequestV2 request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponseV2>> UpdateHearingParticipantsV2Async(System.Guid hearingId, UpdateHearingParticipantsRequestV2 request, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -11554,9 +11554,9 @@ namespace BookingsApi.Client
         /// <param name="request">Details to update</param>
         /// <returns>Details of updated hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<HearingDetailsResponseV2> UpdateHearingDetails2Async(System.Guid hearingId, UpdateHearingRequestV2 request)
+        public virtual System.Threading.Tasks.Task<HearingDetailsResponseV2> UpdateHearingDetailsV2Async(System.Guid hearingId, UpdateHearingRequestV2 request)
         {
-            return UpdateHearingDetails2Async(hearingId, request, System.Threading.CancellationToken.None);
+            return UpdateHearingDetailsV2Async(hearingId, request, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -11567,7 +11567,7 @@ namespace BookingsApi.Client
         /// <param name="request">Details to update</param>
         /// <returns>Details of updated hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<HearingDetailsResponseV2> UpdateHearingDetails2Async(System.Guid hearingId, UpdateHearingRequestV2 request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<HearingDetailsResponseV2> UpdateHearingDetailsV2Async(System.Guid hearingId, UpdateHearingRequestV2 request, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
