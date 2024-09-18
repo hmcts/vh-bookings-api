@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using BookingsApi.Common.Helpers;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
-using Newtonsoft.Json;
 
 namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
 {
     public class ServiceBusQueueClientFake : IServiceBusQueueClient
     {
-        private JsonSerializerSettings SerializerSettings { get; set; } = DefaultSerializerSettings.DefaultNewtonsoftSerializerSettings();
+        public JsonSerializerOptions SerializerSettings { get; } = DefaultSerializerSettings.DefaultSystemTextJsonSerializerSettings();
         private readonly ConcurrentQueue<EventMessage> _eventMessages = new();
 
         public Task PublishMessageAsync(EventMessage eventMessage)
@@ -28,7 +28,7 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         public EventMessage[] ReadAllMessagesFromQueue(Guid hearingId)
         {
             var list = (from message in _eventMessages
-                        where JsonConvert.SerializeObject(message, SerializerSettings).Contains(hearingId.ToString())
+                        where JsonSerializer.Serialize(message, SerializerSettings).Contains(hearingId.ToString())
                         select message).ToList();
             return list.ToArray();
         }

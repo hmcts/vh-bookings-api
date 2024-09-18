@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Mappings.V1;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookingsApi.Controllers.V1;
 
@@ -7,6 +8,7 @@ namespace BookingsApi.Controllers.V1;
 [Route("InterpreterLanguages")]
 [ApiVersion("1.0")]
 [ApiController]
+[AllowAnonymous]
 public class InterpreterLanguagesController(IQueryHandler queryHandler) : ControllerBase
 {
     private readonly IQueryHandler _queryHandler = queryHandler;

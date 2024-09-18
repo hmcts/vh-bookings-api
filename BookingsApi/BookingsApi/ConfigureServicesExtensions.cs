@@ -1,4 +1,6 @@
-﻿using BookingsApi.Common.Security;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using BookingsApi.Common.Security;
 using BookingsApi.DAL.Services;
 using BookingsApi.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -169,13 +171,13 @@ namespace BookingsApi
             {
                 NamingStrategy = new SnakeCaseNamingStrategy()
             };
-
-            serviceCollection.AddMvc()
-                .AddNewtonsoftJson(options =>
+            
+            serviceCollection.AddControllers()
+                .AddJsonOptions(options =>
                 {
-                    options.SerializerSettings.ContractResolver = contractResolver;
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
                 });
 
             return serviceCollection;

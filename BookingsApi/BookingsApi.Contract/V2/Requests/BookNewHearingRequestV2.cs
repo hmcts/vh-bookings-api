@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Enums;
-using Newtonsoft.Json;
 
 namespace BookingsApi.Contract.V2.Requests
 {
@@ -76,7 +76,7 @@ namespace BookingsApi.Contract.V2.Requests
         /// <summary>
         /// List of judiciary participants in a hearing
         /// </summary>
-        [JsonProperty("judicial_office_holders")]
+        [JsonPropertyName("judicial_office_holders")]
         public List<JudiciaryParticipantRequest> JudiciaryParticipants { get; set; } = new();
         
         /// <summary>
