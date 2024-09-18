@@ -276,6 +276,37 @@ public class BookNewHearingV2Tests : ApiTest
         actual.ProtectFromParticipantsIds.Should().Contain(protectFromResponse.Id);
     }
     
+     [Test]
+    public async Task should_fail_to_book_hearing_with_screening_from_a_participant_that_does_not_exist()
+    {
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
+        request.Participants = request.Participants.Take(2).ToList();
+        
+        var endpoint = new EndpointRequestV2
+        {
+            DisplayName = "Endpoint A"
+        };
+        request.Endpoints.Add(endpoint);
+        
+        var participantWithSpecificScreening = request.Participants[0];
+        participantWithSpecificScreening.DisplayName = "Screen Specific Protected 1";
+        
+        participantWithSpecificScreening.Screening = new ScreeningRequest
+        {
+            Type = ScreeningType.Specific,
+            ProtectFromParticipants = ["does-not-exist"],
+            ProtectFromEndpoints = ["made-up"]
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+    
     [Test]
     public async Task should_book_hearing_with_screening_for_an_endpoint()
     {

@@ -824,6 +824,12 @@ namespace BookingsApi.Domain
             ArgumentNullException.ThrowIfNull(participantContactEmail);
             ArgumentNullException.ThrowIfNull(endpointDisplayNames);
             
+            // check if participantContactEmail contains the participant's contact email
+            if (participant.Person.ContactEmail != null && participantContactEmail.Contains(participant.Person.ContactEmail, StringComparer.InvariantCultureIgnoreCase))
+            {
+                throw new DomainRuleException("Participant", DomainRuleErrorMessages.ParticipantCannotScreenFromThemself);
+            }
+            
             var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
             var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
             participant.AssignScreening(screeningType, participants, endpoints);
@@ -841,6 +847,10 @@ namespace BookingsApi.Domain
         {
             ArgumentNullException.ThrowIfNull(participantContactEmail);
             ArgumentNullException.ThrowIfNull(endpointDisplayNames);
+            if(endpointDisplayNames.Contains(endpoint.DisplayName, StringComparer.InvariantCultureIgnoreCase))
+            {
+                throw new DomainRuleException("Endpoint", DomainRuleErrorMessages.EndpointCannotScreenFromThemself);
+            }
             var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
             var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
             endpoint.AssignScreening(screeningType, participants, endpoints);
