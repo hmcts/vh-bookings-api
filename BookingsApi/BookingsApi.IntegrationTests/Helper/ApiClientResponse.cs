@@ -1,5 +1,5 @@
-using BookingsApi.Common.Helpers;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BookingsApi.IntegrationTests.Helper
 {
@@ -8,8 +8,11 @@ namespace BookingsApi.IntegrationTests.Helper
         public static async Task<T> GetResponses<T>(HttpContent content)
         {
             var json = await content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(json,
-                DefaultSerializerSettings.DefaultNewtonsoftSerializerSettings());
+            return JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            });
         }
     }
 }

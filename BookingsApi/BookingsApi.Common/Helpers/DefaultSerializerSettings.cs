@@ -1,25 +1,24 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BookingsApi.Common.Helpers
 {
     public static class DefaultSerializerSettings
     {
-        public static JsonSerializerSettings DefaultNewtonsoftSerializerSettings()
+        public static JsonSerializerOptions DefaultSystemTextJsonSerializerSettings()
         {
-            var settings = new JsonSerializerSettings
+            var options = new JsonSerializerOptions
             {
-                ContractResolver = new DefaultContractResolver {NamingStrategy = new SnakeCaseNamingStrategy()},
-                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                Formatting = Formatting.Indented,
-                TypeNameHandling = TypeNameHandling.Objects
+                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                Converters =
+                {
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                }
             };
 
-            settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            settings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
-
-            return settings;
+            return options;
         }
     }
 }
