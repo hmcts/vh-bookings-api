@@ -8,7 +8,6 @@ namespace BookingsApi.Controllers.V1;
 [Route("InterpreterLanguages")]
 [ApiVersion("1.0")]
 [ApiController]
-[AllowAnonymous]
 public class InterpreterLanguagesController(IQueryHandler queryHandler) : ControllerBase
 {
     private readonly IQueryHandler _queryHandler = queryHandler;
