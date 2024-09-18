@@ -237,7 +237,7 @@ public class BookNewHearingV2Tests : ApiTest
         
         var participantWithSpecificScreening = request.Participants[0];
         participantWithSpecificScreening.DisplayName = "Screen Specific Protected 1";
-        var protectedFrom = request.Participants[0];
+        var protectedFrom = request.Participants[1];
         
         participantWithSpecificScreening.Screening = new ScreeningRequest
         {
