@@ -10,7 +10,16 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
 {
     public class ServiceBusQueueClientFake : IServiceBusQueueClient
     {
-        public JsonSerializerOptions SerializerSettings { get; } = DefaultSerializerSettings.DefaultSystemTextJsonSerializerSettings();
+        private static JsonSerializerOptions SerializerSettings
+        {
+            get
+            {
+                var options = DefaultSerializerSettings.DefaultSystemTextJsonSerializerSettings();
+                options.Converters.Add(new IntegrationEventJsonConverter());
+
+                return options;
+            }
+        }
         private readonly ConcurrentQueue<EventMessage> _eventMessages = new();
 
         public Task PublishMessageAsync(EventMessage eventMessage)

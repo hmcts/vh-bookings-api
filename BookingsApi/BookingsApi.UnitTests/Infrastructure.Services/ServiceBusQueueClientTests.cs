@@ -1,6 +1,6 @@
+using System.Text.Json;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace BookingsApi.UnitTests.Infrastructure.Services
 {
@@ -22,7 +22,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
         [Test]
         public void Should_initialise_serialiser_settings()
         {
-            _client.SerializerSettings.Should().BeOfType<JsonSerializerSettings>();
+            ServiceBusQueueClient.SerializerSettings.Should().BeOfType<JsonSerializerOptions>();
         }
     }
 }

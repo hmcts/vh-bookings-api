@@ -18,7 +18,16 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
     public class ServiceBusQueueClient(IOptions<ServiceBusSettings> serviceBusSettings) : IServiceBusQueueClient
     {
         private readonly ServiceBusSettings _serviceBusSettings = serviceBusSettings.Value;
-        public JsonSerializerOptions SerializerSettings { get; } = DefaultSerializerSettings.DefaultSystemTextJsonSerializerSettings();
+        public static JsonSerializerOptions SerializerSettings
+        {
+            get
+            {
+                var options = DefaultSerializerSettings.DefaultSystemTextJsonSerializerSettings();
+                options.Converters.Add(new IntegrationEventJsonConverter());
+
+                return options;
+            }
+        }
 
         public async Task PublishMessageAsync(EventMessage eventMessage)
         {
