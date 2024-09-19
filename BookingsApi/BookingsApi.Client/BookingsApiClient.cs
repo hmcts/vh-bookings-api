@@ -1341,7 +1341,7 @@ namespace BookingsApi.Client
         /// <param name="endpointId">The endpoint id</param>
         /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateDisplayNameForEndpoint2Async(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequestV2 updateEndpointRequest);
+        System.Threading.Tasks.Task UpdateEndpointV2Async(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequestV2 updateEndpointRequest);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -1351,7 +1351,7 @@ namespace BookingsApi.Client
         /// <param name="endpointId">The endpoint id</param>
         /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateDisplayNameForEndpoint2Async(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequestV2 updateEndpointRequest, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task UpdateEndpointV2Async(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequestV2 updateEndpointRequest, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Retrieve a list of hearing allocated to a given list of CSOs
@@ -10994,9 +10994,9 @@ namespace BookingsApi.Client
         /// <param name="endpointId">The endpoint id</param>
         /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task UpdateDisplayNameForEndpoint2Async(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequestV2 updateEndpointRequest)
+        public virtual System.Threading.Tasks.Task UpdateEndpointV2Async(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequestV2 updateEndpointRequest)
         {
-            return UpdateDisplayNameForEndpoint2Async(hearingId, endpointId, updateEndpointRequest, System.Threading.CancellationToken.None);
+            return UpdateEndpointV2Async(hearingId, endpointId, updateEndpointRequest, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -11007,7 +11007,7 @@ namespace BookingsApi.Client
         /// <param name="endpointId">The endpoint id</param>
         /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task UpdateDisplayNameForEndpoint2Async(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequestV2 updateEndpointRequest, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task UpdateEndpointV2Async(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequestV2 updateEndpointRequest, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");

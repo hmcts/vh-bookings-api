@@ -62,12 +62,12 @@ public class EndpointsControllerV2(
     /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
     /// <returns></returns>
     [HttpPatch("{hearingId}/endpoints/{endpointId}")]
-    [OpenApiOperation("UpdateDisplayNameForEndpoint")]
+    [OpenApiOperation("UpdateEndpointV2")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [MapToApiVersion("2.0")]
-    public async Task<IActionResult> UpdateEndpointAsync(Guid hearingId, Guid endpointId,
+    public async Task<IActionResult> UpdateEndpointV2Async(Guid hearingId, Guid endpointId,
         UpdateEndpointRequestV2 updateEndpointRequest)
     {
         if (hearingId == Guid.Empty)
