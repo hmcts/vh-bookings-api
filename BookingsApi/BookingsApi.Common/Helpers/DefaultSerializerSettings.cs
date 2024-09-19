@@ -11,7 +11,6 @@ namespace BookingsApi.Common.Helpers
             {
                 PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
                 WriteIndented = true,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 Converters =
                 {
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
