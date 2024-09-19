@@ -24,6 +24,7 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
             {
                 var options = DefaultSerializerSettings.DefaultSystemTextJsonSerializerSettings();
                 options.Converters.Add(new IntegrationEventJsonConverter());
+                options.Converters.Add(new TypeInfoConverter<EventMessage>());
 
                 return options;
             }
@@ -37,5 +38,8 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
             var messageBytes = Encoding.UTF8.GetBytes(jsonObjectString);
             await sender.SendMessageAsync(new ServiceBusMessage(messageBytes)).ConfigureAwait(false);
         }
+        
+        public static string SerializeMessage(EventMessage eventMessage) => 
+            JsonSerializer.Serialize(eventMessage, SerializerSettings);
     }
 }
