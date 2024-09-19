@@ -70,12 +70,6 @@ public class EndpointsControllerV2(
     public async Task<IActionResult> UpdateEndpointV2Async(Guid hearingId, Guid endpointId,
         UpdateEndpointRequestV2 updateEndpointRequest)
     {
-        if (hearingId == Guid.Empty)
-        {
-            ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-            return ValidationProblem(ModelState);
-        }
-
         var result = await new EndpointRequestValidationV2().ValidateAsync(updateEndpointRequest);
         if (!result.IsValid)
         {

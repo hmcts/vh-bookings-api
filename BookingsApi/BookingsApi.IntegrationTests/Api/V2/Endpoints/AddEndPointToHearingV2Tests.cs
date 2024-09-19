@@ -2,7 +2,6 @@ using BookingsApi.Client;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
-using BookingsApi.Validations.V2;
 using ScreeningType = BookingsApi.Contract.V2.Enums.ScreeningType;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Endpoints;
