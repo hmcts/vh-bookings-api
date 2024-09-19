@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BookingsApi.Common.Helpers;
 
 namespace BookingsApi.IntegrationTests.Helper
 {
@@ -10,8 +11,9 @@ namespace BookingsApi.IntegrationTests.Helper
             var json = await content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                PropertyNamingPolicy = new SnakeCaseNamingPolicy(),
+                PropertyNameCaseInsensitive = true, // To make sure it matches the properties case-insensitively
+                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
             });
         }
     }

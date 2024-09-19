@@ -13,7 +13,6 @@ namespace BookingsApi.Client
                 ReadResponseAsString = true
             };
             apiClient.JsonSerializerSettings.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-            apiClient.JsonSerializerSettings.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             apiClient.JsonSerializerSettings.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
             
             return apiClient;
