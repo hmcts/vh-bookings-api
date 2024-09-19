@@ -39,18 +39,55 @@ public interface IHearingParticipantService
         bool sendNotification = true);
     
     /// <summary>
-    /// 
+    /// Publish an event for new judiciary participants added to a hearing
     /// </summary>
     /// <param name="hearing"></param>
     /// <param name="newJudiciaryParticipants"></param>
     /// <param name="sendNotification"></param>
     /// <returns></returns>
     public Task PublishEventForNewJudiciaryParticipantsAsync(VideoHearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants, bool sendNotification = true);
+    
+    /// <summary>
+    /// Publish an event for an updated judiciary participant
+    /// </summary>
+    /// <param name="hearing"></param>
+    /// <param name="updatedJudiciaryParticipant"></param>
+    /// <returns></returns>
     public Task PublishEventForUpdateJudiciaryParticipantAsync(VideoHearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant);
     
+    /// <summary>
+    /// Validate the representative information
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     public Task<ValidationResult> ValidateRepresentativeInformationAsync(IRepresentativeInfoRequest request);
+    
+    /// <summary>
+    /// Update a participant and publish an event
+    /// </summary>
+    /// <param name="videoHearing"></param>
+    /// <param name="updateParticipantCommand"></param>
+    /// <returns></returns>
     public Task<Participant> UpdateParticipantAndPublishEventAsync(VideoHearing videoHearing, UpdateParticipantCommand updateParticipantCommand);
+    
+    /// <summary>
+    /// Update a list of participants
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="hearing"></param>
+    /// <param name="sendNotification"></param>
+    /// <returns></returns>
+    [Obsolete("Use UpdateParticipantsV2")]
     Task<VideoHearing> UpdateParticipants(UpdateHearingParticipantsRequest request, VideoHearing hearing, bool sendNotification = true);
+    
+    /// <summary>
+    /// Update a list of participants (v2)
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="hearing"></param>
+    /// <param name="hearingRoles"></param>
+    /// <param name="sendNotification"></param>
+    /// <returns></returns>
     Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles, bool sendNotification = true);
 }
 
@@ -76,7 +113,7 @@ public class HearingParticipantService : IHearingParticipantService
     {
         var participants = hearing.GetParticipants()
                     .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
-        if (participants.Any())
+        if (participants.Count != 0)
         {
             // Raising the below event here instead of in the async process to avoid the async process adding a duplicate participant to the conference
             // as the UpdateHearingParticipants (also includes new participants) has a separate process to add participants
@@ -97,7 +134,7 @@ public class HearingParticipantService : IHearingParticipantService
             .Where(x => existingParticipants.Exists(y => y.ParticipantId == x.Id))
             .ToList();
         
-        if (eventNewParticipants.Any() || removedParticipantIds.Any())
+        if (eventNewParticipants.Count != 0 || removedParticipantIds.Count != 0)
         {
             await ProcessParticipantListChange(hearing, removedParticipantIds, linkedParticipants, eventExistingParticipants, eventNewParticipants, sendNotification);
         }
