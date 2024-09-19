@@ -84,7 +84,7 @@ public class UpdateEndpointV2Tests : ApiTest
     }
     
     [Test]
-    public async Task should_update_endpoint_and_add_screening()
+    public async Task should_update_endpoint_and_remove_screening()
     {
         // arrange
         var hearing = await Hooks.SeedVideoHearingV2(options => { options.Case = new Case("Case1 Num", "Case1 Name"); },
@@ -108,13 +108,22 @@ public class UpdateEndpointV2Tests : ApiTest
         // act
         await bookingsApiClient.UpdateEndpointV2Async(hearing.Id, endpoint.Id, request);
         
-        // assert
         var response = await bookingsApiClient.GetHearingDetailsByIdV2Async(hearing.Id);
         response.Should().NotBeNull();
         var updatedEndpoint = response.Endpoints.First(x => x.Id == endpoint.Id);
         updatedEndpoint.DisplayName.Should().Be(request.DisplayName);
         updatedEndpoint.Screening.Should().NotBeNull();
-        updatedEndpoint.Screening.Type.Should().Be(request.Screening.Type);
-        updatedEndpoint.Screening.ProtectFromParticipantsIds.Should().BeEquivalentTo([screenFrom.Id]);
+        
+        
+        // act part 2 (remove screening)
+        request.Screening = null;
+        await bookingsApiClient.UpdateEndpointV2Async(hearing.Id, endpoint.Id, request);
+        
+        // assert
+        response = await bookingsApiClient.GetHearingDetailsByIdV2Async(hearing.Id);
+        response.Should().NotBeNull();
+        updatedEndpoint = response.Endpoints.First(x => x.Id == endpoint.Id);
+        updatedEndpoint.DisplayName.Should().Be(request.DisplayName);
+        updatedEndpoint.Screening.Should().BeNull();
     }
 }
