@@ -1,4 +1,6 @@
-﻿using BookingsApi.Domain.Extensions;
+﻿using BookingsApi.DAL.Dtos;
+using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.DAL.Commands
@@ -6,7 +8,7 @@ namespace BookingsApi.DAL.Commands
     public class UpdateEndPointOfHearingCommand : ICommand
     {
         public UpdateEndPointOfHearingCommand(Guid hearingId, Guid endpointId, string displayName, Participant defenceAdvocate,
-            string languageCode, string otherLanguage)
+            string languageCode, string otherLanguage, ScreeningDto screening)
         {
             HearingId = hearingId;
             EndpointId = endpointId;
@@ -14,6 +16,7 @@ namespace BookingsApi.DAL.Commands
             DefenceAdvocate = defenceAdvocate;
             LanguageCode = languageCode;
             OtherLanguage = otherLanguage;
+            Screening = screening;
         }
 
         public Guid HearingId { get; }
@@ -22,15 +25,18 @@ namespace BookingsApi.DAL.Commands
         public Participant DefenceAdvocate { get; }
         public string LanguageCode { get; set; }
         public string OtherLanguage { get; set; }
-}
+        public ScreeningDto Screening { get; }
+    }
 
     public class UpdateEndPointOfHearingCommandHandler : ICommandHandler<UpdateEndPointOfHearingCommand>
     {
         private readonly BookingsDbContext _context;
+        private readonly IHearingService _hearingService;
 
-        public UpdateEndPointOfHearingCommandHandler(BookingsDbContext context)
+        public UpdateEndPointOfHearingCommandHandler(BookingsDbContext context, IHearingService hearingService)
         {
             _context = context;
+            _hearingService = hearingService;
         }
 
         public async Task Handle(UpdateEndPointOfHearingCommand command)
@@ -66,6 +72,8 @@ namespace BookingsApi.DAL.Commands
             var languages = await _context.InterpreterLanguages.Where(x => x.Live).ToListAsync();
             var language = languages.GetLanguage(command.LanguageCode, "Endpoint");
             endpoint.UpdateLanguagePreferences(language, command.OtherLanguage);
+            
+            _hearingService.UpdateEndpointScreeningRequirement(hearing, endpoint, command.Screening);
             await _context.SaveChangesAsync();
         }
     }

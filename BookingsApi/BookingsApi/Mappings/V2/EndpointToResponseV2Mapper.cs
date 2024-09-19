@@ -47,12 +47,7 @@ namespace BookingsApi.Mappings.V2
                 ContactEmail = requestV2.DefenceAdvocateContactEmail,
                 OtherLanguage = requestV2.OtherLanguage,
                 LanguageCode = requestV2.InterpreterLanguageCode,
-                Screening = requestV2.Screening == null ? null : new ScreeningDto
-                {
-                    ProtectFromEndpoints = requestV2.Screening.ProtectFromEndpoints,
-                    ProtectFromParticipants = requestV2.Screening.ProtectFromParticipants,
-                    ScreeningType = requestV2.Screening.Type.MapToDomainEnum()
-                }
+                Screening = requestV2.Screening?.MapToDalDto()
             };
         }
     }

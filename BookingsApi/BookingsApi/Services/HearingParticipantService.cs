@@ -344,12 +344,7 @@ public class HearingParticipantService : IHearingParticipantService
         updatedDetails.InterpreterLanguageCode = existingParticipantRequestV2.InterpreterLanguageCode;
         updatedDetails.OtherLanguage = existingParticipantRequestV2.OtherLanguage;
         
-        updatedDetails.Screening = existingParticipantRequestV2.Screening == null ? null : new ScreeningDto
-        {
-            ProtectFromEndpoints = existingParticipantRequestV2.Screening.ProtectFromEndpoints,
-            ProtectFromParticipants = existingParticipantRequestV2.Screening.ProtectFromParticipants,
-            ScreeningType = existingParticipantRequestV2.Screening.Type.MapToDomainEnum()
-        };
+        updatedDetails.Screening = existingParticipantRequestV2.Screening?.MapToDalDto();
 
         return updatedDetails;
     }

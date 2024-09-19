@@ -6,8 +6,12 @@ namespace BookingsApi.Services
     {
         Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint);
 
+        [Obsolete("Use the overload that includes a ScreeningDto")]
         Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName,
             string languageCode, string otherLanguage);
+        
+        Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName,
+            string languageCode, string otherLanguage, ScreeningDto screeningDto);
         Task RemoveEndpoint(VideoHearing hearing, Guid id);
         
         string GetSipAddressStem(BookingSupplier? supplier);
@@ -50,11 +54,17 @@ namespace BookingsApi.Services
 
         public async Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName, string languageCode, string otherLanguage)
         {
+            await UpdateEndpoint(hearing, id, defenceAdvocateContactEmail, displayName, languageCode, otherLanguage, null);
+        }
+
+        public async Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName,
+            string languageCode, string otherLanguage, ScreeningDto screeningDto)
+        {
             var defenceAdvocate =
                 DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(defenceAdvocateContactEmail,
                     hearing.GetParticipants());
             var command = new UpdateEndPointOfHearingCommand(hearing.Id, id, displayName, defenceAdvocate, languageCode,
-                otherLanguage);
+                otherLanguage, screeningDto);
             await _commandHandler.Handle(command);
 
             var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == id);

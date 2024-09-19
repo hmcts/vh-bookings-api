@@ -148,14 +148,7 @@ namespace BookingsApi.Controllers.V2
             
             request.ContactEmail = request.ContactEmail?.Trim();
 
-            var screening = request.Screening == null
-                ? null
-                : new ScreeningDto
-                {
-                    ProtectFromEndpoints = request.Screening.ProtectFromEndpoints,
-                    ProtectFromParticipants = request.Screening.ProtectFromParticipants,
-                    ScreeningType = request.Screening.Type.MapToDomainEnum()
-                };
+            var screening = request.Screening?.MapToDalDto();
             var requiredDto = new UpdateParticipantCommandRequiredDto(hearingId, participantId, request.Title, request.DisplayName, request.TelephoneNumber, request.OrganisationName, linkedParticipants);
             var optionalDto = new UpdateParticipantCommandOptionalDto(representative, additionalInformation, request.ContactEmail, request.InterpreterLanguageCode, request.OtherLanguage, screening);
             var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);

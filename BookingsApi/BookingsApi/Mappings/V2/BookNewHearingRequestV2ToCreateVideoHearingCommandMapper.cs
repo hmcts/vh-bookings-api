@@ -51,12 +51,7 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
             DefenceAdvocateContactEmail = x.DefenceAdvocateContactEmail,
             OtherLanguage = x.OtherLanguage,
             InterpreterLanguageCode = x.InterpreterLanguageCode,
-            Screening = x.Screening == null ? null : new ScreeningDto()
-            {
-                ProtectFromParticipants = x.Screening.ProtectFromParticipants,
-                ProtectFromEndpoints = x.Screening.ProtectFromEndpoints,
-                ScreeningType = x.Screening.Type.MapToDomainEnum()
-            }
+            Screening = x.Screening?.MapToDalDto()
             
         }).ToList();
         return NewEndpointGenerator.GenerateNewEndpoints(dtos, randomGenerator, sipAddressStem);

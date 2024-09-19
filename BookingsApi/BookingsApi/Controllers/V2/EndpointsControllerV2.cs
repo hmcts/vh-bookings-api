@@ -53,4 +53,44 @@ public class EndpointsControllerV2(
 
         return Ok(endpointResponse);
     }
+    
+    /// <summary>
+    ///  Update an endpoint of a given hearing
+    /// </summary>
+    /// <param name="hearingId">The hearing id</param>
+    /// <param name="endpointId">The endpoint id</param>
+    /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
+    /// <returns></returns>
+    [HttpPatch("{hearingId}/endpoints/{endpointId}")]
+    [OpenApiOperation("UpdateDisplayNameForEndpoint")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [MapToApiVersion("2.0")]
+    public async Task<IActionResult> UpdateEndpointAsync(Guid hearingId, Guid endpointId,
+        UpdateEndpointRequestV2 updateEndpointRequest)
+    {
+        if (hearingId == Guid.Empty)
+        {
+            ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+            return ValidationProblem(ModelState);
+        }
+
+        var result = await new EndpointRequestValidationV2().ValidateAsync(updateEndpointRequest);
+        if (!result.IsValid)
+        {
+            ModelState.AddFluentValidationErrors(result.Errors);
+            return ValidationProblem(ModelState);
+        }
+
+        var hearing =
+            await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+        if (hearing == null) throw new HearingNotFoundException(hearingId);
+        await endpointService.UpdateEndpoint(hearing, endpointId,
+            updateEndpointRequest.DefenceAdvocateContactEmail, updateEndpointRequest.DisplayName,
+            updateEndpointRequest.InterpreterLanguageCode, updateEndpointRequest.OtherLanguage,
+            updateEndpointRequest.Screening?.MapToDalDto());
+        
+        return NoContent();
+    }
 }
