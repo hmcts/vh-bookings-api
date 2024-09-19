@@ -125,6 +125,7 @@ namespace BookingsApi.Client
         /// <param name="endpointId">The endpoint id</param>
         /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task UpdateDisplayNameForEndpointAsync(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequest updateEndpointRequest);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -135,6 +136,7 @@ namespace BookingsApi.Client
         /// <param name="endpointId">The endpoint id</param>
         /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task UpdateDisplayNameForEndpointAsync(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequest updateEndpointRequest, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
@@ -2196,6 +2198,7 @@ namespace BookingsApi.Client
         /// <param name="endpointId">The endpoint id</param>
         /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual System.Threading.Tasks.Task UpdateDisplayNameForEndpointAsync(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequest updateEndpointRequest)
         {
             return UpdateDisplayNameForEndpointAsync(hearingId, endpointId, updateEndpointRequest, System.Threading.CancellationToken.None);
@@ -2209,6 +2212,7 @@ namespace BookingsApi.Client
         /// <param name="endpointId">The endpoint id</param>
         /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual async System.Threading.Tasks.Task UpdateDisplayNameForEndpointAsync(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequest updateEndpointRequest, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)

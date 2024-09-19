@@ -9,12 +9,11 @@ namespace BookingsApi.Mappings.V2
     {
         public static HearingDetailsResponseV2 Map(Hearing videoHearing)
         {
-            var caseMapper = new CaseToResponseV2Mapper();
             var participantMapper = new ParticipantToResponseV2Mapper();
             var judiciaryParticipantMapper = new JudiciaryParticipantToResponseMapper();
             
             var cases = videoHearing.GetCases()
-                .Select(x => caseMapper.MapCaseToResponse(x))
+                .Select(CaseToResponseV2Mapper.MapCaseToResponse)
                 .ToList();
 
             var participants = videoHearing.GetParticipants()

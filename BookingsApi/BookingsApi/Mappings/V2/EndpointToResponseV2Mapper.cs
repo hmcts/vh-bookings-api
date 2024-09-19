@@ -5,8 +5,16 @@ using BookingsApi.Mappings.V2.Extensions;
 
 namespace BookingsApi.Mappings.V2
 {
+    /// <summary>
+    /// Operations to map between request/response objects and domains for endpoints
+    /// </summary>
     public static class EndpointToResponseV2Mapper
     {
+        /// <summary>
+        /// Map a JVS endpoint to an external facing Endpoint response model
+        /// </summary>
+        /// <param name="endpoint"></param>
+        /// <returns></returns>
         public static EndpointResponseV2 MapEndpointToResponse(Endpoint endpoint)
         {
             ScreeningResponseV2 screeningResponse = null;
@@ -34,6 +42,13 @@ namespace BookingsApi.Mappings.V2
             };
         }
 
+        /// <summary>
+        /// Create a DTO for a new endpoint from a request
+        /// </summary>
+        /// <param name="requestV2"></param>
+        /// <param name="randomGenerator"></param>
+        /// <param name="sipAddressStem"></param>
+        /// <returns></returns>
         public static NewEndpoint MapRequestToNewEndpointDto(EndpointRequestV2 requestV2, IRandomGenerator randomGenerator, string sipAddressStem)
         {
             var sip = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);

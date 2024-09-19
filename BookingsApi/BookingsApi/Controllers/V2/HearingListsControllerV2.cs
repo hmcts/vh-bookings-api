@@ -4,6 +4,9 @@ using BookingsApi.Mappings.V2;
 
 namespace BookingsApi.Controllers.V2;
 
+/// <summary>
+/// A suite of operations to get hearing lists
+/// </summary>
 [Produces("application/json")]
 [Route(template:"v{version:apiVersion}/hearings")]
 [ApiVersion("2.0")]

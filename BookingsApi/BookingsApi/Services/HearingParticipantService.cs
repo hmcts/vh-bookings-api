@@ -12,7 +12,24 @@ namespace BookingsApi.Services;
 
 public interface IHearingParticipantService
 {
+    /// <summary>
+    /// Publish an event for new participants added to a hearing
+    /// </summary>
+    /// <param name="hearing"></param>
+    /// <param name="newParticipants"></param>
+    /// <returns></returns>
     public Task PublishEventForNewParticipantsAsync(VideoHearing hearing, IEnumerable<NewParticipant> newParticipants);
+    
+    /// <summary>
+    /// Publish an event for all changes to a hearing participants list
+    /// </summary>
+    /// <param name="hearing"></param>
+    /// <param name="existingParticipants"></param>
+    /// <param name="newParticipants"></param>
+    /// <param name="removedParticipantIds"></param>
+    /// <param name="linkedParticipants"></param>
+    /// <param name="sendNotification"></param>
+    /// <returns></returns>
     public Task PublishEventForUpdateParticipantsAsync(
         VideoHearing hearing,
         List<ExistingParticipantDetails> existingParticipants,
@@ -20,6 +37,14 @@ public interface IHearingParticipantService
         List<Guid> removedParticipantIds,
         List<LinkedParticipantDto> linkedParticipants, 
         bool sendNotification = true);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="hearing"></param>
+    /// <param name="newJudiciaryParticipants"></param>
+    /// <param name="sendNotification"></param>
+    /// <returns></returns>
     public Task PublishEventForNewJudiciaryParticipantsAsync(VideoHearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants, bool sendNotification = true);
     public Task PublishEventForUpdateJudiciaryParticipantAsync(VideoHearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant);
     
@@ -241,7 +266,7 @@ public class HearingParticipantService : IHearingParticipantService
         return updatedHearing;
     }
     
-    private NewParticipant MapExistingParticipantToNewParticipant(UpdateParticipantRequestV2 existingRequest, Participant existingParticipant, List<HearingRole> hearingRoles)
+    private static NewParticipant MapExistingParticipantToNewParticipant(UpdateParticipantRequestV2 existingRequest, Participant existingParticipant, List<HearingRole> hearingRoles)
     {
         var hearingRole = hearingRoles.Find(x => string.Compare(x.Code, existingParticipant.HearingRole.Code, StringComparison.InvariantCultureIgnoreCase) == 0);
         // For new user we don't have the username yet.

@@ -6,6 +6,9 @@ using BookingsApi.Validations.V2;
 
 namespace BookingsApi.Controllers.V2
 {
+    /// <summary>
+    /// A suite of operations to manage bookings (V2)
+    /// </summary>
     [Produces("application/json")]
     [Route(template:"v{version:apiVersion}/hearings")]
     [ApiController]
@@ -201,7 +204,7 @@ namespace BookingsApi.Controllers.V2
             var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
             var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
 
-            if (!hearingsInGroup.Any())
+            if (hearingsInGroup.Count == 0)
             {
                 return NotFound();
             }
@@ -260,11 +263,8 @@ namespace BookingsApi.Controllers.V2
         public async Task<IActionResult> GetHearingsForToday()
         {
             var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery());
-            
-            if (!videoHearings.Any())
-                return Ok(new List<HearingDetailsResponseV2>());
-            
-            return Ok(videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
+
+            return Ok(videoHearings.Count == 0 ? [] : videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
         }
 
         /// <summary>
@@ -281,10 +281,7 @@ namespace BookingsApi.Controllers.V2
             var videoHearings =
                 await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery(venueNames));
 
-            if (!videoHearings.Any())
-                return Ok(new List<HearingDetailsResponseV2>());
-
-            return Ok(videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
+            return Ok(videoHearings.Count == 0 ? [] : videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
         }
         
         /// <summary>

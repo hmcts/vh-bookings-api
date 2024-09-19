@@ -5,7 +5,9 @@ using BookingsApi.Mappings.V2.Extensions;
 using BookingsApi.Validations.V2;
 
 namespace BookingsApi.Controllers.V2;
-
+/// <summary>
+/// A suite of operations to manage JVS endpoints in a booking (V2)
+/// </summary>
 [Consumes("application/json")]
 [Produces("application/json")]
 [Route(template:"v{version:apiVersion}/hearings")]
