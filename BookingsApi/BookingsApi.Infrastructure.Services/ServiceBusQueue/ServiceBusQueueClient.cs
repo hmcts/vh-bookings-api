@@ -33,9 +33,12 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         {
             await using var client = new ServiceBusClient(_serviceBusSettings.ConnectionString);
             var sender = client.CreateSender(_serviceBusSettings.QueueName); 
-            var jsonObjectString = JsonSerializer.Serialize(eventMessage, SerializerSettings);
+            var jsonObjectString = SerializeMessage(eventMessage);
             var messageBytes = Encoding.UTF8.GetBytes(jsonObjectString);
             await sender.SendMessageAsync(new ServiceBusMessage(messageBytes)).ConfigureAwait(false);
         }
+        
+        public static string SerializeMessage(EventMessage eventMessage) => 
+            JsonSerializer.Serialize(eventMessage, SerializerSettings);
     }
 }
