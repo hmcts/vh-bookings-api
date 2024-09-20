@@ -52,6 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BookingsApi.Common.Legacy\BookingsApi.Common.Legacy.csproj" />
     <ProjectReference Include="..\BookingsApi.Common\BookingsApi.Common.csproj" />
     <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
     <ProjectReference Include="..\BookingsApi.DAL\BookingsApi.DAL.csproj" />

@@ -1,6 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using BookingsApi.Common.Helpers;
+using BookingsApi.Common.Legacy.Helpers;
+using BookingsApi.Extensions;
 
 namespace BookingsApi.IntegrationTests.Helper
 {
@@ -13,7 +15,7 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 PropertyNamingPolicy = new SnakeCaseNamingPolicy(),
                 PropertyNameCaseInsensitive = true, // To make sure it matches the properties case-insensitively
-                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+                Converters = { new PascalCaseEnumConverterFactory() }
             });
         }
     }

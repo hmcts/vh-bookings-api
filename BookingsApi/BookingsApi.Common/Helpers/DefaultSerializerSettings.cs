@@ -8,21 +8,6 @@ namespace BookingsApi.Common.Helpers
 {
     public static class DefaultSerializerSettings
     {
-        public static JsonSerializerOptions DefaultSystemTextJsonSerializerSettings()
-        {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-                WriteIndented = true,
-                Converters =
-                {
-                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-                }
-            };
-
-            return options;
-        }
-        
         public static JsonSerializerSettings DefaultNewtonsoftSerializerSettings()
         {
             var settings = new JsonSerializerSettings

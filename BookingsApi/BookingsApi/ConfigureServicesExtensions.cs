@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using BookingsApi.Common.Legacy.Helpers;
 using BookingsApi.Common.Security;
 using BookingsApi.DAL.Services;
 using BookingsApi.Swagger;
@@ -170,7 +171,7 @@ namespace BookingsApi
                 {
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
                     options.JsonSerializerOptions.WriteIndented = true;
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+                    options.JsonSerializerOptions.Converters.Add(new PascalCaseEnumConverterFactory());
                 });
 
             return serviceCollection;

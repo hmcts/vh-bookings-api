@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BookingsApi.Common.Legacy.Helpers;
 
 namespace BookingsApi.Client
 {
@@ -13,7 +14,7 @@ namespace BookingsApi.Client
                 ReadResponseAsString = true
             };
             apiClient.JsonSerializerSettings.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-            apiClient.JsonSerializerSettings.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+            apiClient.JsonSerializerSettings.Converters.Add(new PascalCaseEnumConverterFactory());
             
             return apiClient;
         }
@@ -30,7 +31,7 @@ namespace BookingsApi.Client
             settings.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
             settings.WriteIndented = true;
             settings.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            settings.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+            settings.Converters.Add(new PascalCaseEnumConverterFactory());
         }
     }
 }
