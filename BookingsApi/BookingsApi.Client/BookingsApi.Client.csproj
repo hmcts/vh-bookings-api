@@ -14,7 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\BookingsApi.Common.Legacy\BookingsApi.Common.Legacy.csproj" />
+        <ProjectReference Include="..\BookingsApi.Common.DotNet6\BookingsApi.Common.DotNet6.csproj" />
         <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj">
             <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
             <IncludeAssets>BookingsApi.Contract.dll</IncludeAssets>

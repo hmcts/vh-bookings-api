@@ -2371,7 +2371,7 @@
           "Newtonsoft.Json": "[13.0.3, )"
         }
       },
-      "bookingsapi.common.legacy": {
+      "bookingsapi.common.dotnet6": {
         "type": "Project",
         "dependencies": {
           "System.Text.Json": "[8.0.0, )"

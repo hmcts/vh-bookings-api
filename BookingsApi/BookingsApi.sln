@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{90492C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingsApi.Client", "BookingsApi.Client\BookingsApi.Client.csproj", "{5B64B539-471F-4B07-BA58-191B6CBB0856}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingsApi.Common.Legacy", "BookingsApi.Common.Legacy\BookingsApi.Common.Legacy.csproj", "{B7AAEE2A-1A97-4AA8-BF26-FCF43FC8C038}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingsApi.Common.DotNet6", "BookingsApi.Common.DotNet6\BookingsApi.Common.DotNet6.csproj", "{B7AAEE2A-1A97-4AA8-BF26-FCF43FC8C038}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
