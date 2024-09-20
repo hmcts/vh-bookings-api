@@ -762,7 +762,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         updatedParticipant.Screening.ProtectFromParticipantsIds.Should().BeEmpty();
     }
     
-    [Test(Description = "Participant A is screened from Participant B. Participant B is then removed from the hearing")]
+    [Test(Description = "Participant A is screened from Participant B. Participant A no longer requires screening")]
     public async Task should_update_screening_to_none()
     {
         // arrange
@@ -806,5 +806,56 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         var updatedParticipant = hearingResponse.Participants.Find(x => x.Id == participantA.Id);
         updatedParticipant.Should().NotBeNull();
         updatedParticipant.Screening.Should().BeNull();
+    }
+    
+    [Test(Description = "Participant A is screened from Participant B. Participant A is not screened from all")]
+    public async Task should_update_screening_to_all()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearingV2(options
+            =>
+        {
+            options.AddScreening = true;
+            options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge");
+        }, BookingStatus.Created);
+        var individuals = hearing.Participants.Where(x => x is Individual).ToList();
+        var participantA = individuals.Find(i => i.Screening != null);
+        
+        var request = new UpdateHearingParticipantsRequestV2
+        {
+            ExistingParticipants =
+            [
+                new UpdateParticipantRequestV2
+                {
+                    ParticipantId = participantA.Id, 
+                    DisplayName = "NewDisplayName",
+                    FirstName = participantA.Person?.FirstName,
+                    LastName = participantA.Person?.LastName,
+                    OrganisationName = participantA.Person?.Organisation?.Name,
+                    TelephoneNumber = participantA.Person?.TelephoneNumber,
+                    Title = participantA.Person?.Title,
+                    Screening = new ScreeningRequest()
+                    {
+                        Type = ScreeningType.All
+                    }
+                }
+            ]
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
+        
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var updatedHearing = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(hearing.Id.ToString()));
+        
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(updatedHearing.Content);
+        var updatedParticipant = hearingResponse.Participants.Find(x => x.Id == participantA.Id);
+        updatedParticipant.Should().NotBeNull();
+        updatedParticipant.Screening.Type.Should().Be(ScreeningType.All);
+        updatedParticipant.Screening.ProtectFromParticipantsIds.Should().BeEmpty();
+        updatedParticipant.Screening.ProtectFromEndpointsIds.Should().BeEmpty();
     }
 }

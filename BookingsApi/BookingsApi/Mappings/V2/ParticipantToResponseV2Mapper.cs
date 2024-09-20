@@ -24,10 +24,11 @@ namespace BookingsApi.Mappings.V2
                 TelephoneNumber = participant.Person.TelephoneNumber,
                 Organisation = participant.Person.Organisation?.Name,
                 LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponseV2
-                    {LinkedId = x.LinkedId, TypeV2 = x.Type.MapToContractEnum()}).ToList(),
-                InterpreterLanguage = participant.InterpreterLanguage != null ?
-                    InterpreterLanguageToResponseMapper.MapInterpreterLanguageToResponse(participant.InterpreterLanguage) :
-                    null,
+                    { LinkedId = x.LinkedId, TypeV2 = x.Type.MapToContractEnum() }).ToList(),
+                InterpreterLanguage = participant.InterpreterLanguage != null
+                    ? InterpreterLanguageToResponseMapper.MapInterpreterLanguageToResponse(participant
+                        .InterpreterLanguage)
+                    : null,
                 OtherLanguage = participant.OtherLanguage
             };
 
@@ -44,17 +45,10 @@ namespace BookingsApi.Mappings.V2
                     break;
             }
 
-            if (participant.Screening != null)
-            {
-                var screeningResponse = new ScreeningResponseV2
-                {
-                    Type = participant.Screening.Type.MapToContractEnum(),
-                    ProtectFromEndpointsIds = participant.Screening.GetEndpoints().Select(x=> x.EndpointId!.Value).ToList(),
-                    ProtectFromParticipantsIds = participant.Screening.GetParticipants().Select(x=> x.ParticipantId!.Value).ToList()
-                };
+            participantResponse.Screening = participant.Screening == null
+                ? null
+                : ScreeningToResponseV2Mapper.MapScreeningToResponse(participant.Screening);
 
-                participantResponse.Screening = screeningResponse;
-            }
 
             participantResponse.TrimAllStringsRecursively();
             return participantResponse;

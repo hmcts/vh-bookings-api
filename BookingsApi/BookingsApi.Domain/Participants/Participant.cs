@@ -157,6 +157,7 @@ namespace BookingsApi.Domain.Participants
             else
             {
                 screening.ScreeningEntities.Clear();
+                screening.UpdateType(type);
             }
 
             foreach (var participant in participants)
@@ -168,6 +169,7 @@ namespace BookingsApi.Domain.Participants
             {
                 screening.AddEndpoint(endpoint);
             }
+            UpdatedDate = DateTime.UtcNow;
         }
 
         public void RemoveScreening()
@@ -175,6 +177,7 @@ namespace BookingsApi.Domain.Participants
             Screening.ScreeningEntities.Clear();
             Screening = null;
             ScreeningId = null;
+            UpdatedDate = DateTime.UtcNow;
         }
     }
 }

@@ -833,6 +833,7 @@ namespace BookingsApi.Domain
             var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
             var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
             participant.AssignScreening(screeningType, participants, endpoints);
+            UpdatedDate = DateTime.UtcNow;
         }
 
         /// <summary>
@@ -854,6 +855,7 @@ namespace BookingsApi.Domain
             var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
             var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
             endpoint.AssignScreening(screeningType, participants, endpoints);
+            UpdatedDate = DateTime.UtcNow;
         }
 
         private Participant GetParticipantByContactEmail(string contactEmail)

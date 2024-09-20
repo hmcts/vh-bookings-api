@@ -45,6 +45,12 @@ namespace BookingsApi.DAL.Commands
                 .Include(h => h.Participants).ThenInclude(x => x.Person)
                 .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .Include(x=> x.Endpoints).ThenInclude(x=> x.InterpreterLanguage)
+                // keep the following includes for the screening entities - cannot auto include due to cyclic dependency
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
+
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)

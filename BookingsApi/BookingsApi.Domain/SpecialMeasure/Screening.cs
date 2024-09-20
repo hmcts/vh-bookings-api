@@ -34,9 +34,19 @@ public class Screening : TrackableEntity<Guid>
     public Guid? EndpointId { get; set; }
     public virtual Endpoint Endpoint { get; set; }
 
-    public ScreeningType Type { get; set; }
+    public ScreeningType Type { get; private set; }
     public virtual ICollection<ScreeningEntity> ScreeningEntities { get; private set; }
 
+    public void UpdateType(ScreeningType type)
+    {
+        Type = type;
+        if (type == ScreeningType.All)
+        {
+            ScreeningEntities.Clear();
+        }
+        UpdatedDate = DateTime.UtcNow;
+    }
+    
     public void AddParticipant(Participant participant)
     {
         if (ScreeningEntities.Any(x => x.ParticipantId == participant.Id) ||
@@ -47,6 +57,7 @@ public class Screening : TrackableEntity<Guid>
         }
 
         ScreeningEntities.Add(ScreeningEntity.ForParticipant(this, participant));
+        UpdatedDate = DateTime.UtcNow;
     }
 
     public void RemoveParticipant(Participant participant)
@@ -60,6 +71,7 @@ public class Screening : TrackableEntity<Guid>
         }
 
         ScreeningEntities.Remove(screeningEntity);
+        UpdatedDate = DateTime.UtcNow;
     }
 
     public void AddEndpoint(Endpoint endpoint)
@@ -71,6 +83,7 @@ public class Screening : TrackableEntity<Guid>
         }
 
         ScreeningEntities.Add(ScreeningEntity.ForEndpoint(this, endpoint));
+        UpdatedDate = DateTime.UtcNow;
     }
 
     public void RemoveEndpoint(Endpoint endpoint)
@@ -83,6 +96,7 @@ public class Screening : TrackableEntity<Guid>
         }
 
         ScreeningEntities.Remove(screeningEntity);
+        UpdatedDate = DateTime.UtcNow;
     }
 
     public List<ScreeningEntity> GetEndpoints()
