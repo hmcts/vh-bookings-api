@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using JsonConverter = System.Text.Json.Serialization.JsonConverter;
 
-namespace BookingsApi.Common.Legacy.Helpers;
+namespace BookingsApi.Common.DotNet6.Helpers;
 
 public class PascalCaseEnumConverterFactory : JsonConverterFactory
 {

@@ -1,7 +1,6 @@
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using BookingsApi.Common.Legacy.Helpers;
+using BookingsApi.Common.DotNet6.Helpers;
 
 namespace BookingsApi.Client
 {
@@ -28,7 +27,6 @@ namespace BookingsApi.Client
         {
             settings.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
             settings.WriteIndented = true;
-            settings.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             settings.Converters.Add(new PascalCaseEnumConverterFactory());
         }
     }

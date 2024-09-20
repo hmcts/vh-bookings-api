@@ -1,8 +1,6 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using BookingsApi.Common.DotNet6.Helpers;
 using BookingsApi.Common.Helpers;
-using BookingsApi.Common.Legacy.Helpers;
-using BookingsApi.Extensions;
 
 namespace BookingsApi.IntegrationTests.Helper
 {

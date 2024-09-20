@@ -3,7 +3,6 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
-        <RootNamespace>BookingsApi.Common.Legacy</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
