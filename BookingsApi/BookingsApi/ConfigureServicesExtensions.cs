@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using BookingsApi.Common.Legacy.Helpers;
+using BookingsApi.Common.DotNet6.Helpers;
 using BookingsApi.Common.Security;
 using BookingsApi.DAL.Services;
 using BookingsApi.Swagger;
