@@ -18,6 +18,7 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
             _eventMessages.Enqueue(eventMessage);
             return Task.CompletedTask;
         }
+
         public EventMessage ReadMessageFromQueue()
         {
             _eventMessages.TryDequeue(out var message);
@@ -27,8 +28,8 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         public EventMessage[] ReadAllMessagesFromQueue(Guid hearingId)
         {
             var list = (from message in _eventMessages
-                where JsonConvert.SerializeObject(message, SerializerSettings).Contains(hearingId.ToString())
-                select message).ToList();
+                        where JsonConvert.SerializeObject(message, SerializerSettings).Contains(hearingId.ToString())
+                        select message).ToList();
             return list.ToArray();
         }
         
