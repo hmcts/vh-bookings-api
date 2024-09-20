@@ -31,7 +31,7 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
 
     private static List<NewJudiciaryParticipant> MapJudiciaryParticipants(BookNewHearingRequestV2 requestV2)
     {
-        return requestV2.JudiciaryParticipants.Select(JudiciaryParticipantRequestToNewJudiciaryParticipantMapper.Map).ToList();
+        return requestV2.JudicialOfficeHolders.Select(JudiciaryParticipantRequestToNewJudiciaryParticipantMapper.Map).ToList();
     }
 
     private static List<NewParticipant> MapParticipants(BookNewHearingRequestV2 requestV2, List<HearingRole> hearingRoles)
