@@ -37,7 +37,7 @@ namespace BookingsApi.Validations.V2
                 .GreaterThan(0).WithMessage(ScheduleDurationErrorMessage);
 
             RuleFor(x => x.Participants).NotEmpty()
-                .When(x => x.JudiciaryParticipants == null || !x.JudiciaryParticipants.Any())
+                .When(x => x.JudicialOfficeHolders == null || !x.JudicialOfficeHolders.Any())
                 .WithMessage(ParticipantsErrorMessage);
 
             RuleFor(x => x.Cases).NotEmpty()
@@ -61,7 +61,7 @@ namespace BookingsApi.Validations.V2
                 .SetValidator(new EndpointRequestValidationV2())
                 .When(x => x.Endpoints.Any());
             
-            RuleForEach(request =>  request.JudiciaryParticipants).SetValidator(new JudiciaryParticipantRequestValidation());
+            RuleForEach(request =>  request.JudicialOfficeHolders).SetValidator(new JudiciaryParticipantRequestValidation());
             RuleFor(x => x.CreatedBy).NotEmpty();
         }
     }

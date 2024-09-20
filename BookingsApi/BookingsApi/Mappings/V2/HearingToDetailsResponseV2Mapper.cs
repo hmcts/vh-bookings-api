@@ -65,7 +65,7 @@ namespace BookingsApi.Mappings.V2
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints,
-                JudiciaryParticipants = judiciaryParticipants,
+                JudicialOfficeHolders = judiciaryParticipants,
                 BookingSupplier = (BookingSupplier)videoHearing.ConferenceSupplier,
                 SupportsWorkAllocation = videoHearing.HearingVenue.IsWorkAllocationEnabled,
                 AllocatedToId = allocatedToId,

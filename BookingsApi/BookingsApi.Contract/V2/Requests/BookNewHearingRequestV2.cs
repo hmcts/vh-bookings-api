@@ -76,8 +76,7 @@ namespace BookingsApi.Contract.V2.Requests
         /// <summary>
         /// List of judiciary participants in a hearing
         /// </summary>
-        [JsonPropertyName("judicial_office_holders")]
-        public List<JudiciaryParticipantRequest> JudiciaryParticipants { get; set; } = new();
+        public List<JudiciaryParticipantRequest> JudicialOfficeHolders { get; set; } = new();
         
         /// <summary>
         /// The supplier with whom to book a conference with

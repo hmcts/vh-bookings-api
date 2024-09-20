@@ -125,8 +125,7 @@ public class HearingDetailsResponseV2
         /// <summary>
         /// List of judiciary participants in a hearing
         /// </summary>
-        [JsonPropertyName("judicial_office_holders")]
-        public List<JudiciaryParticipantResponse> JudiciaryParticipants { get; set; }
+        public List<JudiciaryParticipantResponse> JudicialOfficeHolders { get; set; }
         
         /// <summary>
         /// The supplier with whom a conference has been booked with
