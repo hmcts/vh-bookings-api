@@ -13,8 +13,6 @@ namespace BookingsApi.Client
             {
                 ReadResponseAsString = true
             };
-            apiClient.JsonSerializerSettings.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-            apiClient.JsonSerializerSettings.Converters.Add(new PascalCaseEnumConverterFactory());
             
             return apiClient;
         }
