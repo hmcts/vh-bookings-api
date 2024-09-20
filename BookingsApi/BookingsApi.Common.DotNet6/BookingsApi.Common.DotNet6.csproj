@@ -3,6 +3,9 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>VH Bookings API common .net 6</Title>
+        <Description>.NET 6 common library for Bookings API</Description>
     </PropertyGroup>
 
     <ItemGroup>
