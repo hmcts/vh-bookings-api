@@ -3,15 +3,30 @@ using BookingsApi.Infrastructure.Services;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace BookingsApi.UnitTests.Infrastructure.Services
 {
     public class ServiceBusQueueClientTests
     {
+        private ServiceBusQueueClient _client;
+      
+        [SetUp]
+        public void Setup()
+        {
+          var settings = new ServiceBusSettings()
+          {
+            ConnectionString = "DevelopmentMode=true",
+            QueueName = "booking"
+          };
+          _client = new ServiceBusQueueClient(Options.Create(settings));
+        }
+      
         [Test]
         public void Should_initialise_serialiser_settings()
         {
-            ServiceBusQueueClient.SerializerSettings.Should().BeOfType<JsonSerializerOptions>();
+            _client.SerializerSettings.Should().BeOfType<JsonSerializerSettings>();
         }
         
         [Test]
@@ -23,11 +38,11 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             var eventMessage = new EventMessage(integrationEvent);
             
             // Act
-            var serializedMessage = ServiceBusQueueClient.SerializeMessage(eventMessage);
+            var serializedMessage = _client.SerializeMessage(eventMessage);
             
             // Assert
             var id = eventMessage.Id;
-            var timestamp = eventMessage.Timestamp.ToString("O");
+            var timestamp = eventMessage.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.ffffff") + "Z";
             var hearingId = hearing.Id;
             var scheduledDateTime = hearing.ScheduledDateTime.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
             var participant1 = ParticipantDtoMapper.MapToDto(hearing.Participants[0]);
