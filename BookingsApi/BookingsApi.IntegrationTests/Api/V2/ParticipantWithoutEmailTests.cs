@@ -174,9 +174,9 @@ public class ParticipantWithoutEmailTests : ApiTest
         rep.ContactEmail = null;
 
         using var client = Application.CreateClient();
-        var bookingsApiClient = BookingsApiClient.GetClient(client);
 
-        var hearing = await bookingsApiClient.BookNewHearingWithCodeAsync(bookHearingRequest);
+        var bookHearingResult = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(bookHearingRequest));
+        var hearing = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(bookHearingResult.Content);
         _hearingIds.Add(hearing.Id);
 
         var participantWithoutEmail = hearing.Participants.First(x => x.ContactEmail == null);
@@ -184,8 +184,8 @@ public class ParticipantWithoutEmailTests : ApiTest
         // make a request to update username so that they are not treated as a new person
         foreach (var participant in hearing.Participants.Where(x=> x.ContactEmail is not null))
         {
-            await bookingsApiClient.UpdatePersonUsernameAsync(participant.ContactEmail,
-                $"{participant.Id}_user@test.com");
+            await client
+                .PutAsync(ApiUriFactory.PersonEndpoints.UpdatePersonUsername(participant.ContactEmail, $"{participant.Id}_user@test.com"), null);
         }
         
         // clear messages created from the booking flow
@@ -207,10 +207,9 @@ public class ParticipantWithoutEmailTests : ApiTest
                 MiddleNames = participantWithoutEmail.MiddleNames
             };
 
-
-        
-        await bookingsApiClient.UpdateParticipantDetailsV2Async(hearing.Id, participantWithoutEmail.Id,
-            updateParticipantRequest);
+        await client
+            .PatchAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateParticipantDetails(hearing.Id, participantWithoutEmail.Id),
+                RequestBody.Set(updateParticipantRequest));
 
         var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearing.Id);
 
