@@ -14,7 +14,7 @@ public class RemoveEndpointTests
         var screening = new Screening(ScreeningType.Specific, participant);
         var endpoint = new Endpoint("name", "sip", "pin", null);
         
-        screening.AddEndpoint(endpoint);
+        screening.UpdateScreeningList([], [endpoint]);
         screening.RemoveEndpoint(endpoint);
         
         screening.GetEndpoints().Should().NotContain(x => x.Endpoint == endpoint);

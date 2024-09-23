@@ -13,7 +13,7 @@ public class RemoveParticipantTests
         var screening = new Screening(ScreeningType.Specific, participant);
         var screenFrom = new ParticipantBuilder().IndividualParticipantRespondent;
         
-        screening.AddParticipant(screenFrom);
+        screening.UpdateScreeningList([screenFrom], []);
         screening.RemoveParticipant(screenFrom);
         
         screening.GetParticipants().Should().NotContain(x => x.Participant == screenFrom);

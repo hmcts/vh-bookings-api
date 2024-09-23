@@ -69,21 +69,12 @@ namespace BookingsApi.Domain
                 screening = new Screening(type, this);
                 Screening = screening;
                 ScreeningId = screening.Id;
+                screening.UpdateScreeningList(participants, endpoints);
             }
             else
             {
-                screening.ScreeningEntities.Clear();
                 screening.UpdateType(type);
-            }
-            
-            foreach (var participant in participants)
-            {
-                screening.AddParticipant(participant);
-            }
-
-            foreach (var endpoint in endpoints)
-            {
-                screening.AddEndpoint(endpoint);
+                screening.UpdateScreeningList(participants, endpoints);
             }
             Screening = screening;
             UpdatedDate = DateTime.UtcNow;

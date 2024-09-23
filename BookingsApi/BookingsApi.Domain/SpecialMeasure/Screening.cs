@@ -46,17 +46,20 @@ public class Screening : TrackableEntity<Guid>
         }
         UpdatedDate = DateTime.UtcNow;
     }
-    
-    public void AddParticipant(Participant participant)
+
+    public void UpdateScreeningList(List<Participant> participants, List<Endpoint> endpoints)
     {
-        if (ScreeningEntities.Any(x => x.ParticipantId == participant.Id) ||
-            ScreeningEntities.Any(x => x.Participant?.Id == participant.Id))
+        ScreeningEntities.Clear();
+        foreach (var participant in participants)
         {
-            throw new DomainRuleException(nameof(Screening),
-                DomainRuleErrorMessages.ParticipantAlreadyAddedForScreening);
+            ScreeningEntities.Add(ScreeningEntity.ForParticipant(this, participant));
         }
 
-        ScreeningEntities.Add(ScreeningEntity.ForParticipant(this, participant));
+        foreach (var endpoint in endpoints)
+        {
+            ScreeningEntities.Add(ScreeningEntity.ForEndpoint(this, endpoint));
+        }
+
         UpdatedDate = DateTime.UtcNow;
     }
 
@@ -71,18 +74,6 @@ public class Screening : TrackableEntity<Guid>
         }
 
         ScreeningEntities.Remove(screeningEntity);
-        UpdatedDate = DateTime.UtcNow;
-    }
-
-    public void AddEndpoint(Endpoint endpoint)
-    {
-        if (ScreeningEntities.Any(x => x.EndpointId == endpoint.Id) ||
-            ScreeningEntities.Any(x => x.Endpoint?.Id == endpoint.Id))
-        {
-            throw new DomainRuleException(nameof(Screening), DomainRuleErrorMessages.EndpointAlreadyAddedForScreening);
-        }
-
-        ScreeningEntities.Add(ScreeningEntity.ForEndpoint(this, endpoint));
         UpdatedDate = DateTime.UtcNow;
     }
 
