@@ -59,7 +59,6 @@
     <ProjectReference Include="..\BookingsApi.Domain\BookingsApi.Domain.csproj" />
     <ProjectReference Include="..\BookingsApi.Infrastructure.Services\BookingsApi.Infrastructure.Services.csproj" />
   </ItemGroup>
-
   <PropertyGroup>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
@@ -83,4 +82,8 @@
     <Error Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' != '0'" />
     <RemoveDir Directories="$(OutDir)References" />
   </Target>
+
+  <PropertyGroup>
+    <NoWarn>CS0612;CS0618</NoWarn>
+  </PropertyGroup>
 </Project>

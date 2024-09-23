@@ -20,7 +20,9 @@ namespace BookingsApi.DAL.Helper
                 WorkPhone = command.WorkPhone,
                 Leaver = command.Leaver,
                 LeftOn = command.LeftOn,
-                HasLeft = command.HasLeft
+                HasLeft = command.HasLeft,
+                Deleted = command.Deleted,
+                DeletedOn = command.DeletedOn
             };
         }
     }

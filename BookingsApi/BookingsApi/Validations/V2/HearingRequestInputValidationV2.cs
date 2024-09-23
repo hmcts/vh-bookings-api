@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Validations.V1;
 using FluentValidation;
 
 namespace BookingsApi.Validations.V2
@@ -31,7 +32,7 @@ namespace BookingsApi.Validations.V2
                 .SetValidator(new UpdateHearingEndpointsRequestValidationV2());
 
             RuleFor(x => x.JudiciaryParticipants)
-                .SetValidator(new UpdateJudiciaryParticipantsRequestValidationV2());
+                .SetValidator(new UpdateJudiciaryParticipantsRequestValidation());
         }
         
         private static int GetJudiciaryParticipantCount(HearingRequestV2 request)

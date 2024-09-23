@@ -97,7 +97,7 @@ namespace BookingsApi.Services
                                 DisplayName = newJudge.DisplayName,
                                 PersonalCode = newJudge.JudiciaryPerson.PersonalCode,
                                 HearingRoleCode = newJudge.HearingRoleCode,
-                                OptionalContactEmail = newJudge.ContactEmail
+                                OptionalContactEmail = newJudge.GetEmail()
                             }
                         }, sendNotification);
             

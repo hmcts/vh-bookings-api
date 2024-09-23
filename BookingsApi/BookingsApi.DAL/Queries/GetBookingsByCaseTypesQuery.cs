@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Common.Services;
+using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -130,7 +131,7 @@ namespace BookingsApi.DAL.Queries
 
             if (query.NoJudge)
             {
-                hearings = hearings.Where(x => !x.Participants.Any(y => y.Discriminator.ToLower().Equals("judge")));
+                hearings = hearings.Where(x => !x.Participants.OfType<Judge>().Any());
                 hearings = hearings.Where(x => x.JudiciaryParticipants.All(y => y.HearingRoleCode != JudiciaryParticipantHearingRoleCode.Judge));
             }
 

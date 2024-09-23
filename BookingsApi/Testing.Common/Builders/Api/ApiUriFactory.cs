@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
 
@@ -57,6 +56,9 @@ namespace Testing.Common.Builders.Api
 
             public static string GetHearingsByGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
             public static string UpdateHearingsInGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
+            public static string GetHearingsForToday() => $"{ApiRoot}/today";
+            public static string GetHearingsForTodayByVenue() => $"{ApiRoot}/today/venue";
+            public static string GetConfirmedHearingsByUsernameForToday(string username) => $"{ApiRoot}/today/username?username={username}";
         }
         
         public static class HearingParticipantsEndpoints
@@ -130,6 +132,13 @@ namespace Testing.Common.Builders.Api
         {
             private const string ApiRoot = "judiciaryperson";
             public static string BulkJudiciaryPersons() => $"{ApiRoot}/BulkJudiciaryPersons";
+            public static string PostJudiciaryPersonBySearchTerm() => $"{ApiRoot}/search";
+        }
+
+        public static class JudiciaryPersonsStagingEndpoints
+        {
+            private const string ApiRoot = "judiciarypersonstaging";
+            public static string BulkJudiciaryPersonsStaging() => $"{ApiRoot}/BulkJudiciaryPersonsStaging";
         }
 
         public static class WorkAllocationEndpoints
@@ -178,10 +187,10 @@ namespace Testing.Common.Builders.Api
             public static string ReassignJudiciaryJudge(Guid hearingId) => $"{ApiRoot}/{hearingId}/joh/judge";
         }
 
-        public static class StaffMemberEndpoints
+        public static class HearingListsEndpoints
         {
-            private const string ApiRoot = "staffmember";
-            public static string GetStaffMemberBySearchTerm(string term) => $"{ApiRoot}?term={term}";
+            private const string ApiRoot = "v2/hearings";
+            public static string GetHearingsForTodayByCsos => $"{ApiRoot}/today/csos";
         }
     }
 }

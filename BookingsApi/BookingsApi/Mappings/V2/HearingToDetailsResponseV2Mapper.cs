@@ -1,3 +1,4 @@
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V2.Extensions;
@@ -28,6 +29,17 @@ namespace BookingsApi.Mappings.V2
                 .Select(x => judiciaryParticipantMapper.MapJudiciaryParticipantToResponse(x))
                 .ToList();
             
+            Guid? allocatedToId = null;
+            string allocatedToUsername = null;
+            string allocatedToName = null;
+            if (videoHearing.AllocatedTo != null)
+            {
+                var allocatedTo = videoHearing.AllocatedTo;
+                allocatedToId = allocatedTo.Id;
+                allocatedToUsername = allocatedTo.Username;
+                allocatedToName = $"{allocatedTo.FirstName} {allocatedTo.Lastname}";
+            }
+            
             var response = new HearingDetailsResponseV2
             {
                 Id = videoHearing.Id,
@@ -53,7 +65,12 @@ namespace BookingsApi.Mappings.V2
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints,
-                JudiciaryParticipants = judiciaryParticipants
+                JudiciaryParticipants = judiciaryParticipants,
+                BookingSupplier = (BookingSupplier)videoHearing.ConferenceSupplier,
+                SupportsWorkAllocation = videoHearing.HearingVenue.IsWorkAllocationEnabled,
+                AllocatedToId = allocatedToId,
+                AllocatedToUsername = allocatedToUsername,
+                AllocatedToName = allocatedToName
             };
             
             response.TrimAllStringsRecursively();

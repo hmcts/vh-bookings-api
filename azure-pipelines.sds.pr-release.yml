@@ -49,9 +49,11 @@ stages:
                 sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
                 sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*
                 sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*, **/BookingsApi.DAL/Migrations/**/*
-                sonar.issue.ignore.multicriteria=e1
-                sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S107
+                sonar.issue.ignore.multicriteria=e1,e2
                 sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.cs
+                sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S107
+                sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.cs
+                sonar.issue.ignore.multicriteria.e2.ruleKey=csharpsquid:S1133
 
   ####################################################
   # Pre Release Tasks. ###############################
@@ -155,6 +157,24 @@ stages:
               imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
               imageTags:
                 - '${{ variables.prTagName }}'
+
+  ##################################################
+  # Deploy Nuget Packages. #########################
+  - stage: Push_Nuget
+    dependsOn: Pre_Release_Tasks
+    displayName: Deploy NuGet Packages
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+    jobs:
+      - job: Publish_Nuget
+        displayName: Publish NuGet Packages
+        steps:
+          - template: templates\dotnet\push-nuget-packages.yml@azTemplates
+            parameters:
+              vstsFeed: '${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}'
 
   #####################################################
   # Run Entity Framework Dev. #########################
@@ -266,24 +286,6 @@ stages:
               aksClusterName: '$(aksCluster.name)'
               dnsSubscriptionName: '${{ variables.dnsZoneSubscription }}'
               dnsResourceGroupName: '${{ variables.dnsZoneResourceGroup }}'
-
-  ##################################################
-  # Deploy Nuget Packages. #########################
-  - stage: Push_Nuget
-    dependsOn: Run_Entity_Framework_Dev
-    displayName: Deploy NuGet Packages
-    variables:
-      - template: variables/dev.yaml
-      - template: variables/shared.yaml
-        parameters:
-          env: ${{ variables.env }}
-    jobs:
-      - job: Publish_Nuget
-        displayName: Publish NuGet Packages
-        steps:
-          - template: templates\dotnet\push-nuget-packages.yml@azTemplates
-            parameters:
-              vstsFeed: '${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}'
 
   ##################################################
   # Run Acceptance Tests. ##########################

@@ -33,7 +33,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected Mock<ICommandHandler> CommandHandlerMock;
         protected Mock<IRandomGenerator> RandomGenerator;
         protected Mock<IHearingService> HearingServiceMock;
-        protected KinlyConfiguration KinlyConfiguration;
+        protected SupplierConfiguration SupplierConfiguration;
         protected Mock<IVhLogger> Logger;
 
         private IEventPublisher _eventPublisher;
@@ -45,7 +45,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected IClonedBookingAsynchronousProcess ClonedBookingAsynchronousProcess;
         protected ICreateConferenceAsynchronousProcess CreateConferenceAsynchronousProcess;
         protected IEventPublisherFactory PublisherFactory;
-        protected Mock<IEventPublisherFactory> PublisherFactoryMock;
         protected IFeatureToggles FeatureToggles;
 
         [SetUp]
@@ -55,17 +54,21 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             QueryHandlerMock = new Mock<IQueryHandler>();
             CommandHandlerMock = new Mock<ICommandHandler>();
             HearingServiceMock = new Mock<IHearingService>();
-            KinlyConfiguration = new KinlyConfiguration { SipAddressStem = "@WhereAreYou.com" };
+            SupplierConfiguration = new SupplierConfiguration { SipAddressStemKinly = "@WhereAreYouKinly.com", SipAddressStemVodafone = "@WhereAreYouVoda.com" };
             RandomGenerator = new Mock<IRandomGenerator>();
             _eventPublisher = new EventPublisher(SbQueueClient);
             EventPublisherMock = new Mock<IEventPublisher>();
             Logger = new Mock<IVhLogger>();
-            PublisherFactoryMock = new Mock<IEventPublisherFactory>();
             PublisherFactory = EventPublisherFactoryInstance.Get(EventPublisherMock.Object);
-            FeatureToggles = new FeatureTogglesStub();
-            BookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
-            FirstdayOfMultidayBookingAsyncProcess = new FirstdayOfMultidayHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
-            ClonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(PublisherFactory, FeatureToggles);
+            var stub = new FeatureTogglesStub
+            {
+                UseVodafone = false
+            };
+            FeatureToggles = stub; 
+            
+            BookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(PublisherFactory);
+            FirstdayOfMultidayBookingAsyncProcess = new FirstdayOfMultidayHearingAsynchronousProcess(PublisherFactory);
+            ClonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(PublisherFactory);
             CreateConferenceAsynchronousProcess = new CreateConferenceAsynchronousProcess(PublisherFactory);
             Controller = GetControllerObject(false);
         }
@@ -76,20 +79,20 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object,
                 BookingAsynchronousProcess, FirstdayOfMultidayBookingAsyncProcess, ClonedBookingAsynchronousProcess, 
                 CreateConferenceAsynchronousProcess);
-            var participantAddedToHearingAsynchronousProcess = new ParticipantAddedToHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
+            var participantAddedToHearingAsynchronousProcess = new ParticipantAddedToHearingAsynchronousProcess(PublisherFactory);
             var newJudiciaryAddedAsynchronousProcess = new NewJudiciaryAddedAsynchronousProcesses(PublisherFactory);
             var hearingParticipantService = new HearingParticipantService(CommandHandlerMock.Object, EventPublisherMock.Object,
                 participantAddedToHearingAsynchronousProcess, newJudiciaryAddedAsynchronousProcess, QueryHandlerMock.Object);
             var endpointService = new EndpointService(QueryHandlerMock.Object, CommandHandlerMock.Object,
-                EventPublisherMock.Object);
+                EventPublisherMock.Object, new OptionsWrapper<SupplierConfiguration>(SupplierConfiguration), FeatureToggles);
             var judiciaryParticipantService = new JudiciaryParticipantService(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 hearingParticipantService, EventPublisherMock.Object);
             var updateHearingService = new UpdateHearingService(hearingParticipantService, endpointService, RandomGenerator.Object,
-                new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration), judiciaryParticipantService);
+                new OptionsWrapper<SupplierConfiguration>(SupplierConfiguration), judiciaryParticipantService, FeatureToggles);
 
             return new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
-                bookingService, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object, Logger.Object, updateHearingService);
+                bookingService, RandomGenerator.Object,
+                HearingServiceMock.Object, Logger.Object, updateHearingService, endpointService);
         }
 
         [Test]

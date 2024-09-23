@@ -63,6 +63,15 @@ namespace BookingsApi.Contract.V1.Responses
         /// Is an optional contact number for generic accounts
         /// </summary>
         public string OptionalContactTelephone { get; set; }
-
+        
+        /// <summary>
+        /// The judiciary person's interpreter language details
+        /// </summary>
+        public InterpreterLanguagesResponse InterpreterLanguage { get; set; }
+        
+        /// <summary>
+        /// Interpreter language, for when the interpreter language code is not available
+        /// </summary>
+        public string OtherLanguage { get; set; }
     }
 }

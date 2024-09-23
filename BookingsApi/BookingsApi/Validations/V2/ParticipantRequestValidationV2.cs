@@ -1,5 +1,4 @@
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.Domain.Constants;
 using FluentValidation;
 
 namespace BookingsApi.Validations.V2
@@ -20,7 +19,7 @@ namespace BookingsApi.Validations.V2
             RuleFor(x => x.ContactEmail).Must(x => x.IsValidEmail())
                 .When(x => !string.IsNullOrWhiteSpace(x.ContactEmail)).WithMessage(InvalidContactEmailErrorMessage);
 
-            var regex = "^([-A-Za-z0-9 ',._]){1,255}$";
+            var regex = @"^[\p{L}\p{N}\s',._-]+${1,255}$";
             RuleFor(x => x.DisplayName)
                 .NotEmpty().WithMessage(NoDisplayNameErrorMessage)
                 .Matches(regex).WithMessage(InvalidDisplayNameErrorMessage);

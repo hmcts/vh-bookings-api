@@ -1,6 +1,6 @@
 ---
 java:
-  image: "sdshmctspublic.azurecr.io/vh/bookings-api:latest"
+  image: 'sdshmctspublic.azurecr.io/vh/bookings-api:latest'
   applicationPort: 8080
   ingressHost: vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net
   releaseNameOverride: vh-bookings-api
@@ -27,12 +27,15 @@ java:
       secrets:
         - azuread--clientid
         - azuread--clientsecret
-        - kinlyconfiguration--sipaddressstem
         - launchdarkly--sdkkey
         - name: azuread--identifieruri
           alias: azuread--bookingsapiresourceid
         - name: azuread--identifieruri
           alias: services--bookingsapiresourceid
+        - name: kinlyconfiguration--sipaddressstem
+          alias: supplierconfiguration--sipaddressstemkinly
+        - name: vodafoneconfiguration--sipaddressstem
+          alias: supplierconfiguration--sipaddressstemvodafone
   environment:
     ASPNETCORE_URLS: http://+:8080
     DISABLEHTTPSREDIRECTION: true
@@ -40,5 +43,5 @@ java:
     Logging__LogLevel__Microsoft: warning
     Logging__LogLevel__System: warning
     SERVICEBUSQUEUE__QUEUENAME: booking
-    TESTING__TESTUSERNAMESTEM: "@hearings.reform.hmcts.net"
+    TESTING__TESTUSERNAMESTEM: '@hearings.reform.hmcts.net'
     UseServiceBusFake: false

@@ -1,3 +1,4 @@
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
@@ -14,20 +15,23 @@ namespace BookingsApi.Controllers.V2
         private readonly IQueryHandler _queryHandler;
         private readonly IBookingService _bookingService;
         private readonly IRandomGenerator _randomGenerator;
-        private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly ILogger<HearingsControllerV2> _logger;
         private readonly IUpdateHearingService _updateHearingService;
+        private readonly IEndpointService _endpointService;
+        private readonly IFeatureToggles _featureToggles;
 
         public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
             ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfigurationOption, IUpdateHearingService updateHearingService)
+            IUpdateHearingService updateHearingService, IEndpointService endpointService,
+            IFeatureToggles featureToggles)
         {
             _queryHandler = queryHandler;
             _bookingService = bookingService;
             _logger = logger;
             _randomGenerator = randomGenerator;
-            _kinlyConfiguration = kinlyConfigurationOption.Value;
             _updateHearingService = updateHearingService;
+            _endpointService = endpointService;
+            _featureToggles = featureToggles;
         }
 
         /// <summary>
@@ -43,6 +47,7 @@ namespace BookingsApi.Controllers.V2
         public async Task<IActionResult> BookNewHearingWithCode(BookNewHearingRequestV2 request)
         {
             request.SanitizeRequest();
+            request.BookingSupplier ??= _featureToggles.UseVodafoneToggle() ? BookingSupplier.Vodafone : BookingSupplier.Kinly;
             var result = await new BookNewHearingRequestInputValidationV2().ValidateAsync(request);
             if (!result.IsValid)
             {
@@ -62,9 +67,10 @@ namespace BookingsApi.Controllers.V2
             }
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
-            
+
+            var sipAddressStem = _endpointService.GetSipAddressStem(request.BookingSupplier);
             var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
-                request, caseType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem, hearingRoles);
+                request, caseType, hearingVenue, cases, _randomGenerator, sipAddressStem, hearingRoles);
 
             var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
             
@@ -240,6 +246,70 @@ namespace BookingsApi.Controllers.V2
             await _bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, videoHearingUpdateDate);
 
             return NoContent();
+        }
+        
+        /// <summary>
+        /// Return hearing details for todays hearings
+        /// </summary>
+        /// <returns>Booking status</returns>
+        [HttpGet("today")]
+        [OpenApiOperation("GetHearingsForTodayV2")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> GetHearingsForToday()
+        {
+            var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery());
+            
+            if (!videoHearings.Any())
+                return Ok(new List<HearingDetailsResponseV2>());
+            
+            return Ok(videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
+        }
+
+        /// <summary>
+        /// Return hearing details for todays hearings by venue
+        /// </summary>
+        /// <param name="venueNames">List of hearing venue names provided in payload</param>
+        /// <returns>Booking status</returns>
+        [HttpPost("today/venue")]
+        [OpenApiOperation("GetHearingsForTodayByVenueV2")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> GetHearingsForTodayByVenue([FromBody] IEnumerable<string> venueNames)
+        {
+            var videoHearings =
+                await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery(venueNames));
+
+            if (!videoHearings.Any())
+                return Ok(new List<HearingDetailsResponseV2>());
+
+            return Ok(videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
+        }
+        
+        /// <summary>
+        /// Get list of all confirmed hearings for a given username for today
+        /// </summary>
+        /// <param name="username">username of person to search against</param>
+        /// <returns>Hearing details</returns>
+        [HttpGet("today/username")]
+        [OpenApiOperation("GetConfirmedHearingsByUsernameForTodayV2")]
+        [ProducesResponseType(typeof(List<ConfirmedHearingsTodayResponseV2>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> GetConfirmedHearingsByUsernameForToday([FromQuery] string username)
+        {
+            var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
+            var hearings =
+                await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
+            
+            if (!hearings.Any())
+            {
+                return NotFound($"{username.Trim().ToLower()} does not have any confirmed hearings today");
+            }
+
+            var response = hearings.Select(ConfirmedHearingsTodayResponseMapperV2.Map).ToList();
+            return Ok(response);
         }
 
         private async Task<HearingVenue> GetHearingVenue(string venueCode)

@@ -28,6 +28,7 @@ namespace BookingsApi.Domain
             Endpoints = new List<Endpoint>();
             Allocations = new List<Allocation>();
             JudiciaryParticipants = new List<JudiciaryParticipant>();
+            ConferenceSupplier = VideoSupplier.Kinly;
         }
 
         /// <summary>
@@ -104,6 +105,7 @@ namespace BookingsApi.Domain
         public bool AudioRecordingRequired { get; set; }
         public string CancelReason { get; set; }
         public Guid? SourceId { get; set; }
+        public VideoSupplier ConferenceSupplier { get; protected set; }
 
         // Ideally, the domain object would implement the clone method and so this change is a work around.
         public bool IsFirstDayOfMultiDayHearing
@@ -168,7 +170,9 @@ namespace BookingsApi.Domain
                 defenceAdvocate = Participants.Single(x => x.Id == endpoint.DefenceAdvocate.Id);
             }
 
-            Endpoints.Add(new Endpoint(endpoint.DisplayName, endpoint.Sip, endpoint.Pin, defenceAdvocate));
+            var newEndpoint = new Endpoint(endpoint.DisplayName, endpoint.Sip, endpoint.Pin, defenceAdvocate);
+            newEndpoint.UpdateLanguagePreferences(endpoint.InterpreterLanguage, endpoint.OtherLanguage);
+            Endpoints.Add(newEndpoint);
             UpdatedDate = DateTime.UtcNow;
         }
 
@@ -179,7 +183,7 @@ namespace BookingsApi.Domain
 
         public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (DoesParticipantExistByContactEmail(person.ContactEmail))
+            if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), $"Participant {person.ContactEmail} already exists in the hearing");
             }
@@ -203,7 +207,7 @@ namespace BookingsApi.Domain
         public Participant AddRepresentative(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
             string representee)
         {
-            if (DoesParticipantExistByContactEmail(person.ContactEmail))
+            if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), "Participant already exists in the hearing");
             }
@@ -251,7 +255,7 @@ namespace BookingsApi.Domain
 
         public Participant AddJudicialOfficeHolder(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (DoesParticipantExistByContactEmail(person.ContactEmail))
+            if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), "Judicial office holder already exists in the hearing");
             }
@@ -285,40 +289,50 @@ namespace BookingsApi.Domain
             GetParticipants().Any(x => x.HearingRole.Name == "Judge") ||
             JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
-        public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)
+        public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName,
+            string email = null, string phone = null, InterpreterLanguage interpreterLanguage = null,
+            string otherLanguage = null)
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
-            
-            if (DoesJudgeExist())
-                throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
 
-            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge, email, phone);
-            
+            if (DoesJudgeExist())
+                throw new DomainRuleException(nameof(judiciaryPerson),
+                    DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
+
+            var participant = new JudiciaryParticipant(displayName, judiciaryPerson,
+                JudiciaryParticipantHearingRoleCode.Judge, email, phone);
+            participant.UpdateLanguagePreferences(interpreterLanguage, otherLanguage);
+
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
             UpdateBookingStatusJudgeRequirement();
             return participant;
         }
-        
-        public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)
+
+        public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName,
+            string email = null, string phone = null, InterpreterLanguage interpreterLanguage = null,
+            string otherLanguage = null)
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
             if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
             {
-                throw new DomainRuleException(nameof(judiciaryPerson), $"Judiciary Person {judiciaryPerson.PersonalCode} already exists in the hearing");
+                throw new DomainRuleException(nameof(judiciaryPerson),
+                    $"Judiciary Person {judiciaryPerson.PersonalCode} already exists in the hearing");
             }
-            var participant = new JudiciaryParticipant(displayName, 
-                judiciaryPerson, 
+
+            var participant = new JudiciaryParticipant(displayName,
+                judiciaryPerson,
                 JudiciaryParticipantHearingRoleCode.PanelMember,
                 email, phone);
+            participant.UpdateLanguagePreferences(interpreterLanguage, otherLanguage);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
-            
+
             return participant;
         }
 
         public JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
-            JudiciaryParticipantHearingRoleCode newHearingRoleCode)
+            JudiciaryParticipantHearingRoleCode newHearingRoleCode, InterpreterLanguage interpreterLanguage, string otherLanguage)
         {
             if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
             {
@@ -337,7 +351,9 @@ namespace BookingsApi.Domain
             }
             
             var hasChanged = newDisplayName != participant.DisplayName ||
-                             newHearingRoleCode != participant.HearingRoleCode;
+                             newHearingRoleCode != participant.HearingRoleCode ||
+                             interpreterLanguage?.Code != participant.InterpreterLanguage?.Code ||
+                             otherLanguage != participant.OtherLanguage;
             if (!hasChanged)
                 return participant;
             
@@ -345,6 +361,7 @@ namespace BookingsApi.Domain
             
             participant.UpdateDisplayName(newDisplayName);
             participant.UpdateHearingRoleCode(newHearingRoleCode);
+            participant.UpdateLanguagePreferences(interpreterLanguage, otherLanguage);
             ValidateHostCount();
             UpdatedDate = DateTime.UtcNow;
             
@@ -361,7 +378,12 @@ namespace BookingsApi.Domain
 
             if (judiciaryPerson.IsALeaver())
             {
-                throw new DomainRuleException(nameof(judiciaryPerson), "Cannot add a participant who is a leaver");
+                throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.CannotAddLeaverJudiciaryPerson);
+            }
+
+            if (judiciaryPerson.Deleted)
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.CannotAddDeletedJudiciaryPerson);
             }
         }
 
@@ -493,7 +515,7 @@ namespace BookingsApi.Domain
 
             HearingVenue = hearingVenue;
 
-            if (cases.Any())
+            if (cases.Count > 0)
             {
                 UpdateCase(cases[0]);
             }
@@ -732,17 +754,17 @@ namespace BookingsApi.Domain
             var judge = GetNonJudiciaryJudge();
             var judiciaryJudge = GetJudiciaryJudge();
 
-            return judge ?? judiciaryJudge;
+            return (ParticipantBase)judge ?? judiciaryJudge;
         }
 
-        private ParticipantBase GetNonJudiciaryJudge()
+        private Participant GetNonJudiciaryJudge()
         {
             var judge = Participants.FirstOrDefault(p => p is Judge);
 
             return judge;
         }
         
-        private ParticipantBase GetJudiciaryJudge()
+        private JudiciaryParticipant GetJudiciaryJudge()
         {
             var judiciaryJudge = JudiciaryParticipants?.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
@@ -766,14 +788,20 @@ namespace BookingsApi.Domain
                     _ => Status 
                 };
         }
-
+        
+        public void OverrideSupplier(VideoSupplier commandVideoSupplier)
+        {
+            if (Status is BookingStatus.ConfirmedWithoutJudge or BookingStatus.Created)
+            {
+                throw new DomainRuleException(nameof(ConferenceSupplier), DomainRuleErrorMessages.ConferenceSupplierAlreadyExists);
+            }
+            ConferenceSupplier = commandVideoSupplier;
+        }
+        
         public void ReassignJudge(Judge newJudge)
         {
-            if (newJudge == null)
-            {
-                throw new ArgumentNullException(nameof(newJudge));
-            }
-            
+            ArgumentNullException.ThrowIfNull(newJudge);
+
             ValidateReassignJudgeAllowed();
 
             var judiciaryJudge = GetJudiciaryJudge();
@@ -793,13 +821,11 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        public void ReassignJudiciaryJudge(JudiciaryJudge newJudge)
+        public void ReassignJudiciaryJudge(JudiciaryJudge newJudge, InterpreterLanguage interpreterLanguage = null,
+            string otherLanguage = null)
         {
-            if (newJudge == null)
-            {
-                throw new ArgumentNullException(nameof(newJudge));
-            }
-            
+            ArgumentNullException.ThrowIfNull(newJudge);
+
             ValidateReassignJudgeAllowed();
             
             var nonJudiciaryJudge = GetNonJudiciaryJudge();
@@ -815,7 +841,8 @@ namespace BookingsApi.Domain
             {
                 JudiciaryParticipants.Remove(existingJudge);
             }
-
+            
+            newJudge.UpdateLanguagePreferences(interpreterLanguage, otherLanguage);
             JudiciaryParticipants.Add(newJudge);
             
             UpdatedDate = DateTime.UtcNow;

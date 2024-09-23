@@ -1,5 +1,6 @@
 using BookingsApi.Domain;
 using BookingsApi.Domain.JudiciaryParticipants;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
 using BookingStatus = BookingsApi.Domain.Enumerations.BookingStatus;
 
@@ -108,6 +109,24 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == "Cannot add a participant who is a leaver").Should().BeTrue();
         }
+        
+        [Test]
+        public void should_throw_exception_when_judiciary_person_has_been_deleted()
+        {
+            // Arrange
+            var hearing = new VideoHearingBuilder(addJudge: false).Build();
+            var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
+            newJudiciaryPerson.SetProtected(nameof(newJudiciaryPerson.Deleted), true);
+            newJudiciaryPerson.SetProtected(nameof(newJudiciaryPerson.DeletedOn), "2023-01-01");
+            var newJudiciaryJudge = new JudiciaryJudge("DisplayName", newJudiciaryPerson);
+            
+            // Act
+            var action = () => hearing.ReassignJudiciaryJudge(newJudiciaryJudge);
+            
+            // Assert
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures
+                .Exists(x => x.Message == DomainRuleErrorMessages.CannotAddDeletedJudiciaryPerson).Should().BeTrue();
+        }
 
         [Test]
         public void should_throw_exception_when_judiciary_person_already_exists_on_hearing_with_different_role()
@@ -143,6 +162,43 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             // Assert
             hearing.GetJudge().Should().Be(judiciaryJudge);
+        }
+
+        [Test]
+        public void should_reassign_judiciary_judge_with_interpreter_languages()
+        {
+            // Arrange
+            var hearing = new VideoHearingBuilder(addJudge: false)
+                .WithJudiciaryJudge()
+                .Build();
+            var judiciaryPerson = ((JudiciaryParticipant)hearing.GetJudge()).JudiciaryPerson;
+            var judiciaryJudge = new JudiciaryJudge("DisplayName", judiciaryPerson);
+            var language = new InterpreterLanguage(1, "spa", "Spanish", "", InterpreterType.Verbal, true);
+            
+            // Act
+            hearing.ReassignJudiciaryJudge(judiciaryJudge, interpreterLanguage: language);
+            
+            // Assert
+            judiciaryJudge.InterpreterLanguage.Should().NotBeNull();
+            judiciaryJudge.InterpreterLanguage.Code.Should().Be(language.Code);
+        }
+
+        [Test]
+        public void should_reassign_judiciary_judge_with_other_languages()
+        {
+            // Arrange
+            var hearing = new VideoHearingBuilder(addJudge: false)
+                .WithJudiciaryJudge()
+                .Build();
+            var judiciaryPerson = ((JudiciaryParticipant)hearing.GetJudge()).JudiciaryPerson;
+            var judiciaryJudge = new JudiciaryJudge("DisplayName", judiciaryPerson);
+            const string otherLanguage = "made up";
+            
+            // Act
+            hearing.ReassignJudiciaryJudge(judiciaryJudge, otherLanguage: otherLanguage);
+            
+            // Assert
+            judiciaryJudge.OtherLanguage.Should().Be(otherLanguage);
         }
     }
 }

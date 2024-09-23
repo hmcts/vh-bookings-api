@@ -127,4 +127,29 @@ public class HearingDetailsResponseV2
         /// </summary>
         [JsonProperty("judicial_office_holders")]
         public List<JudiciaryParticipantResponse> JudiciaryParticipants { get; set; }
+        
+        /// <summary>
+        /// The supplier with whom a conference has been booked with
+        /// </summary>
+        public BookingSupplier BookingSupplier { get; set; }
+        
+        /// <summary>
+        /// The UUID of the user who the hearing is allocated to, if allocated
+        /// </summary>
+        public Guid? AllocatedToId { get; set; }
+
+        /// <summary>
+        /// The username of the user who the hearing is allocated to, if allocated
+        /// </summary>
+        public string AllocatedToUsername { get; set; }
+
+        /// <summary>
+        /// The full name of the user who the hearing is allocated to, if allocated
+        /// </summary>
+        public string AllocatedToName { get; set; }
+        
+        /// <summary>
+        /// Does the hearing venue support work allocation
+        /// </summary>
+        public bool SupportsWorkAllocation { get; set; }
 }

@@ -153,6 +153,20 @@ namespace BookingsApi.UnitTests.Validation.V2
         }
 
         [Test]
+        public async Task should_return_invalid_booking_supplier()
+        {
+            var request = BuildRequest();
+            request.BookingSupplier = 0;
+            
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.BookingSupplierErrorMessage)
+                .Should().BeTrue();
+        }
+
+        [Test]
         public async Task Should_Pass_When_Linked_Participant_Is_Empty()
         {
             var request = BuildRequest();
