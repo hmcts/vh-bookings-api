@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
@@ -9,7 +8,7 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
 {
-    public class Endpoint : TrackableEntity<Guid>
+    public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
     {
         public string DisplayName { get; set; }
         public string Sip { get; set; }
@@ -21,9 +20,9 @@ namespace BookingsApi.Domain
         public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
         public string OtherLanguage { get; set; }
         
-        public Guid? ScreeningId { get; protected set; }
-        public virtual Screening Screening { get; protected set; }
-        
+        public Guid? ScreeningId { get; set; }
+        public virtual Screening Screening { get; set; }
+
         protected Endpoint(){}
 
         public Endpoint(string displayName, string sip, string pin, Participant defenceAdvocate)
@@ -63,28 +62,13 @@ namespace BookingsApi.Domain
 
         public void AssignScreening(ScreeningType type, List<Participant> participants, List<Endpoint> endpoints)
         {
-            var screening = Screening;
-            if (screening == null)
-            {
-                screening = new Screening(type, this);
-                Screening = screening;
-                ScreeningId = screening.Id;
-                screening.UpdateScreeningList(participants, endpoints);
-            }
-            else
-            {
-                screening.UpdateType(type);
-                screening.UpdateScreeningList(participants, endpoints);
-            }
-            Screening = screening;
+            ScreeningHelper.AssignScreening(this, type, participants, endpoints);
             UpdatedDate = DateTime.UtcNow;
         }
 
         public void RemoveScreening()
         {
-            Screening.ScreeningEntities.Clear();
-            Screening = null;
-            ScreeningId = null;
+            ScreeningHelper.RemoveScreening(this);
             UpdatedDate = DateTime.UtcNow;
         }
     }

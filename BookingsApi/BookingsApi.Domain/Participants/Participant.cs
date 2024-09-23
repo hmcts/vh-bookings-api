@@ -9,7 +9,7 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain.Participants
 {
-    public abstract class Participant : ParticipantBase
+    public abstract class Participant : ParticipantBase, IScreenableEntity
     {
         protected readonly ValidationFailures _validationFailures = new ValidationFailures();
 
@@ -45,8 +45,8 @@ namespace BookingsApi.Domain.Participants
         public string OtherLanguage { get; set; }
         public IList<LinkedParticipant> LinkedParticipants { get; set; }
         
-        public Guid? ScreeningId { get; protected set; }
-        public virtual Screening Screening { get; protected set; }
+        public Guid? ScreeningId { get; set; }
+        public virtual Screening Screening { get; set; }
 
         protected virtual void ValidateParticipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
         {
@@ -147,28 +147,13 @@ namespace BookingsApi.Domain.Participants
         
         public void AssignScreening(ScreeningType type, List<Participant> participants, List<Endpoint> endpoints)
         {
-            var screening = Screening;
-            if (screening == null)
-            {
-                screening = new Screening(type, this);
-                Screening = screening;
-                ScreeningId = screening.Id;
-                screening.UpdateScreeningList(participants, endpoints);
-            }
-            else
-            {
-                screening.UpdateType(type);
-                screening.UpdateScreeningList(participants, endpoints);
-            }
-            Screening = screening;
+            ScreeningHelper.AssignScreening(this, type, participants, endpoints);
             UpdatedDate = DateTime.UtcNow;
         }
 
         public void RemoveScreening()
         {
-            Screening.ScreeningEntities.Clear();
-            Screening = null;
-            ScreeningId = null;
+            ScreeningHelper.RemoveScreening(this);
             UpdatedDate = DateTime.UtcNow;
         }
     }
