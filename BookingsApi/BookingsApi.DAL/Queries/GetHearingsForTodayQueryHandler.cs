@@ -33,7 +33,7 @@ namespace BookingsApi.DAL.Queries
                 .Where(x => x.ScheduledDateTime.Date == DateTime.Today.Date)
                 .AsQueryable();
 
-            if (query.HearingVenueNames != null && query.HearingVenueNames.Any())
+            if (query.HearingVenueNames != null && query.HearingVenueNames.Count != 0)
                 hearingQuery = hearingQuery
                     .Where(x => query.HearingVenueNames.Contains(x.HearingVenue.Name))
                     .OrderBy(x => x.HearingVenue.Name).ThenBy(x => x.ScheduledDateTime);
