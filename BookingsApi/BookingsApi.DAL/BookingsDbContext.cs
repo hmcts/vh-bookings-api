@@ -52,12 +52,8 @@ namespace BookingsApi.DAL
 
             modelBuilder.Entity<JusticeUser>().HasQueryFilter(u => !u.Deleted);
             modelBuilder.Entity<VhoWorkHours>().HasQueryFilter(wh => !wh.Deleted);
-
-            modelBuilder.Entity<Participant>().Navigation(p => p.Screening).AutoInclude();
-            modelBuilder.Entity<Endpoint>().Navigation(p => p.Screening).AutoInclude();
-            modelBuilder.Entity<Screening>().Navigation(s => s.ScreeningEntities).AutoInclude();
         }
-        
+
         public override int SaveChanges()
         {
             SetUpdatedDateValue();
