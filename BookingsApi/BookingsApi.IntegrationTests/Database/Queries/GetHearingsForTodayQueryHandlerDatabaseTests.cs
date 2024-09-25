@@ -49,5 +49,19 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             venues.Should().Contain(x=> x.Id == _seededHearing.Id);
             venues.Should().NotContain(x=> x.Id == hearing2.Id);
         }
+
+        [Test]
+        public async Task Should_return_list_of_hearing_for_today_including_endpoints()
+        {
+            _seededHearing = await Hooks.SeedVideoHearing(options => 
+            {
+                options.ScheduledDate = DateTime.UtcNow.Date;
+                options.EndpointsToAdd = 2;
+            }); 
+            var query = new GetHearingsForTodayQuery();
+            var venues = await _handler.Handle(query);
+            venues.Should().Contain(h => h.Id == _seededHearing.Id);
+            venues.Should().Contain(v=>v.Endpoints.Any());
+        }    
     }
 }
