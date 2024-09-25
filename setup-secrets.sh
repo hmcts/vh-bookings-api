@@ -14,6 +14,20 @@ mkdir -p "$base_dir"
 
 yaml_file="charts/vh-bookings-api/values.yaml"
 
+# Define an array of keys to ignore
+ignore_keys=("connectionstrings--vhbookings")
+
+# Function to check if a key is in the ignore list
+is_ignored() {
+    local key=$1
+    for ignore_key in "${ignore_keys[@]}"; do
+        if [[ "$key" == "$ignore_key" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 # Parse the YAML file to extract keys under keyVaults
 keys=$(yq e '.java.keyVaults | keys' "$yaml_file")
 
@@ -30,20 +44,33 @@ for key in $(echo "$keys" | yq e '.[]' -); do
         # is the entry a string or a name/alias object
         secret_type=$(yq e ".java.keyVaults.$key.secrets[$index] | type" "$yaml_file")
         if [ "$secret_type" == "!!str" ]; then
+            # process the string
+            if is_ignored "$secret_name"; then
+                echo "Ignoring key: $secret_name"
+                continue
+            fi
             keyvaultValue=$(az keyvault secret show --vault-name "$key-dev" --name "$secret_name" --query value -o tsv)
             file_name="$secret_name"
             file_path="$dir_path/$file_name"
             echo "Creating file: $file_path with content: $keyvaultValue"
-            # echo "$keyvaultValue" >"$file_name"
+            echo "$keyvaultValue" >"$file_path"
 
         else
+            # process the name/alias object
             name=$(echo "$secret_name" | yq e '.name' -)
             alias=$(echo "$secret_name" | yq e '.alias' -)
+
+            # process the pair
+            if is_ignored "$name"; then
+                echo "Ignoring key: $name"
+                continue
+            fi
 
             keyvaultValue=$(az keyvault secret show --vault-name "$key-dev" --name "$name" --query value -o tsv)
             file_name="$alias"
             file_path="$dir_path/$file_name"
             echo "Creating file: $file_path with content: $keyvaultValue"
+            echo "$keyvaultValue" >"$file_path"
         fi
     done
 
