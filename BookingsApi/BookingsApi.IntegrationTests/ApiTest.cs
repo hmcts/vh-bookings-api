@@ -1,3 +1,4 @@
+using BookingsApi.Client;
 using Microsoft.Extensions.Configuration;
 using Testing.Common.Configuration;
 using Testing.Common.Stubs;
@@ -21,7 +22,6 @@ public class ApiTest
         GenericJudge = Hooks.SeedGenericJudgePerson().Result;
         Application = new VhApiWebApplicationFactory();
     }
-
 
     [TearDown]
     public async Task TearDown()

@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Mappings.V2.Extensions;
 
 namespace BookingsApi.Mappings.V2
 {
@@ -37,7 +38,8 @@ namespace BookingsApi.Mappings.V2
                 DisplayName = requestV2Participant.DisplayName,
                 Representee = requestV2Participant.Representee,
                 OtherLanguage = requestV2Participant.OtherLanguage,
-                InterpreterLanguageCode = requestV2Participant.InterpreterLanguageCode
+                InterpreterLanguageCode = requestV2Participant.InterpreterLanguageCode,
+                Screening = requestV2Participant.Screening?.MapToDalDto()
             };
         }
     }

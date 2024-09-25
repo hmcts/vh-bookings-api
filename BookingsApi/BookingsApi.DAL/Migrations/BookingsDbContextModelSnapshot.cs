@@ -135,6 +135,9 @@ namespace BookingsApi.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ScreeningId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Sip")
                         .HasColumnType("nvarchar(450)");
 
@@ -699,6 +702,9 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<Guid>("PersonId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ScreeningId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -1015,6 +1021,74 @@ namespace BookingsApi.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserRole", (string)null);
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.SpecialMeasure.Screening", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("EndpointId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ParticipantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EndpointId")
+                        .IsUnique()
+                        .HasFilter("[EndpointId] IS NOT NULL");
+
+                    b.HasIndex("ParticipantId")
+                        .IsUnique()
+                        .HasFilter("[ParticipantId] IS NOT NULL");
+
+                    b.ToTable("Screening", (string)null);
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.SpecialMeasure.ScreeningEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("EndpointId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ParticipantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ScreeningId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EndpointId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.HasIndex("ScreeningId");
+
+                    b.ToTable("ScreeningEntity", (string)null);
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.SuitabilityAnswer", b =>
@@ -1406,6 +1480,44 @@ namespace BookingsApi.DAL.Migrations
                         .HasForeignKey("CaseTypeId");
                 });
 
+            modelBuilder.Entity("BookingsApi.Domain.SpecialMeasure.Screening", b =>
+                {
+                    b.HasOne("BookingsApi.Domain.Endpoint", "Endpoint")
+                        .WithOne("Screening")
+                        .HasForeignKey("BookingsApi.Domain.SpecialMeasure.Screening", "EndpointId");
+
+                    b.HasOne("BookingsApi.Domain.Participants.Participant", "Participant")
+                        .WithOne("Screening")
+                        .HasForeignKey("BookingsApi.Domain.SpecialMeasure.Screening", "ParticipantId");
+
+                    b.Navigation("Endpoint");
+
+                    b.Navigation("Participant");
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.SpecialMeasure.ScreeningEntity", b =>
+                {
+                    b.HasOne("BookingsApi.Domain.Endpoint", "Endpoint")
+                        .WithMany()
+                        .HasForeignKey("EndpointId");
+
+                    b.HasOne("BookingsApi.Domain.Participants.Participant", "Participant")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId");
+
+                    b.HasOne("BookingsApi.Domain.SpecialMeasure.Screening", "Screening")
+                        .WithMany("ScreeningEntities")
+                        .HasForeignKey("ScreeningId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Endpoint");
+
+                    b.Navigation("Participant");
+
+                    b.Navigation("Screening");
+                });
+
             modelBuilder.Entity("BookingsApi.Domain.SuitabilityAnswer", b =>
                 {
                     b.HasOne("BookingsApi.Domain.Questionnaire", "Questionnaire")
@@ -1452,6 +1564,11 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("HearingCases");
                 });
 
+            modelBuilder.Entity("BookingsApi.Domain.Endpoint", b =>
+                {
+                    b.Navigation("Screening");
+                });
+
             modelBuilder.Entity("BookingsApi.Domain.Hearing", b =>
                 {
                     b.Navigation("Allocations");
@@ -1484,6 +1601,8 @@ namespace BookingsApi.DAL.Migrations
             modelBuilder.Entity("BookingsApi.Domain.Participants.Participant", b =>
                 {
                     b.Navigation("LinkedParticipants");
+
+                    b.Navigation("Screening");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.Questionnaire", b =>
@@ -1506,6 +1625,11 @@ namespace BookingsApi.DAL.Migrations
             modelBuilder.Entity("BookingsApi.Domain.RefData.UserRole", b =>
                 {
                     b.Navigation("JusticeUserRoles");
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.SpecialMeasure.Screening", b =>
+                {
+                    b.Navigation("ScreeningEntities");
                 });
 #pragma warning restore 612, 618
         }

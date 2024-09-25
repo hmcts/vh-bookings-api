@@ -1,29 +1,24 @@
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
+using BookingsApi.Mappings.V2.Extensions;
 using BookingsApi.Validations.V2;
 
 namespace BookingsApi.Controllers.V2
 {
+    /// <summary>
+    /// A suite of operations to manage participants in a booking (V2)
+    /// </summary>
     [Produces("application/json")]
     [Route(template:"v{version:apiVersion}/hearings")]
     [ApiVersion("2.0")]
     [ApiController]
-    public class HearingParticipantsControllerV2 : ControllerBase
+    public class HearingParticipantsControllerV2(
+        IQueryHandler queryHandler,
+        ICommandHandler commandHandler,
+        IHearingParticipantService hearingParticipantService)
+        : ControllerBase
     {
-        private readonly IQueryHandler _queryHandler;
-        private readonly ICommandHandler _commandHandler;
-        private readonly IHearingParticipantService _hearingParticipantService;
-
-        public HearingParticipantsControllerV2(IQueryHandler queryHandler,
-            ICommandHandler commandHandler,
-            IHearingParticipantService hearingParticipantService)
-        {
-            _queryHandler = queryHandler;
-            _commandHandler = commandHandler;
-            _hearingParticipantService = hearingParticipantService;
-        }
-        
         /// <summary>
         /// Add participant(s) to a hearing
         /// NOT USED BY ADMIN WEB
@@ -32,7 +27,7 @@ namespace BookingsApi.Controllers.V2
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
         [HttpPost("{hearingId}/participants")]
-        [OpenApiOperation("AddParticipantsToHearing")]
+        [OpenApiOperation("AddParticipantsToHearingV2")]
         [ProducesResponseType(typeof(List<ParticipantResponseV2>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -48,14 +43,14 @@ namespace BookingsApi.Controllers.V2
             }
 
             var query = new GetHearingByIdQuery(hearingId);
-            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+            var videoHearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
             if (videoHearing == null)
             {
                 return NotFound("Video hearing not found");
             }
             
-            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            var hearingRoles = await queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
 
             var dataValidationResult = await new AddParticipantsToHearingRequestRefDataValidationV2(hearingRoles).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
@@ -71,10 +66,10 @@ namespace BookingsApi.Controllers.V2
             
             var command = new AddParticipantsToVideoHearingCommand(hearingId, participants, linkedParticipants);
             
-            await _commandHandler.Handle(command);
+            await commandHandler.Handle(command);
 
-            var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
-            await _hearingParticipantService
+            var hearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+            await hearingParticipantService
                 .PublishEventForNewParticipantsAsync(hearing, participants);
 
             var addedParticipants = hearing.Participants.Where(x => request.Participants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail));
@@ -85,11 +80,11 @@ namespace BookingsApi.Controllers.V2
         }
 
         /// <summary>
-        /// Update participant details
+        /// Update participant details (Used by external clients)
         /// </summary>
         /// <param name="hearingId">Id of hearing to look up</param>
-        /// <param name="participantId">Id of participant to remove</param>
-        /// <param name="request">The participant information to add</param>
+        /// <param name="participantId">Id of participant to update</param>
+        /// <param name="request">The participant information to update</param>
         /// <returns></returns>
         [HttpPatch("{hearingId}/participants/{participantId}")]
         [OpenApiOperation("UpdateParticipantDetailsV2")]
@@ -107,7 +102,7 @@ namespace BookingsApi.Controllers.V2
             }
 
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
-            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+            var videoHearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
 
             if (videoHearing == null)
             {
@@ -123,7 +118,7 @@ namespace BookingsApi.Controllers.V2
 
             if (participant.HearingRole.UserRole.IsRepresentative)
             {
-                var repValidationResult = await _hearingParticipantService.ValidateRepresentativeInformationAsync(request);
+                var repValidationResult = await hearingParticipantService.ValidateRepresentativeInformationAsync(request);
                 if (!repValidationResult.IsValid)
                 {
                     ModelState.AddFluentValidationErrors(repValidationResult.Errors);
@@ -147,11 +142,11 @@ namespace BookingsApi.Controllers.V2
             
             request.ContactEmail = request.ContactEmail?.Trim();
 
-            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
-                request.DisplayName, request.TelephoneNumber, request.OrganisationName, representative,
-                linkedParticipants,
-                additionalInformation: additionalInformation, contactEmail: request.ContactEmail);
-            var updatedParticipant = await _hearingParticipantService.UpdateParticipantAndPublishEventAsync(videoHearing, updateParticipantCommand);
+            var screening = request.Screening?.MapToDalDto();
+            var requiredDto = new UpdateParticipantCommandRequiredDto(hearingId, participantId, request.Title, request.DisplayName, request.TelephoneNumber, request.OrganisationName, linkedParticipants);
+            var optionalDto = new UpdateParticipantCommandOptionalDto(representative, additionalInformation, request.ContactEmail, request.InterpreterLanguageCode, request.OtherLanguage, screening);
+            var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
+            var updatedParticipant = await hearingParticipantService.UpdateParticipantAndPublishEventAsync(videoHearing, updateParticipantCommand);
             
             var response = new ParticipantToResponseV2Mapper().MapParticipantToResponse(updatedParticipant);
             return Ok(response);
@@ -164,8 +159,8 @@ namespace BookingsApi.Controllers.V2
         /// <param name="request">The participants information</param>
         /// <returns>204 No Content</returns>
         [HttpPost("{hearingId}/updateParticipants")]
-        [OpenApiOperation("UpdateHearingParticipants")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [OpenApiOperation("UpdateHearingParticipantsV2")]
+        [ProducesResponseType(typeof(List<ParticipantResponseV2>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("2.0")]
@@ -179,14 +174,14 @@ namespace BookingsApi.Controllers.V2
             }
 
             var query = new GetHearingByIdQuery(hearingId);
-            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+            var videoHearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
             if (videoHearing == null)
             {
                 return NotFound();
             }
             
-            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            var hearingRoles = await queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
             var dataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidationV2(hearingRoles).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
@@ -194,7 +189,7 @@ namespace BookingsApi.Controllers.V2
                 return ValidationProblem(ModelState);
             }
 
-            var hearing = await _hearingParticipantService.UpdateParticipantsV2(request, videoHearing, hearingRoles);
+            var hearing = await hearingParticipantService.UpdateParticipantsV2(request, videoHearing, hearingRoles);
 
             var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail)
                 || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
@@ -206,13 +201,10 @@ namespace BookingsApi.Controllers.V2
 
         private static List<ParticipantResponseV2> CreateParticipantResponseV2List(List<Participant> participants)
         {
-            if (participants.Any())
-            {
-                var mapper = new ParticipantToResponseV2Mapper();
-                return participants.Select(x => mapper.MapParticipantToResponse(x)).ToList();
-            }
+            if (participants.Count == 0) return [];
+            var mapper = new ParticipantToResponseV2Mapper();
+            return participants.Select(x => mapper.MapParticipantToResponse(x)).ToList();
 
-            return new List<ParticipantResponseV2>();
         }
     }
 }

@@ -24,10 +24,11 @@ namespace BookingsApi.Mappings.V2
                 TelephoneNumber = participant.Person.TelephoneNumber,
                 Organisation = participant.Person.Organisation?.Name,
                 LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponseV2
-                    {LinkedId = x.LinkedId, TypeV2 = x.Type.MapToContractEnum()}).ToList(),
-                InterpreterLanguage = participant.InterpreterLanguage != null ?
-                    InterpreterLanguageToResponseMapper.MapInterpreterLanguageToResponse(participant.InterpreterLanguage) :
-                    null,
+                    { LinkedId = x.LinkedId, TypeV2 = x.Type.MapToContractEnum() }).ToList(),
+                InterpreterLanguage = participant.InterpreterLanguage != null
+                    ? InterpreterLanguageToResponseMapper.MapInterpreterLanguageToResponse(participant
+                        .InterpreterLanguage)
+                    : null,
                 OtherLanguage = participant.OtherLanguage
             };
 
@@ -43,6 +44,11 @@ namespace BookingsApi.Mappings.V2
                 case "JudicialOfficeHolder":
                     break;
             }
+
+            participantResponse.Screening = participant.Screening == null
+                ? null
+                : ScreeningToResponseV2Mapper.MapScreeningToResponse(participant.Screening);
+
 
             participantResponse.TrimAllStringsRecursively();
             return participantResponse;

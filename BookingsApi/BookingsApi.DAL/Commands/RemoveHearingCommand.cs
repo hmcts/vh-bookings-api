@@ -27,13 +27,22 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .Include(x=> x.JudiciaryParticipants).ThenInclude(x=> x.JudiciaryPerson)
-                .Where(x => x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();
+                // keep the following includes for the screening entities - cannot auto include due to cyclic dependency
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
+                .Where(x => x.Id == command.HearingId || x.SourceId == command.HearingId).AsSplitQuery().ToListAsync();
 
-            if (!hearingsIncCloned.Any())
+            if (hearingsIncCloned.Count == 0)
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
 
+            _context.RemoveRange(hearingsIncCloned.SelectMany(x => x.Participants).Where(p => p.Screening != null)
+                .Select(s => s.Screening).ToList());
+            _context.RemoveRange(hearingsIncCloned.SelectMany(x => x.Endpoints).Where(p => p.Screening != null)
+                .Select(s => s.Screening).ToList());
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetEndpoints()));
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetCases()));
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.Participants.SelectMany(p => p.LinkedParticipants)));

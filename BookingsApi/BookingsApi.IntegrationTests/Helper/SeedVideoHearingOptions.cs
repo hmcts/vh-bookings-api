@@ -20,5 +20,10 @@ namespace BookingsApi.IntegrationTests.Helper
         public int EndpointsToAdd { get; set; } = 0;
         public int ScheduledDuration { get; set; } = 45;
         public bool AudioRecordingRequired { get; set; } = false;
+        
+        /// <summary>
+        /// If true, it will screen the first individual from the participants list from another and an endpoint 
+        /// </summary>
+        public bool AddScreening { get; set; } = false;
     }
 }

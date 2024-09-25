@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Threading;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.SpecialMeasure;
 
 namespace BookingsApi.DAL
 {
@@ -52,7 +53,7 @@ namespace BookingsApi.DAL
             modelBuilder.Entity<JusticeUser>().HasQueryFilter(u => !u.Deleted);
             modelBuilder.Entity<VhoWorkHours>().HasQueryFilter(wh => !wh.Deleted);
         }
-        
+
         public override int SaveChanges()
         {
             SetUpdatedDateValue();

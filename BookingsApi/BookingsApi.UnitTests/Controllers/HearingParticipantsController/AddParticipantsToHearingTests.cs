@@ -4,6 +4,7 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;

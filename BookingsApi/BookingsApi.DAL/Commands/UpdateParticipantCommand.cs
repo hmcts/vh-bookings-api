@@ -1,6 +1,7 @@
 using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Extensions;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -31,26 +32,36 @@ namespace BookingsApi.DAL.Commands
         public string DisplayName { get; }
         public string TelephoneNumber { get; }
         public string OrganisationName { get; }
+        
+        /// <summary>
+        /// The updated participant entity
+        /// </summary>
         public Participant UpdatedParticipant { get; set; }
         public RepresentativeInformation RepresentativeInformation { get; }
         public AdditionalInformation AdditionalInformation { get; }
         public string ContactEmail { get; set; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }
+        
+        public string InterpreterLanguageCode { get; set; }
+        public string OtherLanguage { get; set; }
+        public ScreeningDto Screening { get; set; }
 
-        public UpdateParticipantCommand(Guid hearingId, Guid participantId, string title, string displayName, string telephoneNumber,
-            string organisationName, RepresentativeInformation representativeInformation, List<LinkedParticipantDto> linkedParticipants,
-            AdditionalInformation additionalInformation = null, string contactEmail = null)
+        public UpdateParticipantCommand(UpdateParticipantCommandRequiredDto requiredDto, UpdateParticipantCommandOptionalDto optionalDto = null)
         {
-            HearingId = hearingId;
-            ParticipantId = participantId;
-            Title = title;
-            DisplayName = displayName;
-            TelephoneNumber = telephoneNumber;
-            OrganisationName = organisationName;
-            RepresentativeInformation = representativeInformation;
-            AdditionalInformation = additionalInformation;
-            ContactEmail = contactEmail;
-            LinkedParticipants = linkedParticipants ?? new List<LinkedParticipantDto>();
+            HearingId = requiredDto.HearingId;
+            ParticipantId = requiredDto.ParticipantId;
+            Title = requiredDto.Title;
+            DisplayName = requiredDto.DisplayName;
+            TelephoneNumber = requiredDto.TelephoneNumber;
+            OrganisationName = requiredDto.OrganisationName;
+            LinkedParticipants = requiredDto.LinkedParticipants ?? new List<LinkedParticipantDto>();
+            
+            RepresentativeInformation = optionalDto?.RepresentativeInformation;
+            AdditionalInformation = optionalDto?.AdditionalInformation;
+            ContactEmail = optionalDto?.ContactEmail;
+            InterpreterLanguageCode = optionalDto?.InterpreterLanguageCode;
+            OtherLanguage = optionalDto?.OtherLanguage;
+            Screening = optionalDto?.Screening;
         }
     }
 
@@ -73,6 +84,11 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include(x=> x.Participants).ThenInclude(x=> x.InterpreterLanguage)
+                // keep the following includes for the screening entities - cannot auto include due to cyclic dependency
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
@@ -89,7 +105,7 @@ namespace BookingsApi.DAL.Commands
                 throw new ParticipantNotFoundException(command.ParticipantId);
             }
 
-            if (command.LinkedParticipants.Any() && participant.LinkedParticipants.Any())
+            if (command.LinkedParticipants.Count != 0 && participant.LinkedParticipants.Any())
             {
                 await _hearingService.RemoveParticipantLinks(participants, participant);
             }
@@ -129,6 +145,12 @@ namespace BookingsApi.DAL.Commands
                 ((Representative)participant).UpdateRepresentativeDetails(
                     command.RepresentativeInformation.Representee);
             }
+            
+            var languages = await _context.InterpreterLanguages.Where(x=> x.Live).ToListAsync();
+            var language = languages.GetLanguage(command.InterpreterLanguageCode, "Participant");
+            participant.UpdateLanguagePreferences(language, command.OtherLanguage);
+
+            _hearingService.UpdateParticipantScreeningRequirement(hearing, participant, command.Screening);
 
             hearing.UpdateBookingStatusJudgeRequirement();
             await _context.SaveChangesAsync();

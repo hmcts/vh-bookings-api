@@ -187,6 +187,184 @@ public class BookNewHearingV2Tests : ApiTest
     }
 
     [Test]
+    public async Task should_book_hearing_with_screening_for_a_participant_from_all()
+    {
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
+        request.Participants = request.Participants.Take(2).ToList();
+        
+        var participantWithScreeningFromAll = request.Participants[0];
+        participantWithScreeningFromAll.DisplayName = "Screen All Protected 1";
+        participantWithScreeningFromAll.Screening = new ScreeningRequest
+        {
+            Type = ScreeningType.All,
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
+        _hearingIds.Add(hearingResponse.Id);
+
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        
+        var actual = createdResponse.Participants
+            .Find(x => x.ContactEmail == participantWithScreeningFromAll.ContactEmail).Screening;
+        
+        actual.Should().NotBeNull("Participant should have a screening");
+        
+        actual.Type.Should().Be(ScreeningType.All);
+    }
+    
+    [Test]
+    public async Task should_book_hearing_with_screening_for_a_participant()
+    {
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
+        request.Participants = request.Participants.Take(2).ToList();
+        
+        var endpoint = new EndpointRequestV2
+        {
+            DisplayName = "Endpoint A"
+        };
+        request.Endpoints.Add(endpoint);
+        
+        var participantWithSpecificScreening = request.Participants[0];
+        participantWithSpecificScreening.DisplayName = "Screen Specific Protected 1";
+        var protectedFrom = request.Participants[1];
+        
+        participantWithSpecificScreening.Screening = new ScreeningRequest
+        {
+            Type = ScreeningType.Specific,
+            ProtectFromParticipants = [protectedFrom.ContactEmail],
+            ProtectFromEndpoints = [endpoint.DisplayName]
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
+        _hearingIds.Add(hearingResponse.Id);
+
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        
+        var actual = createdResponse.Participants
+            .Find(x => x.ContactEmail == participantWithSpecificScreening.ContactEmail).Screening;
+        
+        actual.Should().NotBeNull("Participant should have a screening");
+        
+        actual.Type.Should().Be(ScreeningType.Specific);
+
+        var protectFromResponse = createdResponse.Participants.Find(x => x.ContactEmail == protectedFrom.ContactEmail);
+        var endpointResponse = createdResponse.Endpoints.Find(x => x.DisplayName == endpoint.DisplayName);
+        
+        actual.ProtectFromEndpointsIds.Should().Contain(endpointResponse.Id);
+        actual.ProtectFromParticipantsIds.Should().Contain(protectFromResponse.Id);
+    }
+    
+     [Test]
+    public async Task should_fail_to_book_hearing_with_screening_from_a_participant_that_does_not_exist()
+    {
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
+        request.Participants = request.Participants.Take(2).ToList();
+        
+        var endpoint = new EndpointRequestV2
+        {
+            DisplayName = "Endpoint A"
+        };
+        request.Endpoints.Add(endpoint);
+        
+        var participantWithSpecificScreening = request.Participants[0];
+        participantWithSpecificScreening.DisplayName = "Screen Specific Protected 1";
+        
+        participantWithSpecificScreening.Screening = new ScreeningRequest
+        {
+            Type = ScreeningType.Specific,
+            ProtectFromParticipants = ["does-not-exist"],
+            ProtectFromEndpoints = ["made-up"]
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+    
+    [Test]
+    public async Task should_book_hearing_with_screening_for_an_endpoint()
+    {
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
+        request.Participants = request.Participants.Take(2).ToList();
+        
+        var endpoint = new EndpointRequestV2
+        {
+            DisplayName = "Endpoint A"
+        };
+        var endpoint2 = new EndpointRequestV2
+        {
+            DisplayName = "Endpoint B"
+        };
+        request.Endpoints.AddRange([endpoint, endpoint2]);
+        
+        var participantWithSpecificScreening = request.Participants[0];
+        participantWithSpecificScreening.DisplayName = "Screen Specific Protected 1";
+        var protectedFrom = request.Participants[0];
+        
+        endpoint.Screening = new ScreeningRequest
+        {
+            Type = ScreeningType.Specific,
+            ProtectFromParticipants = [protectedFrom.ContactEmail],
+            ProtectFromEndpoints = [endpoint2.DisplayName]
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
+        _hearingIds.Add(hearingResponse.Id);
+
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        
+        var actual = createdResponse.Endpoints
+            .Find(x => x.DisplayName == endpoint.DisplayName).Screening;
+        
+        actual.Should().NotBeNull("Endpoint should have a screening");
+        
+        actual.Type.Should().Be(ScreeningType.Specific);
+
+        var protectFromResponse = createdResponse.Participants.Find(x => x.ContactEmail == protectedFrom.ContactEmail);
+        var endpointResponse = createdResponse.Endpoints.Find(x => x.DisplayName == endpoint2.DisplayName);
+        
+        actual.ProtectFromEndpointsIds.Should().Contain(endpointResponse.Id);
+        actual.ProtectFromParticipantsIds.Should().Contain(protectFromResponse.Id);
+    }
+    
+    [Test]
     public async Task should_return_validation_error_when_flat_structure_hearing_role_not_found()
     {
         // arrange

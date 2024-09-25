@@ -4,11 +4,12 @@ using System.Linq;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.SpecialMeasure;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain.Participants
 {
-    public abstract class Participant : ParticipantBase
+    public abstract class Participant : ParticipantBase, IScreenableEntity
     {
         protected readonly ValidationFailures _validationFailures = new ValidationFailures();
 
@@ -43,7 +44,9 @@ namespace BookingsApi.Domain.Participants
         public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
         public string OtherLanguage { get; set; }
         public IList<LinkedParticipant> LinkedParticipants { get; set; }
-
+        
+        public Guid? ScreeningId { get; set; }
+        public virtual Screening Screening { get; set; }
 
         protected virtual void ValidateParticipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
         {
@@ -121,8 +124,8 @@ namespace BookingsApi.Domain.Participants
         public bool DoesPersonAlreadyExist()
         {
             return Person?.CreatedDate.TrimMilliseconds() != CreatedDate.TrimMilliseconds()
-                   || Person?.UpdatedDate.TrimMilliseconds() != CreatedDate.TrimMilliseconds()
-                   || (Person?.Username is not null && Person.Username != Person.ContactEmail);
+                   || Person.UpdatedDate.TrimMilliseconds() != CreatedDate.TrimMilliseconds()
+                   || (Person.Username is not null && Person.Username != Person.ContactEmail);
         }
 
         public void ChangePerson(Person newPerson)
@@ -139,6 +142,18 @@ namespace BookingsApi.Domain.Participants
             InterpreterLanguage = language;
             OtherLanguage = otherLanguage;
             
+            UpdatedDate = DateTime.UtcNow;
+        }
+        
+        public void AssignScreening(ScreeningType type, List<Participant> participants, List<Endpoint> endpoints)
+        {
+            ScreeningHelper.AssignScreening(this, type, participants, endpoints);
+            UpdatedDate = DateTime.UtcNow;
+        }
+
+        public void RemoveScreening()
+        {
+            ScreeningHelper.RemoveScreening(this);
             UpdatedDate = DateTime.UtcNow;
         }
     }

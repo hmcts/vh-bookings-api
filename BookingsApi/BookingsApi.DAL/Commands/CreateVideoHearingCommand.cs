@@ -112,12 +112,27 @@ namespace BookingsApi.DAL.Commands
 
                 videoHearing.AddEndpoints(newEndpoints);
             }
-
+            
             if (command.ConferenceSupplier.HasValue)
             {
                 videoHearing.OverrideSupplier(command.ConferenceSupplier.Value);
             }
             videoHearing.UpdateBookingStatusJudgeRequirement();
+            
+            foreach (var participantForScreening in command.Participants.Where(x=> x.Screening != null))
+            {
+                var participant = videoHearing.GetParticipants().Single(x=> x.Person.ContactEmail == participantForScreening.Person.ContactEmail);
+                var screeningDto = participantForScreening.Screening;
+                _hearingService.UpdateParticipantScreeningRequirement(videoHearing, participant, screeningDto);
+            }
+
+            
+            foreach (var endpointForScreening in (command.Endpoints ?? []).Where(x=> x.Screening != null))
+            {
+                var endpoint = videoHearing.GetEndpoints().Single(x=> x.DisplayName == endpointForScreening.DisplayName);
+                var screeningDto = endpointForScreening.Screening;
+                videoHearing.AssignScreeningForEndpoint(endpoint, screeningDto.ScreeningType, screeningDto.ProtectFromParticipants, screeningDto.ProtectFromEndpoints);
+            }
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;
         }

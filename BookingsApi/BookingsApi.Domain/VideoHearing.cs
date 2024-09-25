@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 
 namespace BookingsApi.Domain

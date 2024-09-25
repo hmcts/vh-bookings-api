@@ -4,6 +4,7 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
+using BookingsApi.Mappings.V2.Extensions;
 using BookingsApi.Validations.Common;
 using FluentValidation.Results;
 
@@ -11,7 +12,24 @@ namespace BookingsApi.Services;
 
 public interface IHearingParticipantService
 {
+    /// <summary>
+    /// Publish an event for new participants added to a hearing
+    /// </summary>
+    /// <param name="hearing"></param>
+    /// <param name="newParticipants"></param>
+    /// <returns></returns>
     public Task PublishEventForNewParticipantsAsync(VideoHearing hearing, IEnumerable<NewParticipant> newParticipants);
+    
+    /// <summary>
+    /// Publish an event for all changes to a hearing participants list
+    /// </summary>
+    /// <param name="hearing"></param>
+    /// <param name="existingParticipants"></param>
+    /// <param name="newParticipants"></param>
+    /// <param name="removedParticipantIds"></param>
+    /// <param name="linkedParticipants"></param>
+    /// <param name="sendNotification"></param>
+    /// <returns></returns>
     public Task PublishEventForUpdateParticipantsAsync(
         VideoHearing hearing,
         List<ExistingParticipantDetails> existingParticipants,
@@ -19,12 +37,57 @@ public interface IHearingParticipantService
         List<Guid> removedParticipantIds,
         List<LinkedParticipantDto> linkedParticipants, 
         bool sendNotification = true);
+    
+    /// <summary>
+    /// Publish an event for new judiciary participants added to a hearing
+    /// </summary>
+    /// <param name="hearing"></param>
+    /// <param name="newJudiciaryParticipants"></param>
+    /// <param name="sendNotification"></param>
+    /// <returns></returns>
     public Task PublishEventForNewJudiciaryParticipantsAsync(VideoHearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants, bool sendNotification = true);
+    
+    /// <summary>
+    /// Publish an event for an updated judiciary participant
+    /// </summary>
+    /// <param name="hearing"></param>
+    /// <param name="updatedJudiciaryParticipant"></param>
+    /// <returns></returns>
     public Task PublishEventForUpdateJudiciaryParticipantAsync(VideoHearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant);
     
+    /// <summary>
+    /// Validate the representative information
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     public Task<ValidationResult> ValidateRepresentativeInformationAsync(IRepresentativeInfoRequest request);
+    
+    /// <summary>
+    /// Update a participant and publish an event
+    /// </summary>
+    /// <param name="videoHearing"></param>
+    /// <param name="updateParticipantCommand"></param>
+    /// <returns></returns>
     public Task<Participant> UpdateParticipantAndPublishEventAsync(VideoHearing videoHearing, UpdateParticipantCommand updateParticipantCommand);
+    
+    /// <summary>
+    /// Update a list of participants
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="hearing"></param>
+    /// <param name="sendNotification"></param>
+    /// <returns></returns>
+    [Obsolete("Use UpdateParticipantsV2")]
     Task<VideoHearing> UpdateParticipants(UpdateHearingParticipantsRequest request, VideoHearing hearing, bool sendNotification = true);
+    
+    /// <summary>
+    /// Update a list of participants (v2)
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="hearing"></param>
+    /// <param name="hearingRoles"></param>
+    /// <param name="sendNotification"></param>
+    /// <returns></returns>
     Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles, bool sendNotification = true);
 }
 
@@ -50,7 +113,7 @@ public class HearingParticipantService : IHearingParticipantService
     {
         var participants = hearing.GetParticipants()
                     .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
-        if (participants.Any())
+        if (participants.Count != 0)
         {
             // Raising the below event here instead of in the async process to avoid the async process adding a duplicate participant to the conference
             // as the UpdateHearingParticipants (also includes new participants) has a separate process to add participants
@@ -71,7 +134,7 @@ public class HearingParticipantService : IHearingParticipantService
             .Where(x => existingParticipants.Exists(y => y.ParticipantId == x.Id))
             .ToList();
         
-        if (eventNewParticipants.Any() || removedParticipantIds.Any())
+        if (eventNewParticipants.Count != 0 || removedParticipantIds.Count != 0)
         {
             await ProcessParticipantListChange(hearing, removedParticipantIds, linkedParticipants, eventExistingParticipants, eventNewParticipants, sendNotification);
         }
@@ -240,7 +303,7 @@ public class HearingParticipantService : IHearingParticipantService
         return updatedHearing;
     }
     
-    private NewParticipant MapExistingParticipantToNewParticipant(UpdateParticipantRequestV2 existingRequest, Participant existingParticipant, List<HearingRole> hearingRoles)
+    private static NewParticipant MapExistingParticipantToNewParticipant(UpdateParticipantRequestV2 existingRequest, Participant existingParticipant, List<HearingRole> hearingRoles)
     {
         var hearingRole = hearingRoles.Find(x => string.Compare(x.Code, existingParticipant.HearingRole.Code, StringComparison.InvariantCultureIgnoreCase) == 0);
         // For new user we don't have the username yet.
@@ -342,6 +405,8 @@ public class HearingParticipantService : IHearingParticipantService
         
         updatedDetails.InterpreterLanguageCode = existingParticipantRequestV2.InterpreterLanguageCode;
         updatedDetails.OtherLanguage = existingParticipantRequestV2.OtherLanguage;
+        
+        updatedDetails.Screening = existingParticipantRequestV2.Screening?.MapToDalDto();
 
         return updatedDetails;
     }

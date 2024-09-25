@@ -90,5 +90,10 @@ namespace BookingsApi.Contract.V2.Responses
         ///     The participant linked to this participant response
         /// </summary>
         public List<LinkedParticipantResponseV2> LinkedParticipants { get; set; }
+        
+        /// <summary>
+        ///   The participant's screening needs (optional)
+        /// </summary>
+        public ScreeningResponseV2 Screening { get; set; }
     }
 }

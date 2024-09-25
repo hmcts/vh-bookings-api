@@ -3,6 +3,7 @@ using BookingsApi.Contract.V1.Responses;
 
 namespace BookingsApi.Mappings.V1
 {
+    [Obsolete("Use V2 mappers instead")]
     public static class EndpointToResponseMapper
     {
         public static EndpointResponse MapEndpointToResponse(Endpoint endpoint)

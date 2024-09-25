@@ -30,4 +30,12 @@ public static class DomainRuleErrorMessages
     public const string CannotAddLeaverJudiciaryPerson = "Cannot add a participant who is a leaver";
     public const string CannotAddDeletedJudiciaryPerson = "Cannot add a participant who has been deleted";
     public const string ConferenceSupplierAlreadyExists = "Confirmed hearings cannot be updated to use a different conference supplier";
+    public const string ParticipantCannotScreenFromThemself = "Participant cannot screen from themself";
+    public const string EndpointCannotScreenFromThemself = "Endpoint cannot screen from themself";
+    public const string ParticipantDoesNotExist = "Participant does not exist on the hearing";
+    public const string EndpointDoesNotExist = "Endpoint does not exist on the hearing";
+    public const string ParticipantAlreadyAddedForScreening = "Participant already added to the screening";
+    public const string EndpointAlreadyAddedForScreening = "Endpoint already added to the screening";
+    public const string ParticipantDoesNotExistForScreening = "Participant does not exist in screening list";
+    public const string EndpointDoesNotExistForScreening = "Endpoint does not existing in screening list";
 }

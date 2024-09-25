@@ -1,11 +1,12 @@
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Mappings.V1;
+using BookingsApi.Mappings.V2.Extensions;
 
 namespace BookingsApi.Mappings.V2;
 
-public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
+internal static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
 {
-    public static CreateVideoHearingCommand Map(
+    internal static CreateVideoHearingCommand Map(
         BookNewHearingRequestV2 requestV2,
         CaseType caseType,
         HearingVenue venue,
@@ -19,7 +20,7 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
         var linkedParticipants = MapLinkedParticipants(requestV2);
         var judiciaryParticipants = MapJudiciaryParticipants(requestV2);
 
-        var conferenceSupplier = (VideoSupplier)requestV2.BookingSupplier;
+        var conferenceSupplier = requestV2.BookingSupplier?.MapToDomainEnum() ?? VideoSupplier.Kinly;
         return new CreateVideoHearingCommand(
             new CreateVideoHearingRequiredDto(caseType, requestV2.ScheduledDateTime,
                 requestV2.ScheduledDuration, venue, cases, conferenceSupplier),
@@ -49,7 +50,8 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
             DisplayName = x.DisplayName,
             DefenceAdvocateContactEmail = x.DefenceAdvocateContactEmail,
             OtherLanguage = x.OtherLanguage,
-            InterpreterLanguageCode = x.InterpreterLanguageCode
+            InterpreterLanguageCode = x.InterpreterLanguageCode,
+            Screening = x.Screening?.MapToDalDto()
             
         }).ToList();
         return NewEndpointGenerator.GenerateNewEndpoints(dtos, randomGenerator, sipAddressStem);
