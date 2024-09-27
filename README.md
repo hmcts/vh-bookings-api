@@ -1,15 +1,5 @@
 # vh-bookings-api
 
-## HMCTS
-
-[![Build Status](https://hmctsreform.visualstudio.com/VirtualHearings/_apis/build/status/Apps-CI/hmcts.vh-bookings-api?repoName=hmcts%2Fvh-bookings-api&branchName=master)](https://hmctsreform.visualstudio.com/VirtualHearings/_build/latest?definitionId=96&repoName=hmcts%2Fvh-bookings-api&branchName=master)
-
-[![BookingsApi.Client package in vh-packages feed in Azure Artifacts](https://hmctsreform.feeds.visualstudio.com/3f69a23d-fbc7-4541-afc7-4cccefcad773/_apis/public/Packaging/Feeds/vh-packages/Packages/fce37bec-b7b1-4472-b67f-efcd7bace29b/Badge)](https://hmctsreform.visualstudio.com/VirtualHearings/_artifacts/feed/vh-packages/NuGet/BookingsApi.Client?preferRelease=true)
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vh-bookings-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=vh-bookings-api)
-
-## SDS
-
 [![Build Status](https://dev.azure.com/hmcts/Video%20Hearings/_apis/build/status/vh-bookings-api/hmcts.vh-bookings-api.sds.master-release?repoName=hmcts%2Fvh-bookings-api&branchName=master)](https://dev.azure.com/hmcts/Video%20Hearings/_build/latest?definitionId=664&repoName=hmcts%2Fvh-bookings-api&branchName=master)
 
 [![BookingsApi.Client package in vh-packages feed in Azure Artifacts](https://feeds.dev.azure.com/hmcts/cf3711aa-2aed-4f62-81a8-2afaee0ce26d/_apis/public/Packaging/Feeds/vh-packages/Packages/900b1d86-dad9-4013-b8ff-cc19a79e7605/Badge)](https://dev.azure.com/hmcts/Video%20Hearings/_artifacts/feed/vh-packages/NuGet/BookingsApi.Client?preferRelease=true)
@@ -55,12 +45,7 @@ Run the following in a terminal
 dotnet reportgenerator "-reports:./Coverage/coverage.opencover.xml" "-targetDir:./Artifacts/Coverage/Report" -reporttypes:Html -sourcedirs:./BookingsApi
 ```
 
-## Run Stryker
+## Running the app as a container
 
-To run stryker mutation test, go to UnitTest folder under command prompt and run the following command
-
-```bash
-dotnet stryker
-```
-
-From the results look for line(s) of code highlighted with Survived\No Coverage and fix them.
+Visit the VH-Setup repository for
+[Instructions to run as a container locally.](https://github.com/hmcts/vh-setup/tree/main/docs/local-container-setup).
