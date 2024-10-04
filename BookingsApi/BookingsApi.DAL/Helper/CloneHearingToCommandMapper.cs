@@ -27,6 +27,8 @@ namespace BookingsApi.DAL.Helper
             var participants = new List<NewParticipant>();
             participants.AddRange(reps.Select(r => new NewParticipant
             {
+                ExternalReferenceId = r.ExternalReferenceId,
+                MeasuresExternalId = r.MeasuresExternalId,
                 Person = r.Person,
                 Representee = r.Representee,
                 CaseRole = r.CaseRole,
@@ -35,6 +37,8 @@ namespace BookingsApi.DAL.Helper
             }));
             participants.AddRange(nonReps.Select(r => new NewParticipant
             {
+                ExternalReferenceId = r.ExternalReferenceId,
+                MeasuresExternalId = r.MeasuresExternalId,
                 Person = r.Person,
                 CaseRole = r.CaseRole,
                 DisplayName = r.DisplayName,

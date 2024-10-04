@@ -34,7 +34,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_not_return_not_confirmed_hearings_for_username_for_today()
         {
-            var hearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked);
+            var hearing1 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Booked);
             await Hooks.CloneVideoHearing(hearing1.Id, new List<System.DateTime> { System.DateTime.UtcNow });
 
             var username = hearing1.GetPersons()[0].Username;

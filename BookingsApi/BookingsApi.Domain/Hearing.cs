@@ -173,7 +173,7 @@ namespace BookingsApi.Domain
                 defenceAdvocate = Participants.Single(x => x.Id == endpoint.DefenceAdvocate.Id);
             }
 
-            var newEndpoint = new Endpoint(endpoint.DisplayName, endpoint.Sip, endpoint.Pin, defenceAdvocate);
+            var newEndpoint = new Endpoint(endpoint.ExternalReferenceId, endpoint.DisplayName, endpoint.Sip, endpoint.Pin, defenceAdvocate);
             newEndpoint.UpdateLanguagePreferences(endpoint.InterpreterLanguage, endpoint.OtherLanguage);
             Endpoints.Add(newEndpoint);
             UpdatedDate = DateTime.UtcNow;
@@ -184,6 +184,7 @@ namespace BookingsApi.Domain
             endpoints.ForEach(AddEndpoint);
         }
 
+        [Obsolete("Use AddIndividual with externalReferenceId instead")]
         public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
             if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
@@ -208,7 +209,28 @@ namespace BookingsApi.Domain
 
             return participant;
         }
+        
+        public Participant AddIndividual(string externalReferenceId, Person person, HearingRole hearingRole, string displayName)
+        {
+            ValidateParticipantDoesNotExistInHearing(externalReferenceId, person);
 
+            var participant = new Individual(externalReferenceId, person, hearingRole, displayName)
+            {
+                CreatedBy = CreatedBy
+            };
+            Participants.Add(participant);
+
+            if (hearingRole.IsInterpreter() && CaseType.SupportsAudioRecording())
+            {
+                AudioRecordingRequired = true;
+            }
+
+            UpdatedDate = DateTime.UtcNow;
+
+            return participant;
+        }
+
+        [Obsolete("Use AddRepresentative with externalReferenceId instead")]
         public Participant AddRepresentative(Person person, HearingRole hearingRole, CaseRole caseRole,
             string displayName,
             string representee)
@@ -229,6 +251,39 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
 
             return participant;
+        }
+        
+        public Participant AddRepresentative(string externalReferenceId, Person person, HearingRole hearingRole, string displayName, string representee)
+        {
+            ValidateParticipantDoesNotExistInHearing(externalReferenceId, person);
+
+            var participant = new Representative(externalReferenceId, person, hearingRole, displayName, representee)
+            {
+                CreatedBy = CreatedBy
+            };
+            
+            Participants.Add(participant);
+            UpdatedDate = DateTime.UtcNow;
+
+            return participant;
+        }
+
+        /// <summary>
+        /// Check if a participant with the given external reference id already exists in the hearing or by contact email
+        /// </summary>
+        private void ValidateParticipantDoesNotExistInHearing(string externalReferenceId, Person person)
+        {
+            if (externalReferenceId != null && Participants.Any(x=> x.ExternalReferenceId == externalReferenceId))
+            {
+                throw new DomainRuleException(nameof(Participant),
+                    $"Participant with external reference id {externalReferenceId} already exists in the hearing");
+            }
+            
+            if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
+            {
+                throw new DomainRuleException(nameof(person),
+                    $"Participant {person.ContactEmail} already exists in the hearing");
+            }
         }
 
         [Obsolete("Use AddJudiciaryJudge instead")]
@@ -848,23 +903,19 @@ namespace BookingsApi.Domain
         /// </summary>
         /// <param name="participant">The participant who needs screening</param>
         /// <param name="screeningType">The type of screening, blanket (all) or specific participants</param>
-        /// <param name="participantContactEmail">The list of contact emails of participants to screen from</param>
-        /// <param name="endpointDisplayNames">The list of display names of endpoints to screen from</param>
-        public void AssignScreeningForParticipant(Participant participant, ScreeningType screeningType,
-            List<string> participantContactEmail, List<string> endpointDisplayNames)
+        /// <param name="protectedFrom">The list of external reference ids of entities to screen from</param>
+        public void AssignScreeningForParticipant(Participant participant, ScreeningType screeningType, List<string> protectedFrom)
         {
-            ArgumentNullException.ThrowIfNull(participantContactEmail);
-            ArgumentNullException.ThrowIfNull(endpointDisplayNames);
-            
+            ArgumentNullException.ThrowIfNull(protectedFrom);
             // check if participantContactEmail contains the participant's contact email
-            if (participant.Person.ContactEmail != null && participantContactEmail.Contains(participant.Person.ContactEmail, StringComparer.InvariantCultureIgnoreCase))
+            if (participant.ExternalReferenceId != null && protectedFrom.Contains(participant.ExternalReferenceId))
             {
                 throw new DomainRuleException("Participant", DomainRuleErrorMessages.ParticipantCannotScreenFromThemself);
             }
+
+            var matched = GetMatchingParticipantsAndEndpointsByExternalReferenceIds(protectedFrom);
             
-            var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
-            var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
-            participant.AssignScreening(screeningType, participants, endpoints);
+            participant.AssignScreening(screeningType, matched.participants, matched.endpoints);
             UpdatedDate = DateTime.UtcNow;
         }
 
@@ -873,43 +924,19 @@ namespace BookingsApi.Domain
         /// </summary>
         /// <param name="endpoint">The endpoint who needs screening</param>
         /// <param name="screeningType">The type of screening, blanket (all) or specific participants</param>
-        /// <param name="participantContactEmail">The list of contact emails of participants to screen from</param>
-        /// <param name="endpointDisplayNames">The list of display names of endpoints to screen from</param>
-        public void AssignScreeningForEndpoint(Endpoint endpoint, ScreeningType screeningType,
-            List<string> participantContactEmail, List<string> endpointDisplayNames)
+        /// <param name="protectedFrom">The list of external reference ids of entities to screen from</param>
+        public void AssignScreeningForEndpoint(Endpoint endpoint, ScreeningType screeningType, List<string> protectedFrom)
         {
-            ArgumentNullException.ThrowIfNull(participantContactEmail);
-            ArgumentNullException.ThrowIfNull(endpointDisplayNames);
-            if(endpointDisplayNames.Contains(endpoint.DisplayName, StringComparer.InvariantCultureIgnoreCase))
+            ArgumentNullException.ThrowIfNull(protectedFrom);
+            if(endpoint.ExternalReferenceId != null && protectedFrom.Contains(endpoint.ExternalReferenceId))
             {
                 throw new DomainRuleException("Endpoint", DomainRuleErrorMessages.EndpointCannotScreenFromThemself);
             }
-            var participants = participantContactEmail.Select(GetParticipantByContactEmail).ToList();
-            var endpoints = endpointDisplayNames.Select(GetEndpointByDisplayName).ToList();
-            endpoint.AssignScreening(screeningType, participants, endpoints);
+            
+            var matched = GetMatchingParticipantsAndEndpointsByExternalReferenceIds(protectedFrom);
+            
+            endpoint.AssignScreening(screeningType, matched.participants, matched.endpoints);
             UpdatedDate = DateTime.UtcNow;
-        }
-
-        private Participant GetParticipantByContactEmail(string contactEmail)
-        {
-            if (!DoesParticipantExistByContactEmail(contactEmail))
-            {
-                throw new DomainRuleException("Participant",
-                    $"{DomainRuleErrorMessages.ParticipantDoesNotExist} - {contactEmail}");
-            }
-
-            return Participants.Single(x => x.Person.ContactEmail == contactEmail);
-        }
-
-        private Endpoint GetEndpointByDisplayName(string displayName)
-        {
-            if (!Endpoints.Any(x => x.DisplayName.Equals(displayName, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                throw new DomainRuleException("Endpoint",
-                    $"{DomainRuleErrorMessages.EndpointDoesNotExist} - {displayName}");
-            }
-
-            return Endpoints.Single(x => x.DisplayName == displayName);
         }
 
         public void OverrideSupplier(VideoSupplier commandVideoSupplier)
@@ -1007,6 +1034,39 @@ namespace BookingsApi.Domain
             }
 
             return cases[0].Number != existingCase.Number || cases[0].Name != existingCase.Name;
+        }
+        
+        private (List<Participant> participants, List<Endpoint> endpoints) GetMatchingParticipantsAndEndpointsByExternalReferenceIds(List<string> protectedFrom)
+        {
+            var participants = new List<Participant>();
+            var endpoints = new List<Endpoint>();
+            var notFoundList = new List<string>();
+            
+            foreach (var entry in protectedFrom)
+            {
+                var matchedParticipant = Participants.FirstOrDefault(p => p.ExternalReferenceId == entry);
+                var matchedEndpoint = Endpoints.FirstOrDefault(e => e.ExternalReferenceId == entry);
+
+                if (matchedParticipant != null)
+                {
+                    participants.Add(matchedParticipant);
+                }
+                else if (matchedEndpoint != null)
+                {
+                    endpoints.Add(matchedEndpoint);
+                }
+                else
+                {
+                    notFoundList.Add(entry);
+                }
+            }
+
+            if (notFoundList.Count > 0)
+            {
+                throw new DomainRuleException("ProtectedFrom", $"The following external IDs were not found in the hearing: {string.Join(", ", notFoundList)}");
+            }
+            
+            return (participants, endpoints);
         }
     }
 }

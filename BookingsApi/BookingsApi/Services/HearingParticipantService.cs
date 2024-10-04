@@ -201,7 +201,9 @@ public class HearingParticipantService : IHearingParticipantService
                     CaseRole = updatedParticipant.CaseRole,
                     HearingRole = updatedParticipant.HearingRole,
                     DisplayName = updatedParticipant.DisplayName,
-                    Representee = representee
+                    Representee = representee,
+                    ExternalReferenceId = updatedParticipant.ExternalReferenceId,
+                    MeasuresExternalId = updatedParticipant.MeasuresExternalId,
                 }
             });
 
@@ -323,7 +325,9 @@ public class HearingParticipantService : IHearingParticipantService
             CaseRole = null,
             HearingRole = hearingRole,
             DisplayName = existingRequest.DisplayName,
-            Representee = existingRequest.Representee
+            Representee = existingRequest.Representee,
+            ExternalReferenceId = existingParticipant.ExternalReferenceId,
+            MeasuresExternalId = existingParticipant.MeasuresExternalId,
         };
     }
     

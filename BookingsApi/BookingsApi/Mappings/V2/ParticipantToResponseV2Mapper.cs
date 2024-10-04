@@ -11,6 +11,7 @@ namespace BookingsApi.Mappings.V2
             var participantResponse = new ParticipantResponseV2
             {
                 Id = participant.Id,
+                ExternalReferenceId = participant.ExternalReferenceId,
                 DisplayName = participant.DisplayName,
                 HearingRoleCode = participant.HearingRole.Code,
                 HearingRoleName = participant.HearingRole.Name,

@@ -91,8 +91,7 @@ namespace BookingsApi.DAL.Services
                 switch (participantToAdd.HearingRole.UserRole.Name)
                 {
                     case "Individual":
-                        var individual = hearing.AddIndividual(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
-                            participantToAdd.CaseRole, participantToAdd.DisplayName);
+                        var individual = hearing.AddIndividual(participantToAdd.ExternalReferenceId, existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole, participantToAdd.DisplayName);
                         individual.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
                         
                         UpdateOrganisationDetails(participantToAdd.Person, individual);
@@ -100,10 +99,8 @@ namespace BookingsApi.DAL.Services
                         break;
                     case "Representative":
                         {
-                            var representative = hearing.AddRepresentative(existingPerson ?? participantToAdd.Person,
-                                participantToAdd.HearingRole,
-                                participantToAdd.CaseRole, participantToAdd.DisplayName,
-                                participantToAdd.Representee);
+                            var representative = hearing.AddRepresentative(participantToAdd.ExternalReferenceId, existingPerson ?? participantToAdd.Person,
+                                participantToAdd.HearingRole, participantToAdd.DisplayName, participantToAdd.Representee);
                             representative.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
 
                             UpdateOrganisationDetails(participantToAdd.Person, representative);
@@ -158,7 +155,7 @@ namespace BookingsApi.DAL.Services
             }
             
             var screeningExists = participant.Screening != null;
-            hearing.AssignScreeningForParticipant(participant, screeningDto.ScreeningType, screeningDto.ProtectFromParticipants, screeningDto.ProtectFromEndpoints);
+            hearing.AssignScreeningForParticipant(participant, screeningDto.ScreeningType, screeningDto.ProtectedFrom);
             // ef core does not automatically track entities created by domain methods
             _context.Entry(participant.Screening).State = screeningExists? EntityState.Modified : EntityState.Added;
             foreach (var screeningEntity in participant.Screening.ScreeningEntities)
@@ -179,7 +176,7 @@ namespace BookingsApi.DAL.Services
             }
             
             var screeningExists = endpoint.Screening != null;
-            hearing.AssignScreeningForEndpoint(endpoint, screeningDto.ScreeningType, screeningDto.ProtectFromParticipants, screeningDto.ProtectFromEndpoints);
+            hearing.AssignScreeningForEndpoint(endpoint, screeningDto.ScreeningType, screeningDto.ProtectedFrom);
             // ef core does not automatically track entities created by domain methods
             _context.Entry(endpoint.Screening).State = screeningExists? EntityState.Modified : EntityState.Added;
             foreach (var screeningEntity in endpoint.Screening.ScreeningEntities)

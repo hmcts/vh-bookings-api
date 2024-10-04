@@ -39,7 +39,9 @@ namespace BookingsApi.Mappings.V2
                 Representee = requestV2Participant.Representee,
                 OtherLanguage = requestV2Participant.OtherLanguage,
                 InterpreterLanguageCode = requestV2Participant.InterpreterLanguageCode,
-                Screening = requestV2Participant.Screening?.MapToDalDto()
+                Screening = requestV2Participant.Screening?.MapToDalDto(),
+                ExternalReferenceId = requestV2Participant.ExternalParticipantId,
+                MeasuresExternalId = requestV2Participant.MeasuresExternalId,
             };
         }
     }

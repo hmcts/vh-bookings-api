@@ -99,7 +99,7 @@ public class UpdateEndpointV2Tests : ApiTest
             Screening = new ScreeningRequest()
             {
                 Type = ScreeningType.Specific,
-                ProtectFromParticipants = [screenFrom.Person.ContactEmail]
+                ProtectedFrom = [screenFrom.ExternalReferenceId]
             }
         };
         using var client = Application.CreateClient();

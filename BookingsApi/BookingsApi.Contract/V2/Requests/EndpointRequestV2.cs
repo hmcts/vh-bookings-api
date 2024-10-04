@@ -23,6 +23,16 @@ namespace BookingsApi.Contract.V2.Requests
         public string OtherLanguage { get; set; }
         
         /// <summary>
+        /// A unique identifier for the participant from an external system
+        /// </summary>
+        public string ExternalParticipantId { get; set; }
+        
+        /// <summary>
+        /// An external identifier for the special measure for the participant (optional)
+        /// </summary>
+        public string MeasuresExternalId { get; set; }
+        
+        /// <summary>
         ///    Screening requirements (special measure) for the endpoint (optional)
         /// </summary>
         public ScreeningRequest Screening { get; set; }

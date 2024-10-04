@@ -1,3 +1,4 @@
+using System;
 using BookingsApi.Domain.RefData;
 
 namespace BookingsApi.Domain.Participants
@@ -6,6 +7,7 @@ namespace BookingsApi.Domain.Participants
     {
         protected Judge() { }
 
+        [Obsolete("Judges are now JudiciaryParticipants")]
         public Judge(Person person, HearingRole hearingRole, CaseRole caseRole)
             : base(person, hearingRole, caseRole)
         {

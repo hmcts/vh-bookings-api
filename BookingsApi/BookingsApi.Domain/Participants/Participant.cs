@@ -11,7 +11,7 @@ namespace BookingsApi.Domain.Participants
 {
     public abstract class Participant : ParticipantBase, IScreenableEntity
     {
-        protected readonly ValidationFailures _validationFailures = new ValidationFailures();
+        protected readonly ValidationFailures _validationFailures = new();
 
         protected Participant()
         {
@@ -20,6 +20,7 @@ namespace BookingsApi.Domain.Participants
             LinkedParticipants = new List<LinkedParticipant>();
         }
 
+        [Obsolete("Use the constructor with the external reference id")]
         protected Participant(Person person, HearingRole hearingRole, CaseRole caseRole) : this()
         {
             Person = person;
@@ -27,7 +28,14 @@ namespace BookingsApi.Domain.Participants
             HearingRoleId = hearingRole.Id;
             CaseRoleId = caseRole?.Id;
         }
-        
+
+        protected Participant(string externalReferenceId, Person person, HearingRole hearingRole, string displayName) :
+            this(person, hearingRole, null)
+        {
+            ExternalReferenceId = externalReferenceId;
+            DisplayName = displayName;
+        }
+
         public int? CaseRoleId { get; set; }
         public virtual CaseRole CaseRole { get; set; }
         public int HearingRoleId { get; set; }
@@ -40,6 +48,8 @@ namespace BookingsApi.Domain.Participants
         public DateTime UpdatedDate { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
+        public string ExternalReferenceId { get; set; }
+        public string MeasuresExternalId { get; set; }
         public int? InterpreterLanguageId { get; protected set; }
         public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
         public string OtherLanguage { get; set; }

@@ -68,20 +68,17 @@ namespace Testing.Common.Builders.Domain
             _judgePerson = new PersonBuilder(true).Build();
             _johPerson = new PersonBuilder(true).Build();
 
-            _videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
-                $"{person1.FirstName} {person1.LastName}");
+            _videoHearing.AddIndividual(Guid.NewGuid().ToString(), person1, applicantLipHearingRole, $"{person1.FirstName} {person1.LastName}");
             var indApplicant = _videoHearing.Participants[^1];
             indApplicant.SetProtected(nameof(indApplicant.CaseRole), applicantCaseRole);
             indApplicant.SetProtected(nameof(indApplicant.HearingRole), applicantLipHearingRole);
 
-            _videoHearing!.AddIndividual(person3, respondentLipHearingRole, respondentCaseRole,
-                $"{person3.FirstName} {person3.LastName}");
+            _videoHearing!.AddIndividual(Guid.NewGuid().ToString(), person3, respondentLipHearingRole, $"{person3.FirstName} {person3.LastName}");
             var indRespondent = _videoHearing.Participants[^1];
             indRespondent.SetProtected(nameof(indApplicant.CaseRole), respondentCaseRole);
             indRespondent.SetProtected(nameof(indRespondent.HearingRole), respondentLipHearingRole);
 
-            _videoHearing!.AddRepresentative(person2, respondentRepresentativeHearingRole, respondentCaseRole,
-                $"{person2.FirstName} {person2.LastName}", string.Empty);
+            _videoHearing!.AddRepresentative(Guid.NewGuid().ToString(), person2, respondentRepresentativeHearingRole, $"{person2.FirstName} {person2.LastName}", string.Empty);
             var repRespondent = _videoHearing.Participants[^1];
             repRespondent.SetProtected(nameof(indApplicant.CaseRole), respondentCaseRole);
             repRespondent.SetProtected(nameof(repRespondent.HearingRole), respondentRepresentativeHearingRole);

@@ -14,6 +14,8 @@ namespace BookingsApi.DAL.Commands
         public string LanguageCode { get; set; }
         public string OtherLanguage { get; set; }
         public ScreeningDto Screening { get; set; }
+        public string ExternalParticipantId { get; set; }
+        public string MeasuresExternalId { get; set; }
     }
     
     public class AddEndPointToHearingCommand : ICommand
@@ -61,7 +63,7 @@ namespace BookingsApi.DAL.Commands
             var languages = await _context.InterpreterLanguages.Where(x => x.Live).ToListAsync();
             var dto = command.Endpoint;
             var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, hearing.GetParticipants());
-            var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
+            var endpoint = new Endpoint(dto.ExternalParticipantId, dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
             var language = languages.GetLanguage(dto.LanguageCode, "Endpoint");
             endpoint.UpdateLanguagePreferences(language, dto.OtherLanguage);
             hearing.AddEndpoint(endpoint);

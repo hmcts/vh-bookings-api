@@ -8,11 +8,13 @@ public static class ScreeningToResponseV2Mapper
 {
     public static ScreeningResponseV2 MapScreeningToResponse(Screening screening)
     {
+        var endpointIds = screening.GetEndpoints().Select(x => x.Endpoint.ExternalReferenceId).ToList();
+        var participantIds = screening.GetParticipants().Select(x => x.Participant.ExternalReferenceId).ToList();
+        
         return new ScreeningResponseV2
         {
             Type = screening.Type.MapToContractEnum(),
-            ProtectFromEndpointsIds = screening.GetEndpoints().Select(x=> x.EndpointId!.Value).ToList(),
-            ProtectFromParticipantsIds = screening.GetParticipants().Select(x=> x.ParticipantId!.Value).ToList()
+            ProtectedFrom = endpointIds.Concat(participantIds).ToList()
         };
     }
 }

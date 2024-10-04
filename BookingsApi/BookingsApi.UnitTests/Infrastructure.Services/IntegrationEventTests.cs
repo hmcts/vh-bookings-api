@@ -129,8 +129,8 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             
             hearing.AddEndpoints(new List<Endpoint>
             {
-                new Endpoint("one", Guid.NewGuid().ToString(), "1234", null),
-                new Endpoint("two", Guid.NewGuid().ToString(), "1234", representative)
+                new Endpoint(Guid.NewGuid().ToString(),"one", Guid.NewGuid().ToString(), "1234", null),
+                new Endpoint(Guid.NewGuid().ToString(),"two", Guid.NewGuid().ToString(), "1234", representative)
             });
 
             var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
@@ -174,8 +174,8 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             
             hearing.AddEndpoints(new List<Endpoint>
             {
-                new Endpoint("one", Guid.NewGuid().ToString(), "1234", null),
-                new Endpoint("two", Guid.NewGuid().ToString(), "1234", representative)
+                new Endpoint(Guid.NewGuid().ToString(),"one", Guid.NewGuid().ToString(), "1234", null),
+                new Endpoint(Guid.NewGuid().ToString(),"two", Guid.NewGuid().ToString(), "1234", representative)
             });
 
             var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
@@ -201,7 +201,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
         public void Should_publish_message_to_queue_when_EndpointAddedIntegrationEvent_is_raised()
         {
             var endpointAddedIntegrationEvent =
-                new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234", null));
+                new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint(Guid.NewGuid().ToString(),"one", "sip", "1234", null));
             _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
@@ -214,7 +214,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
         {
             var dA = new ParticipantBuilder().RepresentativeParticipantRespondent;
             var endpointAddedIntegrationEvent =
-                new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234", dA));
+                new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint(Guid.NewGuid().ToString(),"one", "sip", "1234", dA));
             _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);

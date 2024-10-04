@@ -27,11 +27,11 @@ public class GetHearingsForTodayByCsosTests : ApiTest
     public async Task should_return_hearings_allocated_to_cso_ids()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(status:BookingStatus.Created, configureOptions: options =>
+        var hearing = await Hooks.SeedVideoHearingV2(status:BookingStatus.Created, configureOptions: options =>
         {
             options.ScheduledDate = DateTime.UtcNow;
         });
-        var hearingUnallocated = await Hooks.SeedVideoHearing(status:BookingStatus.Created, configureOptions: options =>
+        var hearingUnallocated = await Hooks.SeedVideoHearingV2(status:BookingStatus.Created, configureOptions: options =>
         {
             options.ScheduledDate = DateTime.UtcNow;
         });
@@ -60,14 +60,14 @@ public class GetHearingsForTodayByCsosTests : ApiTest
     public async Task should_return_unallocated_hearings()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(status:BookingStatus.Created, configureOptions: options =>
+        var hearing = await Hooks.SeedVideoHearingV2(status:BookingStatus.Created, configureOptions: options =>
         {
             options.ScheduledDate = DateTime.UtcNow;
         });
         var justiceUser = await Hooks.SeedJusticeUser("user@test.com", "Test", "User");
         await Hooks.AddAllocation(hearing, justiceUser);
 
-        var hearingUnallocated = await Hooks.SeedVideoHearing(status:BookingStatus.Created, configureOptions: options =>
+        var hearingUnallocated = await Hooks.SeedVideoHearingV2(status:BookingStatus.Created, configureOptions: options =>
         {
             options.ScheduledDate = DateTime.UtcNow;
         });
@@ -90,13 +90,13 @@ public class GetHearingsForTodayByCsosTests : ApiTest
     public async Task should_return_hearings_allocated_to_cso_and_unallocated_hearings()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(status: BookingStatus.Created,
+        var hearing = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created,
             configureOptions: options => { options.ScheduledDate = DateTime.UtcNow; });
         var justiceUser = await Hooks.SeedJusticeUser("user@test.com", "Test", "User");
         await Hooks.AddAllocation(hearing, justiceUser);
         var csoIds = new List<Guid> {justiceUser.Id};
 
-        var hearingUnallocated = await Hooks.SeedVideoHearing(status: BookingStatus.Created,
+        var hearingUnallocated = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created,
             configureOptions: options => { options.ScheduledDate = DateTime.UtcNow; });
         var request = new HearingsForTodayByAllocationRequestV2 { CsoIds = csoIds, Unallocated = true };
 

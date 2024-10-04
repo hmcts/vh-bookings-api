@@ -104,7 +104,7 @@ namespace BookingsApi.DAL.Commands
                     var defenceAdvocate =
                         DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail,
                             videoHearing.GetParticipants());
-                    var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
+                    var endpoint = new Endpoint(dto.ExternalParticipantId, dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
                     var language = languages.GetLanguage(dto.LanguageCode, "Hearing");
                     endpoint.UpdateLanguagePreferences(language, dto.OtherLanguage);
                     newEndpoints.Add(endpoint);
@@ -131,7 +131,7 @@ namespace BookingsApi.DAL.Commands
             {
                 var endpoint = videoHearing.GetEndpoints().Single(x=> x.DisplayName == endpointForScreening.DisplayName);
                 var screeningDto = endpointForScreening.Screening;
-                videoHearing.AssignScreeningForEndpoint(endpoint, screeningDto.ScreeningType, screeningDto.ProtectFromParticipants, screeningDto.ProtectFromEndpoints);
+                videoHearing.AssignScreeningForEndpoint(endpoint, screeningDto.ScreeningType, screeningDto.ProtectedFrom);
             }
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;

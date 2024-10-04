@@ -242,8 +242,7 @@ public class BookNewHearingV2Tests : ApiTest
         participantWithSpecificScreening.Screening = new ScreeningRequest
         {
             Type = ScreeningType.Specific,
-            ProtectFromParticipants = [protectedFrom.ContactEmail],
-            ProtectFromEndpoints = [endpoint.DisplayName]
+            ProtectedFrom = [protectedFrom.ExternalParticipantId, endpoint.ExternalParticipantId]
         };
         
         // act
@@ -272,8 +271,8 @@ public class BookNewHearingV2Tests : ApiTest
         var protectFromResponse = createdResponse.Participants.Find(x => x.ContactEmail == protectedFrom.ContactEmail);
         var endpointResponse = createdResponse.Endpoints.Find(x => x.DisplayName == endpoint.DisplayName);
         
-        actual.ProtectFromEndpointsIds.Should().Contain(endpointResponse.Id);
-        actual.ProtectFromParticipantsIds.Should().Contain(protectFromResponse.Id);
+        actual.ProtectedFrom.Should().Contain(endpointResponse.ExternalReferenceId);
+        actual.ProtectedFrom.Should().Contain(protectFromResponse.ExternalReferenceId);
     }
     
      [Test]
@@ -294,8 +293,7 @@ public class BookNewHearingV2Tests : ApiTest
         participantWithSpecificScreening.Screening = new ScreeningRequest
         {
             Type = ScreeningType.Specific,
-            ProtectFromParticipants = ["does-not-exist"],
-            ProtectFromEndpoints = ["made-up"]
+            ProtectedFrom = ["does-not-exist", "made-up"]
         };
         
         // act
@@ -330,8 +328,7 @@ public class BookNewHearingV2Tests : ApiTest
         endpoint.Screening = new ScreeningRequest
         {
             Type = ScreeningType.Specific,
-            ProtectFromParticipants = [protectedFrom.ContactEmail],
-            ProtectFromEndpoints = [endpoint2.DisplayName]
+            ProtectedFrom = [protectedFrom.ExternalParticipantId, endpoint2.ExternalParticipantId]
         };
         
         // act
@@ -360,8 +357,8 @@ public class BookNewHearingV2Tests : ApiTest
         var protectFromResponse = createdResponse.Participants.Find(x => x.ContactEmail == protectedFrom.ContactEmail);
         var endpointResponse = createdResponse.Endpoints.Find(x => x.DisplayName == endpoint2.DisplayName);
         
-        actual.ProtectFromEndpointsIds.Should().Contain(endpointResponse.Id);
-        actual.ProtectFromParticipantsIds.Should().Contain(protectFromResponse.Id);
+        actual.ProtectedFrom.Should().Contain(endpointResponse.ExternalReferenceId);
+        actual.ProtectedFrom.Should().Contain(protectFromResponse.ExternalReferenceId);
     }
     
     [Test]
