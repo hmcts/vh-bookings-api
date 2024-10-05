@@ -29,7 +29,7 @@ namespace BookingsApi.Domain
             Endpoints = new List<Endpoint>();
             Allocations = new List<Allocation>();
             JudiciaryParticipants = new List<JudiciaryParticipant>();
-            ConferenceSupplier = VideoSupplier.Kinly;
+            ConferenceSupplier = VideoSupplier.Vodafone;
         }
 
         /// <summary>

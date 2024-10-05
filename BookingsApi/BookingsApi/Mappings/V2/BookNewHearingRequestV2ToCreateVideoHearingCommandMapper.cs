@@ -20,7 +20,7 @@ internal static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
         var linkedParticipants = MapLinkedParticipants(requestV2);
         var judiciaryParticipants = MapJudiciaryParticipants(requestV2);
 
-        var conferenceSupplier = requestV2.BookingSupplier?.MapToDomainEnum() ?? VideoSupplier.Kinly;
+        var conferenceSupplier = requestV2.BookingSupplier?.MapToDomainEnum() ?? VideoSupplier.Vodafone;
         return new CreateVideoHearingCommand(
             new CreateVideoHearingRequiredDto(caseType, requestV2.ScheduledDateTime,
                 requestV2.ScheduledDuration, venue, cases, conferenceSupplier),
