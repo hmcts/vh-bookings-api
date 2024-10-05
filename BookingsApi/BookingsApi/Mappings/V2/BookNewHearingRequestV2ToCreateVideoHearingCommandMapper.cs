@@ -47,6 +47,8 @@ internal static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
     {
         var dtos = requestV2.Endpoints.Select(x => new NewEndpointRequestDto()
         {
+            ExternalReferenceId = x.ExternalParticipantId,
+            MeasuresExternalId = x.MeasuresExternalId,
             DisplayName = x.DisplayName,
             DefenceAdvocateContactEmail = x.DefenceAdvocateContactEmail,
             OtherLanguage = x.OtherLanguage,

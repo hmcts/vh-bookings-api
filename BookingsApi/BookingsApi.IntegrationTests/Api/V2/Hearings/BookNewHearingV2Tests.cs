@@ -231,7 +231,8 @@ public class BookNewHearingV2Tests : ApiTest
         
         var endpoint = new EndpointRequestV2
         {
-            DisplayName = "Endpoint A"
+            DisplayName = "Endpoint A",
+            ExternalParticipantId = Guid.NewGuid().ToString()
         };
         request.Endpoints.Add(endpoint);
         

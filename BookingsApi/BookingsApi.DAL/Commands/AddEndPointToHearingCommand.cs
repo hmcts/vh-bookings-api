@@ -63,7 +63,10 @@ namespace BookingsApi.DAL.Commands
             var languages = await _context.InterpreterLanguages.Where(x => x.Live).ToListAsync();
             var dto = command.Endpoint;
             var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, hearing.GetParticipants());
-            var endpoint = new Endpoint(dto.ExternalParticipantId, dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
+            var endpoint = new Endpoint(dto.ExternalParticipantId, dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate)
+            {
+                MeasuresExternalId = dto.MeasuresExternalId
+            };
             var language = languages.GetLanguage(dto.LanguageCode, "Endpoint");
             endpoint.UpdateLanguagePreferences(language, dto.OtherLanguage);
             hearing.AddEndpoint(endpoint);

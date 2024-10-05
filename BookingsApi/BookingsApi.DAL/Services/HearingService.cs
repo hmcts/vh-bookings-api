@@ -93,7 +93,7 @@ namespace BookingsApi.DAL.Services
                     case "Individual":
                         var individual = hearing.AddIndividual(participantToAdd.ExternalReferenceId, existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole, participantToAdd.DisplayName);
                         individual.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
-                        
+                        individual.MeasuresExternalId = participantToAdd.MeasuresExternalId;
                         UpdateOrganisationDetails(participantToAdd.Person, individual);
                         participantList.Add(individual);
                         break;
@@ -102,7 +102,7 @@ namespace BookingsApi.DAL.Services
                             var representative = hearing.AddRepresentative(participantToAdd.ExternalReferenceId, existingPerson ?? participantToAdd.Person,
                                 participantToAdd.HearingRole, participantToAdd.DisplayName, participantToAdd.Representee);
                             representative.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
-
+                            representative.MeasuresExternalId = participantToAdd.MeasuresExternalId;
                             UpdateOrganisationDetails(participantToAdd.Person, representative);
                             participantList.Add(representative);
                             break;
