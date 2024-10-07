@@ -106,7 +106,7 @@ public class RemoveJudiciaryParticipantFromHearingTests : ApiTest
         var serviceBusStub = Application.Services
             .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var message = serviceBusStub!
-            .ReadMessageFromQueue();
+            .ReadAllMessagesFromQueue(hearingId)[0];
         
         message.IntegrationEvent
             .Should()
