@@ -2,10 +2,6 @@ namespace BookingsApi.DAL.Dtos;
 
 public class NewParticipant
 {
-    public NewParticipant()
-    {
-        
-    }
     public Person Person { get; set; }
     [Obsolete("CaseRole is no longer required. Will be removed in a future release")]
     public CaseRole CaseRole { get; set; }
