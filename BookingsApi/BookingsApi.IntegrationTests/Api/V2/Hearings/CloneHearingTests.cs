@@ -91,6 +91,7 @@ public class CloneHearingTests : ApiTest
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.Created);
         var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        Hooks.AddHearingForCleanup(createdResponse.Id);
         return createdResponse;
     }
     
