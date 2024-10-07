@@ -76,6 +76,16 @@ namespace BookingsApi.Contract.V2.Requests
         public ScreeningRequest Screening { get; set; }
         
         /// <summary>
+        /// A unique identifier for the participant from an external system
+        /// </summary>
+        public string ExternalParticipantId { get; set; }
+        
+        /// <summary>
+        /// An external identifier for the special measure for the participant (optional)
+        /// </summary>
+        public string MeasuresExternalId { get; set; }
+        
+        /// <summary>
         ///     List of linked participants
         /// </summary>
         public List<LinkedParticipantRequestV2> LinkedParticipants { get; set; }

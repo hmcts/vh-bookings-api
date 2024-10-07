@@ -411,6 +411,8 @@ public class HearingParticipantService : IHearingParticipantService
         updatedDetails.OtherLanguage = existingParticipantRequestV2.OtherLanguage;
         
         updatedDetails.Screening = existingParticipantRequestV2.Screening?.MapToDalDto();
+        updatedDetails.MeasuresExternalId = existingParticipantRequestV2.MeasuresExternalId;
+        updatedDetails.ExternalReferenceId = existingParticipantRequestV2.ExternalParticipantId;
 
         return updatedDetails;
     }
