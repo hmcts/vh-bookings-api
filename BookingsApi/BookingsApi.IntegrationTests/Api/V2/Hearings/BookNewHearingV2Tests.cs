@@ -314,11 +314,13 @@ public class BookNewHearingV2Tests : ApiTest
         
         var endpoint = new EndpointRequestV2
         {
-            DisplayName = "Endpoint A"
+            DisplayName = "Endpoint A",
+            ExternalParticipantId = Guid.NewGuid().ToString()
         };
         var endpoint2 = new EndpointRequestV2
         {
-            DisplayName = "Endpoint B"
+            DisplayName = "Endpoint B",
+            ExternalParticipantId = Guid.NewGuid().ToString()
         };
         request.Endpoints.AddRange([endpoint, endpoint2]);
         
