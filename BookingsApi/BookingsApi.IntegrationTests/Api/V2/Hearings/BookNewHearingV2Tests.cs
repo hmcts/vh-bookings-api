@@ -232,12 +232,15 @@ public class BookNewHearingV2Tests : ApiTest
         var endpoint = new EndpointRequestV2
         {
             DisplayName = "Endpoint A",
-            ExternalParticipantId = Guid.NewGuid().ToString()
+            ExternalParticipantId = Guid.NewGuid().ToString(),
+            MeasuresExternalId = "123"
         };
         request.Endpoints.Add(endpoint);
         
         var participantWithSpecificScreening = request.Participants[0];
         participantWithSpecificScreening.DisplayName = "Screen Specific Protected 1";
+        participantWithSpecificScreening.MeasuresExternalId = "456";
+        
         var protectedFrom = request.Participants[1];
         
         participantWithSpecificScreening.Screening = new ScreeningRequest
@@ -261,19 +264,22 @@ public class BookNewHearingV2Tests : ApiTest
         _hearingIds.Add(hearingResponse.Id);
 
         createdResponse.Should().BeEquivalentTo(hearingResponse);
-        
-        var actual = createdResponse.Participants
-            .Find(x => x.ContactEmail == participantWithSpecificScreening.ContactEmail).Screening;
-        
-        actual.Should().NotBeNull("Participant should have a screening");
-        
-        actual.Type.Should().Be(ScreeningType.Specific);
 
-        var protectFromResponse = createdResponse.Participants.Find(x => x.ContactEmail == protectedFrom.ContactEmail);
-        var endpointResponse = createdResponse.Endpoints.Find(x => x.DisplayName == endpoint.DisplayName);
+        var participant = createdResponse.Participants
+            .Find(x => x.ContactEmail == participantWithSpecificScreening.ContactEmail);
         
-        actual.ProtectedFrom.Should().Contain(endpointResponse.ExternalReferenceId);
-        actual.ProtectedFrom.Should().Contain(protectFromResponse.ExternalReferenceId);
+        participant.Screening.Should().NotBeNull("Participant should have a screening");
+        
+        participant.Screening.Type.Should().Be(ScreeningType.Specific);
+
+        var protectFromResponse = createdResponse.Participants.Find(x => x.ExternalReferenceId == protectedFrom.ExternalParticipantId);
+        var endpointResponse = createdResponse.Endpoints.Find(x => x.ExternalReferenceId == endpoint.ExternalParticipantId);
+        
+        participant.Screening.ProtectedFrom.Should().Contain(endpointResponse.ExternalReferenceId);
+        participant.Screening.ProtectedFrom.Should().Contain(protectFromResponse.ExternalReferenceId);
+        
+        participant.MeasuresExternalId.Should().Be("456");
+        endpointResponse.MeasuresExternalId.Should().Be("123");
     }
     
      [Test]

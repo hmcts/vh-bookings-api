@@ -12,6 +12,7 @@ namespace BookingsApi.Mappings.V2
             {
                 Id = participant.Id,
                 ExternalReferenceId = participant.ExternalReferenceId,
+                MeasuresExternalId = participant.MeasuresExternalId,
                 DisplayName = participant.DisplayName,
                 HearingRoleCode = participant.HearingRole.Code,
                 HearingRoleName = participant.HearingRole.Name,

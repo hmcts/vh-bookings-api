@@ -17,6 +17,11 @@ namespace BookingsApi.Contract.V2.Responses
         public string ExternalReferenceId { get; set; }
         
         /// <summary>
+        /// An external identifier for the special measure for the participant (optional)
+        /// </summary>
+        public string MeasuresExternalId { get; set; }
+        
+        /// <summary>
         ///     Participant Display Name
         /// </summary>
         public string DisplayName { get; set; }

@@ -25,6 +25,7 @@ namespace BookingsApi.Mappings.V2
             {
                 Id = endpoint.Id,
                 ExternalReferenceId = endpoint.ExternalReferenceId,
+                MeasuresExternalId = endpoint.MeasuresExternalId,
                 DisplayName = endpoint.DisplayName,
                 Sip = endpoint.Sip,
                 Pin = endpoint.Pin,
