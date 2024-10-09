@@ -113,7 +113,7 @@ public class AddEndPointToHearingTests : ApiTest
         });
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var message = serviceBusStub!.ReadMessageFromQueue();
-        message.IntegrationEvent.Should().BeEquivalentTo(new EndpointAddedIntegrationEvent(hearingId,endpoint));
+        message.IntegrationEvent.Should().BeEquivalentTo(new EndpointAddedIntegrationEvent(seededHearing,endpoint));
     }
 
     [Test]

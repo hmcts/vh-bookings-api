@@ -2,6 +2,8 @@ using BookingsApi.Client;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using ScreeningType = BookingsApi.Contract.V2.Enums.ScreeningType;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Endpoints;
@@ -125,5 +127,19 @@ public class UpdateEndpointV2Tests : ApiTest
         updatedEndpoint = response.Endpoints.First(x => x.Id == endpoint.Id);
         updatedEndpoint.DisplayName.Should().Be(request.DisplayName);
         updatedEndpoint.Screening.Should().BeNull();
+        
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearing.Id);
+        Array.Exists(messages, x => x.IntegrationEvent is EndpointUpdatedIntegrationEvent).Should().BeTrue();
+        
+        
+        var updateEndpointEvents = messages.Where(x=> x. IntegrationEvent is EndpointUpdatedIntegrationEvent).ToList();
+        var firstUpdateEvent = updateEndpointEvents[0].IntegrationEvent as EndpointUpdatedIntegrationEvent;
+        firstUpdateEvent!.Role.Should().Be("Guest", "Endpoint is screened from a participant");
+        
+        var secondUpdateEvent = updateEndpointEvents[1].IntegrationEvent as EndpointUpdatedIntegrationEvent;
+        secondUpdateEvent!.Role.Should().Be("Host", "Endpoint is not screened from any participant");
+
     }
 }

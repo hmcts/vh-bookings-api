@@ -3,6 +3,7 @@ using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain.Validations;
+using BookingsApi.Infrastructure.Services.Dtos;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
@@ -35,6 +36,10 @@ public class BookNewHearingV2Tests : ApiTest
         // arrange
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
         request.BookingSupplier = null;
+        request.Endpoints.Add(new EndpointRequestV2
+        {
+            DisplayName = "Ep1"
+        });
 
         // act
         using var client = Application.CreateClient();
@@ -62,6 +67,11 @@ public class BookNewHearingV2Tests : ApiTest
             Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingResponse.Id);
         Array.Exists(messages, x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().BeTrue();
+        
+        var hearingReadyEvent = messages.First(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent);
+        var integrationEvent = hearingReadyEvent.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
+        integrationEvent!.Hearing.ConferenceRoomType.Should().Be(ConferenceRoomType.VMR);
+        integrationEvent.Endpoints[0].Role.Should().Be("Host");
     }
     
     [Test]
@@ -280,6 +290,16 @@ public class BookNewHearingV2Tests : ApiTest
         
         participant.MeasuresExternalId.Should().Be("456");
         endpointResponse.MeasuresExternalId.Should().Be("123");
+        
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingResponse.Id);
+        Array.Exists(messages, x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().BeTrue();
+        
+        var integrationEvent = messages.First(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent);
+        var hearingIsReadyEvent = integrationEvent.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
+        hearingIsReadyEvent!.Hearing.ConferenceRoomType.Should().Be(ConferenceRoomType.VA);
+        hearingIsReadyEvent.Endpoints[0].Role.Should().Be("Guest");
     }
     
      [Test]

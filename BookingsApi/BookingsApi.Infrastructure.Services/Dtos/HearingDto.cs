@@ -17,5 +17,12 @@ namespace BookingsApi.Infrastructure.Services.Dtos
         public string HearingType { get; set; }
         public string CaseTypeServiceId { get; set; }
         public VideoSupplier VideoSupplier { get; set; }
+        public ConferenceRoomType ConferenceRoomType { get; set; }
+    }
+
+    public enum ConferenceRoomType
+    {
+        VMR,
+        VA
     }
 }
