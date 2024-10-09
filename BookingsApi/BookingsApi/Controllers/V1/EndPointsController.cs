@@ -6,6 +6,9 @@ using BookingsApi.Validations.V1;
 
 namespace BookingsApi.Controllers.V1
 {
+    /// <summary>
+    /// A suite of operations to manage JVS endpoints in a booking
+    /// </summary>
     [Consumes("application/json")]
     [Produces("application/json")]
     [Route("hearings")]
@@ -34,10 +37,10 @@ namespace BookingsApi.Controllers.V1
         [HttpPost("{hearingId}/endpoints/")]
         [OpenApiOperation("AddEndPointToHearing")]
         [ProducesResponseType(typeof(EndpointResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
+        [Obsolete("This method is deprecated, please use the AddEndPointToHearingV2")]
         public async Task<IActionResult> AddEndPointToHearingAsync(Guid hearingId,
             AddEndpointRequest addEndpointRequest)
         {
@@ -106,6 +109,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
+        [Obsolete("This method is deprecated, please use the UpdateEndpointV2")]
         public async Task<IActionResult> UpdateEndpointAsync(Guid hearingId, Guid endpointId,
             UpdateEndpointRequest updateEndpointRequest)
         {

@@ -48,6 +48,11 @@ namespace BookingsApi.DAL.Commands
                 .Include(x=> x.Participants).ThenInclude(x=> x.InterpreterLanguage)
                 .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .Include(x=> x.Endpoints).ThenInclude(x=> x.InterpreterLanguage)
+                // keep the following includes for the screening entities - cannot auto include due to cyclic dependency
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
                         
             if (hearing == null)
@@ -111,25 +116,25 @@ namespace BookingsApi.DAL.Commands
                 var language = languages.GetLanguage(newExistingParticipantDetails.InterpreterLanguageCode, "Participant");
                 existingParticipant.UpdateLanguagePreferences(language, newExistingParticipantDetails.OtherLanguage);
             }
+            
             hearing.UpdateBookingStatusJudgeRequirement();
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
             await _context.SaveChangesAsync();
+            
+            foreach(var existingParticipantScreening in command.ExistingParticipants)
+            {
+                var participant = participants.Single(x=> x.Id == existingParticipantScreening.ParticipantId);
+                _hearingService.UpdateParticipantScreeningRequirement(hearing, participant, existingParticipantScreening.Screening);
+            }
+            
+            foreach(var participantForScreening in (command.NewParticipants).Where(x=> x.Screening != null))
+            {
+                var participant = participants.Single(x=> x.Person.ContactEmail == participantForScreening.Person.ContactEmail);
+                var screeningDto = participantForScreening.Screening;
+                _hearingService.UpdateParticipantScreeningRequirement(hearing, participant, screeningDto);
+            }
+            
+            await _context.SaveChangesAsync();
         }
-    }
-
-    public class ExistingParticipantDetails
-    {
-        public Guid ParticipantId { get; set; }
-        public string Title { get; set; }
-        public string DisplayName { get; set; }
-        public string TelephoneNumber { get; set; }
-        public string CaseRoleName { get; set; }
-        public string HearingRoleName { get; set; }
-        public string OrganisationName { get; set; }
-        public Person Person { get; set; }
-        public RepresentativeInformation RepresentativeInformation { get; set; }
-        public bool IsContactEmailNew { get; set; }
-        public string InterpreterLanguageCode { get; set; }
-        public string OtherLanguage { get; set; }
     }
 }

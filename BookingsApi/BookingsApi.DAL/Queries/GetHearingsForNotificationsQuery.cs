@@ -24,8 +24,8 @@ namespace BookingsApi.DAL.Queries
         {
             var videoHearing = VideoHearings.Get(_context);
 
-            var startDate = DateTime.Today.AddDays(2);  // 2 days is 48 hrs
-            var endDate = DateTime.Today.AddDays(3);    // 3 days is 72 hrs.
+            var startDate = DateTime.UtcNow.Date.AddDays(2);  // 2 days is 48 hrs
+            var endDate = DateTime.UtcNow.Date.AddDays(3);    // 3 days is 72 hrs.
 
             // we are gathering all the hearings where the scheduled date and time is between 48 hrs and 72 hrs.
             var listHearings = await videoHearing.Where(x =>

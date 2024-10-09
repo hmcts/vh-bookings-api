@@ -22,6 +22,7 @@ public class SimpleBookNewHearingRequestV2
             .With(x => x.TelephoneNumber = "01234567890")
             .With(x => x.OtherLanguage = null)
             .With(x => x.InterpreterLanguageCode = null)
+            .With(x=> x.Screening = null)
             .With(x => x.OrganisationName = TestUsers.Organisation1)
             .Build().ToList();
 

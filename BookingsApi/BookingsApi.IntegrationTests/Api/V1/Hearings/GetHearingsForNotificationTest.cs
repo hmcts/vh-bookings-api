@@ -14,25 +14,25 @@ public class GetHearingsForNotificationTest: ApiTest
         // Single day
         var singleDayHearingOutsideRange1 = await Hooks.SeedVideoHearing(options =>
         {
-            options.ScheduledDate = DateTime.UtcNow.AddHours(2);
+            options.ScheduledDate = DateTime.UtcNow.Date.AddHours(2);
         });
         var singleDayHearing = await Hooks.SeedVideoHearing(options =>
         {
-            options.ScheduledDate = DateTime.UtcNow.AddDays(2).AddHours(2);
+            options.ScheduledDate = DateTime.UtcNow.Date.AddDays(2).AddHours(2);
         });
         var singleDayHearingOutsideRange2 = await Hooks.SeedVideoHearing(options =>
         {
-            options.ScheduledDate = DateTime.UtcNow.AddDays(3).AddHours(2);
+            options.ScheduledDate = DateTime.UtcNow.Date.AddDays(3).AddHours(2);
         });
 
         // Multi-day
         var multiDayHearingDates = new List<DateTime>
         {
-            DateTime.UtcNow.AddDays(2),
+            DateTime.UtcNow.Date.AddDays(2),
             
             // Outside range
-            DateTime.UtcNow.AddDays(3),
-            DateTime.UtcNow.AddDays(4)
+            DateTime.UtcNow.Date.AddDays(3),
+            DateTime.UtcNow.Date.AddDays(4)
         };
         var multiDayHearingDay1 = await Hooks.SeedVideoHearing(options =>
         {
@@ -76,23 +76,23 @@ public class GetHearingsForNotificationTest: ApiTest
         // Single day
         var singleDayHearingOutsideRange1 = await Hooks.SeedVideoHearing(options =>
         {
-            options.ScheduledDate = DateTime.UtcNow.AddHours(2);
+            options.ScheduledDate = DateTime.UtcNow.Date.AddHours(2);
         });
         var singleDayHearing = await Hooks.SeedVideoHearing(options =>
         {
-            options.ScheduledDate = DateTime.UtcNow.AddDays(2).AddHours(2);
+            options.ScheduledDate = DateTime.UtcNow.Date.AddDays(2).AddHours(2);
         });
         var singleDayHearingOutsideRange2 = await Hooks.SeedVideoHearing(options =>
         {
-            options.ScheduledDate = DateTime.UtcNow.AddDays(3).AddHours(2);
+            options.ScheduledDate = DateTime.UtcNow.Date.AddDays(3).AddHours(2);
         });
 
         // Multi-day
         var multiDayHearingDates = new List<DateTime>
         {
-            DateTime.UtcNow.AddDays(1), // Outside range
-            DateTime.UtcNow.AddDays(2),
-            DateTime.UtcNow.AddDays(3) // Outside range
+            DateTime.UtcNow.Date.AddDays(1), // Outside range
+            DateTime.UtcNow.Date.AddDays(2),
+            DateTime.UtcNow.Date.AddDays(3) // Outside range
         };
         var multiDayHearingDay1 = await Hooks.SeedVideoHearing(options =>
         {

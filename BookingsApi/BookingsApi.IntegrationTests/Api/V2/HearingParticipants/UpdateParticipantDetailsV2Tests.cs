@@ -7,6 +7,7 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.Common;
 using BookingsApi.Validations.V2;
+using ScreeningType = BookingsApi.Contract.V2.Enums.ScreeningType;
 
 namespace BookingsApi.IntegrationTests.Api.V2.HearingParticipants;
 
@@ -481,5 +482,92 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         integrationEvent!.Participant.Representee.Should().BeEmpty();
         integrationEvent!.Participant.FirstName.Should().Be(request.FirstName);
         integrationEvent!.Participant.LastName.Should().Be(request.LastName);
+    }
+
+    [Test]
+    public async Task should_update_participant_to_set_interpreter_code()
+    {
+        var hearing = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created);
+        var hearingId = hearing.Id;
+        var participant = hearing.GetParticipants().First(x=> x is Individual);
+        var participantId = participant.Id;
+        var request = new UpdateParticipantRequestV2()
+        {
+            ParticipantId = participantId,
+            DisplayName = "New Display Name",
+            ContactEmail = "contactEmailUpdated@email.com",
+            OrganisationName = null,
+            Representee = null,
+            TelephoneNumber = "01526791027",
+            Title = participant.Person.Title,
+            FirstName = "New First Name",
+            MiddleNames = "New Middle Names",
+            LastName = "New Last Name",
+            LinkedParticipants = new List<LinkedParticipantRequestV2>(),
+            InterpreterLanguageCode = "fra"
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PatchAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateParticipantDetails(hearingId, participantId),
+                RequestBody.Set(request));
+        
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var participantResponse = await ApiClientResponse.GetResponses<ParticipantResponseV2>(result.Content);
+        participantResponse.InterpreterLanguage.Should().NotBeNull();
+        participantResponse.InterpreterLanguage.Code.Should().Be(request.InterpreterLanguageCode);
+    }
+
+    [Test]
+    public async Task should_update_participant_with_screening_added()
+    {
+        var hearing = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created);
+        var hearingId = hearing.Id;
+        var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
+        var participant = individuals[0];
+        var secondParticipant = individuals[1];
+        var participantId = participant.Id;
+        var endpointForScreening = hearing.Endpoints[0];
+        
+        var request = new UpdateParticipantRequestV2()
+        {
+            ParticipantId = participantId,
+            DisplayName = "New Display Name",
+            ContactEmail = "contactEmailUpdated@email.com",
+            OrganisationName = null,
+            Representee = null,
+            TelephoneNumber = "01526791027",
+            Title = participant.Person.Title,
+            FirstName = "New First Name",
+            MiddleNames = "New Middle Names",
+            LastName = "New Last Name",
+            LinkedParticipants = new List<LinkedParticipantRequestV2>(),
+            Screening = new ScreeningRequest
+            {
+                Type = ScreeningType.Specific,
+                ProtectFromParticipants = [secondParticipant.Person.ContactEmail],
+                ProtectFromEndpoints = [endpointForScreening.DisplayName]
+            }
+        };
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PatchAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateParticipantDetails(hearingId, participantId),
+                RequestBody.Set(request));
+        
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var participantResponse = await ApiClientResponse.GetResponses<ParticipantResponseV2>(result.Content);
+        participantResponse.Screening.Should().NotBeNull();
+        participantResponse.Screening.Type.Should().Be(ScreeningType.Specific);
+        participantResponse.Screening.ProtectFromParticipantsIds.Should().Contain(secondParticipant.Id);
+        participantResponse.Screening.ProtectFromEndpointsIds.Should().Contain(endpointForScreening.Id);
     }
 }

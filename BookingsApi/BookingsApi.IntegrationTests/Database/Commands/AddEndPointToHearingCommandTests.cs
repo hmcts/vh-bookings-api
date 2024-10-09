@@ -1,6 +1,7 @@
 ﻿using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Services;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -14,7 +15,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            _commandHandler = new AddEndPointToHearingCommandHandler(context);
+            _commandHandler = new AddEndPointToHearingCommandHandler(context, new HearingService(context));
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
             _newHearingId = Guid.Empty;
         }

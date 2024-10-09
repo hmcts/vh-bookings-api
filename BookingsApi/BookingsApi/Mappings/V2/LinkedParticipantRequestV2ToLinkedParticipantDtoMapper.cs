@@ -6,9 +6,9 @@ namespace BookingsApi.Mappings.V2
     /// <summary>
     /// This class is used to map a linked participant request object to a linked participant dto
     /// </summary>
-    public static class LinkedParticipantRequestV2ToLinkedParticipantDtoMapper
+    internal static class LinkedParticipantRequestV2ToLinkedParticipantDtoMapper
     {
-        public static List<LinkedParticipantDto> MapToDto(List<LinkedParticipantRequestV2> requests)
+        internal static List<LinkedParticipantDto> MapToDto(List<LinkedParticipantRequestV2> requests)
         {
             var listOfDtos = new List<LinkedParticipantDto>();
             

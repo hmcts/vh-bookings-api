@@ -1,20 +1,9 @@
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.SpecialMeasure;
 
 namespace BookingsApi.DAL.Commands
 {
-
-    public class NewParticipant
-    {
-        public Person Person { get; set; }
-        public CaseRole CaseRole { get; set; }
-        public HearingRole HearingRole { get; set; }
-        public string Representee { get; set; }
-        public string DisplayName { get; set; }
-        public string InterpreterLanguageCode { get; set; }
-        public string OtherLanguage { get; set; }
-    }
-    
     public class AddParticipantsToVideoHearingCommand : ICommand
     {
         public AddParticipantsToVideoHearingCommand(Guid hearingId, List<NewParticipant> participants, List<LinkedParticipantDto> linkedParticipants)
@@ -49,6 +38,11 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include(x => x.Participants).ThenInclude(x => x.InterpreterLanguage)
+                // keep the following includes for the screening entities - cannot auto include due to cyclic dependency
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
+                .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
             if (hearing == null)
@@ -62,6 +56,13 @@ namespace BookingsApi.DAL.Commands
             await _hearingService.AddParticipantToService(hearing, command.Participants, languages);
             await _hearingService.CreateParticipantLinks(hearing.Participants.ToList(), command.LinkedParticipants);
             hearing.UpdateBookingStatusJudgeRequirement();
+            
+            foreach (var participantForScreening in command.Participants.Where(x=> x.Screening != null))
+            {
+                var participant = hearing.GetParticipants().Single(x=> x.Person.ContactEmail == participantForScreening.Person.ContactEmail);
+                _hearingService.UpdateParticipantScreeningRequirement(hearing, participant, participantForScreening.Screening);
+            }
+            
             await _context.SaveChangesAsync();
         }
     }

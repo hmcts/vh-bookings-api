@@ -21,9 +21,9 @@ public static class ContractExtensions
     /// <param name="obj"></param>
     public static void TrimAllStringsRecursively(this object obj)
     {
-        if(obj == null)
+        if (obj == null)
             return;
-        
+
         // if obj is a list
         if (obj is IEnumerable<object> list)
         {
@@ -33,19 +33,23 @@ public static class ContractExtensions
             }
             return;
         }
-        
+
         var stringProperties = obj.GetType().GetProperties()
-            .Where(p => p.PropertyType == typeof (string)).ToList();
+            .Where(p => p.PropertyType == typeof(string) && p.GetIndexParameters().Length == 0) // Exclude indexers
+            .ToList();
 
         foreach (var stringProperty in stringProperties)
         {
-            var currentValue = (string) stringProperty.GetValue(obj, null);
-            stringProperty.SetValue(obj, currentValue?.Trim(), null) ;
+            var currentValue = (string)stringProperty.GetValue(obj, null);
+            stringProperty.SetValue(obj, currentValue?.Trim(), null);
         }
 
         var objectProperties = obj.GetType().GetProperties()
             .Where(p => !p.PropertyType.IsPrimitive &&
-                        p.PropertyType != typeof(string) && p.PropertyType != typeof(DateTime)).ToList();
+                        p.PropertyType != typeof(string) &&
+                        p.PropertyType != typeof(DateTime) &&
+                        p.GetIndexParameters().Length == 0) // Exclude indexers
+            .ToList();
 
         foreach (var objectProperty in objectProperties)
         {

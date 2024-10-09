@@ -2,9 +2,9 @@ using BookingsApi.Contract.V2.Responses;
 
 namespace BookingsApi.Mappings.V2
 {
-    public class CaseToResponseV2Mapper
+    internal static class CaseToResponseV2Mapper
     {
-        public CaseResponseV2 MapCaseToResponse(Case @case)
+        internal static CaseResponseV2 MapCaseToResponse(Case @case)
         {
             return new CaseResponseV2
             {

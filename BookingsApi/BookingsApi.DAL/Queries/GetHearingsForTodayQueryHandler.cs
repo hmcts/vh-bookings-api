@@ -27,12 +27,13 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole).ThenInclude(x => x.UserRole)
                 .Include(x => x.HearingCases).ThenInclude(x => x.Case)
+                .Include(x => x.Endpoints)
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue)
                 .Where(x => x.ScheduledDateTime.Date == DateTime.Today.Date)
                 .AsQueryable();
 
-            if (query.HearingVenueNames != null && query.HearingVenueNames.Any())
+            if (query.HearingVenueNames != null && query.HearingVenueNames.Count != 0)
                 hearingQuery = hearingQuery
                     .Where(x => query.HearingVenueNames.Contains(x.HearingVenue.Name))
                     .OrderBy(x => x.HearingVenue.Name).ThenBy(x => x.ScheduledDateTime);

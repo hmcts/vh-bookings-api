@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Common.Services;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
@@ -14,7 +15,16 @@ namespace BookingsApi.UnitTests.Mappings.V2
         {
             var sipAddStream = "TestSipStream";
             var randomGen = new Mock<IRandomGenerator>();
-            var endpointRequest = new EndpointRequestV2 { DefenceAdvocateContactEmail = "TestUserName", DisplayName = "TestDispName" };
+            var endpointRequest = new EndpointRequestV2
+            {
+                DefenceAdvocateContactEmail = "TestUserName", DisplayName = "TestDispName",
+                Screening = new ScreeningRequest()
+                {
+                    Type = ScreeningType.Specific,
+                    ProtectFromParticipants = ["email1.com"],
+                    ProtectFromEndpoints = ["endpoint1"]
+                }
+            };
 
             var result = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointRequest,randomGen.Object, sipAddStream);
 
@@ -22,6 +32,9 @@ namespace BookingsApi.UnitTests.Mappings.V2
             result.Sip.EndsWith(sipAddStream).Should().BeTrue();
             result.DisplayName.Should().Be(endpointRequest.DisplayName);
             result.ContactEmail.Should().Be(endpointRequest.DefenceAdvocateContactEmail);
+            result.Screening.ScreeningType.Should().Be(BookingsApi.Domain.Enumerations.ScreeningType.Specific);
+            result.Screening.ProtectFromParticipants.Should().BeEquivalentTo(endpointRequest.Screening.ProtectFromParticipants);
+            result.Screening.ProtectFromEndpoints.Should().BeEquivalentTo(endpointRequest.Screening.ProtectFromEndpoints);
 
         }
 

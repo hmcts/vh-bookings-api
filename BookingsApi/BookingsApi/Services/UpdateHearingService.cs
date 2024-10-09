@@ -4,14 +4,17 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Helpers;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
+using BookingsApi.Mappings.V2.Extensions;
 using ContractJudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode;
 
 namespace BookingsApi.Services
 {
     public interface IUpdateHearingService
     {
+        [Obsolete("Use UpdateParticipantsV2 instead")]
         Task UpdateParticipantsV1(UpdateHearingParticipantsRequest request, VideoHearing hearing);
         Task UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles);
+        [Obsolete("Use UpdateEndpointsV2 instead")]
         Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing);
         Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing);
         Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequest request, VideoHearing hearing);
@@ -85,7 +88,7 @@ namespace BookingsApi.Services
             {
                 await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id,
                     endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName,
-                    endpointToUpdate.InterpreterLanguageCode, endpointToUpdate.OtherLanguage);
+                    endpointToUpdate.InterpreterLanguageCode, endpointToUpdate.OtherLanguage, endpointToUpdate.Screening?.MapToDalDto());
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)

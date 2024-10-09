@@ -3,9 +3,9 @@ using BookingsApi.Mappings.Common;
 
 namespace BookingsApi.Mappings.V2;
 
-public static class ConfirmedHearingsTodayResponseMapperV2
+internal static class ConfirmedHearingsTodayResponseMapperV2
 {
-    public static ConfirmedHearingsTodayResponseV2 Map(Hearing videoHearing)
+    internal static ConfirmedHearingsTodayResponseV2 Map(Hearing videoHearing)
     {
         var participantMapper = new ParticipantToResponseV2Mapper();
         var judiciaryMapper = new JudiciaryParticipantToResponseMapper();
