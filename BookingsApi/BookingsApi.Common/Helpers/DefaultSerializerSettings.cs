@@ -8,6 +8,14 @@ namespace BookingsApi.Common.Helpers
 {
     public static class DefaultSerializerSettings
     {
+        /// <summary>
+        /// The function `DefaultNewtonsoftSerializerSettings` returns default settings for
+        /// Newtonsoft.Json serialization in C# with specific configurations.
+        /// </summary>
+        /// <returns>
+        /// The method `DefaultNewtonsoftSerializerSettings` returns a `JsonSerializerSettings` object
+        /// with specific configurations set for serialization using Newtonsoft.Json.
+        /// </returns>
         public static JsonSerializerSettings DefaultNewtonsoftSerializerSettings()
         {
             var settings = new JsonSerializerSettings
@@ -22,6 +30,33 @@ namespace BookingsApi.Common.Helpers
             settings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
 
             return settings;
+        }
+
+        /// <summary>
+        /// The function returns default settings for the System.Text.Json serializer in C# with
+        /// snake-case property naming, indented output, and camel-case enum conversion.
+        /// </summary>
+        /// <returns>
+        /// The method `DefaultSystemTextJsonSerializerSettings` returns a `JsonSerializerOptions`
+        /// object with the following settings:
+        /// - PropertyNamingPolicy set to `JsonNamingPolicy.SnakeCaseLower`
+        /// - WriteIndented set to `true`
+        /// - A `JsonStringEnumConverter` converter with `JsonNamingPolicy.CamelCase` being added to the
+        /// Converters list.
+        /// </returns>
+        public static JsonSerializerOptions DefaultSystemTextJsonSerializerSettings()
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                WriteIndented = true,
+                Converters =
+                {
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                }
+            };
+
+            return options;
         }
     }
 }
