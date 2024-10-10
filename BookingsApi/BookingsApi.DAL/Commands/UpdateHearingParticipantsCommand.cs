@@ -115,6 +115,8 @@ namespace BookingsApi.DAL.Commands
 
                 var language = languages.GetLanguage(newExistingParticipantDetails.InterpreterLanguageCode, "Participant");
                 existingParticipant.UpdateLanguagePreferences(language, newExistingParticipantDetails.OtherLanguage);
+                existingParticipant.ExternalReferenceId = newExistingParticipantDetails.ExternalReferenceId;
+                existingParticipant.MeasuresExternalId = newExistingParticipantDetails.MeasuresExternalId;
             }
             
             hearing.UpdateBookingStatusJudgeRequirement();

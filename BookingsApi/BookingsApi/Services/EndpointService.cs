@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V2.Enums;
+using BookingsApi.Infrastructure.Services;
 
 namespace BookingsApi.Services
 {
@@ -85,7 +86,7 @@ namespace BookingsApi.Services
 
             if (updatedHearing.Status == BookingStatus.Created || updatedHearing.Status == BookingStatus.ConfirmedWithoutJudge)
             {
-                await _eventPublisher.PublishAsync(new EndpointAddedIntegrationEvent(updatedHearing.Id, endpoint));
+                await _eventPublisher.PublishAsync(new EndpointAddedIntegrationEvent(updatedHearing, endpoint));
             }
 
             return endpoint;
@@ -106,12 +107,13 @@ namespace BookingsApi.Services
                 otherLanguage, screeningDto);
             await _commandHandler.Handle(command);
 
-            var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == id);
+            var endpoint = command.UpdatedEndpoint;
 
             if (endpoint != null && (hearing.Status == BookingStatus.Created || hearing.Status == BookingStatus.ConfirmedWithoutJudge))
             {
+               var conferenceRole = endpoint.GetEndpointConferenceRole(hearing.GetParticipants(), hearing.GetEndpoints());
                 await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearing.Id, endpoint.Sip,
-                    displayName, defenceAdvocate?.Person.ContactEmail));
+                    displayName, defenceAdvocate?.Person.ContactEmail, conferenceRole));
             }
         }
 

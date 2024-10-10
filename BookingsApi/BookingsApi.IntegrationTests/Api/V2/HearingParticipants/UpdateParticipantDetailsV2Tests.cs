@@ -164,7 +164,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
     [TestCase("Test-Judge  1", false)]
     public async Task should_return_validation_error_when_first_last_names_are_not_valid(string testName, bool expectedResult)
     {
-        var hearing = await Hooks.SeedVideoHearing(status:BookingStatus.Booked);
+        var hearing = await Hooks.SeedVideoHearingV2(status:BookingStatus.Booked);
         var hearingId = hearing.Id;
         var participant = hearing.GetParticipants().First(x=> x is Individual);
         var participantId = participant.Id;
@@ -207,7 +207,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
     [Test]
     public async Task should_not_update_middle_names_when_middle_names_not_provided()
     {
-        var hearing = await Hooks.SeedVideoHearing(status:BookingStatus.Created);
+        var hearing = await Hooks.SeedVideoHearingV2(status:BookingStatus.Created);
         var hearingId = hearing.Id;
         var participant = hearing.GetParticipants().First(x=> x is Individual);
         var participantId = participant.Id;
@@ -549,8 +549,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
             Screening = new ScreeningRequest
             {
                 Type = ScreeningType.Specific,
-                ProtectFromParticipants = [secondParticipant.Person.ContactEmail],
-                ProtectFromEndpoints = [endpointForScreening.DisplayName]
+                ProtectedFrom = [secondParticipant.ExternalReferenceId, endpointForScreening.ExternalReferenceId]
             }
         };
         
@@ -567,7 +566,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var participantResponse = await ApiClientResponse.GetResponses<ParticipantResponseV2>(result.Content);
         participantResponse.Screening.Should().NotBeNull();
         participantResponse.Screening.Type.Should().Be(ScreeningType.Specific);
-        participantResponse.Screening.ProtectFromParticipantsIds.Should().Contain(secondParticipant.Id);
-        participantResponse.Screening.ProtectFromEndpointsIds.Should().Contain(endpointForScreening.Id);
+        participantResponse.Screening.ProtectedFrom.Should().Contain(secondParticipant.ExternalReferenceId);
     }
 }

@@ -33,7 +33,9 @@ public static class NewEndpointGenerator
                 ContactEmail = endpointRequest.DefenceAdvocateContactEmail,
                 OtherLanguage = endpointRequest.OtherLanguage,
                 LanguageCode = endpointRequest.InterpreterLanguageCode,
-                Screening = endpointRequest.Screening
+                Screening = endpointRequest.Screening,
+                MeasuresExternalId = endpointRequest.MeasuresExternalId,
+                ExternalParticipantId = endpointRequest.ExternalReferenceId
             });
         }
 
@@ -43,6 +45,8 @@ public static class NewEndpointGenerator
 
 public class NewEndpointRequestDto
 {
+    public string ExternalReferenceId { get; set; }
+    public string MeasuresExternalId { get; set; }
     public string DisplayName { get; set; }
     public string DefenceAdvocateContactEmail { get; set; }
     public string InterpreterLanguageCode { get; set; }

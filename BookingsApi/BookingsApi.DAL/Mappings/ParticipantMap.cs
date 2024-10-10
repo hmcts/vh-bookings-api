@@ -15,6 +15,8 @@ namespace BookingsApi.DAL.Mappings
             builder.Property(x => x.DisplayName);
             builder.Property(x => x.CaseRoleId).IsRequired(false);
             builder.Property(x => x.HearingRoleId);
+            builder.Property(x=> x.ExternalReferenceId);
+            builder.Property(x => x.MeasuresExternalId);
             builder.HasOne(x => x.CaseRole).WithMany().HasForeignKey(x => x.CaseRoleId);
             builder.HasOne(x => x.HearingRole).WithMany().HasForeignKey(x => x.HearingRoleId);
             builder.HasOne<Hearing>("Hearing").WithMany("Participants").HasForeignKey(x => x.HearingId);

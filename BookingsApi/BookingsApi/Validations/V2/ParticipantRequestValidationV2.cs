@@ -24,6 +24,11 @@ namespace BookingsApi.Validations.V2
                 .NotEmpty().WithMessage(NoDisplayNameErrorMessage)
                 .Matches(regex).WithMessage(InvalidDisplayNameErrorMessage);
             RuleFor(x => x.HearingRoleCode).NotEmpty().WithMessage(NoHearingRoleCodeErrorMessage);
+
+            When(x => x.Screening != null, () =>
+            {
+                RuleFor(x => x.Screening).SetValidator(new ScreeningRequestValidation());
+            });
         }
     }
 }

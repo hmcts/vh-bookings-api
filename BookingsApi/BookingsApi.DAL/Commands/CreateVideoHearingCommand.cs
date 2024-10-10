@@ -104,7 +104,10 @@ namespace BookingsApi.DAL.Commands
                     var defenceAdvocate =
                         DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail,
                             videoHearing.GetParticipants());
-                    var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
+                    var endpoint = new Endpoint(dto.ExternalParticipantId, dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate)
+                    {
+                        MeasuresExternalId = dto.MeasuresExternalId,
+                    };
                     var language = languages.GetLanguage(dto.LanguageCode, "Hearing");
                     endpoint.UpdateLanguagePreferences(language, dto.OtherLanguage);
                     newEndpoints.Add(endpoint);
@@ -121,7 +124,7 @@ namespace BookingsApi.DAL.Commands
             
             foreach (var participantForScreening in command.Participants.Where(x=> x.Screening != null))
             {
-                var participant = videoHearing.GetParticipants().Single(x=> x.Person.ContactEmail == participantForScreening.Person.ContactEmail);
+                var participant = videoHearing.GetParticipants().Single(x=> x.ExternalReferenceId == participantForScreening.ExternalReferenceId);
                 var screeningDto = participantForScreening.Screening;
                 _hearingService.UpdateParticipantScreeningRequirement(videoHearing, participant, screeningDto);
             }
@@ -129,9 +132,9 @@ namespace BookingsApi.DAL.Commands
             
             foreach (var endpointForScreening in (command.Endpoints ?? []).Where(x=> x.Screening != null))
             {
-                var endpoint = videoHearing.GetEndpoints().Single(x=> x.DisplayName == endpointForScreening.DisplayName);
+                var endpoint = videoHearing.GetEndpoints().Single(x=> x.ExternalReferenceId == endpointForScreening.ExternalParticipantId);
                 var screeningDto = endpointForScreening.Screening;
-                videoHearing.AssignScreeningForEndpoint(endpoint, screeningDto.ScreeningType, screeningDto.ProtectFromParticipants, screeningDto.ProtectFromEndpoints);
+                videoHearing.AssignScreeningForEndpoint(endpoint, screeningDto.ScreeningType, screeningDto.ProtectedFrom);
             }
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;

@@ -19,9 +19,9 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     public async Task should_update_an_existing_participant()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options
+        var hearing = await Hooks.SeedVideoHearingV2(options
             => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
-        var participant = hearing.Participants.First(e => e.HearingRole.Name == "Litigant in person");
+        var participant = hearing.Participants.First(e => e is Individual);
         var request = new UpdateHearingParticipantsRequestV2
         {
             ExistingParticipants = new List<UpdateParticipantRequestV2> { new()
@@ -303,7 +303,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     public async Task should_remove_a_participant_from_the_confirmed_hearing()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options
+        var hearing = await Hooks.SeedVideoHearingV2(options
             => { options.Case = new Case("UpdateParticipantsRemoveParticipant", "UpdateParticipantsRemoveParticipant"); }, BookingStatus.Created);
         var participantBeingRemoved = hearing.Participants.First(x=> !x.HearingRole.IsJudge());
         var request = new UpdateHearingParticipantsRequestV2 { RemovedParticipantIds = new List<Guid>{ participantBeingRemoved.Id } };
@@ -373,33 +373,12 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     }
     
     [Test]
-    public async Task should_remove_a_judge_from_the_confirmed_hearing()
-    {
-        // arrange
-        var hearing = await Hooks.SeedVideoHearing(options
-            => { options.Case = new Case("UpdateParticipantsRemoveParticipant", "UpdateParticipantsRemoveParticipant"); }, BookingStatus.Created);
-        var judge = hearing.Participants.First(e => e.HearingRole.IsJudge());
-        var request = new UpdateHearingParticipantsRequestV2 { RemovedParticipantIds = new List<Guid>{ judge.Id } };
-
-        // act
-        using var client = Application.CreateClient();
-        var result = await client
-            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
-        var updatedHearing = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(hearing.Id.ToString()));
-        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(updatedHearing.Content);
-        // assert
-        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
-        hearingResponse.Participants.Should().NotContain(p => p.Id == judge.Id);
-        hearingResponse.Status.Should().Be(BookingStatusV2.ConfirmedWithoutJudge);
-    }
-    
-    [Test]
     public async Task should_update_hearing_participants_with_interpreter_languages()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options
+        var hearing = await Hooks.SeedVideoHearingV2(options
             => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
-        var existingParticipant = hearing.Participants.First(e => e.HearingRole.Name == "Litigant in person");
+        var existingParticipant = hearing.Participants.First(e => e is Individual);
         var newParticipant = new { ContactEmail = "newcontact@test.email.com" };
         const string languageCode = "spa";
         var request = new UpdateHearingParticipantsRequestV2
@@ -458,9 +437,9 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     public async Task should_update_hearing_participants_with_other_languages()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options
+        var hearing = await Hooks.SeedVideoHearingV2(options
             => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
-        var existingParticipant = hearing.Participants.First(e => e.HearingRole.Name == "Litigant in person");
+        var existingParticipant = hearing.Participants.First(e => e is Individual);
         var newParticipant = new { ContactEmail = "newcontact@test.email.com" };
         const string otherLanguage = "made up";
         var request = new UpdateHearingParticipantsRequestV2
@@ -519,9 +498,9 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     public async Task should_return_validation_error_when_interpreter_language_code_is_not_found()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options
+        var hearing = await Hooks.SeedVideoHearingV2(options
             => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
-        var existingParticipant = hearing.Participants.First(e => e.HearingRole.Name == "Litigant in person");
+        var existingParticipant = hearing.Participants.First(e => e is Individual);
         var newParticipant = new { ContactEmail = "newcontact@test.email.com" };
         const string languageCode = "non existing";
         var request = new UpdateHearingParticipantsRequestV2
@@ -544,6 +523,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
             [
                 new ParticipantRequestV2
                 {
+                    ExternalParticipantId = Guid.NewGuid().ToString(),
                     DisplayName = "DisplayName",
                     FirstName = "NewFirstName",
                     HearingRoleCode = HearingRoleCodes.Applicant,
@@ -575,9 +555,9 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     public async Task should_return_validation_error_when_both_interpreter_language_code_and_other_language_are_specified()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options
+        var hearing = await Hooks.SeedVideoHearingV2(options
             => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
-        var existingParticipant = hearing.Participants.First(e => e.HearingRole.Name == "Litigant in person");
+        var existingParticipant = hearing.Participants.First(e => e is Individual);
         var newParticipant = new { ContactEmail = "newcontact@test.email.com" };
         const string languageCode = "spa";
         const string otherLanguage = "made up";
@@ -602,6 +582,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
             [
                 new ParticipantRequestV2
                 {
+                    ExternalParticipantId = Guid.NewGuid().ToString(),
                     DisplayName = "DisplayName",
                     FirstName = "NewFirstName",
                     HearingRoleCode = HearingRoleCodes.Applicant,
@@ -658,7 +639,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
                     Screening = new ScreeningRequest
                     {
                         Type = ScreeningType.Specific,
-                        ProtectFromEndpoints = [endpointToScreenFrom.DisplayName]
+                        ProtectedFrom = [endpointToScreenFrom.ExternalReferenceId]
                     }
                     
                 }
@@ -699,7 +680,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         updatedParticipant.Should().NotBeNull();
         updatedParticipant.Screening.Should().NotBeNull("Screening should have been assigned");
         updatedParticipant.Screening.Type.Should().Be(ScreeningType.Specific);
-        updatedParticipant.Screening.ProtectFromEndpointsIds.Should().Contain(endpointToScreenFrom.Id);
+        updatedParticipant.Screening.ProtectedFrom.Should().Contain(endpointToScreenFrom.ExternalReferenceId);
         
         var addedParticipant = hearingResponse.Participants.Find(x => x.ContactEmail == newParticipant.ContactEmail);
         addedParticipant.Should().NotBeNull();
@@ -738,7 +719,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
                     Screening = new ScreeningRequest()
                     {
                         Type = ScreeningType.Specific,
-                        ProtectFromEndpoints = participantA.Screening.GetEndpoints().Select(x=> x.Endpoint.DisplayName).ToList()
+                        ProtectedFrom= participantA.Screening.GetEndpoints().Select(x=> x.Endpoint.ExternalReferenceId).ToList()
                     }
                 }
             ],
@@ -759,7 +740,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         updatedParticipant.Should().NotBeNull();
         updatedParticipant.Screening.Should().NotBeNull();
         updatedParticipant.Screening.Type.Should().Be(ScreeningType.Specific);
-        updatedParticipant.Screening.ProtectFromParticipantsIds.Should().BeEmpty();
+        updatedParticipant.Screening.ProtectedFrom.Should().NotContain(participantB.ExternalReferenceId);
     }
     
     [Test(Description = "Participant A is screened from Participant B. Participant A no longer requires screening")]
@@ -855,7 +836,6 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         var updatedParticipant = hearingResponse.Participants.Find(x => x.Id == participantA.Id);
         updatedParticipant.Should().NotBeNull();
         updatedParticipant.Screening.Type.Should().Be(ScreeningType.All);
-        updatedParticipant.Screening.ProtectFromParticipantsIds.Should().BeEmpty();
-        updatedParticipant.Screening.ProtectFromEndpointsIds.Should().BeEmpty();
+        updatedParticipant.Screening.ProtectedFrom.Should().BeEmpty();
     }
 }

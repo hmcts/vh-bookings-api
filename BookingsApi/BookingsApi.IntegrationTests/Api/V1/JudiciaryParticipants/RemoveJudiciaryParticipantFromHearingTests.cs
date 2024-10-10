@@ -97,8 +97,7 @@ public class RemoveJudiciaryParticipantFromHearingTests : ApiTest
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
         var hearingFromDb = await db.VideoHearings.Include(x => x.JudiciaryParticipants)
             .ThenInclude(x => x.JudiciaryPerson).FirstAsync(x => x.Id == hearingId);
-
-
+        
         hearingFromDb.GetJudiciaryParticipants()
             .Any(p => p.JudiciaryPerson.PersonalCode == judiciaryParticipant.JudiciaryPerson.PersonalCode)
             .Should()
@@ -107,10 +106,42 @@ public class RemoveJudiciaryParticipantFromHearingTests : ApiTest
         var serviceBusStub = Application.Services
             .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var message = serviceBusStub!
-            .ReadMessageFromQueue();
+            .ReadAllMessagesFromQueue(hearingId)[0];
         
         message.IntegrationEvent
             .Should()
             .BeEquivalentTo(new ParticipantRemovedIntegrationEvent(hearingId, judiciaryParticipant.Id));
+    }
+    
+    [Test]
+    public async Task should_remove_a_judge_from_the_confirmed_hearing()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearingV2(options
+            => { options.Case = new Case("UpdateParticipantsRemoveParticipant", "UpdateParticipantsRemoveParticipant"); }, BookingStatus.Created);
+        var judge = hearing.GetJudiciaryParticipants().First(e => e.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+        
+        // Act
+        using var client = Application.CreateClient();
+        var result =
+            await client.DeleteAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.RemoveJudiciaryParticipantFromHearing(hearing.Id,
+                    judge.JudiciaryPerson.PersonalCode));
+        
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        
+        await using var db = new BookingsDbContext(BookingsDbContextOptions);
+        var hearingFromDb = await db.VideoHearings.Include(x => x.JudiciaryParticipants)
+            .ThenInclude(x => x.JudiciaryPerson).FirstAsync(x => x.Id == hearing.Id);
+        
+        hearingFromDb.GetJudiciaryParticipants()
+            .Any(p => p.JudiciaryPerson.PersonalCode == judge.JudiciaryPerson.PersonalCode)
+            .Should()
+            .BeFalse();
+
+        hearingFromDb.Status.Should().Be(BookingStatus.ConfirmedWithoutJudge);
     }
 }

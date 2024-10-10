@@ -12,7 +12,7 @@ public class RemoveEndpointTests
     {
         var participant = new ParticipantBuilder().IndividualParticipantApplicant;
         var screening = new Screening(ScreeningType.Specific, participant);
-        var endpoint = new Endpoint("name", "sip", "pin", null);
+        var endpoint = new Endpoint(Guid.NewGuid().ToString(),"name", "sip", "pin", null);
         
         screening.UpdateScreeningList([], [endpoint]);
         screening.RemoveEndpoint(endpoint);
@@ -25,7 +25,7 @@ public class RemoveEndpointTests
     {
         var participant = new ParticipantBuilder().IndividualParticipantApplicant;
         var screening = new Screening(ScreeningType.Specific, participant);
-        var endpoint = new Endpoint("name", "sip", "pin", null);
+        var endpoint = new Endpoint(Guid.NewGuid().ToString(),"name", "sip", "pin", null);
         
         Action action = () => screening.RemoveEndpoint(endpoint);
         action.Should().Throw<DomainRuleException>()

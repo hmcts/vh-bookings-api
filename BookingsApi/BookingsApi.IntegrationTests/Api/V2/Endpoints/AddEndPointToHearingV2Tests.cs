@@ -92,14 +92,13 @@ public class AddEndPointToHearingV2Tests : ApiTest
         using var client = Application.CreateClient();
         var bookingsApiClient = BookingsApiClient.GetClient(client);
 
-        var request = new EndpointRequestV2()
+        var request = new EndpointRequestV2
         {
             DisplayName = "add-endpoint",
-            Screening = new ScreeningRequest()
+            Screening = new ScreeningRequest
             {
                 Type = ScreeningType.Specific,
-                ProtectFromEndpoints = [endpoint.DisplayName],
-                ProtectFromParticipants = [individual.Person.ContactEmail]
+                ProtectedFrom = [endpoint.ExternalReferenceId, individual.ExternalReferenceId]
             }
         };
         
@@ -111,7 +110,6 @@ public class AddEndPointToHearingV2Tests : ApiTest
         response.DisplayName.Should().Be(request.DisplayName);
         response.Screening.Should().NotBeNull();
         response.Screening.Type.Should().Be(request.Screening.Type);
-        response.Screening.ProtectFromParticipantsIds.Should().BeEquivalentTo([individual.Id]);
-        response.Screening.ProtectFromEndpointsIds.Should().BeEquivalentTo([endpoint.Id]);
+        response.Screening.ProtectedFrom.Should().BeEquivalentTo(endpoint.ExternalReferenceId, individual.ExternalReferenceId);
     }
 }

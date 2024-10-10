@@ -16,5 +16,10 @@ public class EndpointRequestValidationV2 : AbstractValidator<EndpointRequestV2>
         RuleFor(x => x.DisplayName).NotEmpty().Matches(regex).WithMessage(InvalidDisplayNameErrorMessage);
         RuleFor(x => x.DefenceAdvocateContactEmail).Must(x => x.IsValidEmail()).When(x => x.DefenceAdvocateContactEmail != null)
             .WithMessage(InvalidDefenceAdvocateContactEmailError);
+
+        When(x => x.Screening != null, () =>
+        {
+            RuleFor(x => x.Screening).SetValidator(new ScreeningRequestValidation());
+        });
     }
 }

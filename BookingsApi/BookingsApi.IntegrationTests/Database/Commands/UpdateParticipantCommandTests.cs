@@ -70,7 +70,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 Representee = representee
             };
             var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, representativeParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
-            var optionalDto = new UpdateParticipantCommandOptionalDto(repInfo, null, null, null, null, null);
+            var optionalDto =
+                new UpdateParticipantCommandOptionalDto(repInfo, null, null, null, null, null, null, null);
             var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
@@ -173,7 +174,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             };
 
             var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
-            var optionalDto = new UpdateParticipantCommandOptionalDto(null, additionalInformation, null, null, null, null);
+            var optionalDto = new UpdateParticipantCommandOptionalDto(null, additionalInformation, null, null, null, null, null, null);
             var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
@@ -232,7 +233,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var contactEmail = "editedContactEmail@email.com";
 
             var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
-            var optionalDto = new UpdateParticipantCommandOptionalDto(null, additionalInformation, contactEmail, null, null, null);
+            var optionalDto = new UpdateParticipantCommandOptionalDto(null, additionalInformation, contactEmail, null,
+                null, null, null, null);
             var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
@@ -263,7 +265,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             };
 
             var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
-            var optionalDto = new UpdateParticipantCommandOptionalDto(null, additionalInformation, null, null, null, null);
+            var optionalDto =
+                new UpdateParticipantCommandOptionalDto(null, additionalInformation, null, null, null, null, null,
+                    null);
             var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(updateParticipantCommand);
 
@@ -298,7 +302,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var contactEmail = individualParticipant2.Person.ContactEmail;
 
             var requiredDto = new UpdateParticipantCommandRequiredDto(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
-            var optionalDto = new UpdateParticipantCommandOptionalDto(null, additionalInformation, contactEmail, null, null, null);
+            var optionalDto = new UpdateParticipantCommandOptionalDto(null, additionalInformation, contactEmail, null,
+                null, null, null, null);
             var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(updateParticipantCommand);
 

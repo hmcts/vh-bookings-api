@@ -6,10 +6,10 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 {
     public class EndpointAddedIntegrationEvent : IIntegrationEvent
     {
-        public EndpointAddedIntegrationEvent(Guid hearingId, Endpoint endpoint)
+        public EndpointAddedIntegrationEvent(Hearing hearing, Endpoint endpoint)
         {
-            HearingId = hearingId;
-            Endpoint = EndpointDtoMapper.MapToDto(endpoint);
+            HearingId = hearing.Id;
+            Endpoint = EndpointDtoMapper.MapToDto(endpoint, hearing.GetParticipants(), hearing.GetEndpoints());
         }
 
         public Guid HearingId { get; }

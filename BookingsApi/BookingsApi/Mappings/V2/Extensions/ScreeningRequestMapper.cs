@@ -8,9 +8,8 @@ public static class ScreeningRequestMapper
     {
         return new ScreeningDto
         {
-            ProtectFromEndpoints = request.ProtectFromEndpoints,
-            ProtectFromParticipants = request.ProtectFromParticipants,
-            ScreeningType = request.Type.MapToDomainEnum()
+            ScreeningType = request.Type.MapToDomainEnum(),
+            ProtectedFrom = request.ProtectedFrom
         };
     }
 }

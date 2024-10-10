@@ -19,18 +19,25 @@ namespace BookingsApi.Domain
         public int? InterpreterLanguageId { get; protected set; }
         public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
         public string OtherLanguage { get; set; }
-        
+        public string ExternalReferenceId { get; set; }
+        public string MeasuresExternalId { get; set; }
         public Guid? ScreeningId { get; set; }
         public virtual Screening Screening { get; set; }
 
         protected Endpoint(){}
 
+        [Obsolete("Use the constructor with externalParticipantId")]
         public Endpoint(string displayName, string sip, string pin, Participant defenceAdvocate)
         {
             DisplayName = displayName;
             Sip = sip;
             Pin = pin;
             DefenceAdvocate = defenceAdvocate;
+        }
+        
+        public Endpoint(string externalReferenceId, string displayName, string sip, string pin, Participant defenceAdvocate): this(displayName, sip, pin, defenceAdvocate)
+        {
+            ExternalReferenceId = externalReferenceId;
         }
 
         public void AssignDefenceAdvocate(Participant defenceAdvocate)

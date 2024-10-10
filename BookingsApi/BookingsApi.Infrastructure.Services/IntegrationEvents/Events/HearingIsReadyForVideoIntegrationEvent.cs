@@ -29,7 +29,8 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 
             Participants.SingleOrDefault(x => x.UserRole == "Judge")?.SetOtherFieldsForNonEJudJudgeUser(hearing.OtherInformation);
             var hearingEndpoints = hearing.GetEndpoints();
-            Endpoints = hearingEndpoints.Select(EndpointDtoMapper.MapToDto).ToList();
+            Endpoints = hearingEndpoints.Select(he =>
+                EndpointDtoMapper.MapToDto(he, hearing.GetParticipants(), hearing.GetEndpoints())).ToList();
             
             Func<Participant, bool> ParticipantHasContactEmail()
             {

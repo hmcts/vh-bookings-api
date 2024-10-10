@@ -349,7 +349,8 @@ namespace BookingsApi.Controllers.V1
 
             var requiredDto = new UpdateParticipantCommandRequiredDto(hearingId, participantId, request.Title,
                 request.DisplayName, request.TelephoneNumber, request.OrganisationName, linkedParticipants);
-            var optionalDto = new UpdateParticipantCommandOptionalDto(representative, additionalInfo, request.ContactEmail, null, null, null);
+            var optionalDto = new UpdateParticipantCommandOptionalDto(representative, additionalInfo,
+                request.ContactEmail, null, null, null, null, null);
             var updateParticipantCommand = new UpdateParticipantCommand(
                 requiredDto, optionalDto);
             

@@ -81,7 +81,7 @@ public class UpdateHearingV2Tests : ApiTest
     public async Task should_return_bad_request_and_validation_failure_when_editing_a_created_hearing_close_to_start_time()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options => options.ScheduledDate = DateTime.UtcNow.AddMinutes(5), BookingStatus.Created);
+        var hearing = await Hooks.SeedVideoHearingV2(options => options.ScheduledDate = DateTime.UtcNow.AddMinutes(5), BookingStatus.Created);
         var hearingId = hearing.Id;
         var request = BuildRequest();
         
@@ -247,7 +247,7 @@ public class UpdateHearingV2Tests : ApiTest
     public async Task should_update_hearing_with_no_hearing_type_and_publish_when_hearing_status_is_created()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options =>
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.Case = new Case("Case1 Num", "Case1 Name");
             options.ExcludeHearingType = true;
@@ -308,7 +308,7 @@ public class UpdateHearingV2Tests : ApiTest
     public async Task should_update_hearing_when_details_are_the_same()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options =>
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.Case = new Case("Case1 Num", "Case1 Name");
         }, BookingStatus.Created);

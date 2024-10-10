@@ -2,6 +2,7 @@ using BookingsApi.Domain.Participants;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
+using BookingsApi.DAL.Extensions;
 
 namespace BookingsApi.DAL.Helper
 {
@@ -27,18 +28,24 @@ namespace BookingsApi.DAL.Helper
             var participants = new List<NewParticipant>();
             participants.AddRange(reps.Select(r => new NewParticipant
             {
+                ExternalReferenceId = r.ExternalReferenceId,
+                MeasuresExternalId = r.MeasuresExternalId,
                 Person = r.Person,
                 Representee = r.Representee,
                 CaseRole = r.CaseRole,
                 DisplayName = r.DisplayName,
-                HearingRole = r.HearingRole
+                HearingRole = r.HearingRole,
+                Screening = r.Screening.MapToScreeningDto()
             }));
             participants.AddRange(nonReps.Select(r => new NewParticipant
             {
+                ExternalReferenceId = r.ExternalReferenceId,
+                MeasuresExternalId = r.MeasuresExternalId,
                 Person = r.Person,
                 CaseRole = r.CaseRole,
                 DisplayName = r.DisplayName,
-                HearingRole = r.HearingRole
+                HearingRole = r.HearingRole,
+                Screening = r.Screening.MapToScreeningDto()
             }));
 
             var cases = hearing.GetCases().Select(c => new Case(c.Number, $"{c.Name} Day {hearingDay} of {totalDays}")
@@ -67,7 +74,10 @@ namespace BookingsApi.DAL.Helper
             var endpointsToClone = hearing.GetEndpoints().Select(x => new NewEndpointRequestDto()
             {
                 DisplayName = x.DisplayName,
-                DefenceAdvocateContactEmail = x.DefenceAdvocate?.Person?.ContactEmail
+                DefenceAdvocateContactEmail = x.DefenceAdvocate?.Person?.ContactEmail,
+                ExternalReferenceId = x.ExternalReferenceId,
+                MeasuresExternalId = x.MeasuresExternalId,
+                Screening = x.Screening.MapToScreeningDto(),
             }).ToList();
 
             return NewEndpointGenerator.GenerateNewEndpoints(endpointsToClone, randomGenerator, sipAddressStem);

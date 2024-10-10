@@ -38,7 +38,7 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
             }
 
             hearing.AddEndpoints(new List<Endpoint>
-                { new("new endpoint", Guid.NewGuid().ToString(), "pin", null) });
+                { new(Guid.NewGuid().ToString(),"new endpoint", Guid.NewGuid().ToString(), "pin", null) });
 
             return hearing;
         }

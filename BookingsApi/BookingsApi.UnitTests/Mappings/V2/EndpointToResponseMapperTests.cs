@@ -21,8 +21,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
                 Screening = new ScreeningRequest()
                 {
                     Type = ScreeningType.Specific,
-                    ProtectFromParticipants = ["email1.com"],
-                    ProtectFromEndpoints = ["endpoint1"]
+                    ProtectedFrom = ["email1.com","endpoint1"]
                 }
             };
 
@@ -33,9 +32,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             result.DisplayName.Should().Be(endpointRequest.DisplayName);
             result.ContactEmail.Should().Be(endpointRequest.DefenceAdvocateContactEmail);
             result.Screening.ScreeningType.Should().Be(BookingsApi.Domain.Enumerations.ScreeningType.Specific);
-            result.Screening.ProtectFromParticipants.Should().BeEquivalentTo(endpointRequest.Screening.ProtectFromParticipants);
-            result.Screening.ProtectFromEndpoints.Should().BeEquivalentTo(endpointRequest.Screening.ProtectFromEndpoints);
-
+            result.Screening.ProtectedFrom.Should().BeEquivalentTo(endpointRequest.Screening.ProtectedFrom);
         }
 
         [Test]
@@ -43,13 +40,14 @@ namespace BookingsApi.UnitTests.Mappings.V2
         {
             var participant = new ParticipantBuilder().Build();
 
-            var source = new Endpoint("displayName", "sip", "pin", participant[0]);
+            var source = new Endpoint(Guid.NewGuid().ToString(), "displayName", "sip", "pin", participant[0]);
             var interpreterLanguage = new InterpreterLanguage(1, "spa", "Spanish", "WelshValue", InterpreterType.Verbal, true);
             source.UpdateLanguagePreferences(interpreterLanguage, null);
             
             var result = EndpointToResponseV2Mapper.MapEndpointToResponse(source);
 
             result.Id.Should().Be(source.Id);
+            result.ExternalReferenceId.Should().Be(source.ExternalReferenceId);
             result.DisplayName.Should().Be(source.DisplayName);
             result.Sip.Should().Be(source.Sip);
             result.Pin.Should().Be(source.Pin);
@@ -64,7 +62,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             // Arrange
             var participant = new ParticipantBuilder().Build();
 
-            var endpoint = new Endpoint("displayName", "sip", "pin", participant[0]);
+            var endpoint = new Endpoint(Guid.NewGuid().ToString(), "displayName", "sip", "pin", participant[0]);
             endpoint.UpdateLanguagePreferences(null, "OtherLanguage");
             
             // Act

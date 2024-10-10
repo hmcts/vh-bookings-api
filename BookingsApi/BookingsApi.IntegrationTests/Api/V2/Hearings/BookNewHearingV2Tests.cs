@@ -3,6 +3,7 @@ using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain.Validations;
+using BookingsApi.Infrastructure.Services.Dtos;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
@@ -35,6 +36,10 @@ public class BookNewHearingV2Tests : ApiTest
         // arrange
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
         request.BookingSupplier = null;
+        request.Endpoints.Add(new EndpointRequestV2
+        {
+            DisplayName = "Ep1"
+        });
 
         // act
         using var client = Application.CreateClient();
@@ -62,6 +67,11 @@ public class BookNewHearingV2Tests : ApiTest
             Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingResponse.Id);
         Array.Exists(messages, x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().BeTrue();
+        
+        var hearingReadyEvent = messages.First(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent);
+        var integrationEvent = hearingReadyEvent.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
+        integrationEvent!.Hearing.ConferenceRoomType.Should().Be(ConferenceRoomType.VMR);
+        integrationEvent.Endpoints[0].Role.Should().Be(ConferenceRole.Host);
     }
     
     [Test]
@@ -231,19 +241,22 @@ public class BookNewHearingV2Tests : ApiTest
         
         var endpoint = new EndpointRequestV2
         {
-            DisplayName = "Endpoint A"
+            DisplayName = "Endpoint A",
+            ExternalParticipantId = Guid.NewGuid().ToString(),
+            MeasuresExternalId = "123"
         };
         request.Endpoints.Add(endpoint);
         
         var participantWithSpecificScreening = request.Participants[0];
         participantWithSpecificScreening.DisplayName = "Screen Specific Protected 1";
+        participantWithSpecificScreening.MeasuresExternalId = "456";
+        
         var protectedFrom = request.Participants[1];
         
         participantWithSpecificScreening.Screening = new ScreeningRequest
         {
             Type = ScreeningType.Specific,
-            ProtectFromParticipants = [protectedFrom.ContactEmail],
-            ProtectFromEndpoints = [endpoint.DisplayName]
+            ProtectedFrom = [protectedFrom.ExternalParticipantId, endpoint.ExternalParticipantId]
         };
         
         // act
@@ -261,19 +274,32 @@ public class BookNewHearingV2Tests : ApiTest
         _hearingIds.Add(hearingResponse.Id);
 
         createdResponse.Should().BeEquivalentTo(hearingResponse);
-        
-        var actual = createdResponse.Participants
-            .Find(x => x.ContactEmail == participantWithSpecificScreening.ContactEmail).Screening;
-        
-        actual.Should().NotBeNull("Participant should have a screening");
-        
-        actual.Type.Should().Be(ScreeningType.Specific);
 
-        var protectFromResponse = createdResponse.Participants.Find(x => x.ContactEmail == protectedFrom.ContactEmail);
-        var endpointResponse = createdResponse.Endpoints.Find(x => x.DisplayName == endpoint.DisplayName);
+        var participant = createdResponse.Participants
+            .Find(x => x.ContactEmail == participantWithSpecificScreening.ContactEmail);
         
-        actual.ProtectFromEndpointsIds.Should().Contain(endpointResponse.Id);
-        actual.ProtectFromParticipantsIds.Should().Contain(protectFromResponse.Id);
+        participant.Screening.Should().NotBeNull("Participant should have a screening");
+        
+        participant.Screening.Type.Should().Be(ScreeningType.Specific);
+
+        var protectFromResponse = createdResponse.Participants.Find(x => x.ExternalReferenceId == protectedFrom.ExternalParticipantId);
+        var endpointResponse = createdResponse.Endpoints.Find(x => x.ExternalReferenceId == endpoint.ExternalParticipantId);
+        
+        participant.Screening.ProtectedFrom.Should().Contain(endpointResponse.ExternalReferenceId);
+        participant.Screening.ProtectedFrom.Should().Contain(protectFromResponse.ExternalReferenceId);
+        
+        participant.MeasuresExternalId.Should().Be("456");
+        endpointResponse.MeasuresExternalId.Should().Be("123");
+        
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingResponse.Id);
+        Array.Exists(messages, x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().BeTrue();
+        
+        var integrationEvent = messages.First(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent);
+        var hearingIsReadyEvent = integrationEvent.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
+        hearingIsReadyEvent!.Hearing.ConferenceRoomType.Should().Be(ConferenceRoomType.VA);
+        hearingIsReadyEvent.Endpoints[0].Role.Should().Be(ConferenceRole.Guest);
     }
     
      [Test]
@@ -294,8 +320,7 @@ public class BookNewHearingV2Tests : ApiTest
         participantWithSpecificScreening.Screening = new ScreeningRequest
         {
             Type = ScreeningType.Specific,
-            ProtectFromParticipants = ["does-not-exist"],
-            ProtectFromEndpoints = ["made-up"]
+            ProtectedFrom = ["does-not-exist", "made-up"]
         };
         
         // act
@@ -315,11 +340,13 @@ public class BookNewHearingV2Tests : ApiTest
         
         var endpoint = new EndpointRequestV2
         {
-            DisplayName = "Endpoint A"
+            DisplayName = "Endpoint A",
+            ExternalParticipantId = Guid.NewGuid().ToString()
         };
         var endpoint2 = new EndpointRequestV2
         {
-            DisplayName = "Endpoint B"
+            DisplayName = "Endpoint B",
+            ExternalParticipantId = Guid.NewGuid().ToString()
         };
         request.Endpoints.AddRange([endpoint, endpoint2]);
         
@@ -330,8 +357,7 @@ public class BookNewHearingV2Tests : ApiTest
         endpoint.Screening = new ScreeningRequest
         {
             Type = ScreeningType.Specific,
-            ProtectFromParticipants = [protectedFrom.ContactEmail],
-            ProtectFromEndpoints = [endpoint2.DisplayName]
+            ProtectedFrom = [protectedFrom.ExternalParticipantId, endpoint2.ExternalParticipantId]
         };
         
         // act
@@ -360,8 +386,8 @@ public class BookNewHearingV2Tests : ApiTest
         var protectFromResponse = createdResponse.Participants.Find(x => x.ContactEmail == protectedFrom.ContactEmail);
         var endpointResponse = createdResponse.Endpoints.Find(x => x.DisplayName == endpoint2.DisplayName);
         
-        actual.ProtectFromEndpointsIds.Should().Contain(endpointResponse.Id);
-        actual.ProtectFromParticipantsIds.Should().Contain(protectFromResponse.Id);
+        actual.ProtectedFrom.Should().Contain(endpointResponse.ExternalReferenceId);
+        actual.ProtectedFrom.Should().Contain(protectFromResponse.ExternalReferenceId);
     }
     
     [Test]

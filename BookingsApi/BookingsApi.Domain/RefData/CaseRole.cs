@@ -4,6 +4,7 @@ using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.Domain.RefData
 {
+    [Obsolete("No longer required for a booking")]
     public class CaseRole : TrackableEntity<int>, IComparable
     {
         public CaseRole(int id, string name)

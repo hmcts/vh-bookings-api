@@ -26,6 +26,11 @@ namespace BookingsApi.DAL.Commands
         public string LanguageCode { get; set; }
         public string OtherLanguage { get; set; }
         public ScreeningDto Screening { get; }
+        
+        /// <summary>
+        /// The updated endpoint entity
+        /// </summary>
+        public Endpoint UpdatedEndpoint { get; set; }
     }
 
     public class UpdateEndPointOfHearingCommandHandler : ICommandHandler<UpdateEndPointOfHearingCommand>
@@ -81,6 +86,8 @@ namespace BookingsApi.DAL.Commands
             
             _hearingService.UpdateEndpointScreeningRequirement(hearing, endpoint, command.Screening);
             await _context.SaveChangesAsync();
+
+            command.UpdatedEndpoint = endpoint;
         }
     }
 }
