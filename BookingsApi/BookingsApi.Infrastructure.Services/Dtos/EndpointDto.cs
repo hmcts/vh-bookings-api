@@ -11,7 +11,7 @@ namespace BookingsApi.Infrastructure.Services.Dtos
 
     public enum ConferenceRole
     {
-        Host,
-        Guest
+        Host = 1,
+        Guest = 2
     }
 }

@@ -22,7 +22,7 @@ namespace BookingsApi.Infrastructure.Services.Dtos
 
     public enum ConferenceRoomType
     {
-        VMR,
-        VA
+        VMR = 1,
+        VA = 2
     }
 }
