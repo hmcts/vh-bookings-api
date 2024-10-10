@@ -31,32 +31,5 @@ namespace BookingsApi.Common.Helpers
 
             return settings;
         }
-
-        /// <summary>
-        /// The function returns default settings for the System.Text.Json serializer in C# with
-        /// snake-case property naming, indented output, and camel-case enum conversion.
-        /// </summary>
-        /// <returns>
-        /// The method `DefaultSystemTextJsonSerializerSettings` returns a `JsonSerializerOptions`
-        /// object with the following settings:
-        /// - PropertyNamingPolicy set to `JsonNamingPolicy.SnakeCaseLower`
-        /// - WriteIndented set to `true`
-        /// - A `JsonStringEnumConverter` converter with `JsonNamingPolicy.CamelCase` being added to the
-        /// Converters list.
-        /// </returns>
-        public static JsonSerializerOptions DefaultSystemTextJsonSerializerSettings()
-        {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-                WriteIndented = true,
-                Converters =
-                {
-                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-                }
-            };
-
-            return options;
-        }
     }
 }
