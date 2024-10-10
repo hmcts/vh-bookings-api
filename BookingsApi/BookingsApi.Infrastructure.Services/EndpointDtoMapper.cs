@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.Dtos;
 
@@ -34,7 +35,8 @@ namespace BookingsApi.Infrastructure.Services
         /// <returns>'Host' or 'Guest'</returns>
         public static string GetEndpointConferenceRole(this Endpoint source, IList<Participant> participants, IList<Endpoint> endpoints)
         {
-            var requiresScreening = source.Screening != null && source.Screening.ScreeningEntities.Count > 0;
+            var requiresScreening = source.Screening != null && (source.Screening.Type == ScreeningType.All ||
+                                                                 source.Screening.ScreeningEntities.Count > 0);
             if (requiresScreening) return GuestRole;
 
             var participantScreenings = participants.Where(x => x.Screening != null).SelectMany(x => x.Screening.GetEndpoints()).ToList();
