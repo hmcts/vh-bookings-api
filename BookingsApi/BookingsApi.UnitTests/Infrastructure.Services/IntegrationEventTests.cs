@@ -3,6 +3,7 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
+using BookingsApi.Infrastructure.Services.Dtos;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
@@ -241,7 +242,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
         public void Should_publish_message_to_queue_when_EndpointUpdatedIntegrationEvent_is_raised()
         {
             var endpointUpdatedIntegrationEvent =
-                new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name", "sol1@hmcts.net", "Host");
+                new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name", "sol1@hmcts.net", ConferenceRole.Host);
             _eventPublisher.PublishAsync(endpointUpdatedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);

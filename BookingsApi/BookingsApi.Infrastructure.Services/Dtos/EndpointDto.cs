@@ -6,6 +6,12 @@ namespace BookingsApi.Infrastructure.Services.Dtos
         public string Sip { get; set; }
         public string Pin { get; set; }
         public string DefenceAdvocateContactEmail { get; set; }
-        public string Role { get; set; }
+        public ConferenceRole Role { get; set; }
+    }
+
+    public enum ConferenceRole
+    {
+        Host,
+        Guest
     }
 }
