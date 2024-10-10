@@ -772,6 +772,15 @@
           "Microsoft.AspNetCore.Authorization": "2.2.0"
         }
       },
+      "Microsoft.AspNetCore.Connections.Abstractions": {
+        "type": "Transitive",
+        "resolved": "3.1.10",
+        "contentHash": "+bggAAN8KS7tE5QfK1ZXJSukL+LRUX1t/DrN2iRT3CD3lErUsyww9hHyIaIX+YK1A8UpmqjVukFxgc5w7lvlKg==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "3.1.10",
+          "System.IO.Pipelines": "4.7.3"
+        }
+      },
       "Microsoft.AspNetCore.Cors": {
         "type": "Transitive",
         "resolved": "2.2.0",
@@ -883,6 +892,14 @@
           "System.Text.Encodings.Web": "4.5.0"
         }
       },
+      "Microsoft.AspNetCore.Http.Connections.Common": {
+        "type": "Transitive",
+        "resolved": "3.1.10",
+        "contentHash": "D/nIhfWpIqNZTD+5g6q4RXO5OvFdcmLByY9RnrDV+40DHmJ+NPd4n/wC/EbUvv8WL8d7MZqT4kux1bK/I9ETyQ==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Connections.Abstractions": "3.1.10"
+        }
+      },
       "Microsoft.AspNetCore.Http.Extensions": {
         "type": "Transitive",
         "resolved": "2.2.0",
@@ -896,19 +913,20 @@
       },
       "Microsoft.AspNetCore.Http.Features": {
         "type": "Transitive",
-        "resolved": "2.2.0",
-        "contentHash": "ziFz5zH8f33En4dX81LW84I6XrYXKf9jg6aM39cM+LffN9KJahViKZ61dGMSO2gd3e+qe5yBRwsesvyqlZaSMg==",
+        "resolved": "3.1.10",
+        "contentHash": "/uQT0Wx1QMkrefYCuyPzJw0/CZbC++yUBLqGj1WDL7paqC7OqXxfQVT6o9xU0ni+d9SP2Y76UIaYUayvEMNm1w==",
         "dependencies": {
-          "Microsoft.Extensions.Primitives": "2.2.0"
+          "Microsoft.Extensions.Primitives": "3.1.10",
+          "System.IO.Pipelines": "4.7.3"
         }
       },
       "Microsoft.AspNetCore.JsonPatch": {
         "type": "Transitive",
-        "resolved": "8.0.4",
-        "contentHash": "8iy7uza6GTuE5GadOryGfsGuA8xP1RTs16zqdXF5gM0b8iDfyNWnyDmatY5cZhXE1kJiko0S7s1T/gNFdIZ7Zg==",
+        "resolved": "2.2.0",
+        "contentHash": "o9BB9hftnCsyJalz9IT0DUFxz8Xvgh3TOfGWolpuf19duxB4FySq7c25XDYBmBMS+sun5/PsEUAi58ra4iJAoA==",
         "dependencies": {
-          "Microsoft.CSharp": "4.7.0",
-          "Newtonsoft.Json": "13.0.3"
+          "Microsoft.CSharp": "4.5.0",
+          "Newtonsoft.Json": "11.0.2"
         }
       },
       "Microsoft.AspNetCore.Localization": {
@@ -1023,16 +1041,6 @@
           "Microsoft.AspNetCore.Mvc.Razor": "2.2.0",
           "Microsoft.Extensions.DependencyInjection": "2.2.0",
           "Microsoft.Extensions.Localization": "2.2.0"
-        }
-      },
-      "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
-        "type": "Transitive",
-        "resolved": "8.0.4",
-        "contentHash": "lhJq0JjrlGZQwQoYrpVbokhb1AlgLGxI3QacSyKgCNOXTNwCi0pUnMR7NrfON20DkL90Kqqyl3wDrLbRaRgcsA==",
-        "dependencies": {
-          "Microsoft.AspNetCore.JsonPatch": "8.0.4",
-          "Newtonsoft.Json": "13.0.3",
-          "Newtonsoft.Json.Bson": "1.0.2"
         }
       },
       "Microsoft.AspNetCore.Mvc.Razor": {
@@ -1315,8 +1323,8 @@
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
-        "resolved": "4.7.0",
-        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
+        "resolved": "4.5.0",
+        "contentHash": "kaj6Wb4qoMuH3HySFJhxwQfe8R/sJsNJnANrvv8WdFPMoNbKY5htfNscv+LHCu5ipz+49m2e+WQXpLXr9XYemQ=="
       },
       "Microsoft.Data.SqlClient": {
         "type": "Transitive",
@@ -1497,6 +1505,15 @@
           "Microsoft.Extensions.Configuration.FileExtensions": "8.0.0",
           "Microsoft.Extensions.FileProviders.Abstractions": "8.0.0",
           "System.Text.Json": "8.0.0"
+        }
+      },
+      "Microsoft.Extensions.Configuration.KeyPerFile": {
+        "type": "Transitive",
+        "resolved": "3.1.11",
+        "contentHash": "u3Y7Hs22o7vtN3hVtiS9/FwhG1BI5Vc24wucLU1wUvWS4jY1Ddx9h6H1srVtdtXA04tZbGrYBUoCbZDHEyddzQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "3.1.11",
+          "Microsoft.Extensions.FileProviders.Physical": "3.1.11"
         }
       },
       "Microsoft.Extensions.Configuration.UserSecrets": {
@@ -1985,10 +2002,11 @@
       },
       "Newtonsoft.Json.Bson": {
         "type": "Transitive",
-        "resolved": "1.0.2",
-        "contentHash": "QYFyxhaABwmq3p/21VrZNYvCg3DaEoN/wUuw5nmfAf0X3HLjgupwhkEWdgfb9nvGAUIv3osmZoD3kKl4jxEmYQ==",
+        "resolved": "1.0.1",
+        "contentHash": "5PYT/IqQ+UK31AmZiSS102R6EsTo+LGTSI8bp7WAUqDKaF4wHXD8U9u4WxTI1vc64tYi++8p3dk3WWNqPFgldw==",
         "dependencies": {
-          "Newtonsoft.Json": "12.0.1"
+          "NETStandard.Library": "1.6.1",
+          "Newtonsoft.Json": "10.0.1"
         }
       },
       "NJsonSchema": {
@@ -3218,6 +3236,18 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
+      "VH.Core.Configuration": {
+        "type": "Transitive",
+        "resolved": "0.1.13",
+        "contentHash": "fEtq8dy7GbJ8eUDc5kmwg3Ze+6C7JEPSHlmvz22W8UPX/x7ujBTr5MqUdpKNQganaHalt/6DHfHi+gxlPSUjiw==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Http.Connections.Common": "3.1.10",
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Microsoft.Extensions.Configuration.KeyPerFile": "3.1.11",
+          "Microsoft.Extensions.DependencyModel": "3.1.6",
+          "SonarAnalyzer.CSharp": "8.2.0.14119"
+        }
+      },
       "YamlDotNet": {
         "type": "Transitive",
         "resolved": "13.7.1",
@@ -3238,6 +3268,7 @@
         "dependencies": {
           "AspNetCore.HealthChecks.AzureServiceBus": "[8.0.1, )",
           "BookingsApi.Common": "[1.0.0, )",
+          "BookingsApi.Common.DotNet6": "[1.0.0, )",
           "BookingsApi.Contract": "[1.0.0, )",
           "BookingsApi.DAL": "[1.0.0, )",
           "BookingsApi.Domain": "[1.0.0, )",
@@ -3246,15 +3277,15 @@
           "FluentValidation.AspNetCore": "[11.3.0, )",
           "Microsoft.ApplicationInsights.AspNetCore": "[2.22.0, )",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[8.0.4, )",
-          "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "[8.0.4, )",
           "Microsoft.AspNetCore.Mvc.Versioning": "[5.1.0, )",
           "Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer": "[5.1.0, )",
           "Microsoft.Extensions.DependencyModel": "[8.0.0, )",
           "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[8.0.4, )",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "[8.0.2, )",
           "NSwag.AspNetCore": "[14.0.7, )",
-          "Newtonsoft.Json": "[13.0.3, )",
           "System.IdentityModel.Tokens.Jwt": "[7.5.1, )",
+          "System.Text.Json": "[8.0.0, )",
+          "VH.Core.Configuration": "[0.1.13, )",
           "ZymLabs.NSwag.FluentValidation": "[0.6.3, )",
           "libphonenumber-csharp": "[8.13.35, )"
         }
@@ -3262,8 +3293,10 @@
       "bookingsapi.client": {
         "type": "Project",
         "dependencies": {
+          "BookingsApi.Common.DotNet6": "[1.0.0, )",
           "BookingsApi.Contract": "[1.0.0, )",
-          "Microsoft.AspNetCore.Mvc.Core": "[2.2.5, )"
+          "Microsoft.AspNetCore.Mvc.Core": "[2.2.5, )",
+          "System.Text.Json": "[8.0.0, )"
         }
       },
       "bookingsapi.common": {
@@ -3278,11 +3311,16 @@
           "Newtonsoft.Json": "[13.0.3, )"
         }
       },
+      "bookingsapi.common.dotnet6": {
+        "type": "Project",
+        "dependencies": {
+          "System.Text.Json": "[8.0.0, )"
+        }
+      },
       "bookingsapi.contract": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.Configuration.Json": "[8.0.0, )",
-          "Newtonsoft.Json": "[13.0.3, )",
           "System.ComponentModel.Annotations": "[5.0.0, )"
         }
       },
@@ -3305,8 +3343,7 @@
           "Azure.Messaging.ServiceBus": "[7.18.0, )",
           "BookingsApi.Common": "[1.0.0, )",
           "BookingsApi.Domain": "[1.0.0, )",
-          "Microsoft.Extensions.Options": "[8.0.2, )",
-          "Newtonsoft.Json": "[13.0.3, )"
+          "Microsoft.Extensions.Options": "[8.0.2, )"
         }
       },
       "testing.common": {

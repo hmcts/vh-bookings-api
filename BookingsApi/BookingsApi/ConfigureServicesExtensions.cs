@@ -1,14 +1,14 @@
-﻿using BookingsApi.Common.Security;
+﻿using System.Text.Json;
+using BookingsApi.Common.DotNet6.Helpers;
+using BookingsApi.Common.Security;
 using BookingsApi.DAL.Services;
 using BookingsApi.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Serialization;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Newtonsoft.Json.Converters;
 using NSwag.Generation.AspNetCore;
 using ZymLabs.NSwag.FluentValidation;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
@@ -165,17 +165,12 @@ namespace BookingsApi
 
         public static IServiceCollection AddJsonOptions(this IServiceCollection serviceCollection)
         {
-            var contractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new SnakeCaseNamingStrategy()
-            };
-
-            serviceCollection.AddMvc()
-                .AddNewtonsoftJson(options =>
+            serviceCollection.AddControllers()
+                .AddJsonOptions(options =>
                 {
-                    options.SerializerSettings.ContractResolver = contractResolver;
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+                    options.JsonSerializerOptions.WriteIndented = true;
+                    options.JsonSerializerOptions.Converters.Add(new PascalCaseEnumConverterFactory());
                 });
 
             return serviceCollection;

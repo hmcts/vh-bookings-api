@@ -1,7 +1,6 @@
 using System.Net.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
+using System.Text.Json;
+using BookingsApi.Common.DotNet6.Helpers;
 
 namespace BookingsApi.Client
 {
@@ -13,9 +12,7 @@ namespace BookingsApi.Client
             {
                 ReadResponseAsString = true
             };
-            apiClient.JsonSerializerSettings.ContractResolver = new DefaultContractResolver {NamingStrategy = new SnakeCaseNamingStrategy()};
-            apiClient.JsonSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            apiClient.JsonSerializerSettings.Converters.Add(new StringEnumConverter());
+            
             return apiClient;
         }
         
@@ -24,6 +21,13 @@ namespace BookingsApi.Client
             var apiClient = GetClient(httpClient);
             apiClient.BaseUrl = baseUrl;
             return apiClient;
+        }
+
+        static partial void UpdateJsonSerializerSettings(JsonSerializerOptions settings)
+        {
+            settings.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+            settings.WriteIndented = true;
+            settings.Converters.Add(new PascalCaseEnumConverterFactory());
         }
     }
 }

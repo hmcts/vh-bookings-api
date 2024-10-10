@@ -1579,7 +1579,7 @@ namespace BookingsApi.Client
         #pragma warning restore 8618
 
         private System.Net.Http.HttpClient _httpClient;
-        private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
+        private static System.Lazy<System.Text.Json.JsonSerializerOptions> _settings = new System.Lazy<System.Text.Json.JsonSerializerOptions>(CreateSerializerSettings, true);
 
     #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public BookingsApiClient(System.Net.Http.HttpClient httpClient)
@@ -1589,9 +1589,9 @@ namespace BookingsApi.Client
             _httpClient = httpClient;
         }
 
-        private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
+        private static System.Text.Json.JsonSerializerOptions CreateSerializerSettings()
         {
-            var settings = new Newtonsoft.Json.JsonSerializerSettings();
+            var settings = new System.Text.Json.JsonSerializerOptions();
             UpdateJsonSerializerSettings(settings);
             return settings;
         }
@@ -1607,9 +1607,9 @@ namespace BookingsApi.Client
             }
         }
 
-        public Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
+        public System.Text.Json.JsonSerializerOptions JsonSerializerSettings { get { return _settings.Value; } }
 
-        static partial void UpdateJsonSerializerSettings(Newtonsoft.Json.JsonSerializerSettings settings);
+        static partial void UpdateJsonSerializerSettings(System.Text.Json.JsonSerializerOptions settings);
 
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
@@ -1976,8 +1976,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(addEndpointRequest, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(addEndpointRequest, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -2230,8 +2230,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(updateEndpointRequest, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(updateEndpointRequest, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -2476,8 +2476,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -2855,8 +2855,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
@@ -2986,8 +2986,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -3408,8 +3408,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
@@ -3875,8 +3875,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -4100,8 +4100,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(hearingIds, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(hearingIds, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -4303,8 +4303,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -4423,8 +4423,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -4753,8 +4753,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -4999,8 +4999,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -5126,8 +5126,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -5592,8 +5592,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(venueNames, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(venueNames, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -6328,8 +6328,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -6568,8 +6568,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -6697,8 +6697,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
@@ -6812,8 +6812,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -6915,8 +6915,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -7028,8 +7028,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(term, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(term, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -7201,8 +7201,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -7294,8 +7294,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -7413,8 +7413,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -7876,8 +7876,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -8461,8 +8461,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(term, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(term, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -9087,8 +9087,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(payload, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(payload, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
@@ -9556,8 +9556,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(hearingIds, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(hearingIds, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -9659,8 +9659,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(hearingVenueNames, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(hearingVenueNames, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -9880,8 +9880,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(postRequest, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(postRequest, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -9991,8 +9991,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(uploadWorkHoursRequests, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(uploadWorkHoursRequests, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -10102,8 +10102,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(uploadNonWorkingHoursRequests, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(uploadNonWorkingHoursRequests, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -10426,8 +10426,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -10895,8 +10895,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(addEndpointRequest, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(addEndpointRequest, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -11028,8 +11028,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(updateEndpointRequest, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(updateEndpointRequest, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -11148,8 +11148,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -11258,8 +11258,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -11391,8 +11391,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -11522,8 +11522,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -11647,8 +11647,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -11875,8 +11875,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
@@ -12105,8 +12105,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -12328,8 +12328,8 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(venueNames, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(venueNames, _settings.Value);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -12541,10 +12541,10 @@ namespace BookingsApi.Client
                 var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
+                    var typedBody = System.Text.Json.JsonSerializer.Deserialize<T>(responseText, JsonSerializerSettings);
                     return new ObjectResponseResult<T>(typedBody, responseText);
                 }
-                catch (Newtonsoft.Json.JsonException exception)
+                catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
                     throw new BookingsApiException(message, (int)response.StatusCode, responseText, headers, exception);
@@ -12555,15 +12555,12 @@ namespace BookingsApi.Client
                 try
                 {
                     using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                    using (var streamReader = new System.IO.StreamReader(responseStream))
-                    using (var jsonTextReader = new Newtonsoft.Json.JsonTextReader(streamReader))
                     {
-                        var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
-                        var typedBody = serializer.Deserialize<T>(jsonTextReader);
+                        var typedBody = await System.Text.Json.JsonSerializer.DeserializeAsync<T>(responseStream, JsonSerializerSettings, cancellationToken).ConfigureAwait(false);
                         return new ObjectResponseResult<T>(typedBody, string.Empty);
                     }
                 }
-                catch (Newtonsoft.Json.JsonException exception)
+                catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
                     throw new BookingsApiException(message, (int)response.StatusCode, string.Empty, headers, exception);

@@ -34,9 +34,10 @@ namespace BookingsApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApiVersioning();
-            
-            services.AddControllers().AddNewtonsoftJson();
 
+            services.AddControllers();
+
+            
             services.AddSingleton<ITelemetryInitializer, CloudRoleNameInitializer>();
 
             var envName = Configuration["Services:BookingsApiResourceId"]; // any service url will do here since we only care about the env name

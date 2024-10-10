@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Mappings.V1;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookingsApi.Controllers.V1;
 

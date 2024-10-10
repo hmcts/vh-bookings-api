@@ -84,7 +84,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         public async Task Should_return_missing_participants_error_when_no_judiciary_participants_are_given()
         {
             var request = BuildRequest();
-            request.JudiciaryParticipants = Enumerable.Empty<JudiciaryParticipantRequest>().ToList();
+            request.JudicialOfficeHolders = Enumerable.Empty<JudiciaryParticipantRequest>().ToList();
             request.Participants = Enumerable.Empty<ParticipantRequestV2>().ToList();
            
             var result = await _validator.ValidateAsync(request);
