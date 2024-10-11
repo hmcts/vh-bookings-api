@@ -1,19 +1,23 @@
-using BookingsApi.Contract.V2.Responses;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.Domain.SpecialMeasure;
-using BookingsApi.Mappings.V2.Extensions;
 
-namespace BookingsApi.Mappings.V2;
+namespace BookingsApi.DAL.Extensions;
 
-public static class ScreeningToResponseV2Mapper
+public static class ScreeningExtensions
 {
-    public static ScreeningResponseV2 MapScreeningToResponse(Screening screening)
+    public static ScreeningDto MapToScreeningDto(this Screening screening)
     {
+        if (screening == null)
+        {
+            return null;
+        }
+
         var endpointIds = screening.GetEndpoints().Select(x => x.Endpoint.ExternalReferenceId).ToList();
         var participantIds = screening.GetParticipants().Select(x => x.Participant.ExternalReferenceId).ToList();
         
-        return new ScreeningResponseV2
+        return new ScreeningDto
         {
-            Type = screening.Type.MapToContractEnum(),
+            ScreeningType = screening.Type,
             ProtectedFrom = endpointIds.Concat(participantIds).ToList()
         };
     }

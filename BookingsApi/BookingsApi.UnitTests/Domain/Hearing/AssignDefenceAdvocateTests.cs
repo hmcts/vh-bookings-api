@@ -7,7 +7,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         [Test]
         public void should_assign_defence_advocate()
         {
-            var ep = new Endpoint("DisplayName", "sip@address.com", "1111", null);
+            var ep = new Endpoint(Guid.NewGuid().ToString(),"DisplayName", "sip@address.com", "1111", null);
             var dA = new ParticipantBuilder().RepresentativeParticipantRespondent;
             
             ep.AssignDefenceAdvocate(dA);

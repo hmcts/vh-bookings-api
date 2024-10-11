@@ -45,6 +45,8 @@ namespace BookingsApi.DAL.Commands
         public string InterpreterLanguageCode { get; set; }
         public string OtherLanguage { get; set; }
         public ScreeningDto Screening { get; set; }
+        public string ExternalReferenceId { get; set; }
+        public string MeasuresExternalId { get; set; }
 
         public UpdateParticipantCommand(UpdateParticipantCommandRequiredDto requiredDto, UpdateParticipantCommandOptionalDto optionalDto = null)
         {
@@ -62,6 +64,8 @@ namespace BookingsApi.DAL.Commands
             InterpreterLanguageCode = optionalDto?.InterpreterLanguageCode;
             OtherLanguage = optionalDto?.OtherLanguage;
             Screening = optionalDto?.Screening;
+            ExternalReferenceId = optionalDto?.ExternalReferenceId;
+            MeasuresExternalId = optionalDto?.MeasuresExternalId;
         }
     }
 
@@ -149,6 +153,8 @@ namespace BookingsApi.DAL.Commands
             var languages = await _context.InterpreterLanguages.Where(x=> x.Live).ToListAsync();
             var language = languages.GetLanguage(command.InterpreterLanguageCode, "Participant");
             participant.UpdateLanguagePreferences(language, command.OtherLanguage);
+            participant.ExternalReferenceId = command.ExternalReferenceId;
+            participant.MeasuresExternalId = command.MeasuresExternalId;
 
             _hearingService.UpdateParticipantScreeningRequirement(hearing, participant, command.Screening);
 

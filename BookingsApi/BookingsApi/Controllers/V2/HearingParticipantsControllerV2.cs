@@ -143,8 +143,13 @@ namespace BookingsApi.Controllers.V2
             request.ContactEmail = request.ContactEmail?.Trim();
 
             var screening = request.Screening?.MapToDalDto();
-            var requiredDto = new UpdateParticipantCommandRequiredDto(hearingId, participantId, request.Title, request.DisplayName, request.TelephoneNumber, request.OrganisationName, linkedParticipants);
-            var optionalDto = new UpdateParticipantCommandOptionalDto(representative, additionalInformation, request.ContactEmail, request.InterpreterLanguageCode, request.OtherLanguage, screening);
+            var requiredDto = new UpdateParticipantCommandRequiredDto(hearingId, participantId, request.Title,
+                request.DisplayName, request.TelephoneNumber, request.OrganisationName, linkedParticipants);
+            
+            var optionalDto = new UpdateParticipantCommandOptionalDto(representative, additionalInformation,
+                request.ContactEmail, request.InterpreterLanguageCode, request.OtherLanguage, screening,
+                request.ExternalParticipantId, participant.MeasuresExternalId);
+            
             var updateParticipantCommand = new UpdateParticipantCommand(requiredDto, optionalDto);
             var updatedParticipant = await hearingParticipantService.UpdateParticipantAndPublishEventAsync(videoHearing, updateParticipantCommand);
             

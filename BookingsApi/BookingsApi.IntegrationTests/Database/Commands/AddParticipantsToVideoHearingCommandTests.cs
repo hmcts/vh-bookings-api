@@ -55,6 +55,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var newPerson = new PersonBuilder(true).Build();
             var newParticipant = new NewParticipant()
             {
+                ExternalReferenceId = Guid.NewGuid().ToString(),
+                MeasuresExternalId = "Screening1",
                 Person = newPerson,
                 CaseRole = applicantCaseRole,
                 HearingRole = applicantRepresentativeHearingRole,
@@ -86,6 +88,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var newParticipant = new NewParticipant()
             {
+                ExternalReferenceId = Guid.NewGuid().ToString(),
+                MeasuresExternalId = "Screening1",
                 Person = representative.Person,
                 CaseRole = representative.CaseRole,
                 HearingRole = representative.HearingRole,
@@ -114,6 +118,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             representative.HearingRole.UserRole.Name = "NonExistent";
             var newParticipant = new NewParticipant()
             {
+                ExternalReferenceId = Guid.NewGuid().ToString(),
+                MeasuresExternalId = "Screening1",
                 Person = representative.Person,
                 CaseRole = representative.CaseRole,
                 HearingRole = representative.HearingRole,
@@ -181,6 +187,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var newPerson1 = new PersonBuilder(true).Build();
             var interpretee = new NewParticipant()
             {
+                ExternalReferenceId = Guid.NewGuid().ToString(),
+                MeasuresExternalId = "Screening1",
                 Person = newPerson,
                 CaseRole = applicantCaseRole,
                 HearingRole = applicantRepresentativeHearingRole,
@@ -189,6 +197,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             };
             var interpreter = new NewParticipant()
             {
+                ExternalReferenceId = Guid.NewGuid().ToString(),
+                MeasuresExternalId = "Screening1",
                 Person = newPerson1,
                 CaseRole = respondentCaseRole,
                 HearingRole = respondentRepresentativeHearingRole,
@@ -235,6 +245,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var interpreter = new NewParticipant()
             {
+                ExternalReferenceId = Guid.NewGuid().ToString(),
+                MeasuresExternalId = "Screening1",
                 Person = newPerson,
                 CaseRole = respondentCaseRole,
                 HearingRole = respondentRepresentativeHearingRole,
@@ -283,6 +295,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var newPerson = new PersonBuilder(true).Build();
             var newParticipant = new NewParticipant()
             {
+                ExternalReferenceId = Guid.NewGuid().ToString(),
+                MeasuresExternalId = "Screening1",
                 Person = newPerson,
                 CaseRole = judgeCaseRole,
                 HearingRole = judgeHearingRole,
@@ -324,6 +338,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var newPerson = new PersonBuilder(participantsFromHearing1[1].Person.Username, participantsFromHearing1[0].Person.ContactEmail).Build();
             var newParticipant = new NewParticipant()
             {
+                ExternalReferenceId = Guid.NewGuid().ToString(),
+                MeasuresExternalId = "Screening1",
                 Person = newPerson,
                 CaseRole = applicantCaseRole,
                 HearingRole = applicantRepresentativeHearingRole,
@@ -362,6 +378,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var newParticipant = new NewParticipant()
             {
+                ExternalReferenceId = Guid.NewGuid().ToString(),
+                MeasuresExternalId = "Screening1",
                 Person = existingPerson,
                 CaseRole = applicantCaseRole,
                 HearingRole = applicantRepresentativeHearingRole,

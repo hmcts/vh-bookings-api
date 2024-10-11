@@ -12,7 +12,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         {
             var hearing = new VideoHearingBuilder().Build();
             var beforeCount = hearing.GetParticipants().Count;
-            var participant = hearing.GetParticipants().First();
+            var participant = hearing.GetParticipants()[0];
 
             hearing.RemoveParticipant(participant);
             var afterCount =hearing.GetParticipants().Count;
@@ -24,15 +24,14 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         {
             var hearing = new VideoHearingBuilder().Build();
             
-            var applicantCaseRole = new CaseRole(1, "Applicant");
             var applicantRepresentativeHearingRole = new HearingRole(2, "Representative");
             var newPerson = new PersonBuilder(true).Build();
             var participant = Builder<Representative>.CreateNew().WithFactory(() =>
-                new Representative(newPerson, applicantRepresentativeHearingRole, applicantCaseRole)
+                new Representative(Guid.NewGuid().ToString(), newPerson, applicantRepresentativeHearingRole, "Applicant1", "Representee1")
             ).Build();
             
             Action action = () => hearing.RemoveParticipant(participant);
-            action.Should().Throw<DomainRuleException>().And.ValidationFailures.Any(x =>
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures.Exists(x =>
                 x.Name == "Participant" && x.Message == "Participant does not exist on the hearing").Should().BeTrue();
         }
     }

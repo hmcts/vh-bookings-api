@@ -17,4 +17,6 @@ public class ExistingParticipantDetails
     public string InterpreterLanguageCode { get; set; }
     public string OtherLanguage { get; set; }
     public ScreeningDto Screening { get; set; }
+    public string ExternalReferenceId { get; set; }
+    public string MeasuresExternalId { get; set; }
 }

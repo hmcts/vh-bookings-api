@@ -116,7 +116,7 @@ public class AddParticipantsToHearingV2Tests : ApiTest
         request.Participants[0].Screening = new ScreeningRequest()
         {
             Type = ScreeningType.Specific,
-            ProtectFromEndpoints = [hearing.Endpoints[0].DisplayName]
+            ProtectedFrom = [hearing.Endpoints[0].ExternalReferenceId]
         };
 
         // act
@@ -137,7 +137,7 @@ public class AddParticipantsToHearingV2Tests : ApiTest
         addedParticipant.Should().NotBeNull();
         addedParticipant.Screening.Should().NotBeNull();
         addedParticipant.Screening.Type.Should().Be(ScreeningType.Specific);
-        addedParticipant.Screening.ProtectFromEndpointsIds.Should().Contain(hearing.Endpoints[0].Id);
+        addedParticipant.Screening.ProtectedFrom.Should().Contain(hearing.Endpoints[0].ExternalReferenceId);
     }
     
     private static AddParticipantsToHearingRequestV2 BuildRequestObject()
