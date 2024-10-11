@@ -67,6 +67,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             HearingRole hearingRole)
         {
             response.Id.Should().Be(participant.Id);
+            response.ExternalReferenceId.Should().Be(participant.ExternalReferenceId);
             response.DisplayName.Should().Be(participant.DisplayName);
             response.HearingRoleName.Should().Be(hearingRole.Name);
             response.HearingRoleCode.Should().Be(hearingRole.Code);

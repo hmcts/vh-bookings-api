@@ -8,7 +8,7 @@ public class GetConfirmedHearingsByUsernameForTodayTestsV2 : ApiTest
     [Test]
     public async Task should_get_all_confirmed_hearings_for_today()
     {
-        var hearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created,
+        var hearing1 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created,
                     configureOptions: options => { options.ScheduledDate = DateTime.UtcNow; });
         await Hooks.CloneVideoHearing(hearing1.Id, new List<DateTime> { DateTime.UtcNow }, BookingStatus.Created);
         await Hooks.CloneVideoHearing(hearing1.Id, new List<DateTime> { DateTime.UtcNow }, BookingStatus.Created);
@@ -27,7 +27,7 @@ public class GetConfirmedHearingsByUsernameForTodayTestsV2 : ApiTest
     [Test]
     public async Task should_return_notfound_when_no_confirmed_hearings_for_today()
     {
-        var hearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created,
+        var hearing1 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created,
                     configureOptions: options => { options.ScheduledDate = DateTime.UtcNow.AddDays(1); });
         var username = hearing1.Participants[0].Person.Username;
 

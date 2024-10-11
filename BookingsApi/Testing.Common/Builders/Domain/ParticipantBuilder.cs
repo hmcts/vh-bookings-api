@@ -1,3 +1,4 @@
+using System;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using System.Collections.Generic;
@@ -15,8 +16,6 @@ namespace Testing.Common.Builders.Domain
 
         public ParticipantBuilder(bool treatPersonAsNew = true)
         {
-            var applicantCaseRole = new CaseRole(1, "Applicant");
-            var respondentCaseRole = new CaseRole(2, "Respondent");
             var applicantLipHearingRole = new HearingRole(1, "Litigant in person")
             {
                 UserRole = new UserRole(5, "Individual")
@@ -33,13 +32,13 @@ namespace Testing.Common.Builders.Domain
             var person2 = new PersonBuilder(true, treatPersonAsNew:treatPersonAsNew).Build();
             var person3 = new PersonBuilder(true, treatPersonAsNew:treatPersonAsNew).Build();
 
-            _individualParticipant1 = new Individual(person1, applicantLipHearingRole, applicantCaseRole);
+            _individualParticipant1 = new Individual(Guid.NewGuid().ToString(), person1, applicantLipHearingRole, "Individual1");
             _individualParticipant1.HearingRole = applicantLipHearingRole;
             
-            _individualParticipant2 = new Individual(person2, respondentLipHearingRole, respondentCaseRole);
+            _individualParticipant2 = new Individual(Guid.NewGuid().ToString(), person2, respondentLipHearingRole, "Individual2");
             _individualParticipant2.HearingRole = respondentLipHearingRole;
             
-            _representativeParticipant = new Representative(person3, respondentRepresentativeHearingRole, respondentCaseRole);
+            _representativeParticipant = new Representative(Guid.NewGuid().ToString(), person3, respondentRepresentativeHearingRole, "Representative1", "Representee1");
             _representativeParticipant.HearingRole = respondentRepresentativeHearingRole;
             
             _participants.Add(_individualParticipant1);

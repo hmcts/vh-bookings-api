@@ -7,4 +7,4 @@ public record UpdateParticipantCommandRequiredDto(Guid HearingId, Guid Participa
     
 public record UpdateParticipantCommandOptionalDto(RepresentativeInformation RepresentativeInformation,
     AdditionalInformation AdditionalInformation, string ContactEmail, string InterpreterLanguageCode, string OtherLanguage,
-    ScreeningDto Screening);
+    ScreeningDto Screening, string ExternalReferenceId, string MeasuresExternalId);

@@ -24,6 +24,8 @@ namespace BookingsApi.Mappings.V2
             return new EndpointResponseV2
             {
                 Id = endpoint.Id,
+                ExternalReferenceId = endpoint.ExternalReferenceId,
+                MeasuresExternalId = endpoint.MeasuresExternalId,
                 DisplayName = endpoint.DisplayName,
                 Sip = endpoint.Sip,
                 Pin = endpoint.Pin,
@@ -56,6 +58,8 @@ namespace BookingsApi.Mappings.V2
                 ContactEmail = requestV2.DefenceAdvocateContactEmail,
                 OtherLanguage = requestV2.OtherLanguage,
                 LanguageCode = requestV2.InterpreterLanguageCode,
+                ExternalParticipantId = requestV2.ExternalParticipantId,
+                MeasuresExternalId = requestV2.MeasuresExternalId,
                 Screening = requestV2.Screening?.MapToDalDto()
             };
         }

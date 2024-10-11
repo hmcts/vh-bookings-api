@@ -159,6 +159,7 @@ namespace BookingsApi.IntegrationTests.Helper
         /// <summary>
         /// Use when testing V1 endpoints
         /// </summary>
+        [Obsolete("Use SeedVideoHearingV2. This will be removed in a future release.")]
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions = null,
             BookingStatus status = BookingStatus.Booked,
             bool withLinkedParticipants = false,
@@ -168,6 +169,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 isMultiDayFirstHearing);
         }
 
+        [Obsolete("Use SeedVideoHearingV2. This will be removed in a future release.")]
         private async Task<VideoHearing> SeedVideoHearing(bool useFlatHearingRoles,
             Action<SeedVideoHearingOptions> configureOptions = null,
             BookingStatus status = BookingStatus.Booked, bool withLinkedParticipants = false,
@@ -200,7 +202,7 @@ namespace BookingsApi.IntegrationTests.Helper
                     var pin = r.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
                     videoHearing.AddEndpoints(new List<Endpoint>
                     {
-                        new Endpoint($"new endpoint {i}", $"{sip}@hmcts.net", pin, null)
+                        new Endpoint(Guid.NewGuid().ToString(), $"new endpoint {i}", $"{sip}@hmcts.net", pin, null)
                     });
                 }
             }
@@ -217,8 +219,8 @@ namespace BookingsApi.IntegrationTests.Helper
             videoHearing.AddEndpoints(
                 new List<Endpoint>
                 {
-                    new("new endpoint 01", Guid.NewGuid().ToString(), "pin", null),
-                    new("new endpoint 02", Guid.NewGuid().ToString(), "pin", defenceAdvocate),
+                    new(Guid.NewGuid().ToString(),"new endpoint 01", Guid.NewGuid().ToString(), "pin", null),
+                    new(Guid.NewGuid().ToString(),"new endpoint 02", Guid.NewGuid().ToString(), "pin", defenceAdvocate),
                 });
 
             if (status != BookingStatus.Booked)
@@ -243,7 +245,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 var individuals = videoHearing.Participants.Where(x => x is Individual).ToList();
                 var endpoints = videoHearing.Endpoints.ToList();
                 videoHearing.AssignScreeningForParticipant(individuals[0], ScreeningType.Specific,
-                    [individuals[1].Person.ContactEmail], [endpoints[0].DisplayName]);
+                    [individuals[1].ExternalReferenceId, endpoints[0].ExternalReferenceId]);
             }
 
             await db.VideoHearings.AddAsync(videoHearing);
@@ -269,6 +271,11 @@ namespace BookingsApi.IntegrationTests.Helper
             var respondentCaseRole = caseType.CaseRoles.First(x => x.Name == options.RespondentRole);
 
             var flatHearingRoles = GetFlatHearingRolesFromDb();
+            
+            var person1 = new PersonBuilder(true).WithOrganisation().Build();
+            var person2 = new PersonBuilder(true).Build();
+            var person3 = new PersonBuilder(true).Build();
+            var person4 = new PersonBuilder($"Automation/{RandomNumber.Next()}@hmcts.net").Build();
 
             if (useFlatHearingRoles)
             {
@@ -278,33 +285,45 @@ namespace BookingsApi.IntegrationTests.Helper
                 respondentRepresentativeHearingRole =
                     flatHearingRoles.First(x => x.Code == HearingRoleCodes.WelfareRepresentative);
                 respondentLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Respondent);
+                
+                videoHearing.AddIndividual(Guid.NewGuid().ToString(), person1, applicantLipHearingRole,
+                    $"{person1.FirstName} {person1.LastName}");
+
+                videoHearing.AddRepresentative(Guid.NewGuid().ToString(),person2, applicantRepresentativeHearingRole,
+                    $"{person2.FirstName} {person2.LastName}", "Ms X");
+
+                videoHearing.AddRepresentative(Guid.NewGuid().ToString(),person3, respondentRepresentativeHearingRole,
+                    $"{person3.FirstName} {person3.LastName}", "Ms Y");
+
+                videoHearing.AddIndividual(Guid.NewGuid().ToString(), person4, respondentLipHearingRole,
+                    $"{person4.FirstName} {person4.LastName}");
             }
             else
             {
+                // remove this block when v1 operations are removed
                 applicantLipHearingRole = applicantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
                 applicantRepresentativeHearingRole =
                     applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
                 respondentRepresentativeHearingRole =
                     respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
                 respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
+                
+                videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
+                    $"{person1.FirstName} {person1.LastName}");
+
+                videoHearing.AddRepresentative(person2, applicantRepresentativeHearingRole, applicantCaseRole,
+                    $"{person2.FirstName} {person2.LastName}", "Ms X");
+
+                videoHearing.AddRepresentative(person3, respondentRepresentativeHearingRole, respondentCaseRole,
+                    $"{person3.FirstName} {person3.LastName}", "Ms Y");
+
+                videoHearing.AddIndividual(person4, respondentLipHearingRole, respondentCaseRole,
+                    $"{person4.FirstName} {person4.LastName}");
             }
 
-            var person1 = new PersonBuilder(true).WithOrganisation().Build();
-            var person2 = new PersonBuilder(true).Build();
-            var person3 = new PersonBuilder(true).Build();
-            var person4 = new PersonBuilder($"Automation/{RandomNumber.Next()}@hmcts.net").Build();
+            
 
-            videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
-                $"{person1.FirstName} {person1.LastName}");
-
-            videoHearing.AddRepresentative(person2, applicantRepresentativeHearingRole, applicantCaseRole,
-                $"{person2.FirstName} {person2.LastName}", "Ms X");
-
-            videoHearing.AddRepresentative(person3, respondentRepresentativeHearingRole, respondentCaseRole,
-                $"{person3.FirstName} {person3.LastName}", "Ms Y");
-
-            videoHearing.AddIndividual(person4, respondentLipHearingRole, respondentCaseRole,
-                $"{person4.FirstName} {person4.LastName}");
+            
         }
 
         private async Task AddPanelMemberToVideoHearing(VideoHearing videoHearing, CaseType caseType,

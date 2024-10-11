@@ -12,14 +12,9 @@ public class ScreeningRequest
     ///     Is the requirement for all participants or specific participants
     /// </summary>
     public ScreeningType Type { get; set; }
-
+    
     /// <summary>
-    ///     A list of participant contact emails to protect from
+    /// A list of entity external reference ids to protect from
     /// </summary>
-    public List<string> ProtectFromParticipants { get; set; } = [];
-
-    /// <summary>
-    ///     A list of endpoint display names to protect from
-    /// </summary>
-    public List<string> ProtectFromEndpoints { get; set; } = [];
+    public List<string> ProtectedFrom { get; set; } = [];
 }

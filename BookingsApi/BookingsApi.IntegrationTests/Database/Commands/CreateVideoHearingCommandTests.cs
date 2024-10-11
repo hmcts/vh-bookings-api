@@ -48,6 +48,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var newJudgePerson = new PersonBuilder(true).Build();
             var newParticipant = new NewParticipant()
             {
+                ExternalReferenceId = Guid.NewGuid().ToString(),
+                MeasuresExternalId = "Screening1",
                 Person = newPerson,
                 CaseRole = applicantCaseRole,
                 HearingRole = applicantRepresentativeHearingRole,
