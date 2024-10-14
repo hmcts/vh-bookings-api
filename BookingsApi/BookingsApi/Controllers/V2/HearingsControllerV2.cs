@@ -299,11 +299,6 @@ namespace BookingsApi.Controllers.V2
             var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
             var hearings =
                 await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
-            
-            if (!hearings.Any())
-            {
-                return NotFound($"{username.Trim().ToLower()} does not have any confirmed hearings today");
-            }
 
             var response = hearings.Select(ConfirmedHearingsTodayResponseMapperV2.Map).ToList();
             return Ok(response);

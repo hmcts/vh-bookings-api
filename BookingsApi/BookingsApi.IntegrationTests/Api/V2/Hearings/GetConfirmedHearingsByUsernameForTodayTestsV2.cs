@@ -25,7 +25,7 @@ public class GetConfirmedHearingsByUsernameForTodayTestsV2 : ApiTest
     }
 
     [Test]
-    public async Task should_return_notfound_when_no_confirmed_hearings_for_today()
+    public async Task should_return_empty_list_when_no_confirmed_hearings_for_today()
     {
         var hearing1 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created,
                     configureOptions: options => { options.ScheduledDate = DateTime.UtcNow.AddDays(1); });
@@ -35,8 +35,8 @@ public class GetConfirmedHearingsByUsernameForTodayTestsV2 : ApiTest
 
         var result = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetConfirmedHearingsByUsernameForToday(username));
 
-        result.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        var response = await ApiClientResponse.GetResponses<string>(result.Content);
-        response.Should().Be($"{username.Trim().ToLower()} does not have any confirmed hearings today");
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        var response = await ApiClientResponse.GetResponses<List<ConfirmedHearingsTodayResponseV2>>(result.Content);
+        response.Should().BeEmpty();
     }
 }
