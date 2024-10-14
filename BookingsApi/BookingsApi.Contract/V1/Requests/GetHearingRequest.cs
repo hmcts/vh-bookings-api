@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace BookingsApi.Contract.V1.Requests
 {
@@ -17,37 +17,37 @@ namespace BookingsApi.Contract.V1.Requests
 
         public const string DefaultCursor = "0";
 
-        [JsonProperty("types")]
+        [JsonPropertyName("types")]
         public List<int> Types { get; set; }
         
-        [JsonProperty("users")]
+        [JsonPropertyName("users")]
         public List<Guid> Users { get; set; }
 
-        [JsonProperty("cursor")]
+        [JsonPropertyName("cursor")]
         public string Cursor { get; set; } = DefaultCursor;
 
-        [JsonProperty("limit")]
+        [JsonPropertyName("limit")]
         public int Limit { get; set; } = DefaultLimit;
 
-        [JsonProperty("fromDate")]
+        [JsonPropertyName("fromDate")]
         public DateTime? FromDate { get; set; }
 
-        [JsonProperty("caseNumber")]
+        [JsonPropertyName("caseNumber")]
         public string CaseNumber { get; set; }
 
-        [JsonProperty("venueIds")]
+        [JsonPropertyName("venueIds")]
         public List<int> VenueIds { get; set; }
 
-        [JsonProperty("endDate")]
+        [JsonPropertyName("endDate")]
         public DateTime? EndDate { get; set; }
 
-        [JsonProperty("lastName")]
+        [JsonPropertyName("lastName")]
         public string LastName { get; set; }
 
-        [JsonProperty("noJudge")]
+        [JsonPropertyName("noJudge")]
         public bool NoJudge { get; set; }
         
-        [JsonProperty("noAllocated")]
+        [JsonPropertyName("noAllocated")]
         public bool NoAllocated { get; set; }
     }
 }

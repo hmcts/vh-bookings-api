@@ -14,6 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\BookingsApi.Common.DotNet6\BookingsApi.Common.DotNet6.csproj" />
         <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj">
             <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
             <IncludeAssets>BookingsApi.Contract.dll</IncludeAssets>
@@ -22,6 +23,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+        <PackageReference Include="System.Text.Json" Version="8.0.0" />
     </ItemGroup>
 
     <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
