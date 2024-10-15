@@ -109,7 +109,7 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
 
         foreach (var judiciaryParticipant in hearing.GetJudiciaryParticipants())
         {
-            hearingResponse.JudiciaryParticipants.Should()
+            hearingResponse.JudicialOfficeHolders.Should()
                 .ContainEquivalentOf(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
         }
     }

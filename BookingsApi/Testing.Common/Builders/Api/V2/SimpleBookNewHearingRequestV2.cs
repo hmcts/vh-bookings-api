@@ -81,7 +81,7 @@ public class SimpleBookNewHearingRequestV2
             .With(x => x.ScheduledDateTime = hearingScheduled)
             .With(x => x.ScheduledDuration = 5)
             .With(x => x.Participants = participants)
-            .With(x=> x.JudiciaryParticipants = judiciaryParticipants)
+            .With(x=> x.JudicialOfficeHolders = judiciaryParticipants)
             .With(x => x.Cases = cases)
             .With(x => x.CreatedBy = createdBy)
             .With(x => x.AudioRecordingRequired = true)

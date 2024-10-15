@@ -1,3 +1,4 @@
+using System.Text.Json;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
@@ -56,8 +57,8 @@ public class BookNewHearingV2Tests : ApiTest
         _hearingIds.Add(hearingResponse.Id);
 
         createdResponse.Should().BeEquivalentTo(hearingResponse);
-        var judiciaryJudgeRequest = request.JudiciaryParticipants[0];
-        createdResponse.JudiciaryParticipants.Should().Contain(x =>
+        var judiciaryJudgeRequest = request.JudicialOfficeHolders[0];
+        createdResponse.JudicialOfficeHolders.Should().Contain(x =>
             x.PersonalCode == judiciaryJudgeRequest.PersonalCode &&
             x.HearingRoleCode == judiciaryJudgeRequest.HearingRoleCode &&
             x.DisplayName == judiciaryJudgeRequest.DisplayName
@@ -96,8 +97,8 @@ public class BookNewHearingV2Tests : ApiTest
         _hearingIds.Add(hearingResponse.Id);
 
         createdResponse.Should().BeEquivalentTo(hearingResponse);
-        var judiciaryJudgeRequest = request.JudiciaryParticipants[0];
-        createdResponse.JudiciaryParticipants.Should().Contain(x =>
+        var judiciaryJudgeRequest = request.JudicialOfficeHolders[0];
+        createdResponse.JudicialOfficeHolders.Should().Contain(x =>
             x.PersonalCode == judiciaryJudgeRequest.PersonalCode &&
             x.HearingRoleCode == judiciaryJudgeRequest.HearingRoleCode &&
             x.DisplayName == judiciaryJudgeRequest.DisplayName
@@ -116,7 +117,7 @@ public class BookNewHearingV2Tests : ApiTest
         // arrange
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
         const string languageCode = "spa";
-        var judiciaryParticipant = request.JudiciaryParticipants[0];
+        var judiciaryParticipant = request.JudicialOfficeHolders[0];
         judiciaryParticipant.InterpreterLanguageCode = languageCode;
         var participant = request.Participants[0];
         participant.InterpreterLanguageCode = languageCode;
@@ -142,7 +143,7 @@ public class BookNewHearingV2Tests : ApiTest
         _hearingIds.Add(hearingResponse.Id);
 
         createdResponse.Should().BeEquivalentTo(hearingResponse);
-        createdResponse.JudiciaryParticipants.Should().Contain(x => 
+        createdResponse.JudicialOfficeHolders.Should().Contain(x => 
             x.PersonalCode == judiciaryParticipant.PersonalCode && 
             x.InterpreterLanguage.Code == languageCode);
         createdResponse.Participants.Should().Contain(x => 
@@ -159,7 +160,7 @@ public class BookNewHearingV2Tests : ApiTest
         // arrange
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
         const string otherLanguage = "made up";
-        var judiciaryParticipant = request.JudiciaryParticipants[0];
+        var judiciaryParticipant = request.JudicialOfficeHolders[0];
         judiciaryParticipant.OtherLanguage = otherLanguage;
         var participant = request.Participants[0];
         participant.OtherLanguage = otherLanguage;
@@ -185,7 +186,7 @@ public class BookNewHearingV2Tests : ApiTest
         _hearingIds.Add(hearingResponse.Id);
 
         createdResponse.Should().BeEquivalentTo(hearingResponse);
-        createdResponse.JudiciaryParticipants.Should().Contain(x => 
+        createdResponse.JudicialOfficeHolders.Should().Contain(x => 
             x.PersonalCode == judiciaryParticipant.PersonalCode && 
             x.OtherLanguage == otherLanguage);
         createdResponse.Participants.Should().Contain(x => 
@@ -478,7 +479,7 @@ public class BookNewHearingV2Tests : ApiTest
         // arrange
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
         const string languageCode = "madeup";
-        request.JudiciaryParticipants[0].InterpreterLanguageCode = languageCode;
+        request.JudicialOfficeHolders[0].InterpreterLanguageCode = languageCode;
         request.Participants[0].InterpreterLanguageCode = languageCode;
         request.Endpoints.Add(new EndpointRequestV2
         {
@@ -528,9 +529,9 @@ public class BookNewHearingV2Tests : ApiTest
     {
         // arrange
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
-        var judge = request.JudiciaryParticipants.Find(p =>
+        var judge = request.JudicialOfficeHolders.Find(p =>
             p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
-        request.JudiciaryParticipants.Remove(judge);
+        request.JudicialOfficeHolders.Remove(judge);
 
         // act
         using var client = Application.CreateClient();

@@ -4,21 +4,21 @@
     "net8.0": {
       "FluentAssertions": {
         "type": "Direct",
-        "requested": "[6.12.0, )",
-        "resolved": "6.12.0",
-        "contentHash": "ZXhHT2YwP9lajrwSKbLlFqsmCCvFJMoRSK9t7sImfnCyd0OB3MhgxdoMcVqxbq1iyxD6mD2fiackWmBb7ayiXQ==",
+        "requested": "[6.12.1, )",
+        "resolved": "6.12.1",
+        "contentHash": "hciWwryyLw3eonfqhFpOMTXyM1/auJChYslEBA+iGJyuBs5O3t/kA8YaeH4iRo/2Fe3ElSYL86C0miivtZ0f3g==",
         "dependencies": {
           "System.Configuration.ConfigurationManager": "4.4.0"
         }
       },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
-        "requested": "[17.9.0, )",
-        "resolved": "17.9.0",
-        "contentHash": "7GUNAUbJYn644jzwLm5BD3a2p9C1dmP8Hr6fDPDxgItQk9hBs1Svdxzz07KQ/UphMSmgza9AbijBJGmw5D658A==",
+        "requested": "[17.11.1, )",
+        "resolved": "17.11.1",
+        "contentHash": "U3Ty4BaGoEu+T2bwSko9tWqWUOU16WzSFkq6U8zve75oRBMSLTBdMAZrVNNz1Tq12aCdDom9fcOcM9QZaFHqFg==",
         "dependencies": {
-          "Microsoft.CodeCoverage": "17.9.0",
-          "Microsoft.TestPlatform.TestHost": "17.9.0"
+          "Microsoft.CodeCoverage": "17.11.1",
+          "Microsoft.TestPlatform.TestHost": "17.11.1"
         }
       },
       "NUnit": {
@@ -904,11 +904,11 @@
       },
       "Microsoft.AspNetCore.JsonPatch": {
         "type": "Transitive",
-        "resolved": "8.0.10",
-        "contentHash": "pLEDpobrApzc+9IgnlwMfWHfVaOWdNlBFgfggxFgMw57sn/iTkPMwc8eaufcKcLyCCNZQ1r6GRLsIIzUMtH8eg==",
+        "resolved": "2.2.0",
+        "contentHash": "o9BB9hftnCsyJalz9IT0DUFxz8Xvgh3TOfGWolpuf19duxB4FySq7c25XDYBmBMS+sun5/PsEUAi58ra4iJAoA==",
         "dependencies": {
-          "Microsoft.CSharp": "4.7.0",
-          "Newtonsoft.Json": "13.0.3"
+          "Microsoft.CSharp": "4.5.0",
+          "Newtonsoft.Json": "11.0.2"
         }
       },
       "Microsoft.AspNetCore.Localization": {
@@ -1023,16 +1023,6 @@
           "Microsoft.AspNetCore.Mvc.Razor": "2.2.0",
           "Microsoft.Extensions.DependencyInjection": "2.2.0",
           "Microsoft.Extensions.Localization": "2.2.0"
-        }
-      },
-      "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
-        "type": "Transitive",
-        "resolved": "8.0.10",
-        "contentHash": "2DIFj+w15yFIQbh4AgQQC8m0UJfhiF20s3h/DlTyiPGgNfijZ9TxqauYqaj81hF5Pc9wUg9agvxlH+4eUFjoRg==",
-        "dependencies": {
-          "Microsoft.AspNetCore.JsonPatch": "8.0.10",
-          "Newtonsoft.Json": "13.0.3",
-          "Newtonsoft.Json.Bson": "1.0.2"
         }
       },
       "Microsoft.AspNetCore.Mvc.Razor": {
@@ -1315,13 +1305,13 @@
       },
       "Microsoft.CodeCoverage": {
         "type": "Transitive",
-        "resolved": "17.9.0",
-        "contentHash": "RGD37ZSrratfScYXm7M0HjvxMxZyWZL4jm+XgMZbkIY1UPgjUpbNA/t+WTGj/rC/0Hm9A3IrH3ywbKZkOCnoZA=="
+        "resolved": "17.11.1",
+        "contentHash": "nPJqrcA5iX+Y0kqoT3a+pD/8lrW/V7ayqnEJQsTonSoPz59J8bmoQhcSN4G8+UJ64Hkuf0zuxnfuj2lkHOq4cA=="
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
-        "resolved": "4.7.0",
-        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
+        "resolved": "4.5.0",
+        "contentHash": "kaj6Wb4qoMuH3HySFJhxwQfe8R/sJsNJnANrvv8WdFPMoNbKY5htfNscv+LHCu5ipz+49m2e+WQXpLXr9XYemQ=="
       },
       "Microsoft.Data.SqlClient": {
         "type": "Transitive",
@@ -1790,18 +1780,18 @@
       },
       "Microsoft.TestPlatform.ObjectModel": {
         "type": "Transitive",
-        "resolved": "17.9.0",
-        "contentHash": "1ilw/8vgmjLyKU+2SKXKXaOqpYFJCQfGqGz+x0cosl981VzjrY74Sv6qAJv+neZMZ9ZMxF3ArN6kotaQ4uvEBw==",
+        "resolved": "17.11.1",
+        "contentHash": "E2jZqAU6JeWEVsyOEOrSW1o1bpHLgb25ypvKNB/moBXPVsFYBPd/Jwi7OrYahG50J83LfHzezYI+GaEkpAotiA==",
         "dependencies": {
           "System.Reflection.Metadata": "1.6.0"
         }
       },
       "Microsoft.TestPlatform.TestHost": {
         "type": "Transitive",
-        "resolved": "17.9.0",
-        "contentHash": "Spmg7Wx49Ya3SxBjyeAR+nQpjMTKZwTwpZ7KyeOTIqI/WHNPnBU4HUvl5kuHPQAwGWqMy4FGZja1HvEwvoaDiA==",
+        "resolved": "17.11.1",
+        "contentHash": "DnG+GOqJXO/CkoqlJWeDFTgPhqD/V6VqUIL3vINizCWZ3X+HshCtbbyDdSHQQEjrc2Sl/K3yaxX6s+5LFEdYuw==",
         "dependencies": {
-          "Microsoft.TestPlatform.ObjectModel": "17.9.0",
+          "Microsoft.TestPlatform.ObjectModel": "17.11.1",
           "Newtonsoft.Json": "13.0.1"
         }
       },
@@ -1987,10 +1977,11 @@
       },
       "Newtonsoft.Json.Bson": {
         "type": "Transitive",
-        "resolved": "1.0.2",
-        "contentHash": "QYFyxhaABwmq3p/21VrZNYvCg3DaEoN/wUuw5nmfAf0X3HLjgupwhkEWdgfb9nvGAUIv3osmZoD3kKl4jxEmYQ==",
+        "resolved": "1.0.1",
+        "contentHash": "5PYT/IqQ+UK31AmZiSS102R6EsTo+LGTSI8bp7WAUqDKaF4wHXD8U9u4WxTI1vc64tYi++8p3dk3WWNqPFgldw==",
         "dependencies": {
-          "Newtonsoft.Json": "12.0.1"
+          "NETStandard.Library": "1.6.1",
+          "Newtonsoft.Json": "10.0.1"
         }
       },
       "NJsonSchema": {
@@ -3110,16 +3101,16 @@
       },
       "System.Text.Encodings.Web": {
         "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "OP6umVGxc0Z0MvZQBVigj4/U31Pw72ITihDWP9WiWDm+q5aoe0GaJivsfYGq53o6dxH7DcXWiCTl7+0o2CGdmg=="
+        "resolved": "6.0.0",
+        "contentHash": "Vg8eB5Tawm1IFqj4TVK1czJX89rhFxJo9ELqc/Eiq0eXy13RK00eubyU6TJE6y+GQXjyV5gSfiewDUZjQgSE0w==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
       },
       "System.Text.Json": {
         "type": "Transitive",
-        "resolved": "7.0.3",
-        "contentHash": "AyjhwXN1zTFeIibHimfJn6eAsZ7rTBib79JQpzg8WAuR/HKDu9JGNHTuu3nbbXQ/bgI+U4z6HtZmCHNXB1QXrQ==",
-        "dependencies": {
-          "System.Text.Encodings.Web": "7.0.0"
-        }
+        "resolved": "8.0.5",
+        "contentHash": "0f1B50Ss7rqxXiaBJyzUu9bWFOO2/zSlifZ/UNMdiIpDYe4cY4LQQicP4nirK1OS31I43rn062UIJ1Q9bpmHpg=="
       },
       "System.Text.RegularExpressions": {
         "type": "Transitive",
@@ -3242,6 +3233,7 @@
         "dependencies": {
           "AspNetCore.HealthChecks.AzureServiceBus": "[8.0.1, )",
           "BookingsApi.Common": "[1.0.0, )",
+          "BookingsApi.Common.DotNet6": "[1.0.0, )",
           "BookingsApi.Contract": "[1.0.0, )",
           "BookingsApi.DAL": "[1.0.0, )",
           "BookingsApi.Domain": "[1.0.0, )",
@@ -3250,15 +3242,14 @@
           "FluentValidation.AspNetCore": "[11.3.0, )",
           "Microsoft.ApplicationInsights.AspNetCore": "[2.22.0, )",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[8.0.10, )",
-          "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "[8.0.10, )",
           "Microsoft.AspNetCore.Mvc.Versioning": "[5.1.0, )",
           "Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer": "[5.1.0, )",
           "Microsoft.Extensions.DependencyModel": "[8.0.2, )",
           "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[8.0.10, )",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "[8.0.6, )",
           "NSwag.AspNetCore": "[14.1.0, )",
-          "Newtonsoft.Json": "[13.0.3, )",
           "System.IdentityModel.Tokens.Jwt": "[8.1.2, )",
+          "System.Text.Json": "[8.0.5, )",
           "ZymLabs.NSwag.FluentValidation": "[0.6.3, )",
           "libphonenumber-csharp": "[8.13.47, )"
         }
@@ -3266,8 +3257,10 @@
       "bookingsapi.client": {
         "type": "Project",
         "dependencies": {
+          "BookingsApi.Common.DotNet6": "[1.0.0, )",
           "BookingsApi.Contract": "[1.0.0, )",
-          "Microsoft.AspNetCore.Mvc.Core": "[2.2.5, )"
+          "Microsoft.AspNetCore.Mvc.Core": "[2.2.5, )",
+          "System.Text.Json": "[8.0.5, )"
         }
       },
       "bookingsapi.common": {
@@ -3282,11 +3275,16 @@
           "Newtonsoft.Json": "[13.0.3, )"
         }
       },
+      "bookingsapi.common.dotnet6": {
+        "type": "Project",
+        "dependencies": {
+          "System.Text.Json": "[8.0.5, )"
+        }
+      },
       "bookingsapi.contract": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Extensions.Configuration.Json": "[8.0.1, )",
-          "Newtonsoft.Json": "[13.0.3, )",
+          "Microsoft.Extensions.Configuration.Json": "[8.0.0, )",
           "System.ComponentModel.Annotations": "[5.0.0, )"
         }
       },
@@ -3309,8 +3307,7 @@
           "Azure.Messaging.ServiceBus": "[7.18.2, )",
           "BookingsApi.Common": "[1.0.0, )",
           "BookingsApi.Domain": "[1.0.0, )",
-          "Microsoft.Extensions.Options": "[8.0.2, )",
-          "Newtonsoft.Json": "[13.0.3, )"
+          "Microsoft.Extensions.Options": "[8.0.2, )"
         }
       },
       "testing.common": {
