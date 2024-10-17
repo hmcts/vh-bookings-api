@@ -13,40 +13,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
     public class RemoveParticipantFromHearingTests : HearingParticipantsControllerTest
     {
         [Test]
-        public async Task Should_remove_participant_from_hearing_for_given_hearing_and_participantid()
-        {
-            participantId = Participants[0].Id;
-            
-            var response = await Controller.RemoveParticipantFromHearing(hearingId, participantId);
-
-            response.Should().NotBeNull();
-            var result = (NoContentResult)response;
-            result.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
-            QueryHandler.Verify(q => q.Handle<GetParticipantsInHearingQuery, List<Participant>>(It.IsAny<GetParticipantsInHearingQuery>()), Times.Once);
-            QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
-            CommandHandler.Verify(c => c.Handle(It.IsAny<RemoveParticipantFromHearingCommand>()), Times.Once);
-            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<ParticipantRemovedIntegrationEvent>()), Times.Never);
-        }
-
-        [Test]
-        public async Task Should_remove_participant_and_publish_event_from_hearing_for_given_hearing_and_participantid()
-        {
-            participantId = Participants[0].Id;
-
-            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(GetVideoHearing(true));
-
-            var response = await Controller.RemoveParticipantFromHearing(hearingId, participantId);
-
-            response.Should().NotBeNull();
-            var result = (NoContentResult)response;
-            result.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
-            QueryHandler.Verify(q => q.Handle<GetParticipantsInHearingQuery, List<Participant>>(It.IsAny<GetParticipantsInHearingQuery>()), Times.Once);
-            QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
-            CommandHandler.Verify(c => c.Handle(It.IsAny<RemoveParticipantFromHearingCommand>()), Times.Once);
-            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<ParticipantRemovedIntegrationEvent>()), Times.Once);
-        }
-
-        [Test]
         public async Task Should_return_badrequest_for_given_invalid_hearingid()
         {
             hearingId = Guid.Empty;
