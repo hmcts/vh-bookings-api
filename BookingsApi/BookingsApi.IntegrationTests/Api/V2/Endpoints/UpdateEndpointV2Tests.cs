@@ -141,6 +141,8 @@ public class UpdateEndpointV2Tests : ApiTest
         
         var secondUpdateEvent = updateEndpointEvents[1].IntegrationEvent as EndpointUpdatedIntegrationEvent;
         secondUpdateEvent!.Role.Should().Be(ConferenceRole.Host, "Endpoint is not screened from any participant");
+        
+        Array.Exists(messages, x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent).Should().BeTrue();
 
     }
 }

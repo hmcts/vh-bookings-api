@@ -14,17 +14,14 @@ namespace BookingsApi.Controllers.V1
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
-        private readonly IEventPublisher _eventPublisher;
         private readonly IHearingParticipantService _hearingParticipantService;
 
         public HearingParticipantsController(IQueryHandler queryHandler,
             ICommandHandler commandHandler,
-            IEventPublisher eventPublisher,
             IHearingParticipantService hearingParticipantService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
-            _eventPublisher = eventPublisher;
             _hearingParticipantService = hearingParticipantService;
         }
 
@@ -269,15 +266,7 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
 
-            var command = new RemoveParticipantFromHearingCommand(hearingId, participant);
-            await _commandHandler.Handle(command);
-
-            // ONLY publish this event when Hearing is set for ready for video
-            if (videoHearing.Status == BookingStatus.Created || videoHearing.Status == BookingStatus.ConfirmedWithoutJudge)
-            {
-                await _eventPublisher.PublishAsync(new ParticipantRemovedIntegrationEvent(hearingId, participantId));
-            }
-
+            await _hearingParticipantService.RemoveParticipantAndPublishEventAsync(videoHearing, participant);
             return NoContent();
         }
 
