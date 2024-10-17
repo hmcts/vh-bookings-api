@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
+using BookingsApi.Domain.Helper;
 using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V2.Extensions;
 
@@ -29,8 +30,8 @@ namespace BookingsApi.Mappings.V2
                 .ToList();
             
             Guid? allocatedToId = null;
-            string allocatedToUsername = null;
-            string allocatedToName = null;
+            string allocatedToUsername;
+            string allocatedToName;
             if (videoHearing.AllocatedTo != null)
             {
                 var allocatedTo = videoHearing.AllocatedTo;
@@ -38,7 +39,13 @@ namespace BookingsApi.Mappings.V2
                 allocatedToUsername = allocatedTo.Username;
                 allocatedToName = $"{allocatedTo.FirstName} {allocatedTo.Lastname}";
             }
-            
+            else
+            {
+                var allocatedVho = VideoHearingHelper.AllocatedVho(videoHearing);
+                allocatedToUsername = allocatedVho;
+                allocatedToName = allocatedVho;
+            }
+
             var response = new HearingDetailsResponseV2
             {
                 Id = videoHearing.Id,
