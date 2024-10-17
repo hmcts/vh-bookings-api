@@ -3,8 +3,16 @@ using ScreeningType = BookingsApi.Contract.V2.Enums.ScreeningType;
 
 namespace BookingsApi.Mappings.V2.Extensions
 {
+    /// <summary>
+    /// Extensions for mapping between domain and contract enums
+    /// </summary>
     public static class ContractExtensions
     {
+        /// <summary>
+        /// Maps a booking status to a contract enum
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public static BookingStatusV2 MapToContractEnum(this BookingStatus status)
         {
             return Enum.Parse<BookingStatusV2>(status.ToString());
