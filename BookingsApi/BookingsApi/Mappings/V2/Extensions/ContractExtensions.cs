@@ -3,9 +3,9 @@ using ScreeningType = BookingsApi.Contract.V2.Enums.ScreeningType;
 
 namespace BookingsApi.Mappings.V2.Extensions
 {
-    internal static class ContractExtensions
+    public static class ContractExtensions
     {
-        internal static BookingStatusV2 MapToContractEnum(this BookingStatus status)
+        public static BookingStatusV2 MapToContractEnum(this BookingStatus status)
         {
             return Enum.Parse<BookingStatusV2>(status.ToString());
         }
