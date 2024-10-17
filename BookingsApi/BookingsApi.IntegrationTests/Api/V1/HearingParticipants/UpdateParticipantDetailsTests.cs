@@ -419,7 +419,10 @@ public class UpdateParticipantDetailsTests : ApiTest
         participantResponse.FirstName.Should().Be(participantPersonalDetails.FirstName);
         participantResponse.LastName.Should().Be(participantPersonalDetails.LastName);
         participantResponse.MiddleNames.Should().Be(participantPersonalDetails.MiddleNames);
+        
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        serviceBusStub!.Count.Should().Be(1);
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingId);
+        Array.Exists(messages, x => x.IntegrationEvent is ParticipantUpdatedIntegrationEvent).Should().BeTrue();
+        Array.Exists(messages, x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent).Should().BeTrue();
     }
 }

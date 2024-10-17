@@ -56,6 +56,10 @@ public class RemoveEndPointFromHearingTests : ApiTest
         hearingFromDb.GetEndpoints().Any(ep => ep.Id == endpointId).Should().BeFalse();
         var message = _serviceBusStub.ReadMessageFromQueue();
         message.IntegrationEvent.Should().BeEquivalentTo(new EndpointRemovedIntegrationEvent(hearingId, endpoint.Sip));
+        
+        
+        var messages = _serviceBusStub.ReadAllMessagesFromQueue(hearingId);
+        Array.Exists(messages, x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent).Should().BeTrue();
     }
     
     [Test]
@@ -81,8 +85,8 @@ public class RemoveEndPointFromHearingTests : ApiTest
         var hearingFromDb = await db.VideoHearings.Include(x => x.Endpoints).AsNoTracking()
             .FirstAsync(x => x.Id == hearingId);
         hearingFromDb.GetEndpoints().Any(ep => ep.Id == endpointId).Should().BeFalse();
-        var message = _serviceBusStub.ReadMessageFromQueue();
-        message.Should().BeNull();
+        var message = _serviceBusStub.ReadAllMessagesFromQueue(hearingId);
+        message.Should().BeNullOrEmpty();
     }
 
     [Test]

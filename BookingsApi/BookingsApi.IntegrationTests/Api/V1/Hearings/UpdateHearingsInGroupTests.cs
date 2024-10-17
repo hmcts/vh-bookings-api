@@ -631,7 +631,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             
             void AssertHearingEvents()
             {
-                const int expectedDetailsUpdatedCount = 1;
+                const int expectedDetailsUpdatedCount = 6; // 3 hearings updated endpoint added, endpoint removed, and endpoint updated
 
                 var hearingDetailsUpdatedMessages = messages
                     .Where(x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent)
