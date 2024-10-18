@@ -302,6 +302,10 @@ public class HearingParticipantService : IHearingParticipantService
         
         await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantsToTreatAsExisting, newParticipants, request.RemovedParticipantIds, linkedParticipants, sendNotification);
 
+        var hearingDetailsUpdated = updatedHearing.AudioRecordingRequired != hearing.AudioRecordingRequired;
+        if (hearingDetailsUpdated)
+            await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
+        
         return updatedHearing;
     }
     

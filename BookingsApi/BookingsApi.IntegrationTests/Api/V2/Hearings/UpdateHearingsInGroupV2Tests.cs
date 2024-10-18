@@ -155,7 +155,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 AssertParticipantsUpdated(updatedHearing, requestHearing);
                 AssertEndpointsUpdated(updatedHearing, requestHearing);
                 AssertJudiciaryParticipantsUpdated(updatedHearing, requestHearing);
-                AssertEventsPublished(updatedHearing, requestHearing, 1);
+                AssertEventsPublished(updatedHearing, requestHearing, 1, originalHearing);
             }
             var updateDateHearing = updatedHearings[0].UpdatedDate.TrimSeconds();
             var firstHearing = updatedHearings[0];
@@ -813,7 +813,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             }
         }
 
-        private void AssertEventsPublished(Hearing hearing, HearingRequestV2 requestHearing, int existingParticipantsUpdated)
+        private void AssertEventsPublished(Hearing hearing, HearingRequestV2 requestHearing, int existingParticipantsUpdated,
+            Hearing originalHearing)
         {
             var serviceBusStub = Application.Services
                 .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
@@ -885,7 +886,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 
             void AssertHearingEvents()
             {
-                const int expectedDetailsUpdatedCount = 1;
+                var expectedDetailsUpdatedCount =
+                    hearing.AudioRecordingRequired != originalHearing.AudioRecordingRequired 
+                        ? 2 
+                        : 1;
                 
                 var hearingDetailsUpdatedMessages = messages
                     .Where(x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent)
