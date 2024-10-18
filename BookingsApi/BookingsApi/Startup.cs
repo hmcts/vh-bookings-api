@@ -122,7 +122,12 @@ namespace BookingsApi
         private void RegisterInfrastructureServices(IServiceCollection services)
         {
             bool.TryParse(Configuration["UseServiceBusFake"], out var useFakeClient);
-            if (useFakeClient)
+            bool.TryParse(Configuration["UseQueueStorage"], out var useQueueStorage);
+            if (useQueueStorage)
+            {
+                services.AddSingleton<IServiceBusQueueClient, ServiceBusQueueStorageClient>();
+            }
+            else if (useFakeClient)
             {
                 services.AddSingleton<IServiceBusQueueClient, ServiceBusQueueClientFake>();
             }
