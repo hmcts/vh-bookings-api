@@ -87,6 +87,7 @@ namespace BookingsApi.Services
             if (updatedHearing.Status == BookingStatus.Created || updatedHearing.Status == BookingStatus.ConfirmedWithoutJudge)
             {
                 await _eventPublisher.PublishAsync(new EndpointAddedIntegrationEvent(updatedHearing, endpoint));
+                await PublishUpdateHearingEvent(hearingId);
             }
 
             return endpoint;
@@ -114,6 +115,7 @@ namespace BookingsApi.Services
                var conferenceRole = endpoint.GetEndpointConferenceRole(hearing.GetParticipants(), hearing.GetEndpoints());
                 await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearing.Id, endpoint.Sip,
                     displayName, defenceAdvocate?.Person.ContactEmail, conferenceRole));
+                await PublishUpdateHearingEvent(hearing.Id);
             }
         }
 
@@ -125,7 +127,20 @@ namespace BookingsApi.Services
             if (hearing.Status == BookingStatus.Created || hearing.Status == BookingStatus.ConfirmedWithoutJudge)
             {
                 await _eventPublisher.PublishAsync(new EndpointRemovedIntegrationEvent(hearing.Id, ep.Sip));
+                await PublishUpdateHearingEvent(hearing.Id);
             }
+        }
+
+        /// <summary>
+        /// Changing endpoint or participant list may result in a room type change if there's a screening requirement change.
+        /// It's simpler to publish the hearing details changed event to ensure the room type is recalculated.
+        /// </summary>
+        /// <param name="hearingId"></param>
+        private async Task PublishUpdateHearingEvent(Guid hearingId)
+        {
+            var updatedHearing =
+                await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
         }
 
         public string GetSipAddressStem(BookingSupplier? supplier)
