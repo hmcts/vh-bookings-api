@@ -2,6 +2,9 @@ using BookingsApi.Client;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Infrastructure.Services.Dtos;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using ScreeningType = BookingsApi.Contract.V2.Enums.ScreeningType;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Endpoints;
@@ -29,6 +32,16 @@ public class AddEndPointToHearingV2Tests : ApiTest
         // assert
         response.Should().NotBeNull();
         response.DisplayName.Should().Be(request.DisplayName);
+        
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearing.Id);
+        Array.Exists(messages, x => x.IntegrationEvent is EndpointAddedIntegrationEvent).Should().BeTrue();
+        var endpointAddedIntegrationEvent = messages.First(x => x.IntegrationEvent is EndpointAddedIntegrationEvent).IntegrationEvent as EndpointAddedIntegrationEvent;
+        endpointAddedIntegrationEvent!.Endpoint.DisplayName.Should().Be(request.DisplayName);
+        endpointAddedIntegrationEvent.Endpoint.Role.Should().Be(ConferenceRole.Host);
+        
+        Array.Exists(messages, x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent).Should().BeTrue();
     }
     
     [Test]
@@ -111,5 +124,15 @@ public class AddEndPointToHearingV2Tests : ApiTest
         response.Screening.Should().NotBeNull();
         response.Screening.Type.Should().Be(request.Screening.Type);
         response.Screening.ProtectedFrom.Should().BeEquivalentTo(endpoint.ExternalReferenceId, individual.ExternalReferenceId);
+        
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearing.Id);
+        Array.Exists(messages, x => x.IntegrationEvent is EndpointAddedIntegrationEvent).Should().BeTrue();
+        var endpointAddedIntegrationEvent = messages.First(x => x.IntegrationEvent is EndpointAddedIntegrationEvent).IntegrationEvent as EndpointAddedIntegrationEvent;
+        endpointAddedIntegrationEvent!.Endpoint.DisplayName.Should().Be(request.DisplayName);
+        endpointAddedIntegrationEvent.Endpoint.Role.Should().Be(ConferenceRole.Guest);
+        
+        Array.Exists(messages, x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent).Should().BeTrue();
     }
 }
