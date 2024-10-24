@@ -47,7 +47,6 @@ stages:
               dockerComposeTestFile: docker-compose.tests.yml
               sonarExtraProperties: |
                 sonar.sarifReportPaths=$(Build.ArtifactStagingDirectory)/vulnerable_packages.sarif
-                sonar.externalIssuesReportPaths=$(Build.ArtifactStagingDirectory)/vulnerable_packages.sarif
                 sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
                 sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*
                 sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*, **/BookingsApi.DAL/Migrations/**/*
