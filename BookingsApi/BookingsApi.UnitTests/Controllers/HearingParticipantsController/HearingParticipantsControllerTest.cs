@@ -14,7 +14,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
     {
         protected Mock<IQueryHandler> QueryHandler;
         protected Mock<ICommandHandler> CommandHandler;
-        protected Mock<IEventPublisher> EventPublisher;
         protected Mock<IHearingParticipantService> HearingParticipantService;
         private List<Participant> participants;
 
@@ -77,13 +76,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         {
             QueryHandler = new Mock<IQueryHandler>();
             CommandHandler = new Mock<ICommandHandler>();
-            EventPublisher = new Mock<IEventPublisher>();
             HearingParticipantService = new Mock<IHearingParticipantService>();
             hearingId = Guid.NewGuid();
             participantId = Guid.NewGuid();
             videoHearing = GetVideoHearing();
-            Controller = new BookingsApi.Controllers.V1.HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, 
-                EventPublisher.Object, HearingParticipantService.Object);
+            Controller = new BookingsApi.Controllers.V1.HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, HearingParticipantService.Object);
             
             QueryHandler.Setup(q => q.Handle<GetParticipantsInHearingQuery, List<Participant>>(It.IsAny<GetParticipantsInHearingQuery>()))
                 .ReturnsAsync(Participants);

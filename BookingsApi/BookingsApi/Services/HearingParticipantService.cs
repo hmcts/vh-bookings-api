@@ -89,6 +89,14 @@ public interface IHearingParticipantService
     /// <param name="sendNotification"></param>
     /// <returns></returns>
     Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles, bool sendNotification = true);
+
+    /// <summary>
+    /// Execute the remove participant command and publish an event if the booking is confirmed
+    /// </summary>
+    /// <param name="videoHearing">Video hearing to publish an event for</param>
+    /// <param name="participant">The participant to remove</param>
+    /// <returns></returns>
+    public Task RemoveParticipantAndPublishEventAsync(VideoHearing videoHearing, Participant participant);
 }
 
 public class HearingParticipantService : IHearingParticipantService
@@ -119,6 +127,7 @@ public class HearingParticipantService : IHearingParticipantService
             // as the UpdateHearingParticipants (also includes new participants) has a separate process to add participants
             await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
             await _participantAddedToHearingAsynchronousProcess.Start(hearing);
+            await PublishUpdateHearingEvent(hearing.Id);
         }
     }
 
@@ -142,6 +151,7 @@ public class HearingParticipantService : IHearingParticipantService
         {
             await PublishExistingParticipantUpdatedEvent(hearing, existingParticipants, eventExistingParticipants, sendNotification);
         }
+        await PublishUpdateHearingEvent(hearing.Id);
     }
     
     public async Task PublishEventForNewJudiciaryParticipantsAsync(VideoHearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants, bool sendNotification = true)
@@ -211,6 +221,7 @@ public class HearingParticipantService : IHearingParticipantService
         }
 
         await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(updateParticipantCommand.HearingId, updatedParticipant));
+        await PublishUpdateHearingEvent(videoHearing.Id);
         return updatedParticipant;
     }
 
@@ -301,10 +312,22 @@ public class HearingParticipantService : IHearingParticipantService
         var existingParticipantsToTreatAsExisting = existingParticipantDetails.Where(x => !x.IsContactEmailNew).ToList();
         
         await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantsToTreatAsExisting, newParticipants, request.RemovedParticipantIds, linkedParticipants, sendNotification);
-
+        await PublishUpdateHearingEvent(updatedHearing);
         return updatedHearing;
     }
-    
+
+    public async Task RemoveParticipantAndPublishEventAsync(VideoHearing videoHearing, Participant participant)
+    {
+        var command = new RemoveParticipantFromHearingCommand(videoHearing.Id, participant);
+        await _commandHandler.Handle(command);
+        // ONLY publish this event when Hearing is set for ready for video
+        if (videoHearing.Status == BookingStatus.Created || videoHearing.Status == BookingStatus.ConfirmedWithoutJudge)
+        {
+            await _eventPublisher.PublishAsync(new ParticipantRemovedIntegrationEvent(videoHearing.Id, participant.Id));
+            await PublishUpdateHearingEvent(videoHearing.Id);
+        }
+    }
+
     private static NewParticipant MapExistingParticipantToNewParticipant(UpdateParticipantRequestV2 existingRequest, Participant existingParticipant, List<HearingRole> hearingRoles)
     {
         var hearingRole = hearingRoles.Find(x => string.Compare(x.Code, existingParticipant.HearingRole.Code, StringComparison.InvariantCultureIgnoreCase) == 0);
@@ -375,6 +398,7 @@ public class HearingParticipantService : IHearingParticipantService
         var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing,
             eventExistingParticipants, eventNewParticipants, removedParticipantIds, eventLinkedParticipants);
         await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
+        await PublishUpdateHearingEvent(hearing.Id);
     }
 
     private async Task PublishExistingParticipantUpdatedEvent(VideoHearing hearing, List<ExistingParticipantDetails> existingParticipants,
@@ -393,12 +417,35 @@ public class HearingParticipantService : IHearingParticipantService
             else
                 await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
         }
+        await PublishUpdateHearingEvent(hearing.Id);
     }
     
     private async Task UpdateHearingStatusAsync(Guid hearingId, BookingStatus bookingStatus, string updatedBy, string cancelReason)
     {
         var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updatedBy, cancelReason);
         await _commandHandler.Handle(command);
+    }
+    
+    /// <summary>
+    /// Changing endpoint or participant list may result in a room type change if there's a screening requirement change.
+    /// It's simpler to publish the hearing details changed event to ensure the room type is recalculated.
+    /// </summary>
+    /// <param name="hearingId"></param>
+    private async Task PublishUpdateHearingEvent(Guid hearingId)
+    {
+        var updatedHearing =
+            await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+        await PublishUpdateHearingEvent(updatedHearing);
+    }
+    
+    /// <summary>
+    /// Changing endpoint or participant list may result in a room type change if there's a screening requirement change.
+    /// It's simpler to publish the hearing details changed event to ensure the room type is recalculated.
+    /// </summary>
+    /// <param name="updatedHearing">A recently read hearing</param>
+    private async Task PublishUpdateHearingEvent(VideoHearing updatedHearing)
+    {
+        await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
     }
 
     private static ExistingParticipantDetails UpdateExistingParticipantDetailsFromV2Request(List<Participant> existingParticipants, UpdateParticipantRequestV2 existingParticipantRequestV2)
