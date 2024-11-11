@@ -1,84 +1,78 @@
 ﻿using BookingsApi.Domain.Participants;
 
-namespace BookingsApi.DAL.Commands
+namespace BookingsApi.DAL.Commands;
+
+public class AnonymiseCaseAndParticipantCommand : ICommand
 {
-    public class AnonymiseCaseAndParticipantCommand : ICommand
+    public List<Guid> HearingIds { get; init; }
+}
+
+public class AnonymiseCaseAndParticipantCommandHandler(BookingsDbContext context)
+    : ICommandHandler<AnonymiseCaseAndParticipantCommand>
+{
+    public const string AnonymisedNameSuffix = "@email.net";
+
+    public async Task Handle(AnonymiseCaseAndParticipantCommand command)
     {
-        public List<Guid> HearingIds { get; set; }
+        var hearingIds = command.HearingIds;
+
+        var videoHearings = await context.VideoHearings
+            .Include(vh => vh.HearingCases)
+            .ThenInclude(vh => vh.Case)
+            .Where(hearing => hearingIds.Contains(hearing.Id))
+            .ToListAsync();
+
+        videoHearings = videoHearings
+            .Select(r => AnonymiseCaseName(r, hearingIds))
+            .ToList();
+
+        context.VideoHearings.UpdateRange(videoHearings);
+
+
+        var participants = await context.Participants
+            .Where(participant => hearingIds.Contains(participant.HearingId))
+            .ToListAsync();
+
+        participants = participants
+            .Select(AnonymiseParticipantDisplayName)
+            .ToList();
+
+        context.Participants.UpdateRange(participants);
+
+        await context.SaveChangesAsync();
     }
 
-    public class AnonymiseCaseAndParticipantCommandHandler : ICommandHandler<AnonymiseCaseAndParticipantCommand>
+    private static Participant AnonymiseParticipantDisplayName(Participant participant)
     {
-        private readonly BookingsDbContext _context;
-        public const string AnonymisedNameSuffix = "@email.net";
+        var randomString = RandomStringGenerator.GenerateRandomString(9);
 
-        public AnonymiseCaseAndParticipantCommandHandler(BookingsDbContext context)
+        if (!participant.DisplayName.Contains(AnonymisedNameSuffix, StringComparison.InvariantCultureIgnoreCase))
         {
-            _context = context;
+            participant.DisplayName = $"{randomString}{AnonymisedNameSuffix}";
         }
 
-        public async Task Handle(AnonymiseCaseAndParticipantCommand command)
+        if (participant is Representative participantAsRepresentative &&
+            !string.IsNullOrEmpty(participantAsRepresentative.Representee))
         {
-            var hearindIds = command.HearingIds;
-
-            var videoHearings = _context.VideoHearings
-                .Include(vh => vh.HearingCases)
-                .ThenInclude(vh => vh.Case)
-                .Where(hearing => hearindIds.Contains(hearing.Id))
-                .ToList();
-
-            videoHearings = videoHearings
-                .Select(r => AnonymiseCaseName(r, hearindIds))
-                .ToList();
-
-            _context.VideoHearings.UpdateRange(videoHearings);
-
-
-            var participants = _context.Participants
-                .Where(participant => hearindIds.Contains(participant.HearingId))
-                 .ToList();
-
-            participants = participants
-                .Select(r => AnonymiseParticipantDisplayName(r))
-                .ToList();
-
-            _context.Participants.UpdateRange(participants);
-
-            await _context.SaveChangesAsync();
+            participantAsRepresentative.Representee = randomString;
         }
 
-        private Participant AnonymiseParticipantDisplayName(Participant participant)
-        {
-            var randomString = RandomStringGenerator.GenerateRandomString(9);
+        return participant;
+    }
 
-            if (!participant.DisplayName.ToLowerInvariant().Contains(AnonymisedNameSuffix))
+    private static VideoHearing AnonymiseCaseName(VideoHearing hearing, IList<Guid> hearingIds)
+    {
+        hearing.HearingCases.ToList().ForEach(
+            hearingCase =>
             {
-                participant.DisplayName = $"{randomString}{AnonymisedNameSuffix}";
-            }
-
-            if (participant is Representative participantAsRepresentative &&
-                !string.IsNullOrEmpty(participantAsRepresentative.Representee))
-            {
-                participantAsRepresentative.Representee = randomString;
-            }
-
-            return participant;
-        }
-
-        private VideoHearing AnonymiseCaseName(VideoHearing hearing, IList<Guid> hearingIds)
-        {
-            hearing.HearingCases.ToList().ForEach(
-                hearingCase =>
+                if (hearingIds.Any(r => r == hearingCase.HearingId)
+                    && !hearingCase.Case.Name.ToLowerInvariant().Contains(AnonymisedNameSuffix))
                 {
-                    if (hearingIds.Any(r => r == hearingCase.HearingId)
-                             && !hearingCase.Case.Name.ToLowerInvariant().Contains(AnonymisedNameSuffix))
-                    {
-                        hearingCase.Case.Name =
-                             $"{RandomStringGenerator.GenerateRandomString(9)}{AnonymisedNameSuffix}";
-                    }
-                });
+                    hearingCase.Case.Name =
+                        $"{RandomStringGenerator.GenerateRandomString(9)}{AnonymisedNameSuffix}";
+                }
+            });
 
-            return hearing;
-        }
+        return hearing;
     }
 }
