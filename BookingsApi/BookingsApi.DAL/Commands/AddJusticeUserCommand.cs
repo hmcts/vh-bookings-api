@@ -17,14 +17,14 @@ public class AddJusticeUserCommand(
     public string CreatedBy { get; } = createdBy;
     public int[] RoleIds { get; } = roleIds;
 }
-
+#pragma warning disable CA1862 // Disabled as must be SQL compliant
 public class AddJusticeUserCommandHandler(BookingsDbContext context) : ICommandHandler<AddJusticeUserCommand>
 {
     public async Task Handle(AddJusticeUserCommand command)
     {
         var roles = await context.UserRoles.Where(x => command.RoleIds.Contains(x.Id)).ToArrayAsync();
 
-        if (await context.JusticeUsers.IgnoreQueryFilters().AnyAsync(x => x.Username.Equals(command.Username, StringComparison.CurrentCultureIgnoreCase)))
+        if (await context.JusticeUsers.IgnoreQueryFilters().AnyAsync(x => x.Username.ToLower() == command.Username.ToLower()))
         {
             throw new JusticeUserAlreadyExistsException(command.Username);
         }
@@ -38,3 +38,4 @@ public class AddJusticeUserCommandHandler(BookingsDbContext context) : ICommandH
         await context.SaveChangesAsync();
     }
 }
+#pragma warning restore CA1862

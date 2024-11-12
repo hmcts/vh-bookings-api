@@ -33,9 +33,10 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         await _commandHandler.Handle(command);
 
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        var justiceUser = db.JusticeUsers
+        var justiceUser = await db.JusticeUsers
             .Include(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
-            .First(ju => ju.Username == command.Username);
+            .FirstAsync(ju => ju.Username == command.Username);
+        
         Hooks.AddJusticeUserForCleanup(justiceUser.Id);
 
         justiceUser.Should().NotBeNull();
@@ -76,7 +77,7 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
 
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
         
-        var justiceUser = db.JusticeUsers.First(x => x.Username == username);
+        var justiceUser = await db.JusticeUsers.FirstAsync(x => x.Username == username);
         Hooks.AddJusticeUserForCleanup(justiceUser.Id);
         justiceUser.Delete();
         

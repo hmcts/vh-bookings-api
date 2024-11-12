@@ -1,7 +1,5 @@
-using BookingsApi.Common.Services;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.RefData;
-using Moq;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
@@ -65,16 +63,16 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertCaseRolesAndHearingRolesAreSortedAscendingByName(caseType);
         }
 
-        private void AssertCaseRolesAndHearingRolesAreSortedAscendingByName(CaseType caseType)
+        private static void AssertCaseRolesAndHearingRolesAreSortedAscendingByName(CaseType caseType)
         {
             caseType.CaseRoles.Should().BeInAscendingOrder();
             foreach (var caseRole in caseType.CaseRoles)
             {
-                caseRole.HearingRoles.Should().BeInAscendingOrder();
+                caseRole.HearingRoles.Should().BeInAscendingOrder(x => x.Name);
             }
         }
 
-        private void AssertUserRolesForCaseRole(CaseType caseType, string caseRoleName)
+        private static void AssertUserRolesForCaseRole(CaseType caseType, string caseRoleName)
         {
             var caseRole = caseType.CaseRoles.First(x => x.Name == caseRoleName);
             caseRole.Should().NotBeNull();
