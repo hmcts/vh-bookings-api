@@ -30,6 +30,7 @@ public class
             .Include(x => x.CaseType)
             .Include(x => x.HearingVenue)
             .Where(x => x.Participants.Any(p => p.Person.Username.ToLower().Trim() == username))
+            .OrderByDescending(h => h.ScheduledDateTime)
             .AsNoTracking().ToListAsync();
 
         var filteredHearings = FilterHearingsWithRoleAsRepOrIndividual(allHearings, query.Username);
