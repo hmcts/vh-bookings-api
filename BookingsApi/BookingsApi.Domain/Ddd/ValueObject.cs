@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using static System.Reflection.BindingFlags;
 
 namespace BookingsApi.Domain.Ddd
 {
@@ -66,7 +67,7 @@ namespace BookingsApi.Domain.Ddd
                     (current, value) => current * multiplier + value.GetHashCode());
         }
         
-        private static IEnumerable<FieldInfo> GetFields(object obj)
+        private static List<FieldInfo> GetFields(object obj)
         {
             var t = obj.GetType();
 
@@ -75,7 +76,7 @@ namespace BookingsApi.Domain.Ddd
             while (t != typeof(object))
             {
                 if (t == null) continue;
-                fields.AddRange(t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
+                fields.AddRange(t.GetFields(Instance | NonPublic | Public));
 
                 t = t.BaseType;
             }

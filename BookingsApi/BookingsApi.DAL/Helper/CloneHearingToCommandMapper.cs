@@ -1,8 +1,8 @@
-using BookingsApi.Domain.Participants;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Extensions;
+using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.DAL.Helper
 {
@@ -10,6 +10,7 @@ namespace BookingsApi.DAL.Helper
     {
         /// <summary>
         /// Map an existing hearing to a CreateVideoHearingCommand for the purpose of multi-booking days
+        /// TODO: remove obsolete CaseRole mappings as part of https://tools.hmcts.net/jira/browse/VIH-10899
         /// </summary>
         /// <param name="hearing">Original hearing</param>
         /// <param name="newDate">New hearing date</param>

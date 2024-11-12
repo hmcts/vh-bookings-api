@@ -7,11 +7,7 @@ namespace BookingsApi.Validations.V1
 {
     public class UploadNonWorkingHoursRequestsValidation : AbstractValidator<List<UploadNonWorkingHoursRequest>>
     {
-        public UploadNonWorkingHoursRequestsValidation()
-        {
-        }
-
-        public ValidationResult ValidateRequests(List<UploadNonWorkingHoursRequest> requests)
+        public static ValidationResult ValidateRequests(List<UploadNonWorkingHoursRequest> requests)
         {
             var errors = new List<ValidationFailure>();
 

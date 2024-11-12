@@ -66,7 +66,7 @@ public class AnonymiseCaseAndParticipantCommandHandler(BookingsDbContext context
             hearingCase =>
             {
                 if (hearingIds.Any(r => r == hearingCase.HearingId)
-                    && !hearingCase.Case.Name.ToLowerInvariant().Contains(AnonymisedNameSuffix))
+                    && !hearingCase.Case.Name.Contains(AnonymisedNameSuffix, StringComparison.InvariantCultureIgnoreCase))
                 {
                     hearingCase.Case.Name =
                         $"{RandomStringGenerator.GenerateRandomString(9)}{AnonymisedNameSuffix}";

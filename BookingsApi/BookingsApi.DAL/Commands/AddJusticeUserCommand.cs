@@ -24,7 +24,7 @@ public class AddJusticeUserCommandHandler(BookingsDbContext context) : ICommandH
     {
         var roles = await context.UserRoles.Where(x => command.RoleIds.Contains(x.Id)).ToArrayAsync();
 
-        if (await context.JusticeUsers.IgnoreQueryFilters().AnyAsync(x => x.Username.ToLower() == command.Username.ToLower()))
+        if (await context.JusticeUsers.IgnoreQueryFilters().AnyAsync(x => x.Username.Equals(command.Username, StringComparison.CurrentCultureIgnoreCase)))
         {
             throw new JusticeUserAlreadyExistsException(command.Username);
         }

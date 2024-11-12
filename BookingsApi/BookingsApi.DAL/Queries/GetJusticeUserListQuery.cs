@@ -1,46 +1,34 @@
-namespace BookingsApi.DAL.Queries
+namespace BookingsApi.DAL.Queries;
+
+public class GetJusticeUserListQuery(string term, bool includeDeleted = false) : IQuery
 {
-    public class GetJusticeUserListQuery : IQuery
-    {
-        public string Term { get; set; }
-        public bool IncludeDeleted { get; set; }
-        public GetJusticeUserListQuery(string term, bool includeDeleted = false)
-        {
-            Term = term;
-            IncludeDeleted = includeDeleted;
-        }
-    }
+    public string Term { get; set; } = term;
+    public bool IncludeDeleted { get; set; } = includeDeleted;
+}
     
-    public class GetJusticeUserListQueryHandler : IQueryHandler<GetJusticeUserListQuery, List<JusticeUser>>
+public class GetJusticeUserListQueryHandler(BookingsDbContext context)
+    : IQueryHandler<GetJusticeUserListQuery, List<JusticeUser>>
+{
+    public async Task<List<JusticeUser>> Handle(GetJusticeUserListQuery query)
     {
-        private readonly BookingsDbContext _context;
-
-        public GetJusticeUserListQueryHandler(BookingsDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<List<JusticeUser>> Handle(GetJusticeUserListQuery query)
-        {
-            var term = query.Term;
+        var term = query.Term;
             
-            var users = _context.JusticeUsers.IgnoreQueryFilters()
-                .Where(x => query.IncludeDeleted.Equals(true) || x.Deleted.Equals(false))
-                .OrderBy(x => x.Lastname).ThenBy(x => x.FirstName)
-                .Include(x => x.JusticeUserRoles).ThenInclude(x => x.UserRole)
-                .AsQueryable();
+        var users = context.JusticeUsers.IgnoreQueryFilters()
+            .Where(x => query.IncludeDeleted.Equals(true) || x.Deleted.Equals(false))
+            .OrderBy(x => x.Lastname).ThenBy(x => x.FirstName)
+            .Include(x => x.JusticeUserRoles).ThenInclude(x => x.UserRole)
+            .AsQueryable();
 
-            if (!string.IsNullOrEmpty(term))
-            {
-                users = users
-                    .Where(u =>
-                        u.Lastname.Contains(term) ||
-                        u.FirstName.Contains(term) ||
-                        u.ContactEmail.Contains(term) ||
-                        u.Username.Contains(term));
-            }
-
-            return await users.ToListAsync();
+        if (!string.IsNullOrEmpty(term))
+        {
+            users = users
+                .Where(u =>
+                    u.Lastname.Contains(term) ||
+                    u.FirstName.Contains(term) ||
+                    u.ContactEmail.Contains(term) ||
+                    u.Username.Contains(term));
         }
+
+        return await users.ToListAsync();
     }
 }

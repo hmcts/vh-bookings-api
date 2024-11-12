@@ -29,7 +29,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             var validator = new UploadNonWorkingHoursRequestsValidation();
 
             // Act
-            var result = validator.ValidateRequests(requests);
+            var result = UploadNonWorkingHoursRequestsValidation.ValidateRequests(requests);
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -52,7 +52,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             var validator = new UploadNonWorkingHoursRequestsValidation();
 
             // Act
-            var result = validator.ValidateRequests(requests);
+            var result = UploadNonWorkingHoursRequestsValidation.ValidateRequests(requests);
 
             // Assert
             result.IsValid.Should().BeTrue();

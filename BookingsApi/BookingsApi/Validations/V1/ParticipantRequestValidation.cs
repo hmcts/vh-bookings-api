@@ -5,19 +5,19 @@ namespace BookingsApi.Validations.V1
 {
     public class ParticipantRequestValidation : AbstractValidator<ParticipantRequest>
     {
-        public static readonly string NameRegex = "^(\\w+(?:\\w|[\\s'._-](?![\\s'._-]))*\\w+)$";
-        public static readonly string FirstNameDoesntMatchRegex = "First name must match regular expression";
-        public static readonly string LastNameDoesntMatchRegex = "Last name must match regular expression";
-        public static readonly string NoDisplayNameErrorMessage = "Display name is required";
-        public static readonly string NoCaseRoleNameErrorMessage = "Case role is required";
-        public static readonly string NoHearingRoleNameErrorMessage = "Hearing role is required";
-        public static readonly string NoFirstNameErrorMessage = "First name is required";
-        public static readonly string NoLastNameErrorMessage = "Last name is required";
-        public static readonly string NoUsernameErrorMessage = "Username is required";
-        public static readonly string NoTelephoneNumberErrorMessage = "Telephone Number is required";
-        public static readonly string NoContactEmailErrorMessage = "Contact Email is required";
-        public static readonly string InvalidContactEmailErrorMessage = "Contact Email is Invalid";
-        public static readonly string InvalidJudgeUsernameErrorMessage = "Judge username is Invalid";
+        public const string NameRegex = "^(\\w+(?:\\w|[\\s'._-](?![\\s'._-]))*\\w+)$";
+        public const string FirstNameDoesntMatchRegex = "First name must match regular expression";
+        public const string LastNameDoesntMatchRegex = "Last name must match regular expression";
+        public const string NoDisplayNameErrorMessage = "Display name is required";
+        public const string NoCaseRoleNameErrorMessage = "Case role is required";
+        public const string NoHearingRoleNameErrorMessage = "Hearing role is required";
+        public const string NoFirstNameErrorMessage = "First name is required";
+        public const string NoLastNameErrorMessage = "Last name is required";
+        public const string NoUsernameErrorMessage = "Username is required";
+        public const string NoTelephoneNumberErrorMessage = "Telephone Number is required";
+        public const string NoContactEmailErrorMessage = "Contact Email is required";
+        public const string InvalidContactEmailErrorMessage = "Contact Email is Invalid";
+        public const string InvalidJudgeUsernameErrorMessage = "Judge username is Invalid";
 
         public ParticipantRequestValidation()
         {

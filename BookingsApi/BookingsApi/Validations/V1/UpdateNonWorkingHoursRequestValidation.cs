@@ -20,7 +20,7 @@ namespace BookingsApi.Validations.V1
                 .SetValidator(new NonWorkingHoursRequestValidation());
         }
 
-        public ValidationResult ValidateHours(UpdateNonWorkingHoursRequest request, IList<VhoNonAvailability> existingHours)
+        public static ValidationResult ValidateHours(UpdateNonWorkingHoursRequest request, IList<VhoNonAvailability> existingHours)
         {
             var errors = new List<ValidationFailure>();
             
@@ -72,8 +72,8 @@ namespace BookingsApi.Validations.V1
                 if (firstHour != null)
                 {
                     checkedHours.Add(firstHour);
-                    var uncheckedHours = hoursForUser.Where(x => (x.StartTime >= firstHour.StartTime && x != firstHour) && checkedHours.TrueForAll(m => m != x));
-        
+                    var uncheckedHours
+                        = hoursForUser.Where(x => (x.StartTime >= firstHour.StartTime && x != firstHour) && checkedHours.TrueForAll(m => m != x));
                     if (uncheckedHours.Any(uncheckedHour => OverlapsWith(firstHour, uncheckedHour)))
                     {
                         return true;

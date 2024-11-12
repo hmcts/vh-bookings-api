@@ -4,6 +4,7 @@ using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.Domain.RefData
 {
+    //TODO: Delete class in http://tools.hmcts.net/jira/browse/VIH-10899
     [Obsolete("No longer required for a booking")]
     public class CaseRole : TrackableEntity<int>, IComparable
     {

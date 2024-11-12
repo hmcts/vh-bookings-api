@@ -134,7 +134,7 @@ namespace BookingsApi.Controllers.V1
             
             var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
             
-            if (hearings == null || !hearings.Any())
+            if (hearings == null || hearings.Count == 0)
                 return Ok(new List<HearingAllocationsResponse>());
 
             var dtos = _hearingAllocationService.CheckForAllocationClashes(hearings);
@@ -165,7 +165,7 @@ namespace BookingsApi.Controllers.V1
         private async Task PublishAllocationsToServiceBus(List<VideoHearing> hearings, JusticeUser justiceUser)
         {
             var todaysHearing = hearings.Where(x => x.ScheduledDateTime.Date == DateTime.UtcNow.Date).ToList();
-            if(todaysHearing.Any())
+            if(todaysHearing.Count != 0)
             {
                 await _eventPublisher.PublishAsync(new AllocationHearingsIntegrationEvent(todaysHearing, justiceUser));
             }

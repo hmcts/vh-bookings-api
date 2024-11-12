@@ -5,8 +5,11 @@ using Testing.Common.Builders.Api.V2;
 
 namespace BookingsApi.UnitTests.Extensions;
 
-public class ContractExtensionTests
+public partial class ContractExtensionTests
 {
+    [GeneratedRegex(@"^\S(.*\S)?$")]
+    private static partial Regex NameRegex();
+    
     [TestCase("FirstNameWithSpaces ", "LastNameWithSpaces ")]
     [TestCase(" FirstNameWithSpaces",  " LastNameWithSpaces")]
     [TestCase(" FirstNameWithSpaces ", " LastNameWithSpaces ")]
@@ -48,7 +51,7 @@ public class ContractExtensionTests
 
         // assert
         // regex for no white spaces at the start or end of the string 
-        var regex = new Regex(@"^\S(.*\S)?$");
+        var regex = NameRegex();
         request.Participants[0].FirstName.Should().MatchRegex(regex);
         request.Participants[0].LastName.Should().MatchRegex(regex);
     }
