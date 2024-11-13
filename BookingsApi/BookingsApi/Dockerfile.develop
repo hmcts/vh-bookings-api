@@ -18,7 +18,7 @@ COPY BookingsApi/appsettings.json .
 COPY BookingsApi/appsettings.Development.json .
 
 RUN dotnet restore BookingsApi -nowarn:msb3202,nu1503 \
-    && dotnet build BookingsApi --no-restore -c $BUILD_CONFIGURATION \
-    && echo "exec dotnet run --project BookingsApi --no-build --no-launch-profile -c $BUILD_CONFIGURATION -- \"\$@\"" > /entrypoint.sh
+    && dotnet build BookingsApi --no-restore -c "$BUILD_CONFIGURATION" \
+    && echo "exec dotnet run --project BookingsApi --no-build --no-launch-profile -c "$BUILD_CONFIGURATION" -- \"\$@\"" > /entrypoint.sh
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
