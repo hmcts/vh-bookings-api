@@ -53,7 +53,7 @@ namespace BookingsApi.Validations.V1
 
             RuleForEach(x => x.LinkedParticipants)
                 .SetValidator(new LinkedParticipantRequestValidation())
-                .When(x => !x.LinkedParticipants.Any());
+                .When(x => x.LinkedParticipants.Count == 0);
 
         }
     }

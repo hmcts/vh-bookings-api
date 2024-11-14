@@ -8,306 +8,305 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 
-namespace BookingsApi.UnitTests.Infrastructure.Services
+namespace BookingsApi.UnitTests.Infrastructure.Services;
+
+public class IntegrationEventTests
 {
-    public class IntegrationEventTests
+    private ServiceBusQueueClientFake _serviceBusQueueClient;
+    private EventPublisher _eventPublisher;
+
+    [SetUp]
+    public void Setup()
     {
-        private ServiceBusQueueClientFake _serviceBusQueueClient;
-        private IEventPublisher _eventPublisher;
+        _serviceBusQueueClient = new ServiceBusQueueClientFake();
+        _eventPublisher = new EventPublisher(_serviceBusQueueClient);
+    }
 
-        [SetUp]
-        public void Setup()
-        {
-            _serviceBusQueueClient = new ServiceBusQueueClientFake();
-            _eventPublisher = new EventPublisher(_serviceBusQueueClient);
-        }
+    [Test]
+    public void Should_publish_message_to_queue_when_HearingCancelledIntegrationEvent_is_raised()
+    {
+        var hearingCancelledEvent = new HearingCancelledIntegrationEvent(Guid.NewGuid());
+        _eventPublisher.PublishAsync(hearingCancelledEvent);
 
-        [Test]
-        public void Should_publish_message_to_queue_when_HearingCancelledIntegrationEvent_is_raised()
-        {
-            var hearingCancelledEvent = new HearingCancelledIntegrationEvent(Guid.NewGuid());
-            _eventPublisher.PublishAsync(hearingCancelledEvent);
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<HearingCancelledIntegrationEvent>();
+    }
 
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<HearingCancelledIntegrationEvent>();
-        }
+    [Test]
+    public void Should_publish_message_to_queue_when_HearingDetailsUpdatedIntegrationEvent_is_raised()
+    {
+        var hearing = new VideoHearingBuilder().Build();
+        hearing.CaseType = new CaseType(1, "test");
+        hearing.AddCase("1234", "test", true);
 
-        [Test]
-        public void Should_publish_message_to_queue_when_HearingDetailsUpdatedIntegrationEvent_is_raised()
-        {
-            var hearing = new VideoHearingBuilder().Build();
-            hearing.CaseType = new CaseType(1, "test");
-            hearing.AddCase("1234", "test", true);
+        var hearingDetailsUpdatedIntegrationEvent = new HearingDetailsUpdatedIntegrationEvent(hearing);
+        _eventPublisher.PublishAsync(hearingDetailsUpdatedIntegrationEvent);
 
-            var hearingDetailsUpdatedIntegrationEvent = new HearingDetailsUpdatedIntegrationEvent(hearing);
-            _eventPublisher.PublishAsync(hearingDetailsUpdatedIntegrationEvent);
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
 
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
+        var typedEvent = (HearingDetailsUpdatedIntegrationEvent) @event.IntegrationEvent;
+        typedEvent.Hearing.CaseName.Should().Be(hearing.GetCases()[0].Name);
+        typedEvent.Hearing.CaseNumber.Should().Be(hearing.GetCases()[0].Number);
+        typedEvent.Hearing.CaseType.Should().Be(hearing.CaseType.Name);
+        typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
+    }
 
-            var typedEvent = (HearingDetailsUpdatedIntegrationEvent) @event.IntegrationEvent;
-            typedEvent.Hearing.CaseName.Should().Be(hearing.GetCases()[0].Name);
-            typedEvent.Hearing.CaseNumber.Should().Be(hearing.GetCases()[0].Number);
-            typedEvent.Hearing.CaseType.Should().Be(hearing.CaseType.Name);
-            typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
-        }
+    [Test]
+    public void Should_publish_message_to_queue_when_ParticipantsAddedIntegrationEvent_is_raised()
+    {
+        var hearing = new VideoHearingBuilder().Build();
+        hearing.CaseType = new CaseType(1, "test");
+        hearing.AddCase("1234", "test", true);
+        var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
-        [Test]
-        public void Should_publish_message_to_queue_when_ParticipantsAddedIntegrationEvent_is_raised()
-        {
-            var hearing = new VideoHearingBuilder().Build();
-            hearing.CaseType = new CaseType(1, "test");
-            hearing.AddCase("1234", "test", true);
-            var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
+        var individual1 = individuals[0];
+        individual1.HearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(1, "Individual")};
+        individual1.CaseRole = new CaseRole(1, "test");
 
-            var individual1 = individuals[0];
-            individual1.HearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(1, "Individual")};
-            individual1.CaseRole = new CaseRole(1, "test");
+        var participantAddedIntegrationEvent =
+            new ParticipantsAddedIntegrationEvent(hearing, new List<Participant> {individual1});
+        _eventPublisher.PublishAsync(participantAddedIntegrationEvent);
 
-            var participantAddedIntegrationEvent =
-                new ParticipantsAddedIntegrationEvent(hearing, new List<Participant> {individual1});
-            _eventPublisher.PublishAsync(participantAddedIntegrationEvent);
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<ParticipantsAddedIntegrationEvent>();
+    }
 
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<ParticipantsAddedIntegrationEvent>();
-        }
+    [Test]
+    public void Should_publish_message_to_queue_when_ParticipantRemovedIntegrationEvent_is_raised()
+    {
+        var participantRemovedIntegrationEvent =
+            new ParticipantRemovedIntegrationEvent(Guid.NewGuid(), Guid.NewGuid());
+        _eventPublisher.PublishAsync(participantRemovedIntegrationEvent);
 
-        [Test]
-        public void Should_publish_message_to_queue_when_ParticipantRemovedIntegrationEvent_is_raised()
-        {
-            var participantRemovedIntegrationEvent =
-                new ParticipantRemovedIntegrationEvent(Guid.NewGuid(), Guid.NewGuid());
-            _eventPublisher.PublishAsync(participantRemovedIntegrationEvent);
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<ParticipantRemovedIntegrationEvent>();
+    }
 
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<ParticipantRemovedIntegrationEvent>();
-        }
+    [Test]
+    public void Should_publish_message_to_queue_when_ParticipantUpdatedIntegrationEvent_is_raised()
+    {
+        var hearing = new VideoHearingBuilder().Build();
+        var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
+        var individual1 = individuals[0];
+        individual1.HearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(1, "Individual")};
+        individual1.CaseRole = new CaseRole(1, "test");
 
-        [Test]
-        public void Should_publish_message_to_queue_when_ParticipantUpdatedIntegrationEvent_is_raised()
-        {
-            var hearing = new VideoHearingBuilder().Build();
-            var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
-            var individual1 = individuals[0];
-            individual1.HearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(1, "Individual")};
-            individual1.CaseRole = new CaseRole(1, "test");
+        var participantUpdatedIntegrationEvent =
+            new ParticipantUpdatedIntegrationEvent(Guid.NewGuid(), individual1);
+        _eventPublisher.PublishAsync(participantUpdatedIntegrationEvent);
 
-            var participantUpdatedIntegrationEvent =
-                new ParticipantUpdatedIntegrationEvent(Guid.NewGuid(), individual1);
-            _eventPublisher.PublishAsync(participantUpdatedIntegrationEvent);
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
+    }
 
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
-        }
+    [Test]
+    public void Should_publish_message_to_queue_when_HearingIsReadyForVideoIntegrationEvent_is_raised()
+    {
+        var hearing = new VideoHearingBuilder().Build();
+        hearing.CaseType = new CaseType(1, "test");
+        hearing.AddCase("1234", "test", true);
+        var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
-        [Test]
-        public void Should_publish_message_to_queue_when_HearingIsReadyForVideoIntegrationEvent_is_raised()
-        {
-            var hearing = new VideoHearingBuilder().Build();
-            hearing.CaseType = new CaseType(1, "test");
-            hearing.AddCase("1234", "test", true);
-            var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
+        var individual1 = individuals[0];
+        individual1.CaseRole = new CaseRole(1, "test");
 
-            var individual1 = individuals[0];
-            individual1.CaseRole = new CaseRole(1, "test");
+        var individual2 = individuals[individuals.Count - 1];
+        individual2.CaseRole = new CaseRole(2, "test2");
 
-            var individual2 = individuals[individuals.Count - 1];
-            individual2.CaseRole = new CaseRole(2, "test2");
+        var representative = hearing.GetParticipants().Single(x => x is Representative);
+        representative.CaseRole = new CaseRole(3, "test3");
 
-            var representative = hearing.GetParticipants().Single(x => x is Representative);
-            representative.CaseRole = new CaseRole(3, "test3");
+        var judge = hearing.GetParticipants().Single(x => x is Judge);
+        judge.CaseRole = new CaseRole(3, "test4");
 
-            var judge = hearing.GetParticipants().Single(x => x is Judge);
-            judge.CaseRole = new CaseRole(3, "test4");
-
-            var joh = hearing.GetParticipants().Single(x => x is JudicialOfficeHolder);
-            joh.CaseRole = new CaseRole(4, "test5");
+        var joh = hearing.GetParticipants().Single(x => x is JudicialOfficeHolder);
+        joh.CaseRole = new CaseRole(4, "test5");
             
-            hearing.AddEndpoints(new List<Endpoint>
-            {
-                new Endpoint(Guid.NewGuid().ToString(),"one", Guid.NewGuid().ToString(), "1234", null),
-                new Endpoint(Guid.NewGuid().ToString(),"two", Guid.NewGuid().ToString(), "1234", representative)
-            });
-
-            var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
-            _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
-
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
-            var typedEvent = (HearingIsReadyForVideoIntegrationEvent) @event.IntegrationEvent;
-            typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
-            typedEvent.Participants.Count.Should().Be(hearing.GetParticipants().Count);
-            typedEvent.Endpoints.Should().NotBeNull();
-            typedEvent.Endpoints.Count.Should().Be(hearing.GetEndpoints().Count);
-        }
-
-        [Test]
-        public void Should_publish_message_to_queue_when_HearingIsReadyForVideoIntegrationEvent_with_otherinformation_is_raised()
+        hearing.AddEndpoints(new List<Endpoint>
         {
-            var hearing = new VideoHearingBuilder().Build();
-            hearing.CaseType = new CaseType(1, "test");
-            hearing.AddCase("1234", "test", true);
-            var email = "judge.login@hearings.reform.hmcts.net";
-            var phone = "9594395734534";
-            hearing.OtherInformation = $"JudgeEmail|{email}|JudgePhone|{phone}";
-            var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
+            new Endpoint(Guid.NewGuid().ToString(),"one", Guid.NewGuid().ToString(), "1234", null),
+            new Endpoint(Guid.NewGuid().ToString(),"two", Guid.NewGuid().ToString(), "1234", representative)
+        });
 
-            var individual1 = individuals[0];
-            individual1.CaseRole = new CaseRole(1, "test");
+        var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
+        _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
 
-            var individual2 = individuals[individuals.Count - 1];
-            individual2.CaseRole = new CaseRole(2, "test2");
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
+        var typedEvent = (HearingIsReadyForVideoIntegrationEvent) @event.IntegrationEvent;
+        typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
+        typedEvent.Participants.Count.Should().Be(hearing.GetParticipants().Count);
+        typedEvent.Endpoints.Should().NotBeNull();
+        typedEvent.Endpoints.Count.Should().Be(hearing.GetEndpoints().Count);
+    }
 
-            var representative = hearing.GetParticipants().Single(x => x is Representative);
-            representative.CaseRole = new CaseRole(3, "test3");
+    [Test]
+    public void Should_publish_message_to_queue_when_HearingIsReadyForVideoIntegrationEvent_with_otherinformation_is_raised()
+    {
+        var hearing = new VideoHearingBuilder().Build();
+        hearing.CaseType = new CaseType(1, "test");
+        hearing.AddCase("1234", "test", true);
+        var email = "judge.login@hearings.reform.hmcts.net";
+        var phone = "9594395734534";
+        hearing.OtherInformation = $"JudgeEmail|{email}|JudgePhone|{phone}";
+        var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
-            var judge = hearing.GetParticipants().Single(x => x is Judge);
-            judge.CaseRole = new CaseRole(3, "test4");
+        var individual1 = individuals[0];
+        individual1.CaseRole = new CaseRole(1, "test");
+
+        var individual2 = individuals[individuals.Count - 1];
+        individual2.CaseRole = new CaseRole(2, "test2");
+
+        var representative = hearing.GetParticipants().Single(x => x is Representative);
+        representative.CaseRole = new CaseRole(3, "test3");
+
+        var judge = hearing.GetParticipants().Single(x => x is Judge);
+        judge.CaseRole = new CaseRole(3, "test4");
             
-            var joh = hearing.GetParticipants().Single(x => x is JudicialOfficeHolder);
-            joh.CaseRole = new CaseRole(4, "test5");
+        var joh = hearing.GetParticipants().Single(x => x is JudicialOfficeHolder);
+        joh.CaseRole = new CaseRole(4, "test5");
             
-            hearing.AddEndpoints(new List<Endpoint>
-            {
-                new Endpoint(Guid.NewGuid().ToString(),"one", Guid.NewGuid().ToString(), "1234", null),
-                new Endpoint(Guid.NewGuid().ToString(),"two", Guid.NewGuid().ToString(), "1234", representative)
-            });
-
-            var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
-            _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
-
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
-            var typedEvent = (HearingIsReadyForVideoIntegrationEvent)@event.IntegrationEvent;
-            typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
-            typedEvent.Participants.Count.Should().Be(hearing.GetParticipants().Count);
-            typedEvent.Endpoints.Should().NotBeNull();
-            typedEvent.Endpoints.Count.Should().Be(hearing.GetEndpoints().Count);
-            var sentJudge = typedEvent.Participants.Single(x => x.UserRole == "Judge");
-            sentJudge.ContactEmailForNonEJudJudgeUser.Should().Be(email);
-            sentJudge.ContactPhoneForNonEJudJudgeUser.Should().Be(phone);
-            var participant1 = typedEvent.Participants.First(x => x.UserRole != "Judge");
-            participant1.ContactEmailForNonEJudJudgeUser.Should().BeNull();
-            participant1.ContactPhoneForNonEJudJudgeUser.Should().BeNull();
-        }
-
-        [Test]
-        public void Should_publish_message_to_queue_when_EndpointAddedIntegrationEvent_is_raised()
+        hearing.AddEndpoints(new List<Endpoint>
         {
-            var hearing = new VideoHearingBuilder().Build();
-            hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "one", "sip", "1234", null));
-            var endpointAddedIntegrationEvent =
-                new EndpointAddedIntegrationEvent(hearing, hearing.GetEndpoints().First());
-            _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
+            new Endpoint(Guid.NewGuid().ToString(),"one", Guid.NewGuid().ToString(), "1234", null),
+            new Endpoint(Guid.NewGuid().ToString(),"two", Guid.NewGuid().ToString(), "1234", representative)
+        });
 
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<EndpointAddedIntegrationEvent>();
-        }
+        var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
+        _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
 
-        [Test]
-        public void Should_publish_message_to_queue_when_EndpointAddedIntegrationEvent_is_raised_with_defence_advocate()
-        {
-            var hearing = new VideoHearingBuilder().Build();
-            var dA = hearing.GetParticipants().First(x => x is Representative);
-            hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "one", "sip", "1234", dA));
-            var endpointAddedIntegrationEvent =
-                new EndpointAddedIntegrationEvent(hearing, hearing.GetEndpoints().First());
-            _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
+        var typedEvent = (HearingIsReadyForVideoIntegrationEvent)@event.IntegrationEvent;
+        typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
+        typedEvent.Participants.Count.Should().Be(hearing.GetParticipants().Count);
+        typedEvent.Endpoints.Should().NotBeNull();
+        typedEvent.Endpoints.Count.Should().Be(hearing.GetEndpoints().Count);
+        var sentJudge = typedEvent.Participants.Single(x => x.UserRole == "Judge");
+        sentJudge.ContactEmailForNonEJudJudgeUser.Should().Be(email);
+        sentJudge.ContactPhoneForNonEJudJudgeUser.Should().Be(phone);
+        var participant1 = typedEvent.Participants.First(x => x.UserRole != "Judge");
+        participant1.ContactEmailForNonEJudJudgeUser.Should().BeNull();
+        participant1.ContactPhoneForNonEJudJudgeUser.Should().BeNull();
+    }
 
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<EndpointAddedIntegrationEvent>();
-        }
+    [Test]
+    public void Should_publish_message_to_queue_when_EndpointAddedIntegrationEvent_is_raised()
+    {
+        var hearing = new VideoHearingBuilder().Build();
+        hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "one", "sip", "1234", null));
+        var endpointAddedIntegrationEvent =
+            new EndpointAddedIntegrationEvent(hearing, hearing.GetEndpoints().First());
+        _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
 
-        [Test]
-        public void Should_publish_message_to_queue_when_EndpointRemovedIntegrationEvent_is_raised()
-        {
-            var endpointRemovedIntegrationEvent = new EndpointRemovedIntegrationEvent(Guid.NewGuid(), "sip");
-            _eventPublisher.PublishAsync(endpointRemovedIntegrationEvent);
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<EndpointAddedIntegrationEvent>();
+    }
 
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<EndpointRemovedIntegrationEvent>();
-        }
+    [Test]
+    public void Should_publish_message_to_queue_when_EndpointAddedIntegrationEvent_is_raised_with_defence_advocate()
+    {
+        var hearing = new VideoHearingBuilder().Build();
+        var dA = hearing.GetParticipants().First(x => x is Representative);
+        hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "one", "sip", "1234", dA));
+        var endpointAddedIntegrationEvent =
+            new EndpointAddedIntegrationEvent(hearing, hearing.GetEndpoints().First());
+        _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
 
-        [Test]
-        public void Should_publish_message_to_queue_when_EndpointUpdatedIntegrationEvent_is_raised()
-        {
-            var endpointUpdatedIntegrationEvent =
-                new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name", "sol1@hmcts.net", ConferenceRole.Host);
-            _eventPublisher.PublishAsync(endpointUpdatedIntegrationEvent);
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<EndpointAddedIntegrationEvent>();
+    }
 
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<EndpointUpdatedIntegrationEvent>();
-        }
+    [Test]
+    public void Should_publish_message_to_queue_when_EndpointRemovedIntegrationEvent_is_raised()
+    {
+        var endpointRemovedIntegrationEvent = new EndpointRemovedIntegrationEvent(Guid.NewGuid(), "sip");
+        _eventPublisher.PublishAsync(endpointRemovedIntegrationEvent);
 
-        [Test]
-        public void Should_publish_message_to_queue_when_HearingIsReadyForVideoIntegrationEvent_is_raised_with_null_OtherInformation()
-        {
-            var hearing = new VideoHearingBuilder().Build();
-            hearing.OtherInformation = null;
-            hearing.CaseType = new CaseType(1, "test");
-            hearing.AddCase("1234", "test", true);
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<EndpointRemovedIntegrationEvent>();
+    }
 
-            var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
-            _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
+    [Test]
+    public void Should_publish_message_to_queue_when_EndpointUpdatedIntegrationEvent_is_raised()
+    {
+        var endpointUpdatedIntegrationEvent =
+            new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name", "sol1@hmcts.net", ConferenceRole.Host);
+        _eventPublisher.PublishAsync(endpointUpdatedIntegrationEvent);
 
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
-            var typedEvent = (HearingIsReadyForVideoIntegrationEvent)@event.IntegrationEvent;
-            typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
-            typedEvent.Participants.Count.Should().Be(hearing.GetParticipants().Count);
-        }
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<EndpointUpdatedIntegrationEvent>();
+    }
+
+    [Test]
+    public void Should_publish_message_to_queue_when_HearingIsReadyForVideoIntegrationEvent_is_raised_with_null_OtherInformation()
+    {
+        var hearing = new VideoHearingBuilder().Build();
+        hearing.OtherInformation = null;
+        hearing.CaseType = new CaseType(1, "test");
+        hearing.AddCase("1234", "test", true);
+
+        var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
+        _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
+
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
+        var typedEvent = (HearingIsReadyForVideoIntegrationEvent)@event.IntegrationEvent;
+        typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
+        typedEvent.Participants.Count.Should().Be(hearing.GetParticipants().Count);
+    }
         
-        [Test]
-        public void Should_publish_message_to_queue_when_AllocationHearingsIntegrationEvent_is_raised_with_list_of_hearings()
+    [Test]
+    public void Should_publish_message_to_queue_when_AllocationHearingsIntegrationEvent_is_raised_with_list_of_hearings()
+    {
+        List<VideoHearing> hearings;
+        hearings = new List<VideoHearing>
         {
-            List<VideoHearing> hearings;
-            hearings = new List<VideoHearing>
-            {
-                CreateHearingWithCase(),
-                CreateHearingWithCase(),
-                CreateHearingWithCase(),
-                CreateHearingWithCase(),
-                CreateHearingWithCase()
-            };
+            CreateHearingWithCase(),
+            CreateHearingWithCase(),
+            CreateHearingWithCase(),
+            CreateHearingWithCase(),
+            CreateHearingWithCase()
+        };
 
-            var csoUser = new JusticeUser()
-            {
-                Username = "userName"
-            };
+        var csoUser = new JusticeUser()
+        {
+            Username = "userName"
+        };
             
-            csoUser.JusticeUserRoles = new List<JusticeUserRole>
-            {
-                new JusticeUserRole { UserRole = new UserRole((int)UserRoleId.Vho, "Video Hearings Team Lead") }
-            };
-
-            var allocationHearingsIntegrationEvent = new AllocationHearingsIntegrationEvent(hearings, csoUser);
-            _eventPublisher.PublishAsync(allocationHearingsIntegrationEvent);
-
-            _serviceBusQueueClient.Count.Should().Be(1);
-            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<AllocationHearingsIntegrationEvent>();
-            var typedEvent = (AllocationHearingsIntegrationEvent)@event.IntegrationEvent;
-            typedEvent.Hearings.Should().NotContainNulls();
-            typedEvent.AllocatedCso.Should().NotBeNull();
-        }
-        
-        private VideoHearing CreateHearingWithCase()
+        csoUser.JusticeUserRoles = new List<JusticeUserRole>
         {
-            var hearing = new VideoHearingBuilder().Build();
-            hearing.AddCase("1", "test case", true);
-            return hearing;
-        }
+            new() { UserRole = new UserRole((int)UserRoleId.Vho, "Video Hearings Team Lead") }
+        };
+
+        var allocationHearingsIntegrationEvent = new AllocationHearingsIntegrationEvent(hearings, csoUser);
+        _eventPublisher.PublishAsync(allocationHearingsIntegrationEvent);
+
+        _serviceBusQueueClient.Count.Should().Be(1);
+        var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+        @event.IntegrationEvent.Should().BeOfType<AllocationHearingsIntegrationEvent>();
+        var typedEvent = (AllocationHearingsIntegrationEvent)@event.IntegrationEvent;
+        typedEvent.Hearings.Should().NotContainNulls();
+        typedEvent.AllocatedCso.Should().NotBeNull();
+    }
+        
+    private static VideoHearing CreateHearingWithCase()
+    {
+        var hearing = new VideoHearingBuilder().Build();
+        hearing.AddCase("1", "test case", true);
+        return hearing;
     }
 }

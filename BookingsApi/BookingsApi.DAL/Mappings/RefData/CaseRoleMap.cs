@@ -1,5 +1,8 @@
 namespace BookingsApi.DAL.Mappings.RefData
 {
+    /// <summary>
+    /// TODO: remove as part of https://tools.hmcts.net/jira/browse/VIH-10899
+    /// </summary>
     public class CaseRoleMap : IEntityTypeConfiguration<CaseRole>
     {
         public void Configure(EntityTypeBuilder<CaseRole> builder)

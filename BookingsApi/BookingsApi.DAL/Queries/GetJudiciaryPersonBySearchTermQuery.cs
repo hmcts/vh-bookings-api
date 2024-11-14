@@ -1,30 +1,21 @@
-﻿namespace BookingsApi.DAL.Queries
+﻿namespace BookingsApi.DAL.Queries;
+
+public class GetJudiciaryPersonBySearchTermQuery(string term) : IQuery
 {
-    public class GetJudiciaryPersonBySearchTermQuery : IQuery
+    public string Term { get; } = term.ToLowerInvariant();
+}
+
+
+#pragma warning disable CA1862 // Disabled as must be SQL compliant
+public class GetJudiciaryPersonBySearchTermQueryHandler(BookingsDbContext context)
+    : IQueryHandler<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>
+{
+    public async Task<List<JudiciaryPerson>> Handle(GetJudiciaryPersonBySearchTermQuery query)
     {
-        public string Term { get; }
+        return await context.JudiciaryPersons
+            .Where(x => x.Email.ToLower().Contains(query.Term.ToLower()) && !x.HasLeft && !x.Deleted)
+            .ToListAsync();
 
-        public GetJudiciaryPersonBySearchTermQuery(string term)
-        {
-            Term = term.ToLowerInvariant();
-        }
-    }
-
-    public class GetJudiciaryPersonBySearchTermQueryHandler : IQueryHandler<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>
-    {
-        private readonly BookingsDbContext _context;
-
-        public GetJudiciaryPersonBySearchTermQueryHandler(BookingsDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<List<JudiciaryPerson>> Handle(GetJudiciaryPersonBySearchTermQuery query)
-        {
-            return await _context.JudiciaryPersons
-                .Where(x => x.Email.ToLower().Contains(query.Term.ToLower()) && !x.HasLeft && !x.Deleted)
-                .ToListAsync();
-
-        }
     }
 }
+#pragma warning restore CA1862

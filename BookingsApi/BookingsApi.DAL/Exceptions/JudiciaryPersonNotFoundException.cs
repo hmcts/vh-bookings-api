@@ -1,93 +1,63 @@
-namespace BookingsApi.DAL.Exceptions
+namespace BookingsApi.DAL.Exceptions;
+
+public abstract partial class JudiciaryPersonException(string message) : Exception(message)
 {
-    public abstract class JudiciaryPersonException : Exception
+    private const string Regex = @"(?!\b)\w";
+    [System.Text.RegularExpressions.GeneratedRegex(Regex)]
+    private static partial System.Text.RegularExpressions.Regex UsernameRegex();
+    protected static string GetObfuscatedUsernameAsync(string username)
     {
-        protected JudiciaryPersonException(string message) : base(message)
-        {
-        }
-        
-        protected JudiciaryPersonException(SerializationInfo info, StreamingContext context) 
-            : base(info, context)
-        {
-        }
-
-        protected static string GetObfuscatedUsernameAsync(string username)
-        {
-            return System.Text.RegularExpressions.Regex.Replace(username, @"(?!\b)\w", "*");
-        }
+        return UsernameRegex().Replace(username, "*");
     }
 
-    public abstract class JudiciaryLeaverException : Exception
+}
+
+public abstract partial class JudiciaryLeaverException(string message) : Exception(message)
+{
+    private const string Regex = @"(?!\b)\w";
+    [System.Text.RegularExpressions.GeneratedRegex(Regex)]
+    private static partial System.Text.RegularExpressions.Regex UsernameRegex();
+    protected static string GetObfuscatedUsernameAsync(string username)
     {
-        protected JudiciaryLeaverException(string message) : base(message)
-        {
-        }
+        return UsernameRegex().Replace(username, "*");
+    }
+}
 
-        protected JudiciaryLeaverException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
-        protected static string GetObfuscatedUsernameAsync(string username)
-        {
-            return System.Text.RegularExpressions.Regex.Replace(username, @"(?!\b)\w", "*");
-        }
+public class JudiciaryPersonNotFoundException : ObfuscatedEntityNotFoundException
+{
+    public JudiciaryPersonNotFoundException(string personalCode) :
+        base($"Judiciary Person with personal code: {personalCode} does not exist")
+    {
     }
 
-    [Serializable]
-    public class JudiciaryPersonNotFoundException : ObfuscatedEntityNotFoundException
+    public JudiciaryPersonNotFoundException(Guid id) :
+        base($"Judiciary Person with External ref id: {id} does not exist")
     {
-        public JudiciaryPersonNotFoundException(string personalCode) : 
-            base($"Judiciary Person with personal code: {personalCode} does not exist")
-        {
-        }
-        
-        public JudiciaryPersonNotFoundException(Guid id) : 
-            base($"Judiciary Person with External ref id: {id} does not exist")
-        {
-        }
-
-        protected JudiciaryPersonNotFoundException(SerializationInfo info, StreamingContext context) 
-            : base(info, context)
-        {
-        }
     }
+}
 
-    [Serializable]
-    public class JudiciaryLeaverNotFoundException : JudiciaryLeaverException
+public class JudiciaryLeaverNotFoundException : JudiciaryLeaverException
+{
+    public JudiciaryLeaverNotFoundException(string username) : 
+        base($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} does not exist")
     {
-        public JudiciaryLeaverNotFoundException(string username) : 
-            base($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} does not exist")
-        {
-        }
-        
-        public JudiciaryLeaverNotFoundException(Guid id) : 
-            base($"Judiciary Person with External ref id: {id} does not exist")
-        {
-        }
-        
-        protected JudiciaryLeaverNotFoundException(SerializationInfo info, StreamingContext context) 
-            : base(info, context)
-        {
-        }
     }
+        
+    public JudiciaryLeaverNotFoundException(Guid id) : 
+        base($"Judiciary Person with External ref id: {id} does not exist")
+    {
+    }
+}
     
-    [Serializable]
-    public class JudiciaryPersonAlreadyExistsException : JudiciaryPersonException
+public class JudiciaryPersonAlreadyExistsException : JudiciaryPersonException
+{
+    public JudiciaryPersonAlreadyExistsException(string username) : 
+        base($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} already exists")
     {
-        public JudiciaryPersonAlreadyExistsException(string username) : 
-            base($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} already exists")
-        {
-        }
+    }
         
-        public JudiciaryPersonAlreadyExistsException(Guid externalRefId) : 
-            base($"Judiciary Person with ExternalRefId {externalRefId} already exists")
-        {
-        }
-        
-        protected JudiciaryPersonAlreadyExistsException(SerializationInfo info, StreamingContext context) 
-            : base(info, context)
-        {
-        }
+    public JudiciaryPersonAlreadyExistsException(Guid externalRefId) : 
+        base($"Judiciary Person with ExternalRefId {externalRefId} already exists")
+    {
     }
 }

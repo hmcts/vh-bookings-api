@@ -27,9 +27,9 @@ namespace BookingsApi.Domain.Participants
         {
             ValidateArguments(displayName);
 
-            if (_validationFailures.Any())
+            if (ValidationFailures.Any())
             {
-                throw new DomainRuleException(_validationFailures);
+                throw new DomainRuleException(ValidationFailures);
             }
         }
     }

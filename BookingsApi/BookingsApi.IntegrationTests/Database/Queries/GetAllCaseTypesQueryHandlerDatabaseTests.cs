@@ -5,11 +5,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     public class GetAllCaseTypesQueryHandlerDatabaseTests : DatabaseTestsBase
     {
         private GetAllCaseTypesQueryHandler _handler;
-        private int FinancialRemedyCaseTypeId => 2;
+        private static int FinancialRemedyCaseTypeId => 2;
         private DateTime? _originalCaseTypeExpirationDate;
         
-        private int CivilMoneyClaimsCaseTypeId => 1;
-        private int HearingTypeId => 299; // Application Hearings
+        private static int CivilMoneyClaimsCaseTypeId => 1;
+        private static int HearingTypeId => 299; // Application Hearings
         private DateTime? _originalHearingTypeExpirationDate;
 
         [SetUp]
@@ -74,7 +74,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             
-            var caseType = db.CaseTypes.Include(x=> x.HearingTypes).First(c=> c.Id == caseTypeId);
+            var caseType = await db.CaseTypes.Include(x=> x.HearingTypes).FirstAsync(c=> c.Id == caseTypeId);
             caseType!.HearingTypes.First(x=> x.Id == hearingTypeId).ExpirationDate = expirationDate;
             await db.SaveChangesAsync();
         }

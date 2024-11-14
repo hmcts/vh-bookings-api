@@ -397,7 +397,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             return personListBefore;
         }
 
-        private void CheckPersonDetails(Person existingPersonInDb, Person seededPerson)
+        private static void CheckPersonDetails(Person existingPersonInDb, Person seededPerson)
         {
             existingPersonInDb.Title.Should().Be(seededPerson.Title);
             existingPersonInDb.FirstName.Should().Be(seededPerson.FirstName);

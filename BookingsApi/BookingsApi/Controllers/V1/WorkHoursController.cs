@@ -73,7 +73,7 @@ namespace BookingsApi.Controllers.V1
         {
 
             var validationResult =
-                new UploadNonWorkingHoursRequestsValidation().ValidateRequests(uploadNonWorkingHoursRequests);
+                UploadNonWorkingHoursRequestsValidation.ValidateRequests(uploadNonWorkingHoursRequests);
 
             if (!validationResult.IsValid)
             {
@@ -180,7 +180,7 @@ namespace BookingsApi.Controllers.V1
             }
             
             var nonDeletedHours = existingHours.Where(x => !x.Deleted).ToList();
-            var hourValidationResult = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, nonDeletedHours);
+            var hourValidationResult = UpdateNonWorkingHoursRequestValidation.ValidateHours(request, nonDeletedHours);
             if (!hourValidationResult.IsValid)
             {
                 if (hourValidationResult.Errors.Exists(x => x.ErrorMessage.Contains(UpdateNonWorkingHoursRequestValidation.HourIdsNotFoundErrorMessage)))

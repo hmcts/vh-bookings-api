@@ -42,7 +42,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             };
 
             // Act
-            var result = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, existingHours);
+            var result = UpdateNonWorkingHoursRequestValidation.ValidateHours(request, existingHours);
             
             // Assert
             result.IsValid.Should().BeTrue();
@@ -70,7 +70,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             };
 
             // Act
-            var result = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, existingHours);
+            var result = UpdateNonWorkingHoursRequestValidation.ValidateHours(request, existingHours);
             
             // Assert
             result.IsValid.Should().BeFalse();
@@ -112,7 +112,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             };
             
             // Act
-            var result = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, existingHours);
+            var result = UpdateNonWorkingHoursRequestValidation.ValidateHours(request, existingHours);
             
             // Assert
             result.Errors[0].PropertyName.Should().Be("Hours");

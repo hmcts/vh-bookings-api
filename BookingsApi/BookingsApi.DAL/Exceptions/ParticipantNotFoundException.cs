@@ -1,11 +1,4 @@
-﻿namespace BookingsApi.DAL.Exceptions
-{
-#pragma warning disable S3925 // "ISerializable" should be implemented correctly
+﻿namespace BookingsApi.DAL.Exceptions;
 
-    public class ParticipantNotFoundException : EntityNotFoundException
-    {
-        public ParticipantNotFoundException(Guid participantId) : base($"Participant {participantId} does not exist")
-        {
-        }
-    }
-}
+public class ParticipantNotFoundException(Guid participantId)
+    : EntityNotFoundException($"Participant {participantId} does not exist");

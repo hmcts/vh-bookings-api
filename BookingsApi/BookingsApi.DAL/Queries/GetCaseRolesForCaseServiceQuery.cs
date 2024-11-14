@@ -1,38 +1,23 @@
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.DAL.Queries.BaseQueries;
-using BookingsApi.DAL.Queries.Core;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Queries
 {
-    public class GetCaseRolesForCaseServiceQuery : IQuery
+    public class GetCaseRolesForCaseServiceQuery(string serviceId) : IQuery
     {
-        public GetCaseRolesForCaseServiceQuery(string serviceId)
-        {
-            ServiceId = serviceId;
-        }
-
         /// <summary>
         /// Can be caseType name or ServiceId (depending on whether refData flag on/off)
         /// </summary>
-        public string ServiceId { get; }
+        public string ServiceId { get; } = serviceId;
     }
     
-    public class GetCaseRolesForCaseServiceQueryHandler : IQueryHandler<GetCaseRolesForCaseServiceQuery, CaseType>
+    public class GetCaseRolesForCaseServiceQueryHandler(BookingsDbContext context)
+        : IQueryHandler<GetCaseRolesForCaseServiceQuery, CaseType>
     {
-        private readonly BookingsDbContext _context;
-
-        public GetCaseRolesForCaseServiceQueryHandler(BookingsDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<CaseType> Handle(GetCaseRolesForCaseServiceQuery query)
         {
-            var caseTypesQuery = CaseTypes.Get(_context);
+            var caseTypesQuery = CaseTypes.Get(context);
             var caseType = await caseTypesQuery.SingleOrDefaultAsync(x => EF.Functions.Like(x.ServiceId, $"{query.ServiceId}"));
-            if (caseType?.CaseRoles != null && caseType.CaseRoles.Any())
+            if (caseType?.CaseRoles != null && caseType.CaseRoles.Count != 0)
                 caseType.PopulateCaseRoles();
             return caseType;
         }

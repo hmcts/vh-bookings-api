@@ -1,40 +1,24 @@
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.DAL.Queries.BaseQueries;
-using BookingsApi.DAL.Queries.Core;
-using Microsoft.EntityFrameworkCore;
 
-namespace BookingsApi.DAL.Queries
+namespace BookingsApi.DAL.Queries;
+
+public class GetCaseRolesForCaseTypeQuery(string caseTypeQueryParameter) : IQuery
 {
-    public class GetCaseRolesForCaseTypeQuery : IQuery
-    {
-        public GetCaseRolesForCaseTypeQuery(string caseTypeQueryParameter)
-        {
-            CaseTypeQueryParameter = caseTypeQueryParameter;
-        }
-
-        /// <summary>
-        /// Can be caseType name or ServiceId (depending on whether refData flag on/off)
-        /// </summary>
-        public string CaseTypeQueryParameter { get; }
-    }
+    /// <summary>
+    /// Can be caseType name or ServiceId (depending on whether refData flag on/off)
+    /// </summary>
+    public string CaseTypeQueryParameter { get; } = caseTypeQueryParameter;
+}
     
-    public class GetCaseRolesForCaseTypeQueryHandler : IQueryHandler<GetCaseRolesForCaseTypeQuery, CaseType>
+public class GetCaseRolesForCaseTypeQueryHandler(BookingsDbContext context)
+    : IQueryHandler<GetCaseRolesForCaseTypeQuery, CaseType>
+{
+    public async Task<CaseType> Handle(GetCaseRolesForCaseTypeQuery query)
     {
-        private readonly BookingsDbContext _context;
-
-        public GetCaseRolesForCaseTypeQueryHandler(BookingsDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<CaseType> Handle(GetCaseRolesForCaseTypeQuery query)
-        {
-            var caseTypesQuery = CaseTypes.Get(_context);
-            var caseType = await caseTypesQuery.SingleOrDefaultAsync(x => x.Name == query.CaseTypeQueryParameter);        
-            if (caseType?.CaseRoles != null && caseType.CaseRoles.Any())
-                caseType.PopulateCaseRoles();
-            return caseType;
-        }
+        var caseTypesQuery = CaseTypes.Get(context);
+        var caseType = await caseTypesQuery.SingleOrDefaultAsync(x => x.Name == query.CaseTypeQueryParameter);        
+        if (caseType?.CaseRoles != null && caseType.CaseRoles.Count != 0)
+            caseType.PopulateCaseRoles();
+        return caseType;
     }
 }

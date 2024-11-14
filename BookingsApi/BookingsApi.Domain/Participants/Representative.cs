@@ -30,9 +30,9 @@ namespace BookingsApi.Domain.Participants
         {
             ValidateArgumentsRepresentative(representee);
 
-            if (_validationFailures.Any())
+            if (ValidationFailures.Any())
             {
-                throw new DomainRuleException(_validationFailures);
+                throw new DomainRuleException(ValidationFailures);
             }
 
             Representee = representee;
@@ -42,7 +42,7 @@ namespace BookingsApi.Domain.Participants
         {
             if (string.IsNullOrEmpty(representee))
             {
-                _validationFailures.AddFailure("Representee", "Representee is required");
+                ValidationFailures.AddFailure("Representee", "Representee is required");
             }
         }
     }

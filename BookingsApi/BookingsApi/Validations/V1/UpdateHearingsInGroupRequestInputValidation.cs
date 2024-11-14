@@ -19,12 +19,12 @@ namespace BookingsApi.Validations.V1
             RuleFor(x => x.Hearings)
                 .Must(h => !HasDuplicateHearingIds(h))
                 .WithMessage(DuplicateHearingIdsMessage)
-                .When(x => x.Hearings != null && x.Hearings.Any());
+                .When(x => x.Hearings != null && x.Hearings.Count != 0);
             
             RuleFor(x => x.Hearings)
                 .Must(h => !HasDuplicateScheduledDateTimes(h))
                 .WithMessage(DuplicateScheduledDateTimesMessage)
-                .When(x => x.Hearings != null && x.Hearings.Any());
+                .When(x => x.Hearings != null && x.Hearings.Count != 0);
             
             RuleForEach(x => x.Hearings)
                 .SetValidator(new HearingRequestValidation());
