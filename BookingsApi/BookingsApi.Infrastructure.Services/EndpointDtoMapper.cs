@@ -33,9 +33,16 @@ namespace BookingsApi.Infrastructure.Services
         /// <returns>'Host' or 'Guest'</returns>
         public static ConferenceRole GetEndpointConferenceRole(this Endpoint source, IList<Participant> participants, IList<Endpoint> endpoints)
         {
-            var requiresScreening = source.Screening != null && (source.Screening.Type == ScreeningType.All ||
+            var noScreeningRequired =
+                participants.All(x => x.Screening == null || x.Screening.ScreeningEntities.Count == 0) &&
+                endpoints.All(x => x.Screening == null || x.Screening.ScreeningEntities.Count == 0);
+            
+            // if no endpoint or participant requires screening, then the default role is 'Guest'
+            if (noScreeningRequired) return ConferenceRole.Guest;
+            
+            var endpointRequiresScreening = source.Screening != null && (source.Screening.Type == ScreeningType.All ||
                                                                  source.Screening.ScreeningEntities.Count > 0);
-            if (requiresScreening) return ConferenceRole.Guest;
+            if (endpointRequiresScreening) return ConferenceRole.Guest;
 
             var participantScreenings = participants.Where(x => x.Screening != null).SelectMany(x => x.Screening.GetEndpoints()).ToList();
             var endpointScreenings = endpoints.Where(x => x.Screening != null).SelectMany(x => x.Screening.GetEndpoints()).ToList();

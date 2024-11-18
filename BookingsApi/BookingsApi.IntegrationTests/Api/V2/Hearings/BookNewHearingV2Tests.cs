@@ -72,7 +72,8 @@ public class BookNewHearingV2Tests : ApiTest
         var hearingReadyEvent = messages.First(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent);
         var integrationEvent = hearingReadyEvent.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
         integrationEvent!.Hearing.ConferenceRoomType.Should().Be(ConferenceRoomType.VMR);
-        integrationEvent.Endpoints[0].Role.Should().Be(ConferenceRole.Host);
+        integrationEvent.Endpoints[0].Role.Should().Be(ConferenceRole.Guest,
+            "Endpoint should be a guest if there are no screening requirements");
     }
     
     [Test]

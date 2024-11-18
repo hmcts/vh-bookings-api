@@ -39,7 +39,7 @@ public class AddEndPointToHearingV2Tests : ApiTest
         Array.Exists(messages, x => x.IntegrationEvent is EndpointAddedIntegrationEvent).Should().BeTrue();
         var endpointAddedIntegrationEvent = messages.First(x => x.IntegrationEvent is EndpointAddedIntegrationEvent).IntegrationEvent as EndpointAddedIntegrationEvent;
         endpointAddedIntegrationEvent!.Endpoint.DisplayName.Should().Be(request.DisplayName);
-        endpointAddedIntegrationEvent.Endpoint.Role.Should().Be(ConferenceRole.Host);
+        endpointAddedIntegrationEvent.Endpoint.Role.Should().Be(ConferenceRole.Guest, "Endpoint should be a guest when no screening is required in hearing");
         
         Array.Exists(messages, x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent).Should().BeTrue();
     }

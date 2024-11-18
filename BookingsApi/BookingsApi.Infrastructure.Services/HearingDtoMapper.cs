@@ -10,8 +10,8 @@ namespace BookingsApi.Infrastructure.Services
         public static HearingDto MapToDto(Hearing hearing)
         {
             var roomType =
-                hearing.GetParticipants().Any(x => x.Screening != null) ||
-                hearing.GetEndpoints().Any(x => x.Screening != null)
+                hearing.GetParticipants().Any(x => x.Screening?.ScreeningEntities.Count > 0) ||
+                hearing.GetEndpoints().Any(x => x.Screening?.ScreeningEntities.Count > 0)
                     ? ConferenceRoomType.VA
                     : ConferenceRoomType.VMR;
             
