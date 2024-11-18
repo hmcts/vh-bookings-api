@@ -50,6 +50,10 @@ namespace BookingsApi.Controllers.V2
         public async Task<IActionResult> BookNewHearingWithCode(BookNewHearingRequestV2 request)
         {
             request.SanitizeRequest();
+            if(!_featureToggles.UseVodafoneToggle())
+            {
+                request.BookingSupplier = BookingSupplier.Kinly;
+            }
             request.BookingSupplier ??= _featureToggles.UseVodafoneToggle() ? BookingSupplier.Vodafone : BookingSupplier.Kinly;
             var result = await new BookNewHearingRequestInputValidationV2().ValidateAsync(request);
             if (!result.IsValid)
