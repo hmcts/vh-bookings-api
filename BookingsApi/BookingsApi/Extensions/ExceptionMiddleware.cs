@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using BookingsApi.Common.Helpers;
 using System.Text;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 

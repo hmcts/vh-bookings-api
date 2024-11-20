@@ -20,11 +20,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         private CaseType _genericCaseType;
         private List<string> _personsToRemove;
 
-        private List<ExistingParticipantDetails> _existingParticipants { get; set; }
-        private List<NewParticipant> _newParticipants { get; set; }
-        private List<Guid> _removedParticipantIds { get; set; }
-        private List<LinkedParticipantDto> _linkedParticipants { get; set; }
-        private UpdateHearingParticipantsCommand _command { get; set; }
+        private List<ExistingParticipantDetails> _existingParticipants;
+        private List<NewParticipant> _newParticipants;
+        private List<Guid> _removedParticipantIds;
+        private List<LinkedParticipantDto> _linkedParticipants;
+        private UpdateHearingParticipantsCommand _command;
 
         [SetUp]
         public async Task Setup()
@@ -32,16 +32,16 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             _personsToRemove = new List<string>();
             _context = new BookingsDbContext(BookingsDbContextOptions);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(_context);
-            _genericCaseType = _context.CaseTypes
+            _genericCaseType = await _context.CaseTypes
                     .Include(x => x.CaseRoles)
                     .ThenInclude(x => x.HearingRoles)
                     .ThenInclude(x => x.UserRole)
                     .Include(x => x.HearingTypes)
-                    .First(x => x.Name == "Generic");
+                    .FirstAsync(x => x.Name == "Generic");
 
             var hearingService = new HearingService(_context);
 
-            _hearing = await Hooks.SeedVideoHearing(status: BookingStatus.Created);
+            _hearing = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created);
             TestContext.WriteLine($"New seeded video hearing id: {_hearing.Id}");
 
             _existingParticipants = new List<ExistingParticipantDetails>();
@@ -74,12 +74,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var newPerson = new PersonBuilder(true).Build();
-            var newParticipant = new NewParticipant()
+            var newParticipant = new NewParticipant
             {
                 ExternalReferenceId = Guid.NewGuid().ToString(),
                 MeasuresExternalId = "Screening1",
                 Person = newPerson,
-                CaseRole = applicantCaseRole,
                 HearingRole = applicantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
@@ -113,7 +112,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_update_participants_and_remove_any_existing_participant_links()
         {
             //Arrange
-            _hearing = await Hooks.SeedVideoHearing(null, withLinkedParticipants: true);
+            _hearing = await Hooks.SeedVideoHearingV2(withLinkedParticipants: true);
             var beforeUpdatedDate = _hearing.UpdatedDate;
             var participantToUpdate = _hearing.GetParticipants().First(x => x.LinkedParticipants.Any());
 
@@ -139,7 +138,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var updatedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(_hearing.Id));
-            var updatedParticipant = updatedVideoHearing.Participants.SingleOrDefault(x => x.Id == participantToUpdate.Id);
+            var updatedParticipant = updatedVideoHearing.Participants.Single(x => x.Id == participantToUpdate.Id);
 
             updatedParticipant.Should().NotBeNull();
             updatedParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
@@ -159,7 +158,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_update_representative_participants()
         {
             //Arrange
-            _hearing = await Hooks.SeedVideoHearing(null, withLinkedParticipants: true);
+            _hearing = await Hooks.SeedVideoHearingV2(withLinkedParticipants: true);
             var beforeUpdatedDate = _hearing.UpdatedDate;
             var participantToUpdate = _hearing.GetParticipants().First(x => x.HearingRole.UserRole.Name.Equals("Representative"));
 
@@ -185,7 +184,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var updatedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(_hearing.Id));
-            var updatedRepresentative = (Representative)updatedVideoHearing.Participants.SingleOrDefault(x => x.Id == participantToUpdate.Id);
+            var updatedRepresentative = (Representative)updatedVideoHearing.Participants.Single(x => x.Id == participantToUpdate.Id);
 
             updatedRepresentative.Should().NotBeNull();
             updatedRepresentative.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
@@ -201,18 +200,15 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_remove_participants()
         {
             //Arrange
-            var participantToRemoveOne = _hearing.Participants.First(p => p.HearingRole.Name != "Judge");
-            var participantToRemoveTwo = _hearing.Participants.Last(p => p.HearingRole.Name != "Judge");
+            var participantToRemoveOne = _hearing.Participants.First(p => p is Individual);
+            var participantToRemoveTwo = _hearing.Participants.First(p => p is Representative);
             var participantToRemoveIdOne = participantToRemoveOne.Id;
             var participantToRemoveIdTwo = participantToRemoveTwo.Id;
 
             _personsToRemove.Add(participantToRemoveOne.Person.ContactEmail);
             _personsToRemove.Add(participantToRemoveTwo.Person.ContactEmail);
             
-            _removedParticipantIds = new List<Guid>
-            {
-                participantToRemoveIdOne, participantToRemoveIdTwo
-            };
+            _removedParticipantIds = [participantToRemoveIdOne, participantToRemoveIdTwo];
 
             _command = BuildCommand();
 
@@ -221,11 +217,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var updatedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(_hearing.Id));
-            var removedParticipantOne = (Representative)updatedVideoHearing.Participants.SingleOrDefault(x => x.Id == participantToRemoveIdOne);
-            var removedParticipantTwo = (Representative)updatedVideoHearing.Participants.SingleOrDefault(x => x.Id == participantToRemoveIdTwo);
-
-            removedParticipantOne.Should().BeNull();
-            removedParticipantTwo.Should().BeNull();
+            updatedVideoHearing.Participants.Should().NotContain(x => x.Id == participantToRemoveIdOne);
+            updatedVideoHearing.Participants.Should().NotContain(x => x.Id == participantToRemoveIdTwo);
         }
 
         [Test]
@@ -237,10 +230,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var primaryParticipant = unlinkedParticipants[0];
             var secondaryParticipant = unlinkedParticipants[1];
 
-            _linkedParticipants = new List<LinkedParticipantDto>
-            {
-                new LinkedParticipantDto(primaryParticipant.Person.ContactEmail, secondaryParticipant.Person.ContactEmail, LinkedParticipantType.Interpreter)
-            };
+            _linkedParticipants =
+            [
+                new LinkedParticipantDto(primaryParticipant.Person.ContactEmail,
+                    secondaryParticipant.Person.ContactEmail, LinkedParticipantType.Interpreter)
+            ];
 
             _command = BuildCommand();
 
@@ -249,8 +243,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var updatedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(_hearing.Id));
-            var linkedPrimaryParticipant = updatedVideoHearing.Participants.SingleOrDefault(x => x.Id == primaryParticipant.Id);
-            var linkedSecondaryParticipant = updatedVideoHearing.Participants.SingleOrDefault(x => x.Id == secondaryParticipant.Id);
+            var linkedPrimaryParticipant = updatedVideoHearing.Participants.Single(x => x.Id == primaryParticipant.Id);
+            var linkedSecondaryParticipant = updatedVideoHearing.Participants.Single(x => x.Id == secondaryParticipant.Id);
 
             linkedPrimaryParticipant.LinkedParticipants.Should().NotBeEmpty();
             linkedPrimaryParticipant.LinkedParticipants[0].ParticipantId.Should().Be(primaryParticipant.Id);
@@ -259,114 +253,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             linkedSecondaryParticipant.LinkedParticipants.Should().NotBeEmpty();
             linkedSecondaryParticipant.LinkedParticipants[0].ParticipantId.Should().Be(secondaryParticipant.Id);
             linkedSecondaryParticipant.LinkedParticipants[0].LinkedId.Should().Be(primaryParticipant.Id);
-        }
-
-        [Test]
-        public async Task Should_change_judge()
-        {
-            //Arrange
-            var judgeCaseRole = _genericCaseType.CaseRoles.First(x => x.Name == "Judge");
-            var judgeHearingRole =
-                judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
-
-            var oldJudge = _hearing.GetParticipants().Single(x => x.HearingRole.Id == judgeHearingRole.Id);
-            _personsToRemove.Add(oldJudge.Person.ContactEmail);
-            var oldJudgeId = oldJudge.Id;
-
-            var newJudge = new PersonBuilder(true).Build();
-            await _context.Persons.AddAsync(newJudge);
-            await _context.SaveChangesAsync();
-            _personsToRemove.Add(newJudge.ContactEmail);
-            const string displayName = "New Display Name";
-            var newParticipant = new NewParticipant()
-            {
-                Person = newJudge,
-                CaseRole = judgeCaseRole,
-                HearingRole = judgeHearingRole,
-                DisplayName = displayName
-            };
-
-            _removedParticipantIds.Add(oldJudgeId);
-            _newParticipants.Add(newParticipant);
-            _command = BuildCommand();
-
-            //Act
-            await _handler.Handle(_command);
-            var updatedVideoHearing =
-                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(_hearing.Id));
-            var addedJudge = updatedVideoHearing.GetParticipants().SingleOrDefault(x => x.HearingRole.Id == judgeHearingRole.Id);
-
-            //Assert
-            addedJudge.Person.FirstName.Should().Be(newJudge.FirstName);
-            addedJudge.Person.LastName.Should().Be(newJudge.LastName);
-            addedJudge.DisplayName.Should().Be(displayName);
-        }
-
-        [Test]
-        public async Task Should_change_judge_within_30_minutes_of_hearing_starting()
-        {
-            // Arrange
-            await UpdateHearingScheduledDateTime(DateTime.UtcNow.AddMinutes(15));
-
-            var judgeCaseRole = _genericCaseType.CaseRoles.First(x => x.Name == "Judge");
-            var judgeHearingRole =
-                judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
-
-            var oldJudge = _hearing.GetParticipants().Single(x => x.HearingRole.Id == judgeHearingRole.Id);
-            _personsToRemove.Add(oldJudge.Person.ContactEmail);
-            var oldJudgeId = oldJudge.Id;
-
-            var newJudge = new PersonBuilder(true).Build();
-            await _context.Persons.AddAsync(newJudge);
-            await _context.SaveChangesAsync();
-            _personsToRemove.Add(newJudge.ContactEmail);
-
-            var newParticipant = new NewParticipant()
-            {
-                Person = newJudge,
-                CaseRole = judgeCaseRole,
-                HearingRole = judgeHearingRole,
-                DisplayName = $"{newJudge.FirstName} {newJudge.LastName}"
-            };
-
-            _removedParticipantIds.Add(oldJudgeId);
-            _newParticipants.Add(newParticipant);
-            _command = BuildCommand();
-            
-            // Act
-            await _handler.Handle(_command);
-            var updatedVideoHearing =
-                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(_hearing.Id));
-            var addedJudge = updatedVideoHearing.GetParticipants().SingleOrDefault(x => x.HearingRole.Id == judgeHearingRole.Id);
-            
-            // Assert
-            addedJudge.Person.FirstName.Should().Be(newJudge.FirstName);
-            addedJudge.Person.LastName.Should().Be(newJudge.LastName);
-        }
-
-        [Test]
-        public async Task Should_not_be_able_to_remove_judge_within_30_minutes_of_hearing_starting()
-        {
-            // Arrange
-            await UpdateHearingScheduledDateTime(DateTime.UtcNow.AddMinutes(15));
-
-            var judgeCaseRole = _genericCaseType.CaseRoles.First(x => x.Name == "Judge");
-            var judgeHearingRole =
-                judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
-
-            var oldJudge = _hearing.GetParticipants().Single(x => x.HearingRole.Id == judgeHearingRole.Id);
-            _personsToRemove.Add(oldJudge.Person.ContactEmail);
-            var oldJudgeId = oldJudge.Id;
-
-            _removedParticipantIds.Add(oldJudgeId);
-            _newParticipants.Clear();
-            _command = BuildCommand();
-            
-            // Act & Assert
-            Assert.ThrowsAsync<DomainRuleException>(async () =>
-            {
-                await _handler.Handle(_command);
-            })!.Message.Should().Be(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
         }
         
         [Test]
@@ -405,7 +291,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [TearDown]
         public new async Task TearDown()
         {
-            if (_hearing?.Id != Guid.Empty)
+            if (_hearing!= null && _hearing.Id != Guid.Empty)
             {
                 TestContext.WriteLine($"Removing test hearing {_hearing.Id}");
                 await Hooks.RemoveVideoHearing(_hearing.Id);

@@ -24,20 +24,16 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
     public Guid? ScreeningId { get; set; }
     public virtual Screening Screening { get; set; }
 
-    protected Endpoint(){}
-        
-    //TODO: Remove as part of https://tools.hmcts.net/jira/browse/VIH-10899
-    [Obsolete("Use the constructor with externalParticipantId")]
-    public Endpoint(string displayName, string sip, string pin, Participant defenceAdvocate)
+    protected Endpoint()
+    {
+    }
+
+    public Endpoint(string externalReferenceId, string displayName, string sip, string pin, Participant defenceAdvocate)
     {
         DisplayName = displayName;
         Sip = sip;
         Pin = pin;
         DefenceAdvocate = defenceAdvocate;
-    }
-        
-    public Endpoint(string externalReferenceId, string displayName, string sip, string pin, Participant defenceAdvocate): this(displayName, sip, pin, defenceAdvocate)
-    {
         ExternalReferenceId = externalReferenceId;
     }
 
@@ -45,7 +41,7 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
     {
         DefenceAdvocate = defenceAdvocate;
     }
-        
+
     public void UpdateDisplayName(string displayName)
     {
         if (string.IsNullOrEmpty(displayName))
@@ -55,13 +51,15 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
 
         DisplayName = displayName;
     }
-        
+
     public void UpdateLanguagePreferences(InterpreterLanguage language, string otherLanguage)
     {
         if (language != null && !string.IsNullOrEmpty(otherLanguage))
         {
-            throw new DomainRuleException(nameof(Endpoint), DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
+            throw new DomainRuleException(nameof(Endpoint),
+                DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
         }
+
         InterpreterLanguage = language;
         OtherLanguage = otherLanguage;
 

@@ -24,9 +24,8 @@ namespace BookingsApi.DAL.Queries
         public async Task<List<Participant>> Handle(GetParticipantsInHearingQuery query)
         {
             var hearing = await _context.VideoHearings
-                .Include("Participants.Person.Organisation")
-                .Include("Participants.HearingRole.UserRole")
-                .Include("Participants.CaseRole")
+                .Include(x=> x.Participants).ThenInclude(x=> x.HearingRole).ThenInclude(x=> x.UserRole)
+                .Include(x=> x.Participants).ThenInclude(x=> x.Person).ThenInclude(x=> x.Organisation)
                 .SingleOrDefaultAsync(x => x.Id == query.HearingId);
             if (hearing == null)
             {

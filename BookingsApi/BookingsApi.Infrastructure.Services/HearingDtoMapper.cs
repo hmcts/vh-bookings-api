@@ -27,7 +27,6 @@ namespace BookingsApi.Infrastructure.Services
                 CaseName= @case.Name,
                 HearingVenueName = hearing.HearingVenue.Name,
                 RecordAudio = hearing.AudioRecordingRequired,
-                HearingType = hearing.HearingType?.Name,
                 CaseTypeServiceId = hearing.CaseType.ServiceId ?? RefData.DefaultCaseTypeServiceId,
                 VideoSupplier = hearing.ConferenceSupplier,
                 ConferenceRoomType = roomType

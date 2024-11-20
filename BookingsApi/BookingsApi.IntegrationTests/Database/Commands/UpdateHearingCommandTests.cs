@@ -36,7 +36,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_be_able_to_update_video_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
@@ -73,7 +73,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_deallocate_when_scheduled_datetime_changes_and_user_is_not_available_due_to_work_hours()
         {
             var daysOfWeek = await _context.DaysOfWeek.ToListAsync();
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
@@ -108,7 +108,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_deallocate_when_scheduled_datetime_changes_and_user_is_not_available_due_to_non_availability()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test", initWorkHours: false);
@@ -141,7 +141,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_not_deallocate_when_scheduled_datetime_changes_and_user_is_available_due_to_work_hours()
         {
             var daysOfWeek = await _context.DaysOfWeek.ToListAsync();
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
@@ -180,7 +180,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_not_deallocate_when_scheduled_datetime_has_not_changed()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");

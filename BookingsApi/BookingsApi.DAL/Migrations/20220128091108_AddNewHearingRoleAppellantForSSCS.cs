@@ -1,4 +1,5 @@
-﻿using BookingsApi.DAL.Helper;
+﻿using BookingsApi.Common.Helpers;
+using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
 

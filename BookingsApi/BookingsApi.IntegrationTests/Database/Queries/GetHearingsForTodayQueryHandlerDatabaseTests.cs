@@ -19,7 +19,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_list_of_hearing_for_today()
         {
-            _seededHearing = await Hooks.SeedVideoHearing(options => options.ScheduledDate = DateTime.UtcNow.Date);
+            _seededHearing = await Hooks.SeedVideoHearingV2(options => options.ScheduledDate = DateTime.UtcNow.Date);
             var query = new GetHearingsForTodayQuery();
             var venues = await _handler.Handle(query);
             venues.Should().Contain(h => h.Id == _seededHearing.Id);
@@ -28,7 +28,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_list_of_hearing_for_today_by_venue()
         {
-            _seededHearing = await Hooks.SeedVideoHearing(options => options.ScheduledDate = DateTime.UtcNow.Date);
+            _seededHearing = await Hooks.SeedVideoHearingV2(options => options.ScheduledDate = DateTime.UtcNow.Date);
             var query = new GetHearingsForTodayQuery(new string[] { _seededHearing.HearingVenue.Name });
             var venues = await _handler.Handle(query);
             venues.Should().Contain(x=> x.Id == _seededHearing.Id);
@@ -38,8 +38,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_list_of_hearing_for_today_by_venue_but_dont_include_anything_not_created()
         {
-            _seededHearing = await Hooks.SeedVideoHearing(options => options.ScheduledDate = DateTime.UtcNow.Date);
-            var hearing2 = await Hooks.SeedVideoHearing(options =>
+            _seededHearing = await Hooks.SeedVideoHearingV2(options => options.ScheduledDate = DateTime.UtcNow.Date);
+            var hearing2 = await Hooks.SeedVideoHearingV2(options =>
             {
                 options.AddJudge = false;
                 options.ScheduledDate = DateTime.UtcNow.Date;
@@ -53,7 +53,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_list_of_hearing_for_today_including_endpoints()
         {
-            _seededHearing = await Hooks.SeedVideoHearing(options => 
+            _seededHearing = await Hooks.SeedVideoHearingV2(options => 
             {
                 options.ScheduledDate = DateTime.UtcNow.Date;
                 options.EndpointsToAdd = 2;

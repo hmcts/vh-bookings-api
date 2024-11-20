@@ -1,4 +1,5 @@
 using System;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
@@ -34,7 +35,8 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             else
                 hearing.AddJudiciaryJudge(newJudiciaryPerson, "Display Name","", "");
 
-            var judiciary = hearing.GetJudiciaryParticipants().First();
+            var judiciary = hearing.GetJudiciaryParticipants()
+                .First(j => j.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
             judiciary.GetTelephone().Should().Be(optionalContactDetailsAdded ? "12345" : newJudiciaryPerson.WorkPhone);
             judiciary.GetEmail().Should().Be(optionalContactDetailsAdded ? "contact@email.com" : newJudiciaryPerson.Email);
         }

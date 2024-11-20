@@ -10,7 +10,6 @@ namespace BookingsApi.DAL.Helper
     {
         /// <summary>
         /// Map an existing hearing to a CreateVideoHearingCommand for the purpose of multi-booking days
-        /// TODO: remove obsolete CaseRole mappings as part of https://tools.hmcts.net/jira/browse/VIH-10899
         /// </summary>
         /// <param name="hearing">Original hearing</param>
         /// <param name="newDate">New hearing date</param>
@@ -33,7 +32,6 @@ namespace BookingsApi.DAL.Helper
                 MeasuresExternalId = r.MeasuresExternalId,
                 Person = r.Person,
                 Representee = r.Representee,
-                CaseRole = r.CaseRole,
                 DisplayName = r.DisplayName,
                 HearingRole = r.HearingRole,
                 Screening = r.Screening.MapToScreeningDto()
@@ -43,7 +41,6 @@ namespace BookingsApi.DAL.Helper
                 ExternalReferenceId = r.ExternalReferenceId,
                 MeasuresExternalId = r.MeasuresExternalId,
                 Person = r.Person,
-                CaseRole = r.CaseRole,
                 DisplayName = r.DisplayName,
                 HearingRole = r.HearingRole,
                 Screening = r.Screening.MapToScreeningDto()
@@ -64,8 +61,8 @@ namespace BookingsApi.DAL.Helper
             var command = new CreateVideoHearingCommand(new CreateVideoHearingRequiredDto(
                     hearing.CaseType, newDate, duration, hearing.HearingVenue, cases, hearing.ConferenceSupplier),
                 new CreateVideoHearingOptionalDto(participants, hearing.HearingRoomName, hearing.OtherInformation,
-                    hearing.CreatedBy, hearing.AudioRecordingRequired, newEndpoints, null, linkedParticipantDtos,
-                    newJudiciaryParticipants, false, hearing.Id, hearing.HearingType));
+                    hearing.CreatedBy, hearing.AudioRecordingRequired, newEndpoints, linkedParticipantDtos,
+                    newJudiciaryParticipants, false, hearing.Id));
 
             return command;
         }

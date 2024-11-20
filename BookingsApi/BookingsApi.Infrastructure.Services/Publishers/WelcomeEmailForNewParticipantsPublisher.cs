@@ -26,7 +26,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)
             {
-                var participantDto = ParticipantDtoMapper.MapToDto(participant, videoHearing.OtherInformation);
+                var participantDto = ParticipantDtoMapper.MapToDto(participant);
                 
                 await _eventPublisher.PublishAsync(new NewParticipantWelcomeEmailEvent(EventDtoMappers.MapToWelcomeEmailDto(
                     videoHearing.Id, participantDto, @case)));

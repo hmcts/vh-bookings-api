@@ -31,7 +31,7 @@ namespace BookingsApi.DAL.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: nameof(CaseRole),
+                table: "CaseRole",
                 columns: new[] {"Id", "Name", "Group", "CaseTypeId"},
                 values: new object[,]
                 {

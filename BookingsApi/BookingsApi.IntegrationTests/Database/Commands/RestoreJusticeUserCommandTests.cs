@@ -19,7 +19,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task should_restore_justice_user()
         {
             // Arrange
-            _hearing = await Hooks.SeedVideoHearing();
+            _hearing = await Hooks.SeedVideoHearingV2();
             var justiceUserToRestore = await SeedDeletedJusticeUser("should_delete_justice_user4@testdb.com", _hearing);
 
             var command = new RestoreJusticeUserCommand(justiceUserToRestore.Id);

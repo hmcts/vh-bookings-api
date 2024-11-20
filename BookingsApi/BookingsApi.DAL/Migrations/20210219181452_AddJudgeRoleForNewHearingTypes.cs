@@ -9,7 +9,7 @@ namespace BookingsApi.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-                nameof(CaseRole),
+                "CaseRole",
                 new[] { "Id", "Name", "Group", "CaseTypeId" },
                 new object[,]
                 {
@@ -37,7 +37,7 @@ namespace BookingsApi.DAL.Migrations
         {
             for (var i = 198; i < 203; i++)
             {
-                migrationBuilder.DeleteData(nameof(CaseRole), "Id", i);
+                migrationBuilder.DeleteData("CaseRole", "Id", i);
             }
             
             for (var i = 697; i < 702; i++)

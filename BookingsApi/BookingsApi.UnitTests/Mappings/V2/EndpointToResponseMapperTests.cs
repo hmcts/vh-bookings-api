@@ -3,8 +3,8 @@ using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
-using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
+using InterpreterType = BookingsApi.Domain.RefData.InterpreterType;
 
 namespace BookingsApi.UnitTests.Mappings.V2
 {
@@ -53,7 +53,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             result.Pin.Should().Be(source.Pin);
             result.DefenceAdvocateId.Should().Be(participant[0].Id);
             result.InterpreterLanguage.Should().NotBeNull();
-            result.InterpreterLanguage.Should().BeEquivalentTo(InterpreterLanguageToResponseMapper.MapInterpreterLanguageToResponse(interpreterLanguage));
+            result.InterpreterLanguage.Should().BeEquivalentTo(InterpreterLanguageToResponseMapperV2.MapInterpreterLanguageToResponse(interpreterLanguage));
         }
 
         [Test]

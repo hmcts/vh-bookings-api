@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
+using BookingsApi.DAL.Services;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V2;
 
@@ -10,33 +11,20 @@ namespace BookingsApi.Controllers.V2
     /// A suite of operations to manage bookings (V2)
     /// </summary>
     [Produces("application/json")]
-    [Route(template:"v{version:apiVersion}/hearings")]
+    [Route(template: "v{version:apiVersion}/hearings")]
     [ApiController]
     [ApiVersion("2.0")]
-    public class HearingsControllerV2 : ControllerBase
+    public class HearingsControllerV2(
+        IQueryHandler queryHandler,
+        IBookingService bookingService,
+        ILogger<HearingsControllerV2> logger,
+        IRandomGenerator randomGenerator,
+        IUpdateHearingService updateHearingService,
+        IEndpointService endpointService,
+        IFeatureToggles featureToggles,
+        IHearingService hearingService)
+        : ControllerBase
     {
-        private readonly IQueryHandler _queryHandler;
-        private readonly IBookingService _bookingService;
-        private readonly IRandomGenerator _randomGenerator;
-        private readonly ILogger<HearingsControllerV2> _logger;
-        private readonly IUpdateHearingService _updateHearingService;
-        private readonly IEndpointService _endpointService;
-        private readonly IFeatureToggles _featureToggles;
-
-        public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
-            ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
-            IUpdateHearingService updateHearingService, IEndpointService endpointService,
-            IFeatureToggles featureToggles)
-        {
-            _queryHandler = queryHandler;
-            _bookingService = bookingService;
-            _logger = logger;
-            _randomGenerator = randomGenerator;
-            _updateHearingService = updateHearingService;
-            _endpointService = endpointService;
-            _featureToggles = featureToggles;
-        }
-
         /// <summary>
         /// Request to book a new hearing
         /// </summary>
@@ -44,29 +32,35 @@ namespace BookingsApi.Controllers.V2
         /// <returns>Details of the newly booked hearing</returns>
         [HttpPost]
         [OpenApiOperation("BookNewHearingWithCode")]
-        [ProducesResponseType(typeof(HearingDetailsResponseV2), (int) HttpStatusCode.Created)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(HearingDetailsResponseV2), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> BookNewHearingWithCode(BookNewHearingRequestV2 request)
         {
             request.SanitizeRequest();
-            if(!_featureToggles.UseVodafoneToggle())
+            if(!featureToggles.UseVodafoneToggle())
             {
                 request.BookingSupplier = BookingSupplier.Kinly;
             }
-            request.BookingSupplier ??= _featureToggles.UseVodafoneToggle() ? BookingSupplier.Vodafone : BookingSupplier.Kinly;
+            request.BookingSupplier ??=
+                featureToggles.UseVodafoneToggle() ? BookingSupplier.Vodafone : BookingSupplier.Kinly;
             var result = await new BookNewHearingRequestInputValidationV2().ValidateAsync(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
                 return ValidationProblem(ModelState);
             }
-            
-            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
-            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(new GetCaseRolesForCaseServiceQuery(request.ServiceId));
+
+            var hearingRoles =
+                await queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            var caseType =
+                await queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(
+                    new GetCaseRolesForCaseServiceQuery(request.ServiceId));
             var hearingVenue = await GetHearingVenue(request.HearingVenueCode);
-            
-            var dataValidationResult = await new BookNewHearingRequestRefDataValidationV2(caseType, hearingVenue, hearingRoles).ValidateAsync(request);
+
+            var dataValidationResult =
+                await new BookNewHearingRequestRefDataValidationV2(caseType, hearingVenue, hearingRoles)
+                    .ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
@@ -75,14 +69,15 @@ namespace BookingsApi.Controllers.V2
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
 
-            var sipAddressStem = _endpointService.GetSipAddressStem(request.BookingSupplier);
+            var sipAddressStem = endpointService.GetSipAddressStem(request.BookingSupplier);
             var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
-                request, caseType, hearingVenue, cases, _randomGenerator, sipAddressStem, hearingRoles);
+                request, caseType, hearingVenue, cases, randomGenerator, sipAddressStem, hearingRoles);
 
-            var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
-            
+            var queriedVideoHearing =
+                await bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
+
             var response = HearingToDetailsResponseV2Mapper.Map(queriedVideoHearing);
-            return CreatedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
+            return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
         }
 
         /// <summary>
@@ -98,7 +93,7 @@ namespace BookingsApi.Controllers.V2
         public async Task<IActionResult> GetHearingDetailsById(Guid hearingId)
         {
             var query = new GetHearingByIdQuery(hearingId);
-            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+            var videoHearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
             if (videoHearing == null)
                 return NotFound();
@@ -106,8 +101,7 @@ namespace BookingsApi.Controllers.V2
             var response = HearingToDetailsResponseV2Mapper.Map(videoHearing);
             return Ok(response);
         }
-        
-        
+
         /// <summary>
         /// Update the details of a hearing such as venue, time and duration
         /// </summary>
@@ -130,7 +124,7 @@ namespace BookingsApi.Controllers.V2
             }
 
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
-            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+            var videoHearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
 
             if (videoHearing == null)
             {
@@ -142,7 +136,7 @@ namespace BookingsApi.Controllers.V2
             {
                 ModelState.AddModelError(nameof(request.HearingVenueCode),
                     $"Hearing venue code {request.HearingVenueCode} does not exist");
-                _logger.LogTrace("HearingVenueCode {HearingVenueCode} does not exist", request.HearingVenueCode);
+                logger.LogTrace("HearingVenueCode {HearingVenueCode} does not exist", request.HearingVenueCode);
                 return ValidationProblem(ModelState);
             }
 
@@ -156,8 +150,9 @@ namespace BookingsApi.Controllers.V2
 
             if (videoHearing.SourceId != null)
             {
-                await _bookingService.ValidateScheduleUpdateForHearingInGroup(videoHearing, scheduledDateTime);
+                await bookingService.ValidateScheduleUpdateForHearingInGroup(videoHearing, scheduledDateTime);
             }
+
             var updatedHearing = await UpdateHearingDetails(hearingId, scheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
                 request.UpdatedBy, cases, request.AudioRecordingRequired.Value, videoHearing);
@@ -177,13 +172,13 @@ namespace BookingsApi.Controllers.V2
         public async Task<IActionResult> GetHearingsByGroupId(Guid groupId)
         {
             var query = new GetHearingsByGroupIdQuery(groupId);
-            var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(query);
+            var hearings = await queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(query);
 
             var response = hearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList();
 
             return Ok(response);
         }
-        
+
         /// <summary>
         /// Update hearings in a multi day group
         /// </summary>
@@ -196,27 +191,33 @@ namespace BookingsApi.Controllers.V2
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("2.0")]
-        public async Task<IActionResult> UpdateHearingsInGroup(Guid groupId, [FromBody] UpdateHearingsInGroupRequestV2 request)
+        public async Task<IActionResult> UpdateHearingsInGroup(Guid groupId,
+            [FromBody] UpdateHearingsInGroupRequestV2 request)
         {
-            var inputValidationResult = await new UpdateHearingsInGroupRequestInputValidationV2().ValidateAsync(request);
+            var inputValidationResult =
+                await new UpdateHearingsInGroupRequestInputValidationV2().ValidateAsync(request);
             if (!inputValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(inputValidationResult.Errors);
                 return ValidationProblem(ModelState);
             }
-            
+
             var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
-            var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
+            var hearingsInGroup =
+                await queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
 
             if (hearingsInGroup.Count == 0)
             {
                 return NotFound();
             }
 
-            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            var hearingRoles =
+                await queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
             var venues = await GetHearingVenues();
-            
-            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidationV2(hearingsInGroup, hearingRoles, venues).ValidateAsync(request);
+
+            var dataValidationResult =
+                await new UpdateHearingsInGroupRequestRefDataValidationV2(hearingsInGroup, hearingRoles, venues)
+                    .ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
@@ -231,101 +232,116 @@ namespace BookingsApi.Controllers.V2
                     .Select(x => new Case(requestHearing.CaseNumber, x.Name))
                     .ToList();
 
-                await UpdateHearingDetails(hearing.Id, requestHearing.ScheduledDateTime, 
-                    requestHearing.ScheduledDuration, venue, requestHearing.HearingRoomName, requestHearing.OtherInformation, 
+                await UpdateHearingDetails(hearing.Id, requestHearing.ScheduledDateTime,
+                    requestHearing.ScheduledDuration, venue, requestHearing.HearingRoomName,
+                    requestHearing.OtherInformation,
                     request.UpdatedBy, cases, requestHearing.AudioRecordingRequired, hearing);
-                
-                await _updateHearingService.UpdateParticipantsV2(requestHearing.Participants, hearing, hearingRoles);
-                
-                hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(requestHearing.HearingId));
-                
-                await _updateHearingService.UpdateEndpointsV2(requestHearing.Endpoints, hearing);
-                await _updateHearingService.UpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants, hearing);
+
+                await updateHearingService.UpdateParticipantsV2(requestHearing.Participants, hearing, hearingRoles);
+
+                hearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(
+                    new GetHearingByIdQuery(requestHearing.HearingId));
+
+                await updateHearingService.UpdateEndpointsV2(requestHearing.Endpoints, hearing);
+                await updateHearingService.UpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants, hearing);
             }
-            
+
             var hearings = request.Hearings.ToList();
             var totalDays = hearings.Count;
             var firstHearingId = hearings[0].HearingId;
-            var firstHearing = await _bookingService.GetHearingById(firstHearingId);
+            var firstHearing = await bookingService.GetHearingById(firstHearingId);
             var videoHearingUpdateDate = firstHearing.UpdatedDate.TrimSeconds();
-            
+
             // publish multi day hearing notification event
-            await _bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, videoHearingUpdateDate);
+            await bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, videoHearingUpdateDate);
 
             return NoContent();
         }
-        
+
         /// <summary>
-        /// Return hearing details for todays hearings
+        /// Create a new hearing with the details of a given hearing on given dates
         /// </summary>
-        /// <returns>Booking status</returns>
-        [HttpGet("today")]
-        [OpenApiOperation("GetHearingsForTodayV2")]
+        /// <param name="hearingId">Original hearing to clone</param>
+        /// <param name="request">List of dates to create a new hearing on</param>
+        /// <returns></returns>
+        [HttpPost("{hearingId}/clone")]
+        [OpenApiOperation("CloneHearing")]
         [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [MapToApiVersion("2.0")]
-        public async Task<IActionResult> GetHearingsForToday()
+        public async Task<IActionResult> CloneHearing([FromRoute] Guid hearingId,
+            [FromBody] CloneHearingRequestV2 request)
         {
-            var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery());
+            var query = new GetHearingByIdQuery(hearingId);
+            var videoHearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
-            return Ok(videoHearings.Count == 0 ? [] : videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
-        }
+            if (videoHearing == null)
+                return NotFound();
 
-        /// <summary>
-        /// Return hearing details for todays hearings by venue
-        /// </summary>
-        /// <param name="venueNames">List of hearing venue names provided in payload</param>
-        /// <returns>Booking status</returns>
-        [HttpPost("today/venue")]
-        [OpenApiOperation("GetHearingsForTodayByVenueV2")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
-        [MapToApiVersion("2.0")]
-        public async Task<IActionResult> GetHearingsForTodayByVenue([FromBody] IEnumerable<string> venueNames)
-        {
-            var videoHearings =
-                await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery(venueNames));
+            var videoHearingUpdateDate = videoHearing.UpdatedDate.TrimSeconds();
 
-            return Ok(videoHearings.Count == 0 ? [] : videoHearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList());
-        }
-        
-        /// <summary>
-        /// Get list of all confirmed hearings for a given username for today
-        /// </summary>
-        /// <param name="username">username of person to search against</param>
-        /// <returns>Hearing details</returns>
-        [HttpGet("today/username")]
-        [OpenApiOperation("GetConfirmedHearingsByUsernameForTodayV2")]
-        [ProducesResponseType(typeof(List<ConfirmedHearingsTodayResponseV2>), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
-        [MapToApiVersion("2.0")]
-        public async Task<IActionResult> GetConfirmedHearingsByUsernameForToday([FromQuery] string username)
-        {
-            var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
-            var hearings =
-                await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
+            var validationResult = await new CloneHearingRequestValidationV2().ValidateAsync(request);
+            if (!validationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
 
-            var response = hearings.Select(ConfirmedHearingsTodayResponseMapperV2.Map).ToList();
+            var datesValidationResult =
+                new CloneHearingRequestValidationV2(videoHearing)
+                    .ValidateDates(request);
+            if (!datesValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(datesValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+
+            var orderedDates = request.Dates.OrderBy(x => x).ToList();
+            var totalDays = orderedDates.Count + 1; // include original hearing
+            var sipAddressStem = endpointService.GetSipAddressStem((BookingSupplier?)videoHearing.ConferenceSupplier);
+            var commands = orderedDates.Select((newDate, index) =>
+            {
+                var hearingDay = index + 2; // zero index including original hearing
+                return CloneHearingToCommandMapper.CloneToCommand(videoHearing, newDate, randomGenerator,
+                    sipAddressStem, totalDays, hearingDay, request.ScheduledDuration);
+            }).ToList();
+
+            var existingCase = videoHearing.GetCases()[0];
+            await hearingService.RenameHearingForMultiDayBooking(hearingId,
+                $"{existingCase.Name} Day {1} of {totalDays}");
+            var hearingsList = new List<VideoHearing>();
+            foreach (var command in commands)
+            {
+                // dbcontext is not thread safe. loop one at a time
+                var hearing = await bookingService.SaveNewHearing(command);
+                hearingsList.Add(hearing);
+            }
+
+            // publish multi day hearing notification event
+            await bookingService.PublishMultiDayHearing(videoHearing, totalDays, videoHearingUpdateDate);
+            var response = hearingsList.Select(HearingToDetailsResponseV2Mapper.Map).ToList();
+
             return Ok(response);
         }
 
         private async Task<HearingVenue> GetHearingVenue(string venueCode)
         {
             var hearingVenues =
-                await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(new GetHearingVenuesQuery());
+                await queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(new GetHearingVenuesQuery());
             var hearingVenue = hearingVenues.SingleOrDefault(x =>
                 string.Equals(x.VenueCode, venueCode, StringComparison.CurrentCultureIgnoreCase));
             return hearingVenue;
         }
-        
+
         private async Task<List<HearingVenue>> GetHearingVenues()
         {
             var getHearingVenuesQuery = new GetHearingVenuesQuery();
             var hearingVenues =
-                await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
+                await queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
 
             return hearingVenues;
         }
-        
+
         private async Task<Hearing> UpdateHearingDetails(Guid hearingId, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue venue, string hearingRoomName, string otherInformation,
             string updatedBy, List<Case> cases, bool audioRecordingRequired, VideoHearing originalHearing)
@@ -333,8 +349,8 @@ namespace BookingsApi.Controllers.V2
             var command = new UpdateHearingCommand(hearingId, scheduledDateTime,
                 scheduledDuration, venue, hearingRoomName, otherInformation,
                 updatedBy, cases, audioRecordingRequired);
-            
-            var updatedHearing = await _bookingService.UpdateHearingAndPublish(command, originalHearing);
+
+            var updatedHearing = await bookingService.UpdateHearingAndPublish(command, originalHearing);
             return updatedHearing;
         }
     }

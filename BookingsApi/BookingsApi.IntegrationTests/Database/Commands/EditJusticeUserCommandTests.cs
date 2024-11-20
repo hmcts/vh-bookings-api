@@ -1,4 +1,3 @@
-using AcceptanceTests.Common.Model.UserRole;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain.Enumerations;
@@ -22,7 +21,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
     public async Task should_edit_a_justice_user(UserRoleId roleId)
     {
         // Arrange
-        _hearing = await Hooks.SeedVideoHearing();
+        _hearing = await Hooks.SeedVideoHearingV2();
         var fName = "First";
         var lName = "Last";
         var number = "12345";
@@ -33,9 +32,9 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
         // Act
         await _commandHandler.Handle(command);
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        var justiceUser = db.JusticeUsers
+        var justiceUser = await db.JusticeUsers
             .Include(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
-            .FirstOrDefault(ju => ju.Username == command.Username);
+            .FirstAsync(ju => ju.Username == command.Username);
         Hooks.AddJusticeUserForCleanup(justiceUser.Id);
         // Assert
         justiceUser.Should().NotBeNull();
@@ -50,7 +49,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
     public async Task should_edit_a_justice_user_not_update_first_last_name(UserRoleId roleId)
     {
         // Arrange
-        _hearing = await Hooks.SeedVideoHearing();
+        _hearing = await Hooks.SeedVideoHearingV2();
         var userToEdit = await SeedJusticeUser(_hearing.Id, "testuser@hmcts.net");
         var fName = userToEdit.FirstName;
         var lName = userToEdit.Lastname;
@@ -77,7 +76,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
     {
         // Arrange
         var id = Guid.NewGuid();
-        var command = new EditJusticeUserCommand(id, "testuser2@hmcts.net", null, null, null, (int)UserRole.VideoHearingsOfficer);
+        var command = new EditJusticeUserCommand(id, "testuser2@hmcts.net", null, null, null, (int)UserRoleId.Vho);
 
         // Act & Assert
         Assert.ThrowsAsync<JusticeUserNotFoundException>(async () =>

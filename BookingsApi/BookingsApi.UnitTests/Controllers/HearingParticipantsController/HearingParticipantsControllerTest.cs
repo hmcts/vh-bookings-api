@@ -5,7 +5,6 @@ using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
-using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Services;
 
 namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
@@ -28,8 +27,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
                 foreach(var participant in participants)
                 {
                     participant.DisplayName = "Test Participant";
-                    participant.CaseRole = new CaseRole(1, "TestCaseRole");
-
                     if(participant.HearingRole.UserRole.Name == "Representative")
                     {
                         var representative = (Representative)participant;
@@ -57,7 +54,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
                 participant.HearingRole = participant is Judge 
                     ? new HearingRole(1, "Judge") { UserRole = new UserRole(1, "Judge")}
                     : new HearingRole(1, "Name") { UserRole = new UserRole(1, "User")};
-                participant.CaseRole = new CaseRole(1, "Generic");
             }
 
             if(createdStatus)
@@ -80,7 +76,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             hearingId = Guid.NewGuid();
             participantId = Guid.NewGuid();
             videoHearing = GetVideoHearing();
-            Controller = new BookingsApi.Controllers.V1.HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, HearingParticipantService.Object);
+            Controller = new BookingsApi.Controllers.V1.HearingParticipantsController(QueryHandler.Object, HearingParticipantService.Object);
             
             QueryHandler.Setup(q => q.Handle<GetParticipantsInHearingQuery, List<Participant>>(It.IsAny<GetParticipantsInHearingQuery>()))
                 .ReturnsAsync(Participants);

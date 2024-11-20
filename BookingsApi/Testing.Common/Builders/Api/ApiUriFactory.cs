@@ -6,45 +6,17 @@ namespace Testing.Common.Builders.Api
 {
     public static class ApiUriFactory
     {
-        public static class CaseTypesEndpoints
-        {
-            private const string ApiRoot = "casetypes";
-            public static string GetCaseRolesForCaseType(string caseTypeName) => $"{ApiRoot}/{caseTypeName}/caseroles";
-            public static string GetHearingRolesForCaseRole(string caseTypeName, string caseRoleName) => $"{ApiRoot}/{caseTypeName}/caseroles/{caseRoleName}/hearingroles";
-            public static string GetCaseTypes => $"{ApiRoot}/";
-        }
-
-        public static class HealthCheckEndpoints
-        {
-            private static string ApiRoot => "healthCheck";
-            public static string HealthCheck => $"{ApiRoot}/health";
-        }
-
         public static class HearingsEndpoints
         {
             private const string ApiRoot = "hearings";
-            public static string GetHearingDetailsById(string hearingId) => $"{ApiRoot}/{hearingId}";
-            public static string GetHearingShellById(Guid hearingId) => $"{ApiRoot}/{hearingId}/status";
-            public static string BookNewHearing => $"{ApiRoot}";
-            public static string GetHearingsByTypes => $"{ApiRoot}/types";
-            public static string CloneHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/clone";
-            public static string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
+            public static string CancelHearingsInGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings/cancel";
+            public static string RebookHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/conferences";
+            public static string RemoveHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}";
+            public static string UpdateBookingStatus(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string FailBookingUri(Guid hearingId) => $"{ApiRoot}/{hearingId}/fail";
             public static string CancelBookingUri(Guid hearingId) => $"{ApiRoot}/{hearingId}/cancel";
-            public static string RemoveHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}";
-            public static string GetHearingsByUsername(string username) => $"{ApiRoot}/?username={username}";
-            public static string GetConfirmedHearingsByUsernameForToday(string username) => $"{ApiRoot}/today/username?username={username}";
-            public static string SearchForHearings(SearchForHearingsQuery query) =>
-                $"{ApiRoot}/audiorecording/search?{QueryStringBuilder.ConvertToQueryString(query)}";
-            public static string AnonymiseHearings() =>  $"{ApiRoot}/anonymisehearings";
-            public static string UpdateAudiorecordingZipStatus(Guid hearingId, bool? zipStatus) => $"{ApiRoot}/{hearingId}/audiorecordingzipsatus/zipStatus?zipstatus={zipStatus}";
-            public static string GetHearingsByGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
-            public static string GetHearingsForNotification() => $"{ApiRoot}/notifications/gethearings";
-            public static string RebookHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/conferences";
-            public static string UpdateBookingStatus(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string GetBookingStatusById(Guid hearingId) => $"{ApiRoot}/{hearingId}/status";
-            public static string UpdateHearingsInGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
-            public static string CancelHearingsInGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings/cancel";
+            public static string GetHearingsByTypes => $"{ApiRoot}/types";
         }
         
         public static class HearingsEndpointsV2
@@ -59,6 +31,7 @@ namespace Testing.Common.Builders.Api
             public static string GetHearingsForToday() => $"{ApiRoot}/today";
             public static string GetHearingsForTodayByVenue() => $"{ApiRoot}/today/venue";
             public static string GetConfirmedHearingsByUsernameForToday(string username) => $"{ApiRoot}/today/username?username={username}";
+            public static string CloneHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/clone";
         }
         
         public static class HearingParticipantsEndpoints
@@ -75,17 +48,16 @@ namespace Testing.Common.Builders.Api
             public static string UpdateParticipantDetails(Guid hearingId, Guid participantId) => $"{ApiRoot}/{hearingId}/participants/{participantId}";
         }
         
-        public static class HearingRolesEndpoints
+        public static class HearingRolesEndpointsV2
         {
-            private const string ApiRoot = "hearingroles";
-            
+            private const string ApiRoot = "v2/hearingroles";
             public static string GetHearingRoles() => $"{ApiRoot}";
         }
                 
         public static class CaseTypesEndpointsV2
         {
             private const string ApiRoot = "v2/casetypes";
-            public static string GetCaseRolesForCaseType(string serviceId) => $"{ApiRoot}/{serviceId}/caseroles";
+            public static string GetCaseRolesForService(string serviceId) => $"{ApiRoot}/{serviceId}/caseroles";
             public static string GetHearingRolesForCaseRole(string serviceId, string caseRoleName) => $"{ApiRoot}/{serviceId}/caseroles/{caseRoleName}/hearingroles";
         }
         
@@ -109,22 +81,19 @@ namespace Testing.Common.Builders.Api
         public static class PersonEndpoints
         {
             private const string ApiRoot = "persons";
-            public static string GetPersonByUsername(string username) => $"{ApiRoot}/username/{username}";
-            public static string GetPersonByContactEmail(string contactEmail) => $"{ApiRoot}/contactEmail/{contactEmail}";
-            public static string PostPersonBySearchTerm => $"{ApiRoot}";
-            public static string GetPersonByClosedHearings() => $"{ApiRoot}/userswithclosedhearings";
-            public static string GetHearingsByUsernameForDeletion(string username) => $"{ApiRoot}/username/hearings?username={username}";
-            public static string AnonymisePerson(string username) => $"{ApiRoot}/username/{username}/anonymise";
-            public static string SearchForNonJudicialPersonsByContactEmail(string contactEmail) => $"{ApiRoot}/?contactEmail={contactEmail}";
-            public static string UpdatePersonDetails(Guid personId) => $"{ApiRoot}/{personId}";
             public static string UpdatePersonUsername(string contactEmail, string username) => $"{ApiRoot}/user/{contactEmail}?username={username}";
+        }
+        
+        public static class PersonEndpointsV2
+        {
+            private const string ApiRoot = "v2/persons";
+            public static string UpdatePersonDetails(Guid personId) => $"{ApiRoot}/{personId}";
+            public static string SearchForNonJudicialPersonsByContactEmail(string contactEmail) => $"{ApiRoot}/?contactEmail={contactEmail}";
         }
             
         public static class JVEndPointEndpoints
         {
             private static string ApiRoot => "hearings";
-            public static string AddEndpointToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/endpoints";
-            public static string UpdateEndpoint(Guid hearingId, Guid endpointId) => $"{ApiRoot}/{hearingId}/endpoints/{endpointId}";
             public static string RemoveEndPointFromHearing(Guid hearingId, Guid endpointId) => $"{ApiRoot}/{hearingId}/endpoints/{endpointId}";
         }
 
@@ -180,7 +149,7 @@ namespace Testing.Common.Builders.Api
 
         public static class JudiciaryParticipantEndpoints
         {
-            private const string ApiRoot = "hearings";
+            private const string ApiRoot = "v2/hearings";
             public static string AddJudiciaryParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/joh";
             public static string RemoveJudiciaryParticipantFromHearing(Guid hearingId, string personalCode) => $"{ApiRoot}/{hearingId}/joh/{personalCode}";
             public static string UpdateJudiciaryParticipant(Guid hearingId, string personalCode) => $"{ApiRoot}/{hearingId}/joh/{personalCode}";

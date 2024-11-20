@@ -12,6 +12,7 @@ global using BookingsApi.DAL.Commands;
 global using BookingsApi.DAL.Commands.Core;
 global using BookingsApi.DAL.Dtos;
 global using BookingsApi.DAL.Exceptions;
+global using BookingsApi.Common.Helpers;
 global using BookingsApi.DAL.Helper;
 global using BookingsApi.DAL.Queries;
 global using BookingsApi.DAL.Queries.Core;

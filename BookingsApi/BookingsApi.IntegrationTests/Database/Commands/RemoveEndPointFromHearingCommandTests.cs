@@ -31,7 +31,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_throw_exception_when_endpoint_does_not_exist()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
@@ -42,7 +42,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_remove_endpoint_from_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
@@ -62,7 +62,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_remove_endpoint_with_defence_advocate_from_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 

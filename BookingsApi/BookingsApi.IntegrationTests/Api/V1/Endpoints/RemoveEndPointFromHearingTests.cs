@@ -35,7 +35,7 @@ public class RemoveEndPointFromHearingTests : ApiTest
     public async Task should_remove_endpoint_from_and_publish_message_when_hearing_is_created_and_found()
     {
         // arrange
-        var seededHearing = await Hooks.SeedVideoHearing(options =>
+        var seededHearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.EndpointsToAdd = 3;
         }, BookingStatus.Created);
@@ -66,7 +66,7 @@ public class RemoveEndPointFromHearingTests : ApiTest
     public async Task should_remove_endpoint_from_hearing_but_not_publish_when_hearing_is_not_created()
     {
         // arrange
-        var seededHearing = await Hooks.SeedVideoHearing(options =>
+        var seededHearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.EndpointsToAdd = 3;
         });
@@ -111,7 +111,7 @@ public class RemoveEndPointFromHearingTests : ApiTest
     public async Task should_return_not_found_when_removing_an_endpoint_that_does_not_exist()
     {
         // arrange
-        var seededHearing = await Hooks.SeedVideoHearing(options =>
+        var seededHearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.EndpointsToAdd = 3;
         }, BookingStatus.Created);

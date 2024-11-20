@@ -1,10 +1,7 @@
-using System.Collections.Generic;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingsApi.UnitTests.Controllers.Persons

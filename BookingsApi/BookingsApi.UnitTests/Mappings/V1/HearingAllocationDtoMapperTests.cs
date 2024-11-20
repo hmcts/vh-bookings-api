@@ -15,7 +15,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var result = HearingAllocationDtoMapper.MapToDto(hearing);
 
             var expectedCase = hearing.GetCases()[0];
-            var expectedJudge = hearing.Participants?.FirstOrDefault(p => p is Judge);
+            var expectedJudge = hearing.GetJudge();
             
             result.HearingId.Should().Be(hearing.Id);
             result.GroupId.Should().Be(hearing.SourceId);

@@ -25,7 +25,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_participant_that_exists()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var firstParticipant = seededHearing.GetParticipants().First();

@@ -10,7 +10,7 @@ public class RemoveParticipantFromHearingTests : ApiTest
     public async Task should_not_remove_participant_when_hearing_is_about_to_start()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options =>
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
             {
                 options.Case = new Case("Case1 Num", "Case1 Name"); 
                 options.ScheduledDate = DateTime.UtcNow.AddMinutes(25);
@@ -56,7 +56,7 @@ public class RemoveParticipantFromHearingTests : ApiTest
     public async Task should_return_bad_request_when_participant_id_is_invalid()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options =>
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
             {
                 options.Case = new Case("Case1 Num", "Case1 Name"); 
                 options.ScheduledDate = DateTime.UtcNow.AddMinutes(25);

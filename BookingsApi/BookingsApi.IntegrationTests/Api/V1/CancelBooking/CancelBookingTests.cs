@@ -60,7 +60,7 @@ public class CancelBookingTests : ApiTest
     [TestCase(BookingStatus.ConfirmedWithoutJudge)]
     public async Task should_cancel_a_hearing(BookingStatus status)
     {
-        var seededHearing = await Hooks.SeedVideoHearing(status: status, configureOptions: options =>
+        var seededHearing = await Hooks.SeedVideoHearingV2(status: status, configureOptions: options =>
         {
             options.ScheduledDate = DateTime.UtcNow;
         });
@@ -82,7 +82,7 @@ public class CancelBookingTests : ApiTest
     [Test]
     public async Task should_fail_cancelling_failed_hearing()
     {
-        var seededHearing = await Hooks.SeedVideoHearing(status: BookingStatus.Failed, configureOptions: options =>
+        var seededHearing = await Hooks.SeedVideoHearingV2(status: BookingStatus.Failed, configureOptions: options =>
         {
             options.ScheduledDate = DateTime.UtcNow;
         });

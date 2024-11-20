@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Domain.Enumerations;
+using BookingsApi.Common.Helpers;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -31,7 +32,7 @@ namespace BookingsApi.DAL.Migrations
                 });
             
             migrationBuilder.InsertData(
-                nameof(CaseRole),
+                "CaseRole",
                 new[] { "Id", "Name", "Group", "CaseTypeId" },
                 new object[,]
                 {
@@ -97,7 +98,7 @@ namespace BookingsApi.DAL.Migrations
             
             for (int CaseRoleId = 255; CaseRoleId <= 259; CaseRoleId++)
             {
-                migrationBuilder.DeleteData(nameof(CaseRole), "Id", CaseRoleId);
+                migrationBuilder.DeleteData("CaseRole", "Id", CaseRoleId);
             }
             
             migrationBuilder.DeleteData(nameof(CaseType), "Id", 40);

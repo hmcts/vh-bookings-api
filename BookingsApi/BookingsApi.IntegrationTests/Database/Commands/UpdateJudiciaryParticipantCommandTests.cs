@@ -74,7 +74,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_throw_exception_when_judiciary_person_does_not_exist()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             var hearingId = seededHearing.Id;
             var personalCode = Guid.NewGuid().ToString();
             const string displayName = "Display Name";

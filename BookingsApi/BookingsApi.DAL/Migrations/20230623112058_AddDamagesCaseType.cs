@@ -31,7 +31,7 @@ namespace BookingsApi.DAL.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: nameof(CaseRole),
+                table: "CaseRole",
                 columns: new[] { "Id", "Name", "Group", "CaseTypeId" },
                 values: new object[,]
                 {
@@ -99,7 +99,7 @@ namespace BookingsApi.DAL.Migrations
             for (int caseRoleId = 350; caseRoleId <= 355; caseRoleId++)
             {
                 migrationBuilder.DeleteData(
-                    table: nameof(CaseRole),
+                    table: "CaseRole",
                     keyColumn: "Id",
                     keyValue: caseRoleId);
             }

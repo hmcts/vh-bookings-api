@@ -1,6 +1,7 @@
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using NuGet.Packaging;
+using NUnit.Framework.Legacy;
 using DayOfWeek = System.DayOfWeek;
 
 namespace BookingsApi.IntegrationTests.Database.Queries;
@@ -24,17 +25,17 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     {
         _context = new BookingsDbContext(BookingsDbContextOptions);
         _handler = new GetAllocationHearingsBySearchQueryHandler(_context, isTest: true);
-        _seededHearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created, configureOptions: options =>
+        _seededHearing1 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created, configureOptions: options =>
         {
             options.CaseTypeName = TestCaseType;
             options.ScheduledDate = _testDate1;
         });
-        _seededHearing2 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        _seededHearing2 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Booked, configureOptions: options =>
         {
             options.CaseTypeName = TestCaseType;
             options.ScheduledDate = _testDate2;
         });
-        _seededHearing3 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        _seededHearing3 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Booked, configureOptions: options =>
         {
             options.ScheduledDate = _testDate1;
         });
@@ -227,8 +228,9 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         }
 
         await _context.SaveChangesAsync();
-        
-        justiceUser = _context.JusticeUsers.Include(ju => ju.VhoWorkHours).First(x => x.Id == justiceUser.Id);
+
+        justiceUser = await _context.JusticeUsers.Include(ju => ju.VhoWorkHours)
+            .FirstAsync(x => x.Id == justiceUser.Id);
         
         justiceUser.Delete();
         
@@ -262,11 +264,11 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     [Test]
     public async Task should_not_return_excluded_venues()
     {
-        _seededHearing4 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        _seededHearing4 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Booked, configureOptions: options =>
         {
             options.HearingVenue = new HearingVenue(474, "Dolgellau");
         });
-        _seededHearing5 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        _seededHearing5 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Booked, configureOptions: options =>
         {
             options.HearingVenue = new HearingVenue(15, "Aberdeen Tribunal Hearing Centre");
         });
@@ -285,12 +287,12 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     public async Task should_not_return_hearings_with_a_duration_that_crosses_multiple_days()
     {
         //ARRANGE
-        _seededHearing4 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        _seededHearing4 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Booked, configureOptions: options =>
         {
             options.ScheduledDate = DateTime.Today.AddDays(1).AddHours(18);
             options.ScheduledDuration = 420; //7 hours (crosses midnight)
         });
-        _seededHearing5 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        _seededHearing5 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Booked, configureOptions: options =>
         {
             options.ScheduledDate = DateTime.Today.AddDays(1).AddHours(18);
             options.ScheduledDuration = 300; //5 hours (does not pass midnight)

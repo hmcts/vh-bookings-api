@@ -38,7 +38,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_add_endpoint_to_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
@@ -74,7 +74,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_add_endpoint_with_defence_advocate_to_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 

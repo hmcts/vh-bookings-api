@@ -36,11 +36,6 @@ namespace BookingsApi.Contract.V1.Responses
         public string CaseTypeName { get; set; }
 
         /// <summary>
-        /// Gets or sets the hearing case type.
-        /// </summary>
-        public string HearingTypeName { get; set; }
-
-        /// <summary>
         /// Gets or sets the court room.
         /// </summary>
         public string CourtRoom { get; set; }

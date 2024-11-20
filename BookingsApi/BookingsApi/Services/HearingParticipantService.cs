@@ -1,8 +1,6 @@
 using BookingsApi.Contract.Interfaces.Requests;
-using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
-using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Mappings.V2.Extensions;
 using BookingsApi.Validations.Common;
@@ -71,17 +69,7 @@ public interface IHearingParticipantService
     public Task<Participant> UpdateParticipantAndPublishEventAsync(VideoHearing videoHearing, UpdateParticipantCommand updateParticipantCommand);
     
     /// <summary>
-    /// Update a list of participants
-    /// </summary>
-    /// <param name="request"></param>
-    /// <param name="hearing"></param>
-    /// <param name="sendNotification"></param>
-    /// <returns></returns>
-    [Obsolete("Use UpdateParticipantsV2")]
-    Task<VideoHearing> UpdateParticipants(UpdateHearingParticipantsRequest request, VideoHearing hearing, bool sendNotification = true);
-    
-    /// <summary>
-    /// Update a list of participants (v2)
+    /// Update a list of participants (v2) and publish changes
     /// </summary>
     /// <param name="request"></param>
     /// <param name="hearing"></param>
@@ -99,24 +87,14 @@ public interface IHearingParticipantService
     public Task RemoveParticipantAndPublishEventAsync(VideoHearing videoHearing, Participant participant);
 }
 
-public class HearingParticipantService : IHearingParticipantService
+public class HearingParticipantService(
+    ICommandHandler commandHandler,
+    IEventPublisher eventPublisher,
+    IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess,
+    INewJudiciaryAddedAsynchronousProcesses newJudiciaryAddedAsynchronousProcesses,
+    IQueryHandler queryHandler)
+    : IHearingParticipantService
 {
-    private readonly IEventPublisher _eventPublisher;
-    private readonly IQueryHandler _queryHandler;
-    private readonly ICommandHandler _commandHandler;
-    private readonly IParticipantAddedToHearingAsynchronousProcess _participantAddedToHearingAsynchronousProcess;
-    private readonly INewJudiciaryAddedAsynchronousProcesses _newJudiciaryAddedAsynchronousProcesses;
-    public HearingParticipantService(ICommandHandler commandHandler, IEventPublisher eventPublisher, 
-        IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess, INewJudiciaryAddedAsynchronousProcesses newJudiciaryAddedAsynchronousProcesses,
-        IQueryHandler queryHandler)
-    {
-        _commandHandler = commandHandler;
-        _eventPublisher = eventPublisher;
-        _participantAddedToHearingAsynchronousProcess = participantAddedToHearingAsynchronousProcess;
-        _newJudiciaryAddedAsynchronousProcesses = newJudiciaryAddedAsynchronousProcesses;
-        _queryHandler = queryHandler;
-    }
-
     public async Task PublishEventForNewParticipantsAsync(VideoHearing hearing, IEnumerable<NewParticipant> newParticipants)
     {
         var participants = hearing.GetParticipants()
@@ -125,8 +103,8 @@ public class HearingParticipantService : IHearingParticipantService
         {
             // Raising the below event here instead of in the async process to avoid the async process adding a duplicate participant to the conference
             // as the UpdateHearingParticipants (also includes new participants) has a separate process to add participants
-            await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
-            await _participantAddedToHearingAsynchronousProcess.Start(hearing);
+            await eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
+            await participantAddedToHearingAsynchronousProcess.Start(hearing);
             await PublishUpdateHearingEvent(hearing.Id);
         }
     }
@@ -163,10 +141,10 @@ public class HearingParticipantService : IHearingParticipantService
         switch (hearing.Status)
         {
             case BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge:
-                await _newJudiciaryAddedAsynchronousProcesses.Start(hearing, participants, sendNotification);
+                await newJudiciaryAddedAsynchronousProcesses.Start(hearing, participants, sendNotification);
                 break;
             case BookingStatus.Booked or BookingStatus.BookedWithoutJudge when participants.Exists(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge):
-                await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.GetParticipants()));
+                await eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.GetParticipants()));
                 break;
         }
     }
@@ -176,7 +154,7 @@ public class HearingParticipantService : IHearingParticipantService
         var participant = hearing.GetJudiciaryParticipants()
             .FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == updatedJudiciaryParticipant.PersonalCode);
         
-        await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
+        await eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
     }
 
     public async Task<ValidationResult> ValidateRepresentativeInformationAsync(IRepresentativeInfoRequest request)
@@ -188,7 +166,7 @@ public class HearingParticipantService : IHearingParticipantService
 
     public async Task<Participant> UpdateParticipantAndPublishEventAsync(VideoHearing videoHearing, UpdateParticipantCommand updateParticipantCommand)
     {
-        await _commandHandler.Handle(updateParticipantCommand);
+        await commandHandler.Handle(updateParticipantCommand);
 
         var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
         if (updateParticipantCommand.AdditionalInformation?.IsContactEmailNew == true)
@@ -201,14 +179,13 @@ public class HearingParticipantService : IHearingParticipantService
 
             // need a refreshed object of video hearing including updated time stamps
             var updatedHearing =
-                await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(videoHearing.Id));
+                await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(videoHearing.Id));
             
             await PublishEventForNewParticipantsAsync(updatedHearing, new List<NewParticipant>
             {
                 new()
                 {
                     Person = updatedParticipant.Person,
-                    CaseRole = updatedParticipant.CaseRole,
                     HearingRole = updatedParticipant.HearingRole,
                     DisplayName = updatedParticipant.DisplayName,
                     Representee = representee,
@@ -220,44 +197,9 @@ public class HearingParticipantService : IHearingParticipantService
             return updatedParticipant;
         }
 
-        await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(updateParticipantCommand.HearingId, updatedParticipant));
+        await eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(updateParticipantCommand.HearingId, updatedParticipant));
         await PublishUpdateHearingEvent(videoHearing.Id);
         return updatedParticipant;
-    }
-
-    public async Task<VideoHearing> UpdateParticipants(UpdateHearingParticipantsRequest request, VideoHearing hearing, bool sendNotification = true)
-    {
-        var newParticipants = request.NewParticipants
-                .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, hearing.CaseType)).ToList();
-        
-        var existingParticipants = hearing.Participants
-            .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id))
-            .ToList();
-        
-        var existingParticipantDetails = new List<ExistingParticipantDetails>();
-
-        foreach (var existingParticipantRequest in request.ExistingParticipants)
-        {
-            var updatedParticipantRequest = UpdateExistingParticipantDetailsFromRequest(existingParticipants, existingParticipantRequest);
-            if (updatedParticipantRequest != null)
-            {
-                updatedParticipantRequest.Person.ContactEmail = existingParticipantRequest.ContactEmail ??  existingParticipants.First(ep => ep.Id == existingParticipantRequest.ParticipantId).Person.ContactEmail;
-                existingParticipantDetails.Add(updatedParticipantRequest);
-            }
-        }
-
-        var linkedParticipants =
-            LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
-
-        var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
-
-        await _commandHandler.Handle(command);
-
-        var getHearingByIdQuery = new GetHearingByIdQuery(hearing.Id);
-        var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-        await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants, sendNotification);
-
-        return updatedHearing;
     }
 
     public async Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles, bool sendNotification = true)
@@ -303,10 +245,10 @@ public class HearingParticipantService : IHearingParticipantService
 
         var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
 
-        await _commandHandler.Handle(command);
+        await commandHandler.Handle(command);
 
         var getHearingByIdQuery = new GetHearingByIdQuery(hearing.Id);
-        var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+        var updatedHearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
         
         newParticipants.AddRange(existingParticipantsToTreatAsNew);
         var existingParticipantsToTreatAsExisting = existingParticipantDetails.Where(x => !x.IsContactEmailNew).ToList();
@@ -319,11 +261,11 @@ public class HearingParticipantService : IHearingParticipantService
     public async Task RemoveParticipantAndPublishEventAsync(VideoHearing videoHearing, Participant participant)
     {
         var command = new RemoveParticipantFromHearingCommand(videoHearing.Id, participant);
-        await _commandHandler.Handle(command);
+        await commandHandler.Handle(command);
         // ONLY publish this event when Hearing is set for ready for video
         if (videoHearing.Status == BookingStatus.Created || videoHearing.Status == BookingStatus.ConfirmedWithoutJudge)
         {
-            await _eventPublisher.PublishAsync(new ParticipantRemovedIntegrationEvent(videoHearing.Id, participant.Id));
+            await eventPublisher.PublishAsync(new ParticipantRemovedIntegrationEvent(videoHearing.Id, participant.Id));
             await PublishUpdateHearingEvent(videoHearing.Id);
         }
     }
@@ -345,7 +287,6 @@ public class HearingParticipantService : IHearingParticipantService
         return new NewParticipant
         {
             Person = person,
-            CaseRole = null,
             HearingRole = hearingRole,
             DisplayName = existingRequest.DisplayName,
             Representee = existingRequest.Representee,
@@ -369,7 +310,7 @@ public class HearingParticipantService : IHearingParticipantService
 
         if (sendNotification)
         {
-            await _participantAddedToHearingAsynchronousProcess.Start(hearing);
+            await participantAddedToHearingAsynchronousProcess.Start(hearing);
         }
     }
 
@@ -397,7 +338,7 @@ public class HearingParticipantService : IHearingParticipantService
 
         var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing,
             eventExistingParticipants, eventNewParticipants, removedParticipantIds, eventLinkedParticipants);
-        await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
+        await eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
         await PublishUpdateHearingEvent(hearing.Id);
     }
 
@@ -412,10 +353,10 @@ public class HearingParticipantService : IHearingParticipantService
                     existingParticipants.First(e => e.ParticipantId == participant.Id);
                 participant.Person.ContactEmail = judgeRequest.Person.ContactEmail;
                 participant.Person.TelephoneNumber = judgeRequest.Person.TelephoneNumber;
-                await _eventPublisher.PublishAsync(new JudgeUpdatedIntegrationEvent(hearing, participant, sendNotification));
+                await eventPublisher.PublishAsync(new JudgeUpdatedIntegrationEvent(hearing, participant, sendNotification));
             }
             else
-                await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
+                await eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
         }
         await PublishUpdateHearingEvent(hearing.Id);
     }
@@ -423,7 +364,7 @@ public class HearingParticipantService : IHearingParticipantService
     private async Task UpdateHearingStatusAsync(Guid hearingId, BookingStatus bookingStatus, string updatedBy, string cancelReason)
     {
         var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updatedBy, cancelReason);
-        await _commandHandler.Handle(command);
+        await commandHandler.Handle(command);
     }
     
     /// <summary>
@@ -434,7 +375,7 @@ public class HearingParticipantService : IHearingParticipantService
     private async Task PublishUpdateHearingEvent(Guid hearingId)
     {
         var updatedHearing =
-            await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
         await PublishUpdateHearingEvent(updatedHearing);
     }
     
@@ -445,7 +386,7 @@ public class HearingParticipantService : IHearingParticipantService
     /// <param name="updatedHearing">A recently read hearing</param>
     private async Task PublishUpdateHearingEvent(VideoHearing updatedHearing)
     {
-        await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
+        await eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
     }
 
     private static ExistingParticipantDetails UpdateExistingParticipantDetailsFromV2Request(List<Participant> existingParticipants, UpdateParticipantRequestV2 existingParticipantRequestV2)

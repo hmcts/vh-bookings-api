@@ -98,7 +98,6 @@ public static class ConfigureServicesExtensions
         services.AddScoped<ICommandHandler, CommandHandler>();
         services.AddScoped<IHearingService, HearingService>();
         services.AddScoped<IRandomGenerator, RandomGenerator>();
-        services.AddScoped<IVhLogger, VhLogger>();
         services.AddScoped<IHearingAllocationService, HearingAllocationService>();
         services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
 

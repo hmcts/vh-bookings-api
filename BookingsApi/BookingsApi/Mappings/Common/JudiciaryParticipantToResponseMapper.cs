@@ -1,6 +1,6 @@
-using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Mappings.V1;
-using JudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode;
+using BookingsApi.Contract.V2.Responses;
+using BookingsApi.Mappings.V2;
+using JudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V2.Enums.JudiciaryParticipantHearingRoleCode;
 
 namespace BookingsApi.Mappings.Common
 {
@@ -23,7 +23,7 @@ namespace BookingsApi.Mappings.Common
                 OptionalContactEmail = judiciaryParticipant.GetEmail(),
                 OptionalContactTelephone = judiciaryParticipant.GetTelephone(),
                 InterpreterLanguage = judiciaryParticipant.InterpreterLanguage != null ? 
-                    InterpreterLanguageToResponseMapper.MapInterpreterLanguageToResponse(judiciaryParticipant.InterpreterLanguage) : 
+                    InterpreterLanguageToResponseMapperV2.MapInterpreterLanguageToResponse(judiciaryParticipant.InterpreterLanguage) : 
                     null,
                 OtherLanguage = judiciaryParticipant.OtherLanguage
             };

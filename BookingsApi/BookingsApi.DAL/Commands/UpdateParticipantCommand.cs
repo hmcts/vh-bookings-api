@@ -85,7 +85,6 @@ namespace BookingsApi.DAL.Commands
             var hearing = await _context.VideoHearings
                 .Include(x => x.Participants).ThenInclude(x => x.Person.Organisation)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
-                .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include(x=> x.Participants).ThenInclude(x=> x.InterpreterLanguage)
                 // keep the following includes for the screening entities - cannot auto include due to cyclic dependency

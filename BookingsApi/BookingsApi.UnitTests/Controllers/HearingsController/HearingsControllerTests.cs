@@ -34,7 +34,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected Mock<IRandomGenerator> RandomGenerator;
         protected Mock<IHearingService> HearingServiceMock;
         protected SupplierConfiguration SupplierConfiguration;
-        protected Mock<IVhLogger> Logger;
 
         private IEventPublisher _eventPublisher;
         protected Mock<IEventPublisher> EventPublisherMock;
@@ -58,7 +57,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             RandomGenerator = new Mock<IRandomGenerator>();
             _eventPublisher = new EventPublisher(SbQueueClient);
             EventPublisherMock = new Mock<IEventPublisher>();
-            Logger = new Mock<IVhLogger>();
             PublisherFactory = EventPublisherFactoryInstance.Get(EventPublisherMock.Object);
             var stub = new FeatureTogglesStub
             {
@@ -79,20 +77,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object,
                 BookingAsynchronousProcess, FirstdayOfMultidayBookingAsyncProcess, ClonedBookingAsynchronousProcess, 
                 CreateConferenceAsynchronousProcess);
-            var participantAddedToHearingAsynchronousProcess = new ParticipantAddedToHearingAsynchronousProcess(PublisherFactory);
-            var newJudiciaryAddedAsynchronousProcess = new NewJudiciaryAddedAsynchronousProcesses(PublisherFactory);
-            var hearingParticipantService = new HearingParticipantService(CommandHandlerMock.Object, EventPublisherMock.Object,
-                participantAddedToHearingAsynchronousProcess, newJudiciaryAddedAsynchronousProcess, QueryHandlerMock.Object);
-            var endpointService = new EndpointService(QueryHandlerMock.Object, CommandHandlerMock.Object,
-                EventPublisherMock.Object, new OptionsWrapper<SupplierConfiguration>(SupplierConfiguration), FeatureToggles);
-            var judiciaryParticipantService = new JudiciaryParticipantService(QueryHandlerMock.Object, CommandHandlerMock.Object,
-                hearingParticipantService, EventPublisherMock.Object);
-            var updateHearingService = new UpdateHearingService(hearingParticipantService, endpointService, RandomGenerator.Object,
-                new OptionsWrapper<SupplierConfiguration>(SupplierConfiguration), judiciaryParticipantService, FeatureToggles);
-
             return new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
-                bookingService, RandomGenerator.Object,
-                HearingServiceMock.Object, Logger.Object, updateHearingService, endpointService);
+                bookingService);
         }
 
         [Test]

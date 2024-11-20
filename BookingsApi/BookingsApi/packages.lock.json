@@ -160,12 +160,9 @@
       },
       "System.Text.Json": {
         "type": "Direct",
-        "requested": "[8.0.0, )",
-        "resolved": "8.0.0",
-        "contentHash": "OdrZO2WjkiEG6ajEFRABTRCi/wuXQPxeV6g8xvUJqdxMvvuCCEk86zPla8UiIQJz3durtUEbNyY/3lIhS0yZvQ==",
-        "dependencies": {
-          "System.Text.Encodings.Web": "8.0.0"
-        }
+        "requested": "[8.0.5, )",
+        "resolved": "8.0.5",
+        "contentHash": "0f1B50Ss7rqxXiaBJyzUu9bWFOO2/zSlifZ/UNMdiIpDYe4cY4LQQicP4nirK1OS31I43rn062UIJ1Q9bpmHpg=="
       },
       "VH.Core.Configuration": {
         "type": "Direct",
@@ -182,13 +179,13 @@
       },
       "ZymLabs.NSwag.FluentValidation": {
         "type": "Direct",
-        "requested": "[0.6.3, )",
-        "resolved": "0.6.3",
-        "contentHash": "l1pglSv1EzcLdWqhAqVsm1H6qFbiut5//pAVkuNhdbjKNthbmaiwmJj7aP8tfVTU5GUSqerimSJ21R7HYSG4rw==",
+        "requested": "[0.7.1, )",
+        "resolved": "0.7.1",
+        "contentHash": "G9TlVN1iMYcx3yz3JqTLKS4H413tuEeLAelku/vSMhH4Q3gKvcHwlHnoUKHBkR1sNRh/vzyzRZlw5AXd7Z7zSA==",
         "dependencies": {
-          "FluentValidation": "10.2.3",
-          "Microsoft.Extensions.Logging.Abstractions": "5.0.0",
-          "NJsonSchema": "10.4.4"
+          "FluentValidation": "11.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
+          "NJsonSchema": "11.0.0-preview006"
         }
       },
       "Azure.Core": {
@@ -1495,8 +1492,8 @@
       },
       "Microsoft.Identity.Client": {
         "type": "Transitive",
-        "resolved": "4.60.3",
-        "contentHash": "jve1RzmSpBhGlqMzPva6VfRbLMLZZc1Q8WRVZf8+iEruQkBgDTJPq8OeTehcY4GGYG1j6UB1xVofVE+n4BLDdw==",
+        "resolved": "4.60.4",
+        "contentHash": "7gLb5KF/tJMIoO891C8Ij7kaj5EoU1gTazdYPUZgkEhIZQ6ii74Md8mJXMDvX9fSb3EUQ4lyex5pI0jqpCJivw==",
         "dependencies": {
           "Microsoft.IdentityModel.Abstractions": "6.35.0",
           "System.Diagnostics.DiagnosticSource": "6.0.1"
@@ -2367,14 +2364,14 @@
           "Microsoft.ApplicationInsights.AspNetCore": "[2.22.0, )",
           "Microsoft.Extensions.Caching.Abstractions": "[8.0.0, )",
           "Microsoft.Extensions.Configuration.UserSecrets": "[8.0.0, )",
-          "Microsoft.Identity.Client": "[4.60.3, )",
+          "Microsoft.Identity.Client": "[4.60.4, )",
           "Newtonsoft.Json": "[13.0.3, )"
         }
       },
       "bookingsapi.common.dotnet6": {
         "type": "Project",
         "dependencies": {
-          "System.Text.Json": "[8.0.0, )"
+          "System.Text.Json": "[8.0.5, )"
         }
       },
       "bookingsapi.contract": {

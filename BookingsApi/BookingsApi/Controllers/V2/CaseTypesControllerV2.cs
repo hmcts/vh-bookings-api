@@ -15,6 +15,28 @@ public class CaseTypesController : ControllerBase
     }
     
     /// <summary>
+    ///     Get available case types
+    /// </summary>
+    /// <returns>A list of available case types</returns>
+    [HttpGet]
+    [OpenApiOperation("GetCaseTypesV2")]
+    [ProducesResponseType(typeof(List<CaseTypeResponseV2>), (int) HttpStatusCode.OK)]
+    [MapToApiVersion("2.0")]
+    public async Task<IActionResult> GetCaseTypes([FromQuery]bool includeDeleted = false)
+    {
+        var query = new GetAllCaseTypesQuery(includeDeleted);
+        var caseTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
+        var response = caseTypes.Select(caseType => new CaseTypeResponseV2
+            {
+                Id = caseType.Id,
+                Name = caseType.Name,
+                ServiceId = caseType.ServiceId
+            }
+        );
+        return Ok(response);
+    }
+    
+    /// <summary>
     /// Get case roles for a case service type
     /// </summary>
     /// <param name="serviceId"></param>

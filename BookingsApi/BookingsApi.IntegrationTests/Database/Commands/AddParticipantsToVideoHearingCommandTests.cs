@@ -39,7 +39,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_add_participants_to_video_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
@@ -58,7 +58,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 ExternalReferenceId = Guid.NewGuid().ToString(),
                 MeasuresExternalId = "Screening1",
                 Person = newPerson,
-                CaseRole = applicantCaseRole,
                 HearingRole = applicantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
@@ -80,7 +79,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_not_add_existing_participant_to_the_same_video_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var representative =
@@ -91,7 +90,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 ExternalReferenceId = Guid.NewGuid().ToString(),
                 MeasuresExternalId = "Screening1",
                 Person = representative.Person,
-                CaseRole = representative.CaseRole,
                 HearingRole = representative.HearingRole,
                 DisplayName = representative.DisplayName,
                 Representee = representative.Representee
@@ -109,7 +107,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_throw_exception_when_adding_unsupported_role_to_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var representative =
@@ -121,7 +119,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 ExternalReferenceId = Guid.NewGuid().ToString(),
                 MeasuresExternalId = "Screening1",
                 Person = representative.Person,
-                CaseRole = representative.CaseRole,
                 HearingRole = representative.HearingRole,
                 DisplayName = representative.DisplayName,
                 Representee = representative.Representee
@@ -168,7 +165,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_Add_Participant_With_A_Link()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
@@ -190,7 +187,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 ExternalReferenceId = Guid.NewGuid().ToString(),
                 MeasuresExternalId = "Screening1",
                 Person = newPerson,
-                CaseRole = applicantCaseRole,
                 HearingRole = applicantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
@@ -200,7 +196,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 ExternalReferenceId = Guid.NewGuid().ToString(),
                 MeasuresExternalId = "Screening1",
                 Person = newPerson1,
-                CaseRole = respondentCaseRole,
                 HearingRole = respondentRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
@@ -230,7 +225,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_Add_New_Participant_Linked_To_Existing_Participant()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
@@ -248,7 +243,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 ExternalReferenceId = Guid.NewGuid().ToString(),
                 MeasuresExternalId = "Screening1",
                 Person = newPerson,
-                CaseRole = respondentCaseRole,
                 HearingRole = respondentRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
@@ -275,52 +269,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task Should_add_judge_participant_to_video_hearing()
-        {
-            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
-            {
-                options.AddJudge = false;
-            });
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
-
-            var beforeCount = seededHearing.GetParticipants().Count;
-
-            var caseTypeName = "Generic";
-            var caseType = GetCaseTypeFromDb(caseTypeName);
-
-            var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
-            var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
-
-            var newPerson = new PersonBuilder(true).Build();
-            var newParticipant = new NewParticipant()
-            {
-                ExternalReferenceId = Guid.NewGuid().ToString(),
-                MeasuresExternalId = "Screening1",
-                Person = newPerson,
-                CaseRole = judgeCaseRole,
-                HearingRole = judgeHearingRole,
-                DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
-                Representee = string.Empty
-            };
-            var participants = new List<NewParticipant>()
-            {
-                newParticipant
-            };
-
-            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants, null));
-
-            var returnedVideoHearing =
-                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
-            var afterCount = returnedVideoHearing.GetParticipants().Count;
-
-            afterCount.Should().BeGreaterThan(beforeCount);
-        }
-
-        [Test]
         public async Task Should_add_a_participant_with_same_contactemail_and_username_of_other_participants_to_video_hearing()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing();
+            var seededHearing1 = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing1.Id}");
             _newHearingId = seededHearing1.Id;
 
@@ -334,14 +285,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var applicantRepresentativeHearingRole =
                 applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
-            var seededHearing2 = await Hooks.SeedVideoHearing();
+            var seededHearing2 = await Hooks.SeedVideoHearingV2();
             var newPerson = new PersonBuilder(participantsFromHearing1[1].Person.Username, participantsFromHearing1[0].Person.ContactEmail).Build();
             var newParticipant = new NewParticipant()
             {
                 ExternalReferenceId = Guid.NewGuid().ToString(),
                 MeasuresExternalId = "Screening1",
                 Person = newPerson,
-                CaseRole = applicantCaseRole,
                 HearingRole = applicantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
@@ -363,7 +313,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
         private async Task<List<Person>> AddExistingPersonToAHearing(Person existingPerson)
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             var personListBefore = await GetPersonsInDb();
 
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
@@ -381,7 +331,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 ExternalReferenceId = Guid.NewGuid().ToString(),
                 MeasuresExternalId = "Screening1",
                 Person = existingPerson,
-                CaseRole = applicantCaseRole,
                 HearingRole = applicantRepresentativeHearingRole,
                 DisplayName = $"{existingPerson.FirstName} {existingPerson.LastName}",
                 Representee = string.Empty
@@ -426,27 +375,22 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             }
 
             var newPerson = builder.Build();
-            using (var db = new BookingsDbContext(BookingsDbContextOptions))
-            {
-                await db.Persons.AddAsync(newPerson);
-                await db.SaveChangesAsync();
-            }
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            await db.Persons.AddAsync(newPerson);
+            await db.SaveChangesAsync();
 
             return newPerson;
         }
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)
         {
-            CaseType caseType;
-            using (var db = new BookingsDbContext(BookingsDbContextOptions))
-            {
-                caseType = db.CaseTypes
-                    .Include(x => x.CaseRoles)
-                    .ThenInclude(x => x.HearingRoles)
-                    .ThenInclude(x => x.UserRole)
-                    .Include(x => x.HearingTypes)
-                    .First(x => x.Name == caseTypeName);
-            }
+            using var db = new BookingsDbContext(BookingsDbContextOptions);
+            var caseType = db.CaseTypes
+                .Include(x => x.CaseRoles)
+                .ThenInclude(x => x.HearingRoles)
+                .ThenInclude(x => x.UserRole)
+                .Include(x => x.HearingTypes)
+                .First(x => x.Name == caseTypeName);
 
             return caseType;
         }

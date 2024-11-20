@@ -29,7 +29,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var hearingId = Guid.NewGuid();
 
             var newPerson = new PersonBuilder(true).Build();
-            var participant = new Individual(newPerson, new HearingRole(1, "Dummy"), new CaseRole(1, "Dummy"));
+            var participant = new Individual(Guid.NewGuid().ToString(), newPerson, new HearingRole(1, "Dummy"), "Dummy");
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(
                 new RemoveParticipantFromHearingCommand(hearingId, participant)));
         }
@@ -37,11 +37,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_throw_exception_when_participant_does_not_exist()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var newPerson = new PersonBuilder(true).Build();
-            var participant = new Individual(newPerson, new HearingRole(1, "Dummy"), new CaseRole(1, "Dummy"));
+            var participant = new Individual(Guid.NewGuid().ToString(), newPerson, new HearingRole(1, "Dummy"), "Dummy");
             Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
                 new RemoveParticipantFromHearingCommand(seededHearing.Id, participant)));
         }
@@ -49,7 +49,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_remove_participant_from_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var beforeCount = seededHearing.GetParticipants().Count;
@@ -67,7 +67,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_remove_participant_with_endpoint_from_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var beforeCount = seededHearing.GetParticipants().Count;
 
@@ -86,7 +86,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_Remove_ParticipantLink_When_Participant_Is_Removed()
         {
-            var seededHearing = await Hooks.SeedVideoHearing(withLinkedParticipants: true);
+            var seededHearing = await Hooks.SeedVideoHearingV2(withLinkedParticipants: true);
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var participantWithALink = seededHearing.Participants.First(x => x.LinkedParticipants.Any());

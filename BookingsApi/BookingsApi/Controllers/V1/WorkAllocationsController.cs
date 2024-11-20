@@ -9,22 +9,12 @@ namespace BookingsApi.Controllers.V1
     [Route("hearings")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class WorkAllocationsController : ControllerBase
+    public class WorkAllocationsController(
+        IHearingAllocationService hearingAllocationService,
+        IQueryHandler queryHandler,
+        IEventPublisher eventPublisher)
+        : ControllerBase
     {
-        private readonly IQueryHandler _queryHandler;
-        private readonly IHearingAllocationService _hearingAllocationService;
-        private readonly ILogger<WorkAllocationsController> _logger;
-        private readonly IEventPublisher _eventPublisher;
-
-        public WorkAllocationsController(IHearingAllocationService hearingAllocationService, 
-            IQueryHandler queryHandler, ILogger<WorkAllocationsController> logger,
-            IEventPublisher eventPublisher)
-        {
-            _hearingAllocationService = hearingAllocationService;
-            _queryHandler = queryHandler;
-            _logger = logger;
-            _eventPublisher = eventPublisher;
-        }
         /// <summary>
         /// Automatically allocates a user to a hearing
         /// </summary>
@@ -38,7 +28,7 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> AllocateHearingAutomatically(Guid hearingId)
         {
-            var justiceUser = await _hearingAllocationService.AllocateAutomatically(hearingId);
+            var justiceUser = await hearingAllocationService.AllocateAutomatically(hearingId);
             
             if (justiceUser == null)
                 return NotFound();
@@ -46,50 +36,6 @@ namespace BookingsApi.Controllers.V1
             var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
 
             return Ok(justiceUserResponse);
-        }
-        
-        /// <summary>
-        /// Get all the unallocated hearings
-        /// </summary>
-        /// <returns>unallocated hearings</returns>
-        [HttpGet("unallocated")]
-        [OpenApiOperation("GetUnallocatedHearings")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [MapToApiVersion("1.0")]
-        public async Task<IActionResult> GetUnallocatedHearings()
-        {
-            var today = DateTime.UtcNow; //provide a range (from today 1 year) for unallocated hearings rather than return all past and present.
-            var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true, fromDate: today, toDate: today.AddYears(1), excludeDurationsThatSpanMultipleDays: true);
-            var results = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
-
-            if (results.Count <= 0)
-                _logger.LogInformation("[GetUnallocatedHearings] Could not find any unallocated hearings");
-            var response = results.Select(HearingToDetailsResponseMapper.Map).ToList();
-            return Ok(response);
-        }
-         
-        /// <summary>
-        /// Get the allocated cso for the provided hearing Ids
-        /// </summary>
-        /// <param name="hearingIds">Hearing Reference ID array</param>
-        /// <returns>list of hearing Ids with the allocated cso</returns>
-        [HttpPost("get-allocation")]
-        [OpenApiOperation("GetAllocationsForHearings")]
-        [Obsolete("This method is deprecated, v2 operations provide the allocation details for the hearings")]
-        [ProducesResponseType(typeof(IList<AllocatedCsoResponse>), (int)HttpStatusCode.OK)]
-        [MapToApiVersion("1.0")]
-        public async Task<IActionResult> GetAllocationsForHearings([FromBody]Guid[] hearingIds)
-        {
-            var allocatedHearings = await _queryHandler
-                    .Handle<GetAllocationHearingsQuery, List<VideoHearing>>(new GetAllocationHearingsQuery(hearingIds));
-            
-            return Ok(allocatedHearings.Select(e => new AllocatedCsoResponse
-            {
-                HearingId = e.Id,
-                Cso = e.AllocatedTo != null ? JusticeUserToResponseMapper.Map(e.AllocatedTo) : null,
-                SupportsWorkAllocation = e.HearingVenue.IsWorkAllocationEnabled
-            }));
         }
         
         /// <summary>
@@ -104,7 +50,7 @@ namespace BookingsApi.Controllers.V1
         public async Task<IActionResult> GetAllocationsForHearingsByVenue([FromBody]string[] hearingVenueNames)
         {
             var query = new GetHearingsForTodayQuery(hearingVenueNames);
-            var hearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(query);
+            var hearings = await queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(query);
             return Ok(hearings.Select(e => new AllocatedCsoResponse
             {
                 HearingId = e.Id,
@@ -113,7 +59,7 @@ namespace BookingsApi.Controllers.V1
         }
 
         /// <summary>
-        /// Search for hearings to be allocate via search parameters
+        /// Search for hearings to be allocated via search parameters
         /// </summary>
         /// <param name="searchRequest">Search criteria</param>
         /// <returns>list of hearings matching search criteria</returns>
@@ -132,12 +78,12 @@ namespace BookingsApi.Controllers.V1
                 searchRequest.IsUnallocated,
                 includeWorkHours: true);
             
-            var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
+            var hearings = await queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
             
             if (hearings == null || hearings.Count == 0)
                 return Ok(new List<HearingAllocationsResponse>());
 
-            var dtos = _hearingAllocationService.CheckForAllocationClashes(hearings);
+            var dtos = hearingAllocationService.CheckForAllocationClashes(hearings);
             return Ok(dtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
         }
 
@@ -152,9 +98,9 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> AllocateHearingManually([FromBody] UpdateHearingAllocationToCsoRequest postRequest)
         {
-            var allocatedHearings = await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
+            var allocatedHearings = await hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
             
-            var hearingAllocationClashResultDtos = _hearingAllocationService.CheckForAllocationClashes(allocatedHearings);
+            var hearingAllocationClashResultDtos = hearingAllocationService.CheckForAllocationClashes(allocatedHearings);
             
             // need to broadcast acknowledgment message for the allocation
             await PublishAllocationsToServiceBus(allocatedHearings, allocatedHearings[0].AllocatedTo);
@@ -167,7 +113,7 @@ namespace BookingsApi.Controllers.V1
             var todaysHearing = hearings.Where(x => x.ScheduledDateTime.Date == DateTime.UtcNow.Date).ToList();
             if(todaysHearing.Count != 0)
             {
-                await _eventPublisher.PublishAsync(new AllocationHearingsIntegrationEvent(todaysHearing, justiceUser));
+                await eventPublisher.PublishAsync(new AllocationHearingsIntegrationEvent(todaysHearing, justiceUser));
             }
         }
     }

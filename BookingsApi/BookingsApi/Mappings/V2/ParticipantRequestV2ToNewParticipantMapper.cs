@@ -33,7 +33,6 @@ namespace BookingsApi.Mappings.V2
             return new NewParticipant
             {
                 Person = person,
-                CaseRole = null,
                 HearingRole = hearingRole,
                 DisplayName = requestV2Participant.DisplayName,
                 Representee = requestV2Participant.Representee,

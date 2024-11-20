@@ -25,9 +25,9 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             var beforeAddCount = hearing.GetCases().Count;
             
-            Action action = () => hearing.AddCase("0875", "Test Case Add",false);
+            var action = () => hearing.AddCase("0875", "Test Case Add",false);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Any(x => x.Message == $"Case {caseNumber} - {caseName} already exists for the hearing").Should().BeTrue();
+                .Exists(x => x.Message == $"Case {caseNumber} - {caseName} already exists for the hearing").Should().BeTrue();
             
             var afterAddCount = hearing.GetCases().Count;
             afterAddCount.Should().Be(beforeAddCount);

@@ -17,7 +17,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             });
             
             var beforeRemoveCount = hearing.GetEndpoints().Count;
-            hearing.RemoveEndpoint(hearing.GetEndpoints().First());
+            hearing.RemoveEndpoint(hearing.GetEndpoints()[0]);
             var afterRemoveCount = hearing.GetEndpoints().Count;
             afterRemoveCount.Should().BeLessThan(beforeRemoveCount);
         }

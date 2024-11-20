@@ -1,5 +1,4 @@
 using BookingsApi.Client;
-using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
@@ -26,8 +25,8 @@ public class CloneHearingTests : ApiTest
         var dates = new List<DateTime> {hearing.ScheduledDateTime.AddDays(2), hearing.ScheduledDateTime.AddDays(3)};
         
         // act
-        var request = new CloneHearingRequest { Dates = dates }; // No duration specified - should use the default
-        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.CloneHearing(hearing.Id), RequestBody.Set(request));
+        var request = new CloneHearingRequestV2 { Dates = dates }; // No duration specified - should use the default
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.CloneHearing(hearing.Id), RequestBody.Set(request));
         
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);

@@ -8,11 +8,6 @@ namespace BookingsApi.Contract.V1.Requests;
 /// </summary>
 public class AddJusticeUserRequest
 {
-    public AddJusticeUserRequest()
-    {
-        Roles = new List<JusticeUserRole>();
-    }
-    
     /// <summary>
     /// The user's first name
     /// </summary>
@@ -46,5 +41,5 @@ public class AddJusticeUserRequest
     /// <summary>
     /// The user's roles. This can be a VHO or a Team Lead, and/or Staff Member.
     /// </summary>
-    public List<JusticeUserRole> Roles { get; set;}
+    public List<JusticeUserRole> Roles { get; set;} = new();
 }

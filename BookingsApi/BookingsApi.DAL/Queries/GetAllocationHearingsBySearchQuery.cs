@@ -40,7 +40,6 @@ public class GetAllocationHearingsBySearchQueryHandler(BookingsDbContext context
         var hearings =  context.VideoHearings
             .Include(h => h.HearingVenue)
             .Include(h => h.CaseType)
-            .Include(h => h.HearingType)
             .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
             .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser)
             .Where(x 

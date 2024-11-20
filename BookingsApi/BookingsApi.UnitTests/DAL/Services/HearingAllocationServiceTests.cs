@@ -21,7 +21,6 @@ namespace BookingsApi.UnitTests.DAL.Services
         private BookingsDbContext _context;
         private HearingAllocationService _service;
         private CaseType _caseType;
-        private HearingType _hearingType;
         private HearingVenue _hearingVenue;
         private Mock<IRandomNumberGenerator> _randomNumberGenerator;
         private UserRole _userRoleCso;
@@ -1375,15 +1374,12 @@ namespace BookingsApi.UnitTests.DAL.Services
         private void SeedRefData()
         {
             var caseTypeName = "Generic";
-            var hearingTypeName = "Automated Test";
             var hearingVenueName = "Birmingham Civil and Family Justice Centre";
 
             var caseType = new CaseType(1, caseTypeName);
             _context.CaseTypes.Add(caseType);
             _caseType = caseType;
             
-            _hearingType = Builder<HearingType>.CreateNew().WithFactory(() => new HearingType(hearingTypeName)).Build();
-
             var refDataBuilder = new RefDataBuilder();
             _hearingVenue = refDataBuilder.HearingVenues.First( x=> x.Name == hearingVenueName);
 
@@ -1399,15 +1395,13 @@ namespace BookingsApi.UnitTests.DAL.Services
             var otherInformation = "OtherInformation03";
             var createdBy = "User03";
             const bool audioRecordingRequired = true;
-            var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
-                    new VideoHearing(_caseType, _hearingType, scheduledDateTime, duration, _hearingVenue, hearingRoomName,
-                        otherInformation, createdBy, audioRecordingRequired, cancelReason))
+                    new VideoHearing(_caseType, scheduledDateTime, duration, _hearingVenue, hearingRoomName,
+                        otherInformation, createdBy, audioRecordingRequired))
                 .Build();
 
             // Set the navigation properties as well since these would've been set if we got the hearing from DB
-            videoHearing.SetProtected(nameof(videoHearing.HearingType), _hearingType);
             videoHearing.SetProtected(nameof(videoHearing.CaseType), _caseType);
             videoHearing.SetProtected(nameof(videoHearing.HearingVenue), _hearingVenue);
 

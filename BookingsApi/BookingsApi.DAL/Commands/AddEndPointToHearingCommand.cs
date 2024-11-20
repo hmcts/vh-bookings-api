@@ -1,4 +1,5 @@
 ﻿using BookingsApi.DAL.Dtos;
+using BookingsApi.Common.Helpers;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Extensions;

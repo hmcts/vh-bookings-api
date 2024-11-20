@@ -24,7 +24,7 @@ namespace BookingsApi.DAL.Commands
         public async Task Handle(AddCasesToHearingCommand command)
         {
             var hearing = await _context.VideoHearings
-                .Include("HearingCases.Case")
+                .Include(x=> x.HearingCases).ThenInclude(x=> x.Case)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
             if (hearing == null)

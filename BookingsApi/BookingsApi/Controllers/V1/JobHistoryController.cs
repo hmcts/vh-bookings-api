@@ -6,16 +6,8 @@ namespace BookingsApi.Controllers.V1
     [Route("JobHistory")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class JobHistoryController : ControllerBase
+    public class JobHistoryController(ICommandHandler commandHandler, IQueryHandler queryHandler) : ControllerBase
     {
-        private readonly ICommandHandler _commandHandler;
-        private readonly IQueryHandler _queryHandler;
-
-        public JobHistoryController(ICommandHandler commandHandler, IQueryHandler queryHandler)
-        {
-            _commandHandler = commandHandler;
-            _queryHandler = queryHandler;
-        }
         /// <summary>
         /// Insert a new record into the job history table
         /// </summary>
@@ -29,7 +21,7 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> UpdateJobHistory(string jobName, bool isSuccessful)
         {
-            await _commandHandler.Handle(new AddJobHistoryCommand {JobName = jobName, IsSuccessful = true});
+            await commandHandler.Handle(new AddJobHistoryCommand {JobName = jobName, IsSuccessful = true});
             return NoContent();
         }
 
@@ -45,7 +37,7 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetJobHistory(string jobName)
         {
-            var jobHistories = await _queryHandler.Handle<GetJobHistoryByJobNameQuery, List<JobHistory>>(new GetJobHistoryByJobNameQuery(jobName));   
+            var jobHistories = await queryHandler.Handle<GetJobHistoryByJobNameQuery, List<JobHistory>>(new GetJobHistoryByJobNameQuery(jobName));   
             var obj = jobHistories.Select(e => new JobHistoryResponse(e.JobName, e.LastRunDate, e.IsSuccessful)).ToList();
             return Ok(obj);
         }

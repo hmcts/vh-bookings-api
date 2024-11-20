@@ -29,7 +29,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             
             foreach (var participant in newJudicialOfficers)
             {
-                var participantDto = ParticipantDtoMapper.MapToDto(participant, videoHearing.OtherInformation);
+                var participantDto = ParticipantDtoMapper.MapToDto(participant);
                 await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(EventDtoMappers.MapToHearingConfirmationDto(
                     videoHearing.Id, videoHearing.ScheduledDateTime, participantDto, @case)));
             }

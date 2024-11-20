@@ -1,4 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- List of warnings to ignore (i.e. private unused setters in the domain -->
+    <NoWarn>$(NoWarn);S1144</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.25.0.90414">
       <PrivateAssets>all</PrivateAssets>

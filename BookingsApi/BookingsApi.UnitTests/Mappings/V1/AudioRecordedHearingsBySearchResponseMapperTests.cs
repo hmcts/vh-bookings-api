@@ -70,8 +70,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var @case = hearingsByCaseNumber[0].GetCases().FirstOrDefault();
             hearingsByCaseNumber.ForEach(h =>
             {
-                var judge = h.GetParticipants().First(x => x is Judge);
-                h.RemoveParticipant(judge, false);
+                h.RemoveJudiciaryParticipantByPersonalCode(h.GetJudge().JudiciaryPerson.PersonalCode);
             });
 
             var result = hearingMapper.MapHearingToDetailedResponse(hearingsByCaseNumber, string.Empty);

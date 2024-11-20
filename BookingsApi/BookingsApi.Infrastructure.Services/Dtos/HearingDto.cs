@@ -14,7 +14,6 @@ namespace BookingsApi.Infrastructure.Services.Dtos
         public string CaseName { get; set;}
         public string HearingVenueName { get; set;}
         public bool RecordAudio { get; set; }
-        public string HearingType { get; set; }
         public string CaseTypeServiceId { get; set; }
         public VideoSupplier VideoSupplier { get; set; }
         public ConferenceRoomType ConferenceRoomType { get; set; }

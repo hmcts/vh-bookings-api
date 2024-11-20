@@ -6,22 +6,15 @@ namespace BookingsApi.Contract.V1.Requests
 {
     public class GetHearingRequest
     {
-        public GetHearingRequest()
-        {
-            Types = new List<int>();
-            Users = new List<Guid>();
-            VenueIds = new List<int>();
-        }
-        
         private const int DefaultLimit = 100;
 
         public const string DefaultCursor = "0";
 
         [JsonPropertyName("types")]
-        public List<int> Types { get; set; }
-        
+        public List<int> Types { get; set; } = new();
+
         [JsonPropertyName("users")]
-        public List<Guid> Users { get; set; }
+        public List<Guid> Users { get; set; } = new();
 
         [JsonPropertyName("cursor")]
         public string Cursor { get; set; } = DefaultCursor;
@@ -36,7 +29,7 @@ namespace BookingsApi.Contract.V1.Requests
         public string CaseNumber { get; set; }
 
         [JsonPropertyName("venueIds")]
-        public List<int> VenueIds { get; set; }
+        public List<int> VenueIds { get; set; } = new();
 
         [JsonPropertyName("endDate")]
         public DateTime? EndDate { get; set; }

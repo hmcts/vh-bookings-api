@@ -1,8 +1,8 @@
-using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V2.Requests;
 
 namespace Testing.Common.Data
 {
-    public class TestUser : ParticipantRequest
+    public class TestUser : ParticipantRequestV2
     {
         public TestUser(string firstName, string lastName)
         {
@@ -11,7 +11,6 @@ namespace Testing.Common.Data
             FirstName = fullFirstName;
             LastName = lastName;
             ContactEmail = $"{fullFirstName}_{lastName}@hmcts.net".ToLower();
-            Username = $"{fullFirstName}_{lastName}@hearings.reform.hmcts.net".ToLower();
             DisplayName = $"{fullFirstName} {lastName}";
         }
     }

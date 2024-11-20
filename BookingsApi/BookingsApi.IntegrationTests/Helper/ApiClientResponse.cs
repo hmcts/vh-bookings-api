@@ -16,5 +16,15 @@ namespace BookingsApi.IntegrationTests.Helper
                 Converters = { new PascalCaseEnumConverterFactory() }
             });
         }
+        
+        public static string Serialize(object request)
+        {
+            return JsonSerializer.Serialize(request, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = new SnakeCaseNamingPolicy(),
+                PropertyNameCaseInsensitive = true,
+                Converters = { new PascalCaseEnumConverterFactory() }
+            });
+        }
     }
 }

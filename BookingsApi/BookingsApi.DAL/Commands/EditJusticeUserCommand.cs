@@ -67,7 +67,7 @@ namespace BookingsApi.DAL.Commands
             var addEntities = rolesToAdd.Select(userRole => new JusticeUserRole(justiceUser, userRole)).ToList();
 
             _context.RemoveRange(removeEntities);
-            _context.AddRange(addEntities);
+            await _context.AddRangeAsync(addEntities);
         }
     }
 }

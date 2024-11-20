@@ -150,7 +150,6 @@ public class HearingAllocationService(
     {
         return await context.VideoHearings
             .Include(h => h.CaseType)
-            .Include(h => h.HearingType)
             .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoWorkHours)
             .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
             .Include(h => h.HearingVenue)
@@ -166,7 +165,6 @@ public class HearingAllocationService(
     {
         var hearing = await context.VideoHearings
             .Include(h => h.CaseType)
-            .Include(h => h.HearingType)
             .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
             .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoWorkHours)
             .Include(h => h.Participants).ThenInclude(i => i.HearingRole).ThenInclude(aa => aa.UserRole)

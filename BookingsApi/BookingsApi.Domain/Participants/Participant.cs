@@ -9,7 +9,6 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain.Participants;
 
-// TODO: Should remove obsolete constructor and references to CaseRole in http://tools.hmcts.net/jira/browse/VIH-10899
 public abstract class Participant : ParticipantBase, IScreenableEntity
 {
     protected readonly ValidationFailures ValidationFailures = new();
@@ -21,23 +20,15 @@ public abstract class Participant : ParticipantBase, IScreenableEntity
         LinkedParticipants = new List<LinkedParticipant>();
     }
 
-    [Obsolete("Use the constructor with the external reference id")]
-    protected Participant(Person person, HearingRole hearingRole, CaseRole caseRole) : this()
+    protected Participant(string externalReferenceId, Person person, HearingRole hearingRole, string displayName) : this()
     {
         Person = person;
         PersonId = person.Id;
         HearingRoleId = hearingRole.Id;
-        CaseRoleId = caseRole?.Id;
-    }
-
-    protected Participant(string externalReferenceId, Person person, HearingRole hearingRole, string displayName) : this(person, hearingRole, null)
-    {
         ExternalReferenceId = externalReferenceId;
         DisplayName = displayName;
     }
-
-    public int? CaseRoleId { get; set; }
-    public virtual CaseRole CaseRole { get; set; }
+    
     public int HearingRoleId { get; set; }
     public HearingRole HearingRole { get; set; }
     public Guid PersonId { get; protected set; }

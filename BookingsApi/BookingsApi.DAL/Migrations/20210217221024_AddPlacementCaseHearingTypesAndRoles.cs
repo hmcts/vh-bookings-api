@@ -26,7 +26,7 @@ namespace BookingsApi.DAL.Migrations
                 });
             
             migrationBuilder.InsertData(
-                nameof(CaseRole),
+                "CaseRole",
                 new[] { "Id", "Name", "Group", "CaseTypeId" },
                 new object[,]
                 {
@@ -89,7 +89,7 @@ namespace BookingsApi.DAL.Migrations
 
             for (var i = 190; i < 194; i++)
             {
-                migrationBuilder.DeleteData(nameof(CaseRole), "Id", i);
+                migrationBuilder.DeleteData("CaseRole", "Id", i);
             }
 
             for (var i = 635; i < 666; i++)

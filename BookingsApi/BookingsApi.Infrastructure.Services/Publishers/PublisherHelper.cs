@@ -13,7 +13,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         {
             var existingParticipants = videoHearing.Participants
                 .Where(x => x.Person.ContactEmail is not null)
-                .Where(x => x is Judge || (x.DoesPersonAlreadyExist() && x.Person?.ContactEmail != x.Person?.Username))
+                .Where(x => x.DoesPersonAlreadyExist() && x.Person?.ContactEmail != x.Person?.Username)
                 .ToList();
             var areParticipantsAddedToExistingBooking = existingParticipants.Exists(x =>
                 x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
@@ -37,7 +37,6 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         {
             var newParticipants = videoHearing.Participants
                 .Where(x => x.Person?.ContactEmail is not null) // JoH can have a null person
-                .Where(x => x is not Judge)
                 .Where(x => !x.DoesPersonAlreadyExist() || x.Person?.ContactEmail == x.Person?.Username).ToList();
             var areParticipantsAddedToExistingBooking = newParticipants.Exists(x =>
                 x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());

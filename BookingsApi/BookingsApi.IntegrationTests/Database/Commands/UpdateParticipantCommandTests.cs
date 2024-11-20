@@ -24,7 +24,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_be_able_to_update_individual_participant()
         {
             var editPrefix = " _Edit";
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             var beforeUpdatedDate = seededHearing.UpdatedDate;
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
@@ -53,7 +53,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_be_able_to_update_representative_participant()
         {
             var editPrefix = " _Edit";
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             var beforeUpdatedDate = seededHearing.UpdatedDate;
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
@@ -91,7 +91,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_Update_Participant_With_Links()
         {
             var editPrefix = " _Edit";
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var individuals = seededHearing.GetParticipants()
@@ -124,7 +124,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_Update_Participant_With_Exisiting_Links()
         {
             var editPrefix = " _Edit";
-            var seededHearing = await Hooks.SeedVideoHearing(withLinkedParticipants: true);
+            var seededHearing = await Hooks.SeedVideoHearingV2(withLinkedParticipants: true);
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var individuals = seededHearing.GetParticipants().Where(x => x is Individual).ToList();
@@ -156,7 +156,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_update_additional_information_when_passed_in()
         {
             var editPrefix = " _Edit";
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var individualParticipant = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
@@ -189,7 +189,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_not_update_additional_information_when_not_passed_in()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var individualParticipant = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
@@ -214,7 +214,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_update_contact_email_when_passed_in()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var individualParticipant = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
@@ -247,7 +247,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_not_update_contact_email_when_not_passed_in()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var individualParticipant = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
@@ -280,12 +280,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_use_contact_email_for_different_person_when_passed_in_contact_email_is_same_as_different_person()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var individualParticipant = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
 
-            var seededHearing2 = await Hooks.SeedVideoHearing();
+            var seededHearing2 = await Hooks.SeedVideoHearingV2();
             var individualParticipant2 = seededHearing2.GetParticipants().First(x => x.HearingRole.UserRole.Name.Equals("Individual"));
             
             var title = individualParticipant.Person.Title;

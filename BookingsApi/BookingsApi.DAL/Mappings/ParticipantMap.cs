@@ -13,11 +13,10 @@ namespace BookingsApi.DAL.Mappings
             builder.Property(x => x.Id).ValueGeneratedNever();
             builder.HasIndex(x => new {ParticipantId = x.PersonId, x.HearingId}).IsUnique();
             builder.Property(x => x.DisplayName);
-            builder.Property(x => x.CaseRoleId).IsRequired(false);
+            builder.Property<int?>("CaseRoleId").IsRequired(false);
             builder.Property(x => x.HearingRoleId);
             builder.Property(x=> x.ExternalReferenceId);
             builder.Property(x => x.MeasuresExternalId);
-            builder.HasOne(x => x.CaseRole).WithMany().HasForeignKey(x => x.CaseRoleId);
             builder.HasOne(x => x.HearingRole).WithMany().HasForeignKey(x => x.HearingRoleId);
             builder.HasOne<Hearing>("Hearing").WithMany("Participants").HasForeignKey(x => x.HearingId);
             builder.HasMany(x => x.LinkedParticipants).WithOne(x => x.Participant).HasForeignKey(x => x.ParticipantId);

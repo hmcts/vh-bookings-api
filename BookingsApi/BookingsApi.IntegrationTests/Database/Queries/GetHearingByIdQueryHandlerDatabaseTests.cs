@@ -17,7 +17,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_hearing_details_by_id()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var hearing = await _handler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
@@ -25,7 +25,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             hearing.CaseType.Should().NotBeNull();
             hearing.HearingVenue.Should().NotBeNull();
-            hearing.HearingType.Should().NotBeNull();
 
             var participants = hearing.GetParticipants();
             participants.Any().Should().BeTrue();
@@ -36,8 +35,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var representatives = participants.Where(x => x.GetType() == typeof(Representative));
             representatives.Should().NotBeNullOrEmpty();
 
-            var judges = participants.Where(x => x.GetType() == typeof(Judge));
-            judges.Should().NotBeNullOrEmpty();
+            hearing.GetJudge().Should().NotBeNull();
             
             var persons = hearing.GetPersons();
             persons.Count.Should().Be(participants.Count);

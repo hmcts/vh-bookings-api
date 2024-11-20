@@ -30,10 +30,6 @@ namespace BookingsApi.Mappings.V1
 
             var judge = videoHearing.GetJudge();
             var courtRoomAccount = string.Empty;
-            if (judge is Judge judgeParticipant)
-            {
-                courtRoomAccount = judgeParticipant.Person.Username;
-            }
             var judgeName = judge?.DisplayName ?? string.Empty;
             var allocatedVho = VideoHearingHelper.AllocatedVho(videoHearing);
 
@@ -44,7 +40,6 @@ namespace BookingsApi.Mappings.V1
                 HearingName = @case.Name,
                 ScheduledDuration = videoHearing.ScheduledDuration,
                 ScheduledDateTime = videoHearing.ScheduledDateTime,
-                HearingTypeName = videoHearing.HearingType?.Name,
                 CaseTypeName = videoHearing.CaseType.Name,
                 CourtAddress = videoHearing.HearingVenue.Name,
                 CourtRoom = videoHearing.HearingRoomName,

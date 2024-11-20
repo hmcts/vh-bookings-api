@@ -17,12 +17,12 @@ namespace BookingsApi.Domain.RefData
         public string Name { get; set; }
         public CaseRoleGroup Group { get; set; }
         public List<HearingRole> HearingRoles { get; set; }
-
+        
         public int CompareTo(CaseRole other)
         {
             return String.CompareOrdinal(this.Name, other.Name);
         }
-
+        
         public int CompareTo(object obj)
         {
             return this.CompareTo((CaseRole)obj);

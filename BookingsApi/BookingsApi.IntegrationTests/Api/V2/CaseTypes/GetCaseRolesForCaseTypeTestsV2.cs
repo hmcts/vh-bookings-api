@@ -12,7 +12,7 @@ public class GetCaseRolesForCaseTypeTestsV2 : ApiTest
         using var client = Application.CreateClient();
 
         // act
-        var result = await client.GetAsync(ApiUriFactory.CaseTypesEndpointsV2.GetCaseRolesForCaseType(caseType));
+        var result = await client.GetAsync(ApiUriFactory.CaseTypesEndpointsV2.GetCaseRolesForService(caseType));
 
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -29,7 +29,7 @@ public class GetCaseRolesForCaseTypeTestsV2 : ApiTest
         using var client = Application.CreateClient();
 
         // act
-        var result = await client.GetAsync(ApiUriFactory.CaseTypesEndpointsV2.GetCaseRolesForCaseType(caseType));
+        var result = await client.GetAsync(ApiUriFactory.CaseTypesEndpointsV2.GetCaseRolesForService(caseType));
 
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);

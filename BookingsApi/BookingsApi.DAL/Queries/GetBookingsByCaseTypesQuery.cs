@@ -1,15 +1,8 @@
-﻿using BookingsApi.Common.Services;
-using BookingsApi.Domain.Participants;
-
-namespace BookingsApi.DAL.Queries
+﻿namespace BookingsApi.DAL.Queries
 {
     public class GetBookingsByCaseTypesQuery : IQuery
     {
         private int _limit;
-
-        public GetBookingsByCaseTypesQuery() : this(new List<int>())
-        {
-        }
 
         public GetBookingsByCaseTypesQuery(IList<int> types)
         {
@@ -56,11 +49,10 @@ namespace BookingsApi.DAL.Queries
         public async Task<CursorPagedResult<VideoHearing, string>> Handle(GetBookingsByCaseTypesQuery query)
         {
             var hearings = _context.VideoHearings
-                .Include("Participants.Person")
-                .Include("Participants.HearingRole.UserRole")
-                .Include("HearingCases.Case")
+                .Include(x=> x.Participants).ThenInclude(x=> x.Person)
+                .Include(x=> x.Participants).ThenInclude(x=> x.HearingRole).ThenInclude(x=> x.UserRole)
+                .Include(x=> x.HearingCases).ThenInclude(x=> x.Case)
                 .Include(x => x.JudiciaryParticipants).ThenInclude(x => x.JudiciaryPerson)
-                .Include(x => x.HearingType)
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue)
                 .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser)
@@ -84,7 +76,7 @@ namespace BookingsApi.DAL.Queries
                                                && x.Id.CompareTo(id) > 0);
             }
 
-            // Add one to the limit to know whether or not we have a next page
+            // Add one to the limit to know whether we have a next page
             var result = await hearings.Take(query.Limit + 1).ToListAsync();
             string nextCursor = null;
             if (result.Count > query.Limit)
@@ -131,7 +123,6 @@ namespace BookingsApi.DAL.Queries
 
             if (query.NoJudge)
             {
-                hearings = hearings.Where(x => !x.Participants.OfType<Judge>().Any());
                 hearings = hearings.Where(x => x.JudiciaryParticipants.All(y => y.HearingRoleCode != JudiciaryParticipantHearingRoleCode.Judge));
             }
 

@@ -10,7 +10,7 @@ namespace BookingsApi.Infrastructure.Services
         public static IEnumerable<HearingConfirmationForParticipantDto> MapToDtos(Hearing hearing)
         {
             var participantDtos = hearing.Participants
-                .Select(p => ParticipantDtoMapper.MapToDto(p, hearing.OtherInformation))
+                .Select(ParticipantDtoMapper.MapToDto)
                 .ToList();
             var judiciaryParticipantDtos = hearing.JudiciaryParticipants
                 .Select(ParticipantDtoMapper.MapToDto)

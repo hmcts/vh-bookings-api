@@ -125,9 +125,10 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         public void Should_update_hearing_status_when_judge_added_or_removed_BookedHearing(BookingStatus currentStatus, BookingStatus expectedStatus)
         {
             var hearing = new VideoHearingBuilder().Build();
-            var judge = hearing.Participants.First(e => e is Judge);
+            var judge = hearing.JudiciaryParticipants.First(x =>
+                x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
             if(currentStatus == BookingStatus.Booked)
-                hearing.Participants.Remove(judge);
+                hearing.RemoveJudiciaryParticipantByPersonalCode(judge.JudiciaryPerson.PersonalCode);
             else
                 hearing.UpdateStatus(BookingStatus.BookedWithoutJudge, "testuser", "");
             hearing.UpdateBookingStatusJudgeRequirement();
@@ -139,11 +140,12 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         public void Should_update_hearing_status_when_judge_added_or_removed_ConfirmedHearing(BookingStatus currentStatus, BookingStatus expectedStatus) 
         {
             var hearing = new VideoHearingBuilder().Build();
-            var judge = hearing.Participants.First(e => e is Judge);
+            var judge = hearing.JudiciaryParticipants.First(x =>
+                x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
             if (currentStatus == BookingStatus.Created)
             {
                 hearing.UpdateStatus(BookingStatus.Created, "testuser", "");
-                hearing.Participants.Remove(judge);
+                hearing.RemoveJudiciaryParticipantByPersonalCode(judge.JudiciaryPerson.PersonalCode);
             }
             else
             {

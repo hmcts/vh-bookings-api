@@ -66,7 +66,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.DisplayName.Should().Be(participant.DisplayName);
             result.HearingRole.Should().Be(participant.HearingRole.Name);
             result.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
-            result.CaseGroupType.Should().Be(participant.CaseRole.Group);
             result.LinkedParticipants.Select(x => x.ParticipantId).Should()
                 .BeEquivalentTo(participant.LinkedParticipants.Select(x => x.ParticipantId));
             result.Representee.Should().BeNullOrEmpty();
@@ -87,7 +86,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.DisplayName.Should().Be(participant.DisplayName);
             result.HearingRole.Should().Be(participant.HearingRole.Name);
             result.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
-            result.CaseGroupType.Should().Be(participant.CaseRole.Group);
 
             result.Representee.Should().Be(participant.Representee);
         }
@@ -118,7 +116,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.DisplayName.Should().Be(participant.DisplayName);
             result.HearingRole.Should().Be("Judge");
             result.UserRole.Should().Be("Judge");
-            result.CaseGroupType.Should().Be(CaseRoleGroup.Judge);
         }
 
         [Test]
@@ -137,7 +134,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.DisplayName.Should().Be(participant.DisplayName);
             result.HearingRole.Should().Be("Panel Member");
             result.UserRole.Should().Be("Judicial Office Holder");
-            result.CaseGroupType.Should().Be(CaseRoleGroup.PanelMember);
         }
 
         private static VideoHearing GetHearing()
@@ -147,7 +143,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
             foreach (var participant in hearing.Participants)
             {
                 participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
-                participant.CaseRole = new CaseRole(1, "Name");
             }
 
             var individuals = hearing.Participants.Where(x => x is Individual).ToList();

@@ -18,7 +18,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_all_confirmed_hearings_for_username_for_today()
         {
-            var hearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created,
+            var hearing1 = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created,
                     configureOptions: options => { options.ScheduledDate = System.DateTime.UtcNow; });
             await Hooks.CloneVideoHearing(hearing1.Id, new List<System.DateTime> { System.DateTime.UtcNow}, BookingStatus.Created);
             await Hooks.CloneVideoHearing(hearing1.Id, new List<System.DateTime> { System.DateTime.UtcNow }, BookingStatus.Created);

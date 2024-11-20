@@ -1,4 +1,5 @@
-﻿using BookingsApi.DAL.Helper;
+﻿using BookingsApi.Common.Helpers;
+using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -23,7 +24,7 @@ namespace BookingsApi.DAL.Migrations
             for (int caseTypeId = 1; caseTypeId <= 38; caseTypeId++)
             {
                 migrationBuilder.InsertData(
-                    nameof(CaseRole),
+                    "CaseRole",
                     new[] { "Id", "Name", "Group", "CaseTypeId" },
                     new object[,]
                     {

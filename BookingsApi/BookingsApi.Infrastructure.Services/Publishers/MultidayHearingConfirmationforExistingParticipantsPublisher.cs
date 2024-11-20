@@ -3,7 +3,6 @@ using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using System.Threading.Tasks;
-using BookingsApi.Common;
 
 namespace BookingsApi.Infrastructure.Services.Publishers
 {
@@ -27,7 +26,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             
             foreach (var participant in existingParticipants)
             {
-                var participantDto = ParticipantDtoMapper.MapToDto(participant, videoHearing.OtherInformation);
+                var participantDto = ParticipantDtoMapper.MapToDto(participant);
                 
                 await _eventPublisher.PublishAsync(new ExistingParticipantMultidayHearingConfirmationEvent(EventDtoMappers.MapToHearingConfirmationDto(
                     videoHearing.Id, videoHearing.ScheduledDateTime, participantDto, @case), TotalDays));

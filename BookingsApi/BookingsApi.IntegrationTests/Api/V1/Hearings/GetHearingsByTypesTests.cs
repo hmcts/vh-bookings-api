@@ -33,7 +33,6 @@ public class GetHearingsByTypesTests : ApiTest
         hearingResponse.Should().NotBeNull();
         hearingResponse.Hearings[0].Hearings
             .Exists(x => x.HearingId == hearing.Id && x.JudgeName == hearing.GetJudge().DisplayName).Should().BeTrue();
-
     }
     
     [Test]
@@ -42,7 +41,7 @@ public class GetHearingsByTypesTests : ApiTest
         // arrange
         var request = new GetHearingRequest
         {
-            Types = new List<int>{ -1 }
+            Types = [-1]
         };
             
         // act

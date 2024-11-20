@@ -21,7 +21,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task should_delete_justice_user()
         {
             // Arrange
-            _hearing = await Hooks.SeedVideoHearing();
+            _hearing = await Hooks.SeedVideoHearingV2();
             var justiceUserToDelete = await SeedJusticeUser("should_delete_justice_user@testdb.com");
             await Hooks.AddAllocation(_hearing, justiceUserToDelete);
 

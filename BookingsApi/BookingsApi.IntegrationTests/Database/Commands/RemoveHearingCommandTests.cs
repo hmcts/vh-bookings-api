@@ -29,7 +29,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_remove_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             await _commandHandler.Handle(new RemoveHearingCommand(seededHearing.Id));
@@ -42,7 +42,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_remove_hearing_containing_interpreter()
         {
-            var seededHearing = await Hooks.SeedVideoHearing(withLinkedParticipants: true);
+            var seededHearing = await Hooks.SeedVideoHearingV2(withLinkedParticipants: true);
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             await _commandHandler.Handle(new RemoveHearingCommand(seededHearing.Id));

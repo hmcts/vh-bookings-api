@@ -15,14 +15,15 @@
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="GST.Fake.Authentication.JwtBearer" Version="6.0.0" />
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="NUnit" Version="4.2.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.25.0.90414">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.24.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BookingsApi.Client\BookingsApi.Client.csproj" />
@@ -83,5 +84,9 @@
       <DesignTime>true</DesignTime>
       <Visible>true</Visible>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Api\V1\GetHearingsByUsername\" />
   </ItemGroup>
 </Project>

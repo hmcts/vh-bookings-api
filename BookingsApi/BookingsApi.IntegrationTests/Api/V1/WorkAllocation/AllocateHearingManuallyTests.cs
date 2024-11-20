@@ -24,14 +24,15 @@ public class AllocateHearingManuallyTests : ApiTest
         // arrange
         var caseNumber = "TestSearchQueryInt";
         var nonGenericCaseTypeName = "Financial Remedy";
-        var hearing = await Hooks.SeedVideoHearing(options =>
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.Case = new Case(caseNumber, "Integration");
             options.CaseTypeName = nonGenericCaseTypeName;
             options.ScheduledDate =
                 MoveHearingToWorkingDay(); // Needed as the seeded justice users do not work on weekends
         });
-        var judge = hearing.Participants.First(x => x is Judge);
+        var judge = hearing.JudiciaryParticipants.First(x =>
+            x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
         var j1 = await Hooks.SeedJusticeUser($"{Guid.NewGuid():N}@test.com", "testfirstname1", "testsurname1",
             initWorkHours: true);

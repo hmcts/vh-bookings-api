@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Participants;
-using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using Microsoft.AspNetCore.Mvc;
 using Testing.Common.Assertions;
 

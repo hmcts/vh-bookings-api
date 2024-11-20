@@ -1,4 +1,5 @@
-using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Client;
+using BookingsApi.Contract.V2.Enums;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings
 {
@@ -27,7 +28,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
         public async Task should_be_Created_when_requested_to_Created_with_judge_in_hearing()
         {
             // arrange
-            var seededHearing = await Hooks.SeedVideoHearing(status: Domain.Enumerations.BookingStatus.Booked, configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(status: Domain.Enumerations.BookingStatus.Booked, configureOptions: options =>
             {
                 options.ScheduledDate = DateTime.UtcNow;
             });
@@ -38,22 +39,17 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             var result = await client
                 .PatchAsync(ApiUriFactory.HearingsEndpoints.UpdateBookingStatus(hearingId), null);
 
-            var getHearing = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetHearingDetailsById(hearingId.ToString()));
-
             // assert
             result.IsSuccessStatusCode.Should().BeTrue();
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getHearing.Content);
-
-            hearingResponse.Status.Should().Be(Contract.V1.Enums.BookingStatus.Created);
-            AssertCommon(hearingResponse);
+            await GetHearingAndConfirmStatusIs(client, hearingId, BookingStatusV2.Created);
         }
 
         [Test]
         public async Task should_be_ConfirmedWithoutJudge_when_requested_to_Created_with_no_judge_in_hearing()
         {
             // arrange
-            var seededHearing = await Hooks.SeedVideoHearing(status: Domain.Enumerations.BookingStatus.Booked, configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(status: Domain.Enumerations.BookingStatus.Booked, configureOptions: options =>
             {
                 options.ScheduledDate = DateTime.UtcNow;
                 options.AddJudge = false;
@@ -65,19 +61,17 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             var result = await client
                 .PatchAsync(ApiUriFactory.HearingsEndpoints.UpdateBookingStatus(hearingId), RequestBody.Set(string.Empty));
 
-            var getHearing = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetHearingDetailsById(hearingId.ToString()));
-
             // assert
             result.IsSuccessStatusCode.Should().BeTrue();
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getHearing.Content);
-
-            hearingResponse.Status.Should().Be(Contract.V1.Enums.BookingStatus.ConfirmedWithoutJudge);
-            AssertCommon(hearingResponse);
+            await GetHearingAndConfirmStatusIs(client, hearingId, BookingStatusV2.ConfirmedWithoutJudge);
         }
 
-        private static void AssertCommon(HearingDetailsResponse hearingResponse)
+        private static async Task GetHearingAndConfirmStatusIs(HttpClient client, Guid hearingId, BookingStatusV2 expectedStatus)
         {
+            var bookingsApiClient = BookingsApiClient.GetClient(client);
+            var hearingResponse = await bookingsApiClient.GetHearingDetailsByIdV2Async(hearingId);
+            hearingResponse.Status.Should().Be(expectedStatus);
             hearingResponse.UpdatedBy.Should().Be("System");
             hearingResponse.ConfirmedBy.Should().Be("System");
         }

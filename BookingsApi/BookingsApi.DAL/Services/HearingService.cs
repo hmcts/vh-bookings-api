@@ -51,30 +51,30 @@ public interface IHearingService
 
     Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant, List<InterpreterLanguage> languages);
 
-    Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant);
-
     void UpdateParticipantScreeningRequirement(VideoHearing hearing, Participant participant,
         ScreeningDto screeningDto);
 
     void UpdateEndpointScreeningRequirement(VideoHearing hearing, Endpoint endpoint, ScreeningDto screeningDto);
 }
 
-//TODO: Remove all CaseRole Assignments as part of https://tools.hmcts.net/jira/browse/VIH-10899
 public class HearingService(BookingsDbContext context) : IHearingService
 {
-    public async Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants, List<InterpreterLanguage> languages)
+    public async Task<List<Participant>> AddParticipantToService(VideoHearing hearing,
+        List<NewParticipant> participants, List<InterpreterLanguage> languages)
     {
         var participantList = new List<Participant>();
         foreach (var participantToAdd in participants)
         {
             var existingPerson = await UpdateExistingParticipantPerson(participantToAdd);
 
-            var language = languages.GetLanguage(participantToAdd.InterpreterLanguageCode, "Participant");
+            var language = languages.GetLanguage(participantToAdd.InterpreterLanguageCode);
 
             switch (participantToAdd.HearingRole.UserRole.Name)
             {
                 case "Individual":
-                    var individual = hearing.AddIndividual(participantToAdd.ExternalReferenceId, existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole, participantToAdd.DisplayName);
+                    var individual = hearing.AddIndividual(participantToAdd.ExternalReferenceId,
+                        existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                        participantToAdd.DisplayName);
                     individual.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
                     individual.MeasuresExternalId = participantToAdd.MeasuresExternalId;
                     UpdateOrganisationDetails(participantToAdd.Person, individual);
@@ -82,7 +82,8 @@ public class HearingService(BookingsDbContext context) : IHearingService
                     break;
                 case "Representative":
                 {
-                    var representative = hearing.AddRepresentative(participantToAdd.ExternalReferenceId, existingPerson ?? participantToAdd.Person,
+                    var representative = hearing.AddRepresentative(participantToAdd.ExternalReferenceId,
+                        existingPerson ?? participantToAdd.Person,
                         participantToAdd.HearingRole, participantToAdd.DisplayName, participantToAdd.Representee);
                     representative.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
                     representative.MeasuresExternalId = participantToAdd.MeasuresExternalId;
@@ -90,29 +91,12 @@ public class HearingService(BookingsDbContext context) : IHearingService
                     participantList.Add(representative);
                     break;
                 }
-                case "Judicial Office Holder":
-                {
-                    var joh = hearing.AddJudicialOfficeHolder(existingPerson ?? participantToAdd.Person,
-                        participantToAdd.HearingRole, participantToAdd.CaseRole, participantToAdd.DisplayName);
-                    joh.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
-                    participantList.Add(joh);
-                    break;
-                }
-                case "Judge":
-                {
-                    var judge = hearing.AddJudge(existingPerson ?? participantToAdd.Person, 
-                        participantToAdd.HearingRole, 
-                        participantToAdd.CaseRole, 
-                        participantToAdd.DisplayName);
-                    judge.UpdateLanguagePreferences(language, participantToAdd.OtherLanguage);
-                    participantList.Add(judge);
-                    break;
-                }
                 default:
                     throw new DomainRuleException(nameof(participantToAdd.HearingRole.UserRole.Name),
                         $"Role {participantToAdd.HearingRole.UserRole.Name} not recognised");
             }
         }
+
         await LoadHearingRoles(participantList);
         return participantList;
     }
@@ -123,7 +107,7 @@ public class HearingService(BookingsDbContext context) : IHearingService
         if (participantToAdd.Person.ContactEmail != null)
         {
             existingPerson = await context.Persons
-                .Include("Organisation")
+                .Include(x => x.Organisation)
                 .SingleOrDefaultAsync(x => x.ContactEmail == participantToAdd.Person.ContactEmail);
         }
 
@@ -136,18 +120,9 @@ public class HearingService(BookingsDbContext context) : IHearingService
         return existingPerson;
     }
 
-    public async Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant)
-    {
-        var person = await context.Persons.FirstAsync(x => x.ContactEmail == newJudgeParticipant.Person.ContactEmail);
-        var judge = new Judge(person, newJudgeParticipant.HearingRole, newJudgeParticipant.CaseRole)
-        {
-            DisplayName = newJudgeParticipant.DisplayName
-        };
-        hearing.ReassignJudge(judge);
-    }
-
     public void UpdateParticipantScreeningRequirement(VideoHearing hearing, Participant participant, ScreeningDto screeningDto)
     {
+        ArgumentNullException.ThrowIfNull(participant);
         if(participant.Screening == null && screeningDto == null) return;
         if (participant.Screening != null && screeningDto == null)
         {

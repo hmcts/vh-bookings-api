@@ -73,7 +73,7 @@ namespace BookingsApi.DAL.Migrations
                     { 113, "Costs Hearing", 31 }
                 });
             migrationBuilder.InsertData(
-                nameof(CaseRole),
+                "CaseRole",
                 new[] { "Id", "Name", "Group", "CaseTypeId" },
                 new object[,]
                 {

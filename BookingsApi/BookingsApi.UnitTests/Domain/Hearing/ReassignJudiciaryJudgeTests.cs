@@ -50,10 +50,11 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             // Arrange
             var hearing = new VideoHearingBuilder().Build();
             hearing.SetProtected(nameof(hearing.Status), BookingStatus.Cancelled);
-            var newJudge = new JudgeBuilder().Build();
+            var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
+            var newJudiciaryJudge = new JudiciaryJudge("DisplayName", newJudiciaryPerson);
             
             // Act
-            var action = () => hearing.ReassignJudge(newJudge);
+            var action = () => hearing.ReassignJudiciaryJudge(newJudiciaryJudge);
             
             // Assert
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
@@ -71,22 +72,6 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             // Assert
             action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Test]
-        public void should_throw_exception_when_adding_new_judiciary_judge_to_hearing_with_non_judiciary_judge()
-        {
-            // Arrange
-            var hearing = new VideoHearingBuilder(addJudge: true).Build();
-            var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
-            var newJudiciaryJudge = new JudiciaryJudge("DisplayName", newJudiciaryPerson);
-            
-            // Act
-            var action = () => hearing.ReassignJudiciaryJudge(newJudiciaryJudge);
-            
-            // Assert
-            action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Exists(x => x.Message == DomainRuleErrorMessages.CannotAddJudiciaryJudgeWhenJudgeAlreadyExists).Should().BeTrue();
         }
 
         [TestCase(true, true)]

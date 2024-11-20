@@ -1,0 +1,37 @@
+
+using BookingsApi.Contract.V2.Responses;
+using BookingsApi.Mappings.V2;
+
+namespace BookingsApi.Controllers.V2;
+
+[Produces("application/json")]
+[Route(template: "v{version:apiVersion}/hearings")]
+[Route("hearings")]
+[ApiVersion("2.0")]
+[ApiController]
+public class WorkAllocationsControllerV2(
+    IQueryHandler queryHandler,
+    ILogger<WorkAllocationsControllerV2> logger) : ControllerBase
+{
+    /// <summary>
+    /// Get all the unallocated hearings
+    /// </summary>
+    /// <returns>unallocated hearings</returns>
+    [HttpGet("unallocated")]
+    [OpenApiOperation("GetUnallocatedHearings")]
+    [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [MapToApiVersion("2.0")]
+    public async Task<IActionResult> GetUnallocatedHearings()
+    {
+        var today = DateTime.UtcNow; //provide a range (from today 1 year) for unallocated hearings rather than return all past and present.
+        var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true, fromDate: today, toDate: today.AddYears(1), excludeDurationsThatSpanMultipleDays: true);
+        var results = await queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
+
+        if (results.Count <= 0)
+            logger.LogInformation("[GetUnallocatedHearings] Could not find any unallocated hearings");
+        var response = results.Select(HearingToDetailsResponseV2Mapper.Map).ToList();
+        return Ok(response);
+    }
+
+}

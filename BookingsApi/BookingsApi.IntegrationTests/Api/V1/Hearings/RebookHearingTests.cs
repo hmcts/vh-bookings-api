@@ -8,7 +8,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
         public async Task should_return_bad_request_when_hearing_status_is_not_failed()
         {
             // arrange
-            var hearing = await Hooks.SeedVideoHearing(status: BookingStatus.Created);
+            var hearing = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created);
             
             // act
             using var client = Application.CreateClient();
