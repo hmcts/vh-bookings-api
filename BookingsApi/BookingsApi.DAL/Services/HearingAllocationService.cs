@@ -253,7 +253,7 @@ public class HearingAllocationService(
 
         if (availableCsos.Count == 1)
         {
-            return availableCsos.SingleOrDefault();
+            return availableCsos.Single();
         }
 
         var csos = availableCsos

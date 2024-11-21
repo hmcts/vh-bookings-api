@@ -55,7 +55,7 @@ namespace BookingsApi.DAL.SeedData
                 });
         }
 
-        public void AddCaseRoles(MigrationBuilder migrationBuilder)
+        public static void AddCaseRoles(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
                 table: "CaseRole",

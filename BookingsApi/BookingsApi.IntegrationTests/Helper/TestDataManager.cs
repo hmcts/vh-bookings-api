@@ -764,9 +764,16 @@ namespace BookingsApi.IntegrationTests.Helper
         /// Seed a person with a unique email address. Not intended to be used to be added to hearings
         /// </summary>
         /// <returns></returns>
-        public async Task<Person> SeedPerson()
+        public async Task<Person> SeedPerson(bool withOrganisation = false)
         {
-            var person = new PersonBuilder(true).Build();
+            var builder = new PersonBuilder(true);
+
+            if (withOrganisation)
+            {
+                builder.WithOrganisation();
+            }
+
+            var person = builder.Build();
             person.ContactEmail = $"{Guid.NewGuid():N}@auto.com";
             await using var db = new BookingsDbContext(dbContextOptions);
             await db.Persons.AddAsync(person);

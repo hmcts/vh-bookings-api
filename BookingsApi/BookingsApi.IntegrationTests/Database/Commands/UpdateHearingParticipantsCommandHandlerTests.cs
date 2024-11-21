@@ -4,6 +4,7 @@ using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.BaseQueries;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
@@ -65,9 +66,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             //Arrange
             var originalParticipantCount = _hearing.GetParticipants().Count;
 
-            var applicantCaseRole = _genericCaseType.CaseRoles.First(x => x.Name == "Applicant");
-            var applicantRepresentativeHearingRole =
-                applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var hearingRoles = await GetHearingRolesFromDb();
+            var repHearingRole = hearingRoles.Find(x => x.Code == HearingRoleCodes.Representative);
 
             var newPerson = new PersonBuilder(true).Build();
             var newParticipant = new NewParticipant
@@ -75,7 +75,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 ExternalReferenceId = Guid.NewGuid().ToString(),
                 MeasuresExternalId = "Screening1",
                 Person = newPerson,
-                HearingRole = applicantRepresentativeHearingRole,
+                HearingRole = repHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
             };
@@ -282,6 +282,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var hearing = await _context.VideoHearings.FirstAsync(x => x.Id == _hearing.Id);
             hearing.SetProtected(nameof(_hearing.ScheduledDateTime), newScheduledDateTime);
             await _context.SaveChangesAsync();
+        }
+        
+        private async Task<List<HearingRole>> GetHearingRolesFromDb()
+        {
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            var query = new GetHearingRolesQuery();
+            var handler = new GetHearingRolesQueryHandler(db);
+            return await handler.Handle(query);
         }
 
         [TearDown]
