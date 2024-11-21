@@ -2,6 +2,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.BaseQueries;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
@@ -385,13 +386,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         private CaseType GetCaseTypeFromDb(string caseTypeName)
         {
             using var db = new BookingsDbContext(BookingsDbContextOptions);
-            var caseType = db.CaseTypes
-                .Include(x => x.CaseRoles)
-                .ThenInclude(x => x.HearingRoles)
-                .ThenInclude(x => x.UserRole)
-                .Include(x => x.HearingTypes)
-                .First(x => x.Name == caseTypeName);
-
+            var caseType = CaseTypes.Get(db).First(x => x.Name == caseTypeName);
             return caseType;
         }
     }

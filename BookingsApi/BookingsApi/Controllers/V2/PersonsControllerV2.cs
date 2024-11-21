@@ -109,13 +109,12 @@ public class PersonsControllerV2(
         var command = new UpdatePersonCommand(personId, payload.FirstName, payload.LastName, payload.Username);
         await commandHandler.Handle(command);
 
-
         // get all hearings for user
         var query = new GetHearingsByUsernameQuery(payload.Username);
         var hearings = await queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
 
         // raise an update event for each hearing to ensure consistency between video and bookings api
-        var anonymisedText = "@hmcts.net";
+        const string anonymisedText = "@hmcts.net";
         var nonAnonymisedParticipants = hearings
             .Where(x => x.Status == BookingStatus.Created &&
                         x.GetCases().Any(c => !c.Name.EndsWith(anonymisedText))).SelectMany(c => c.Participants)
@@ -125,7 +124,7 @@ public class PersonsControllerV2(
         foreach (var participant in nonAnonymisedParticipants)
         {
             // map to updated participant event
-            await eventPublisher.PublishAsync(
+                await eventPublisher.PublishAsync(
                 new ParticipantUpdatedIntegrationEvent(participant.HearingId, participant));
         }
 

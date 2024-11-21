@@ -1,4 +1,3 @@
-using BookingsApi.Client;
 using Microsoft.Extensions.Configuration;
 using Testing.Common.Configuration;
 using Testing.Common.Stubs;
@@ -12,14 +11,12 @@ public class ApiTest
     protected TestDataManager Hooks { get; private set; }
     private IConfigurationRoot _configRoot;
     private string _databaseConnectionString;
-    protected Person GenericJudge { get; private set; }
 
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
         RegisterSettings();
         RunMigrations();
-        GenericJudge = Hooks.SeedGenericJudgePerson().Result;
         Application = new VhApiWebApplicationFactory();
     }
 
@@ -29,6 +26,8 @@ public class ApiTest
         await Hooks.ClearSeededHearings();
         await Hooks.ClearSeededJusticeUsersAsync();
         await Hooks.ClearJudiciaryPersonsAsync();
+        await Hooks.ClearSeededPersonsAsync();
+        await Hooks.ClearSeededJobHistory();
     }
 
     private void RegisterSettings()

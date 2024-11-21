@@ -23,41 +23,11 @@ public abstract partial class JudiciaryLeaverException(string message) : Excepti
     }
 }
 
-public class JudiciaryPersonNotFoundException : ObfuscatedEntityNotFoundException
-{
-    public JudiciaryPersonNotFoundException(string personalCode) :
-        base($"Judiciary Person with personal code: {personalCode} does not exist")
-    {
-    }
+public class JudiciaryPersonNotFoundException(string personalCode)
+    : ObfuscatedEntityNotFoundException($"Judiciary Person with personal code: {personalCode} does not exist");
 
-    public JudiciaryPersonNotFoundException(Guid id) :
-        base($"Judiciary Person with External ref id: {id} does not exist")
-    {
-    }
-}
-
-public class JudiciaryLeaverNotFoundException : JudiciaryLeaverException
-{
-    public JudiciaryLeaverNotFoundException(string username) : 
-        base($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} does not exist")
-    {
-    }
-        
-    public JudiciaryLeaverNotFoundException(Guid id) : 
-        base($"Judiciary Person with External ref id: {id} does not exist")
-    {
-    }
-}
+public class JudiciaryLeaverNotFoundException(string username)
+    : JudiciaryLeaverException($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} does not exist");
     
-public class JudiciaryPersonAlreadyExistsException : JudiciaryPersonException
-{
-    public JudiciaryPersonAlreadyExistsException(string username) : 
-        base($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} already exists")
-    {
-    }
-        
-    public JudiciaryPersonAlreadyExistsException(Guid externalRefId) : 
-        base($"Judiciary Person with ExternalRefId {externalRefId} already exists")
-    {
-    }
-}
+public class JudiciaryPersonAlreadyExistsException(string username)
+    : JudiciaryPersonException($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} already exists");

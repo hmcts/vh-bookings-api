@@ -85,8 +85,4 @@
       <Visible>true</Visible>
     </Compile>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Api\V1\GetHearingsByUsername\" />
-  </ItemGroup>
 </Project>

@@ -78,7 +78,7 @@ namespace BookingsApi.Controllers.V1
         [HttpPatch("username/{username}/anonymise")]
         [OpenApiOperation("AnonymisePersonWithUsername")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> AnonymisePerson(string username)
         {

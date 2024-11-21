@@ -127,7 +127,7 @@ public class HearingParticipantService(
         }
         else
         {
-            await PublishExistingParticipantUpdatedEvent(hearing, existingParticipants, eventExistingParticipants, sendNotification);
+            await PublishExistingParticipantUpdatedEvent(hearing, eventExistingParticipants);
         }
         await PublishUpdateHearingEvent(hearing.Id);
     }
@@ -342,21 +342,11 @@ public class HearingParticipantService(
         await PublishUpdateHearingEvent(hearing.Id);
     }
 
-    private async Task PublishExistingParticipantUpdatedEvent(VideoHearing hearing, List<ExistingParticipantDetails> existingParticipants,
-        List<Participant> eventExistingParticipants, bool sendNotification = true)
+    private async Task PublishExistingParticipantUpdatedEvent(VideoHearing hearing, List<Participant> eventExistingParticipants)
     {
         foreach (var participant in eventExistingParticipants)
         {
-            if (participant is Judge)
-            {
-                var judgeRequest =
-                    existingParticipants.First(e => e.ParticipantId == participant.Id);
-                participant.Person.ContactEmail = judgeRequest.Person.ContactEmail;
-                participant.Person.TelephoneNumber = judgeRequest.Person.TelephoneNumber;
-                await eventPublisher.PublishAsync(new JudgeUpdatedIntegrationEvent(hearing, participant, sendNotification));
-            }
-            else
-                await eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
+            await eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
         }
         await PublishUpdateHearingEvent(hearing.Id);
     }

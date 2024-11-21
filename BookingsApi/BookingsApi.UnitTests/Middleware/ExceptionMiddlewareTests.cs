@@ -42,21 +42,6 @@ namespace BookingsApi.UnitTests.Middleware
         }
 
         [Test]
-        public async Task Should_return_bad_request_message()
-        {
-
-            RequestDelegateMock
-                .Setup(x => x.RequestDelegate(It.IsAny<HttpContext>()))
-                .Returns(Task.FromException(new BadRequestException("Error")));
-            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate, LoggerMock.Object);
-
-
-            await ExceptionMiddleware.InvokeAsync(_HttpContext);
-            _HttpContext.Response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
-            _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
-        }
-
-        [Test]
         public void should_return_not_found_when_EntityNotFoundException_is_thrown()
         {
             RequestDelegateMock

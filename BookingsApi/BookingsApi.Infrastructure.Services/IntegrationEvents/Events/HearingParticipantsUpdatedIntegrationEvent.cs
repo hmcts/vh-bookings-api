@@ -20,8 +20,8 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
         {
             Hearing = HearingDtoMapper.MapToDto(hearing);
 
-            ExistingParticipants = existingParticipants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
-            NewParticipants = newParticipants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
+            ExistingParticipants = existingParticipants.Select(ParticipantDtoMapper.MapToDto).ToList();
+            NewParticipants = newParticipants.Select(ParticipantDtoMapper.MapToDto).ToList();
             NewParticipants.SingleOrDefault(x => x.UserRole == "Judge")?.SetOtherFieldsForNonEJudJudgeUser(hearing.OtherInformation);
             RemovedParticipants = removedParticipants;
             LinkedParticipants = linkedParticipants;

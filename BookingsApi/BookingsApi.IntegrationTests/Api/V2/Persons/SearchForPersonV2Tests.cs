@@ -3,7 +3,7 @@ using BookingsApi.Contract.V2.Requests;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Persons;
 
-public class PostPersonBySearchTermTests : ApiTest
+public class SearchForPersonV2Tests : ApiTest
 {
     [Test]
     public async Task should_get_person_by_partial_contact_email_match()

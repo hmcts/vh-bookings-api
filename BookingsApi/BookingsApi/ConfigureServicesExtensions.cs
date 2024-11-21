@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using BookingsApi.Common.DotNet6.Helpers;
-using BookingsApi.Common.Security;
 using BookingsApi.DAL.Services;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.Publishers;
@@ -88,9 +87,6 @@ public static class ConfigureServicesExtensions
         services.AddMemoryCache();
 
         services.AddSingleton<ITelemetryInitializer, BadRequestTelemetry>();
-
-        services.AddScoped<ITokenProvider, AzureTokenProvider>();
-
         services.AddScoped<IQueryHandlerFactory, QueryHandlerFactory>();
         services.AddScoped<IQueryHandler, QueryHandler>();
 

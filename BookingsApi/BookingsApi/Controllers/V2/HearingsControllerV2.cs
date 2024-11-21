@@ -51,11 +51,15 @@ namespace BookingsApi.Controllers.V2
                 return ValidationProblem(ModelState);
             }
 
+            var caseTypes =
+                await queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(
+                    new GetAllCaseTypesQuery(includeDeleted: false));
+
+            var caseType = caseTypes.Find(x =>
+                x.ServiceId.Equals(request.ServiceId, StringComparison.CurrentCultureIgnoreCase));
             var hearingRoles =
                 await queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
-            var caseType =
-                await queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(
-                    new GetCaseRolesForCaseServiceQuery(request.ServiceId));
+            
             var hearingVenue = await GetHearingVenue(request.HearingVenueCode);
 
             var dataValidationResult =

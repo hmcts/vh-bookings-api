@@ -4,7 +4,7 @@ using BookingsApi.Common.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 
-namespace BookingsApi.Common.Security
+namespace Testing.Common.Security
 {
     public interface ITokenProvider
     {

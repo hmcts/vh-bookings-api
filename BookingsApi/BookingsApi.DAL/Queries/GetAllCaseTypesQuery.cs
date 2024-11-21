@@ -1,3 +1,5 @@
+using BookingsApi.DAL.Queries.BaseQueries;
+
 namespace BookingsApi.DAL.Queries
 {
     public class GetAllCaseTypesQuery : IQuery
@@ -21,22 +23,16 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<CaseType>> Handle(GetAllCaseTypesQuery query)
         {
-            var dbQuery = _context.CaseTypes.Include(x=> x.HearingTypes).AsNoTracking();
+            var dbQuery = CaseTypes.Get(_context).AsNoTracking();
 
             if (query.IncludeDeleted)
             {
                 return await dbQuery.ToListAsync();
             }
             
-            // exclude case and hearing types that have expired
+            // exclude case types that have expired
             dbQuery = dbQuery.Where(x => x.ExpirationDate == null || x.ExpirationDate >= DateTime.UtcNow);
-
             var caseTypes = await dbQuery.ToListAsync();
-            foreach (var caseType in caseTypes)
-            {
-                caseType.HearingTypes = caseType.HearingTypes.Where(x => !x.HasExpired()).ToList();
-            }
-
             return caseTypes;
         }
     }

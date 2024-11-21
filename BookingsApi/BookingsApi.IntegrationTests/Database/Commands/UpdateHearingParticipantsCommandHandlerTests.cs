@@ -2,6 +2,7 @@
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.BaseQueries;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
@@ -32,12 +33,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             _personsToRemove = new List<string>();
             _context = new BookingsDbContext(BookingsDbContextOptions);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(_context);
-            _genericCaseType = await _context.CaseTypes
-                    .Include(x => x.CaseRoles)
-                    .ThenInclude(x => x.HearingRoles)
-                    .ThenInclude(x => x.UserRole)
-                    .Include(x => x.HearingTypes)
-                    .FirstAsync(x => x.Name == "Generic");
+            _genericCaseType = await CaseTypes.Get(_context).FirstAsync(x => x.Name == "Generic");
 
             var hearingService = new HearingService(_context);
 

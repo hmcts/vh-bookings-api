@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace BookingsApi.DAL.SeedData
 {
+    [ExcludeFromCodeCoverage]
     public class SeedCaseTypesData
     {
         public void Up(MigrationBuilder migrationBuilder)

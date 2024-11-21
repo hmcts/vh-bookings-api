@@ -34,25 +34,4 @@ public class GetHearingsByTypesTests : ApiTest
         hearingResponse.Hearings[0].Hearings
             .Exists(x => x.HearingId == hearing.Id && x.JudgeName == hearing.GetJudge().DisplayName).Should().BeTrue();
     }
-    
-    [Test]
-    public async Task should_return_bad_request_when_hearing_types_are_invalid()
-    {
-        // arrange
-        var request = new GetHearingRequest
-        {
-            Types = [-1]
-        };
-            
-        // act
-        using var client = Application.CreateClient();
-        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.GetHearingsByTypes, RequestBody.Set(request));
-
-        // assert
-        result.IsSuccessStatusCode.Should().BeFalse();
-        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors.SelectMany(x => x.Value).Should()
-            .Contain($"Invalid value for hearing types");
-    }
 }

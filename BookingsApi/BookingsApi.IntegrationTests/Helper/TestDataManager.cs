@@ -3,6 +3,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.BaseQueries;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using NuGet.Packaging;
 using Testing.Common.Builders.Domain;
 using Testing.Common.Configuration;
+using JobHistory = BookingsApi.Domain.JobHistory;
 
 namespace BookingsApi.IntegrationTests.Helper
 {
@@ -24,7 +26,9 @@ namespace BookingsApi.IntegrationTests.Helper
         private readonly List<Guid> _seededHearings = new();
         public List<string> JudiciaryPersons { get; } = new();
         private readonly List<Guid> _seededJusticeUserIds = new();
+        private readonly List<Guid> _seededPersonIds = new();
         private readonly List<long> _seededAllocationIds = new();
+        private readonly List<Guid> _seededJobHistoryIds = [];
         public static string CaseNumber => "2222/3511";
 
         public void AddHearingForCleanup(Guid id)
@@ -157,7 +161,6 @@ namespace BookingsApi.IntegrationTests.Helper
             configureOptions?.Invoke(options);
             var caseType = GetCaseTypeFromDb(options.CaseTypeName);
             
-
             await using var db = new BookingsDbContext(dbContextOptions);
             
             var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues[0];
@@ -335,13 +338,10 @@ namespace BookingsApi.IntegrationTests.Helper
         private CaseType GetCaseTypeFromDb(string caseTypeName)
         {
             using var db = new BookingsDbContext(dbContextOptions);
-            var caseType = db.CaseTypes
-                .Include(x => x.CaseRoles)
-                .ThenInclude(x => x.HearingRoles)
-                .ThenInclude(x => x.UserRole)
-                .Include(x => x.HearingTypes)
-                .FirstOrDefault(x => x.Name == caseTypeName);
-
+            var caseTypes = CaseTypes.Get(db)
+                .AsNoTracking()
+                .Where(x => x.Name == caseTypeName).ToList();
+            var caseType = caseTypes[0];
             if (caseType == null)
             {
                 throw new InvalidOperationException("Unknown case type: " + caseTypeName);
@@ -443,6 +443,32 @@ namespace BookingsApi.IntegrationTests.Helper
             }
 
             _seededJusticeUserIds.Clear();
+        }
+        
+        public async Task ClearSeededPersonsAsync()
+        {
+            foreach (var id in _seededPersonIds)
+            {
+                try
+                {
+                    await using var db = new BookingsDbContext(dbContextOptions);
+                    var persons = await db.Persons.Where(x => x.Id == id).ToListAsync();
+                    var person = persons.FirstOrDefault();
+                    if (person != null)
+                    {
+                        db.Persons.Remove(person);
+                        await db.SaveChangesAsync();
+                    }
+
+                    TestContext.WriteLine(@$"Remove Person: {id}.");
+                }
+                catch (PersonNotFoundException)
+                {
+                    TestContext.WriteLine(@$"Ignoring cleanup for Person: {id}. Does not exist.");
+                }
+            }
+
+            _seededPersonIds.Clear();
         }
 
         public async Task ClearAllJusticeUsersAsync()
@@ -684,15 +710,6 @@ namespace BookingsApi.IntegrationTests.Helper
             await db.SaveChangesAsync();
         }
 
-        public async Task<Person> SeedGenericJudgePerson()
-        {
-            await using var db = new BookingsDbContext(dbContextOptions);
-            var newJudge = new PersonBuilder().Build();
-            var genericJudge = await db.Persons.AddAsync(newJudge);
-            await db.SaveChangesAsync();
-            return genericJudge.Entity;
-        }
-
         public async Task<List<VideoHearing>> SeedMultiDayHearing(bool useV2, 
             IEnumerable<DateTime> dates, int scheduledDuration = 45, 
             bool addPanelMember = false)
@@ -741,6 +758,52 @@ namespace BookingsApi.IntegrationTests.Helper
         {
             await using var db = new BookingsDbContext(dbContextOptions);
             await AddPanelMemberToVideoHearing(videoHearing, db);
+        }
+
+        /// <summary>
+        /// Seed a person with a unique email address. Not intended to be used to be added to hearings
+        /// </summary>
+        /// <returns></returns>
+        public async Task<Person> SeedPerson()
+        {
+            var person = new PersonBuilder(true).Build();
+            person.ContactEmail = $"{Guid.NewGuid():N}@auto.com";
+            await using var db = new BookingsDbContext(dbContextOptions);
+            await db.Persons.AddAsync(person);
+            await db.SaveChangesAsync();
+            _seededPersonIds.Add(person.Id);
+            return person;
+        }
+
+        public async Task<JobHistory> SeedJobHistory(string jobName, bool successful = true)
+        {
+            await using var db = new BookingsDbContext(dbContextOptions);
+            var jobHistory = new UpdateJobHistory(jobName, true);
+            await db.JobHistory.AddAsync(jobHistory);
+            await db.SaveChangesAsync();
+            _seededJobHistoryIds.Add(jobHistory.Id);
+            return jobHistory;
+        }
+
+        public async Task ClearSeededJobHistory()
+        {
+            await using var db = new BookingsDbContext(dbContextOptions);
+            foreach (var id in _seededJobHistoryIds)
+            {
+                var jobHistory = await db.JobHistory.FindAsync(id);
+                if (jobHistory != null)
+                {
+                    db.JobHistory.Remove(jobHistory);
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            _seededJobHistoryIds.Clear();
+        }
+
+        public void AddJobHistoryToBeDeleted(Guid id)
+        {
+            _seededJobHistoryIds.Add(id);
         }
     }
 }
