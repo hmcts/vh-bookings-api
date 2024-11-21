@@ -32,7 +32,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
             
             createdResponse.Should().BeEquivalentTo(justiceUserResponse);
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            var justiceUser = db.JusticeUsers.First(x => x.Username == _request.Username);
+            var justiceUser = await db.JusticeUsers.FirstAsync(x => x.Username == _request.Username);
             justiceUser.Id.Should().Be(justiceUserResponse.Id);
             Hooks.AddJusticeUserForCleanup(justiceUser.Id);
         }

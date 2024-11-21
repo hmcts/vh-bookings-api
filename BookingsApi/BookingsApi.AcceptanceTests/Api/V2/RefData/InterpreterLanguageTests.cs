@@ -1,9 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Contract.V1.Enums;
+using BookingsApi.Contract.V2.Enums;
 using FluentAssertions;
 
-namespace BookingsApi.AcceptanceTests.Api.V1.RefData;
+namespace BookingsApi.AcceptanceTests.Api.V2.RefData;
 
 public class InterpreterLanguageTests : ApiTest
 {

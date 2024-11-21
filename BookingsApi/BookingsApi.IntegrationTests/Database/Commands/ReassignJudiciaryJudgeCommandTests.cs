@@ -2,9 +2,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
-using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.JudiciaryParticipants;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -42,7 +40,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             
             var updatedHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
-            var newAssignedJudge = (JudiciaryParticipant)updatedHearing.GetJudge();
+            var newAssignedJudge = updatedHearing.GetJudge();
             newAssignedJudge.Should().NotBeNull();
             newAssignedJudge.JudiciaryPerson.PersonalCode.Should().Be(personalCode);
         }
@@ -68,7 +66,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             
             var updatedHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
-            var newAssignedJudge = (JudiciaryParticipant)updatedHearing.GetJudge();
+            var newAssignedJudge = updatedHearing.GetJudge();
             newAssignedJudge.Should().NotBeNull();
             newAssignedJudge.JudiciaryPerson.PersonalCode.Should().Be(personalCode);
         }

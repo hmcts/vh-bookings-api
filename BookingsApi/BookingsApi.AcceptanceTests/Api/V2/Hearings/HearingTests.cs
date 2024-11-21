@@ -1,16 +1,14 @@
 using System;
 using System.Threading.Tasks;
-using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Responses;
 using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Api.V1.Request;
+using Testing.Common.Builders.Api.V2;
 
-namespace BookingsApi.AcceptanceTests.Api.V1.Hearings;
+namespace BookingsApi.AcceptanceTests.Api.V2.Hearings;
 
 public class HearingTests : ApiTest
 {
-    
-    private HearingDetailsResponse _hearing;
+    private HearingDetailsResponseV2 _hearing;
     
     [TearDown]
     public async Task TearDown()
@@ -24,10 +22,10 @@ public class HearingTests : ApiTest
     public async Task should_get_hearings_for_today()
     {
         var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
-        var caseName = "Bookings Api AC Automated";
-        var request = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
-        _hearing = await BookingsApiClient.BookNewHearingAsync(request);
-        var results = await BookingsApiClient.GetHearingsForTodayAsync();
+        var caseName = "Bookings Api AC Automated - Get Today";
+        var request = new SimpleBookNewHearingRequestV2(caseName, hearingSchedule, SimpleBookNewHearingRequestV2.JudgePersonalCode).Build();
+        _hearing = await BookingsApiClient.BookNewHearingWithCodeAsync(request);
+        var results = await BookingsApiClient.GetHearingsForTodayV2Async();
         results.Should().NotBeNullOrEmpty();
         results.Should().Contain(e => e.Id == _hearing.Id);
         
@@ -37,10 +35,10 @@ public class HearingTests : ApiTest
     public async Task should_get_hearings_for_today_by_venue()
     {
         var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
-        var caseName = "Bookings Api AC Automated";
-        var request = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
-        _hearing = await BookingsApiClient.BookNewHearingAsync(request);
-        var results = await BookingsApiClient.GetHearingsForTodayByVenueAsync(new []{ _hearing.HearingVenueName });
+        var caseName = "Bookings Api AC Automated - Get Today By Venue";
+        var request = new SimpleBookNewHearingRequestV2(caseName, hearingSchedule, SimpleBookNewHearingRequestV2.JudgePersonalCode).Build();
+        _hearing = await BookingsApiClient.BookNewHearingWithCodeAsync(request);
+        var results = await BookingsApiClient.GetHearingsForTodayByVenueV2Async([_hearing.HearingVenueName]);
         results.Should().NotBeNullOrEmpty();
         results.Should().Contain(e => e.Id == _hearing.Id);
         foreach (var result in results)

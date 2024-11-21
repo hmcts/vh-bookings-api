@@ -25,7 +25,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
         var fName = "First";
         var lName = "Last";
         var number = "12345";
-        var userToEdit = await SeedJusticeUser(_hearing.Id, "testuser@hmcts.net");
+        var userToEdit = await SeedJusticeUser("testuser@hmcts.net");
         
         var command = new EditJusticeUserCommand(userToEdit.Id, userToEdit.Username,fName, lName, number, (int)roleId);
         
@@ -50,7 +50,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
     {
         // Arrange
         _hearing = await Hooks.SeedVideoHearingV2();
-        var userToEdit = await SeedJusticeUser(_hearing.Id, "testuser@hmcts.net");
+        var userToEdit = await SeedJusticeUser("testuser@hmcts.net");
         var fName = userToEdit.FirstName;
         var lName = userToEdit.Lastname;
         var number = userToEdit.Telephone;
@@ -85,7 +85,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
         }).Message.Should().Be($"Justice user with id {id} not found");
     }
 
-    private async Task<JusticeUser> SeedJusticeUser(Guid allocatedHearingId, string username)
+    private async Task<JusticeUser> SeedJusticeUser(string username)
     {
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
         

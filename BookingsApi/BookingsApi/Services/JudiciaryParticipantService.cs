@@ -68,14 +68,14 @@ namespace BookingsApi.Services
         {
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
 
-            var oldJudge = (JudiciaryParticipant)hearing.GetJudge();
+            var oldJudge = hearing.GetJudge();
             
             var command = new ReassignJudiciaryJudgeCommand(hearingId, newJudiciaryJudge);
             await _commandHandler.Handle(command);
             
             hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
             
-            var newJudge = (JudiciaryParticipant)hearing.GetJudge();
+            var newJudge = hearing.GetJudge();
 
             await PublishEventsForJudiciaryJudgeReassigned(hearing, oldJudge?.Id, newJudge, sendNotification);
 

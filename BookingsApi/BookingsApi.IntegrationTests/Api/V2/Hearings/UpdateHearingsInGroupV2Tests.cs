@@ -161,7 +161,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var expectedNewUser =
                 PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
             var expectedWelcomeNewUser =
-                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).Where(x => x is not JudicialOfficeHolder)
+                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing)
                     .ToList().Count;
             AssertNotificationEvents(firstHearing, expectedExistingUser, expectedNewUser, expectedWelcomeNewUser);
         }
@@ -708,7 +708,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             new()
             {
                 HearingId = hearing.Id,
-                CaseNumber = hearing.GetCases().First().Number,
+                CaseNumber = hearing.GetCases()[0].Number,
                 ScheduledDateTime = hearing.ScheduledDateTime,
                 ScheduledDuration = hearing.ScheduledDuration,
                 HearingVenueCode = hearing.HearingVenue.VenueCode,

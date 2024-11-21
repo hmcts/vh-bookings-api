@@ -11,6 +11,7 @@ namespace Testing.Common.Builders.Api.V2;
 
 public class SimpleBookNewHearingRequestV2
 {
+    public const string JudgePersonalCode = "VH-GENERIC-ACCOUNT-00";
     private readonly BookNewHearingRequestV2 _requestV2;
 
     public SimpleBookNewHearingRequestV2(string caseName, DateTime scheduledDateTime, string judiciaryJudgePersonCode)

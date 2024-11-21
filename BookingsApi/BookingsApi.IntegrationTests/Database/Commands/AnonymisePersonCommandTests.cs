@@ -7,7 +7,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     public class AnonymisePersonCommandTests : DatabaseTestsBase
     {
         private AnonymisePersonCommandHandler _commandHandler;
-        private Guid _newHearingId;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
         
         [SetUp]
@@ -15,7 +14,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _commandHandler = new AnonymisePersonCommandHandler(context);
-            _newHearingId = Guid.Empty;
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
         }
 
@@ -32,9 +30,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedPastHearings(DateTime.Today.AddMonths(-3));
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
-            var person = seededHearing.GetPersons().First();
+            var person = seededHearing.GetPersons()[0];
             var command = new AnonymisePersonCommand(person.Username);
             await _commandHandler.Handle(command);
             
