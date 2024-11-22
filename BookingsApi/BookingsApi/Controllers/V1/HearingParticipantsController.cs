@@ -19,7 +19,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("RemoveParticipantFromHearing")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(string),(int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> RemoveParticipantFromHearing(Guid hearingId, Guid participantId)
         {

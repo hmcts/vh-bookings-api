@@ -1,3 +1,4 @@
+using BookingsApi.Client;
 using Microsoft.Extensions.Configuration;
 using Testing.Common.Configuration;
 using Testing.Common.Stubs;
@@ -46,5 +47,11 @@ public class ApiTest
 
         var context = new BookingsDbContext(BookingsDbContextOptions);
         context.Database.Migrate();
+    }
+
+    protected BookingsApiClient GetBookingsApiClient()
+    {
+        var client = Application.CreateClient();
+        return BookingsApiClient.GetClient(client);
     }
 }
