@@ -12,7 +12,6 @@ UPDATE VhBookings.dbo.CaseType SET ExpirationDate = '2024-11-29', UpdatedDate = 
 
 GO;
 
-SELECT * FROM VhBookings.dbo.CaseType WHERE HearingVenue.ExpirationDate IS NOT NULL
 
 COMMIT TRANSACTION;
 SET XACT_ABORT OFF
