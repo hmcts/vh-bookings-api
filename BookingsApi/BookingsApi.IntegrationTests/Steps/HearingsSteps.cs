@@ -311,7 +311,7 @@ namespace BookingsApi.IntegrationTests.Steps
             var caseType = scenario switch
             {
                 Scenario.Valid => seededHearing.CaseTypeId,
-                Scenario.Invalid => 99,
+                Scenario.Invalid => 200,
                 _ => throw new InvalidOperationException("Unexpected type of case type: " + scenario)
             };
 
