@@ -26,9 +26,9 @@ UPDATE VhBookings.dbo.CaseType SET ExpirationDate = '2024-11-29', UpdatedDate = 
     'Right to buy',
     'Tenant Fees',
     'Tribunal',
-    'Employment Appeals Tribunal',
+    'Employment Appeal Tribunal',
     'Upper Tribunal Administrative Appeals Chamber',
-    'Upper Tribunals Land Chamber'
+    'Upper Tribunal Lands Chamber'
 )
 
 GO;
