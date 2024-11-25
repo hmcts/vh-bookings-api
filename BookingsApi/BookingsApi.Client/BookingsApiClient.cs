@@ -1108,7 +1108,6 @@ namespace BookingsApi.Client
         /// </summary>
         /// <param name="contactEmail">The contact email to match</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        [System.Obsolete]
         System.Threading.Tasks.Task<PersonResponseV2> SearchForNonJudgePersonsByContactEmailV2Async(string contactEmail);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -1117,7 +1116,6 @@ namespace BookingsApi.Client
         /// </summary>
         /// <param name="contactEmail">The contact email to match</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        [System.Obsolete]
         System.Threading.Tasks.Task<PersonResponseV2> SearchForNonJudgePersonsByContactEmailV2Async(string contactEmail, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
@@ -8842,7 +8840,6 @@ namespace BookingsApi.Client
         /// </summary>
         /// <param name="contactEmail">The contact email to match</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        [System.Obsolete]
         public virtual System.Threading.Tasks.Task<PersonResponseV2> SearchForNonJudgePersonsByContactEmailV2Async(string contactEmail)
         {
             return SearchForNonJudgePersonsByContactEmailV2Async(contactEmail, System.Threading.CancellationToken.None);
@@ -8854,7 +8851,6 @@ namespace BookingsApi.Client
         /// </summary>
         /// <param name="contactEmail">The contact email to match</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        [System.Obsolete]
         public virtual async System.Threading.Tasks.Task<PersonResponseV2> SearchForNonJudgePersonsByContactEmailV2Async(string contactEmail, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;

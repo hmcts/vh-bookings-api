@@ -53,7 +53,6 @@ public class PersonsControllerV2(
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [MapToApiVersion("2.0")]
-    [Obsolete("Ported for backwards compatibility, will be removed in a future release.")]
     public async Task<ActionResult<PersonResponseV2>> SearchForNonJudgePersonsByContactEmailAsync(
         [FromQuery] string contactEmail)
     {
