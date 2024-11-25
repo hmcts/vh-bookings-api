@@ -6,7 +6,6 @@ namespace BookingsApi.Controllers.V2;
 
 [Produces("application/json")]
 [Route(template: "v{version:apiVersion}/hearings")]
-[Route("hearings")]
 [ApiVersion("2.0")]
 [ApiController]
 public class WorkAllocationsControllerV2(

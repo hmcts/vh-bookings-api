@@ -25,7 +25,7 @@ public class GetUnallocatedHearingsTests : ApiTest
         // act
         using var client = Application.CreateClient();
         var bookingsApiClient = BookingsApiClient.GetClient(client);
-        var unallocatedHearings = await bookingsApiClient.GetUnallocatedHearingsAsync();
+        var unallocatedHearings = await bookingsApiClient.GetUnallocatedHearingsV2Async();
         
         // assert
         unallocatedHearings.Should().NotContain(x => x.Id == allocatedHearing.Id);
