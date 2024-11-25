@@ -139,7 +139,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder(addJudge: false)
                 .WithJudiciaryJudge()
                 .Build();
-            var judiciaryPerson = ((JudiciaryParticipant)hearing.GetJudge()).JudiciaryPerson;
+            var judiciaryPerson = hearing.GetJudge().JudiciaryPerson;
             var judiciaryJudge = new JudiciaryJudge("DisplayName", judiciaryPerson);
             
             // Act
@@ -156,7 +156,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder(addJudge: false)
                 .WithJudiciaryJudge()
                 .Build();
-            var judiciaryPerson = ((JudiciaryParticipant)hearing.GetJudge()).JudiciaryPerson;
+            var judiciaryPerson = hearing.GetJudge().JudiciaryPerson;
             var judiciaryJudge = new JudiciaryJudge("DisplayName", judiciaryPerson);
             var language = new InterpreterLanguage(1, "spa", "Spanish", "", InterpreterType.Verbal, true);
             
@@ -175,7 +175,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder(addJudge: false)
                 .WithJudiciaryJudge()
                 .Build();
-            var judiciaryPerson = ((JudiciaryParticipant)hearing.GetJudge()).JudiciaryPerson;
+            var judiciaryPerson = hearing.GetJudge().JudiciaryPerson;
             var judiciaryJudge = new JudiciaryJudge("DisplayName", judiciaryPerson);
             const string otherLanguage = "made up";
             

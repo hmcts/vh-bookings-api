@@ -58,7 +58,7 @@ namespace BookingsApi.UnitTests.Services
             hearing.Participants[0].ChangePerson(new PersonBuilder(true, treatPersonAsNew: false).Build());
             
             var createConferenceMessageCount = 1;
-            var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge) - 1;
+            var newParticipantWelcomeMessageCount = hearing.Participants.Count - 1;
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 1;
             var hearingConfirmationForExistingParticipantsMessageCount = 1;
             var updateDate = hearing.UpdatedDate.TrimSeconds();

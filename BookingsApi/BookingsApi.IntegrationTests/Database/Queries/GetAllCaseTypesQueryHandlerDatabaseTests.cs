@@ -10,11 +10,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         private DateTime? _originalCaseTypeExpirationDate;
 
         [SetUp]
-        public void Setup()
+        public async Task Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _handler = new GetAllCaseTypesQueryHandler(context);
-            InitGetOriginalExpirationDate();
+            await InitGetOriginalExpirationDate();
         }
 
         protected override async Task Cleanup()

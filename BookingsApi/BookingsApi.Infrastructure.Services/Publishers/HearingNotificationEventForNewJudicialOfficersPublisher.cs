@@ -1,4 +1,5 @@
-﻿using BookingsApi.Domain;
+﻿using System;
+using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using System.Linq;
@@ -8,6 +9,7 @@ using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.Infrastructure.Services.Publishers
 {
+    [Obsolete("JudicialOfficeHolder are no longer created as Participants")]
     public class HearingNotificationEventForNewJudicialOfficersPublisher : IPublishEvent
     {
         private readonly IEventPublisher _eventPublisher;

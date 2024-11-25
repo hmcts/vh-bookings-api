@@ -63,7 +63,7 @@ namespace BookingsApi.UnitTests.Services
             var hearing = new VideoHearingBuilder().WithCase().Build();
             hearing.IsFirstDayOfMultiDayHearing = true;
             var createConferenceMessageCount = 1;
-            var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not Judge && x is not JudicialOfficeHolder);
+            var newParticipantWelcomeMessageCount = hearing.Participants.Count;
             var hearingConfirmationForNewParticipantsMessageCount = 0;
 
             var totalMessages = newParticipantWelcomeMessageCount + createConferenceMessageCount + hearingConfirmationForNewParticipantsMessageCount;
