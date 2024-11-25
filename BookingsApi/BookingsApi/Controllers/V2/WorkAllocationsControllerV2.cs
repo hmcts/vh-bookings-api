@@ -18,11 +18,11 @@ public class WorkAllocationsControllerV2(
     /// </summary>
     /// <returns>unallocated hearings</returns>
     [HttpGet("unallocated")]
-    [OpenApiOperation("GetUnallocatedHearings")]
+    [OpenApiOperation("GetUnallocatedHearingsV2")]
     [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [MapToApiVersion("2.0")]
-    public async Task<IActionResult> GetUnallocatedHearings()
+    public async Task<IActionResult> GetUnallocatedHearingsV2()
     {
         var today = DateTime.UtcNow; //provide a range (from today 1 year) for unallocated hearings rather than return all past and present.
         var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true, fromDate: today, toDate: today.AddYears(1), excludeDurationsThatSpanMultipleDays: true);
