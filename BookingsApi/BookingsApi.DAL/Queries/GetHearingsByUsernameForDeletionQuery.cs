@@ -44,7 +44,7 @@ public class
         {
             var p = hearing.GetParticipants().First(x =>
                 x.Person.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase));
-            if (p is Judge)
+            if (p.HearingRole.IsJudge()) // judge class is removed so switch to HearingRole
             {
                 throw new PersonIsAJudgeException(username);
             }

@@ -73,7 +73,7 @@ public class PersonsControllerV2(
         var hearings = await queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(hearingsQuery);
 
         var judicialHearings = hearings.SelectMany(v => v.Participants.Where(p => p.PersonId == person.Id))
-            .Any(x => x is Judge);
+            .Any(x => x.HearingRole.IsJudge());
 
         if (judicialHearings)
         {

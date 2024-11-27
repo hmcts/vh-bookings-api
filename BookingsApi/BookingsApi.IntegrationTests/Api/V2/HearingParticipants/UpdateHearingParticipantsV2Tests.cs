@@ -305,7 +305,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         // arrange
         var hearing = await Hooks.SeedVideoHearingV2(options
             => { options.Case = new Case("UpdateParticipantsRemoveParticipant", "UpdateParticipantsRemoveParticipant"); }, BookingStatus.Created);
-        var participantBeingRemoved = hearing.Participants.First(x=> !x.HearingRole.IsJudge());
+        var participantBeingRemoved = hearing.Participants[0];
         var request = new UpdateHearingParticipantsRequestV2 { RemovedParticipantIds = new List<Guid>{ participantBeingRemoved.Id } };
 
         // act
