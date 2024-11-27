@@ -20,7 +20,7 @@ namespace BookingsApi.Mappings.V1
                     ? judgeParticipant.DisplayName 
                     : string.Empty;
                 var courtroomAccount = judgeParticipant?.JudiciaryPerson != null
-                    ? judgeParticipant.ContactEmail
+                    ? judgeParticipant.JudiciaryPerson.Email
                     : string.Empty;
 
                 var @case = string.IsNullOrEmpty(caseNumber)
