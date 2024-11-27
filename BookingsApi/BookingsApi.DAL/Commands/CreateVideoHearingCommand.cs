@@ -74,6 +74,7 @@ namespace BookingsApi.DAL.Commands
                 videoHearing.SourceId = command.SourceId;
 
             await context.VideoHearings.AddAsync(videoHearing);
+            await context.Entry(videoHearing).Reference(x => x.CaseType).LoadAsync();
             var languages = await context.InterpreterLanguages.Where(x => x.Live).ToListAsync();
             var participants = await hearingService.AddParticipantToService(videoHearing, command.Participants, languages);
 
