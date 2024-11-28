@@ -5,8 +5,8 @@
 namespace RefData.Migrations
 {
     [DbContext(typeof(RefDataContext))]
-    [Migration("20241128150655_RenameCaseTypes")]
-    public partial class RenameCaseTypes : Migration
+    [Migration("20241128150655_RevertCaseTypes")]
+    public partial class RevertCaseTypes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
