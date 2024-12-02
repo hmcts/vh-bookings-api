@@ -8,7 +8,7 @@ namespace BookingsApi.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-              nameof(HearingType),
+              "HearingType",
               new[] { "Id", "Name", "CaseTypeId" },
               new object[,]
               {

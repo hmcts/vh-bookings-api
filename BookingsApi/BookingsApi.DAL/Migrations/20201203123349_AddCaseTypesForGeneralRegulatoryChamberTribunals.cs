@@ -28,7 +28,7 @@ namespace BookingsApi.DAL.Migrations
                     { 31, "GRC - Welfare of Animals" }
                 });
             migrationBuilder.InsertData(
-                nameof(HearingType),
+                "HearingType",
                 new[] { "Id", "Name", "CaseTypeId" },
                 new object[,]
                 {

@@ -8,7 +8,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     {
         private RemoveEndPointFromHearingCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
-        private Guid _newHearingId;
 
         [SetUp]
         public void Setup()
@@ -16,7 +15,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _commandHandler = new RemoveEndPointFromHearingCommandHandler(context);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
-            _newHearingId = Guid.Empty;
         }
 
         [Test]
@@ -33,7 +31,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             Assert.ThrowsAsync<EndPointNotFoundException>(() => _commandHandler.Handle(
                 new RemoveEndPointFromHearingCommand(seededHearing.Id, Guid.NewGuid())));
@@ -44,7 +41,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             var beforeCount = seededHearing.GetEndpoints().Count;
 
@@ -64,7 +60,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             var beforeCount = seededHearing.GetEndpoints().Count;
 

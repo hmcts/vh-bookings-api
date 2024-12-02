@@ -80,9 +80,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _commandHandler.Handle(command);
 
             var justiceUserOneNonWorkHours = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
-                .First(x => x.Id == justiceUserOne.Id).VhoNonAvailability[0];
+                .FirstAsync(x => x.Id == justiceUserOne.Id).Result.VhoNonAvailability[0];
             var justiceUserTwoNonWorkHours = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
-                .First(x => x.Id == justiceUserTwo.Id).VhoNonAvailability[0];
+                .FirstAsync(x => x.Id == justiceUserTwo.Id).Result.VhoNonAvailability[0];
 
             // Assert
             justiceUserOneNonWorkHours.StartTime.Should().Be(justiceUserOneNonWorkingHoursStartTime);

@@ -68,7 +68,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var justiceUserId = _justiceUser.Id;
             var originalNonWorkingHoursLength = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
-                .First(x => x.Id == _justiceUser.Id).VhoNonAvailability.Count;
+                .FirstAsync(x => x.Id == _justiceUser.Id).Result.VhoNonAvailability.Count;
 
             var newHour1 = new
             {
@@ -84,7 +84,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Act
             await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(justiceUserId, newHours));
             var newNonWorkingHoursLength = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
-                .First(x => x.Id == _justiceUser.Id).VhoNonAvailability.Count(x => x.JusticeUserId == justiceUserId);
+                .FirstAsync(x => x.Id == _justiceUser.Id).Result.VhoNonAvailability.Count(x => x.JusticeUserId == justiceUserId);
 
             // Assert
             (originalNonWorkingHoursLength + 1).Should().Be(newNonWorkingHoursLength);

@@ -46,20 +46,4 @@ namespace BookingsApi.DAL.Mappings
             // Method intentionally left empty.
         }
     }
-
-    public class JudgeMap : IEntityTypeConfiguration<Judge>
-    {
-        public void Configure(EntityTypeBuilder<Judge> builder)
-        {
-            // Method intentionally left empty.
-        }
-    }
-
-    public class JudicialOfficeHolderMap : IEntityTypeConfiguration<JudicialOfficeHolder>
-    {
-        public void Configure(EntityTypeBuilder<JudicialOfficeHolder> builder)
-        {
-            // Method intentionally left empty.
-        }
-    }
 }

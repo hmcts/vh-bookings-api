@@ -33,7 +33,7 @@ namespace BookingsApi.DAL.Migrations
                 value: 1);
             
             migrationBuilder.InsertData(
-                table: nameof(HearingType),
+                table: "HearingType",
                 columns: new[] { "Id", "Name", "CaseTypeId", "Code", "WelshName" },
                 values: new object[,]
                 {
@@ -67,7 +67,7 @@ namespace BookingsApi.DAL.Migrations
             for (int hearingTypeId = 294; hearingTypeId <= 296; hearingTypeId++)
             {
                 migrationBuilder.DeleteData(
-                    table: nameof(HearingType),
+                    table: "HearingType",
                     keyColumn: "Id",
                     keyValue: hearingTypeId);
             }

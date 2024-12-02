@@ -39,11 +39,7 @@ namespace BookingsApi.UnitTests.DAL.Queries
             _anonymisedPerson =
                 new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), $"{Faker.Internet.Email()}@email.net");
 
-            _caseType1 = new CaseType(12, "case 1")
-            {
-                HearingTypes = [new HearingType("Hearing type 1")],
-                CaseRoles = []
-            };
+            _caseType1 = new CaseType(12, "case 1");
 
             await _context.CaseTypes.AddAsync(_caseType1);
             await _context.SaveChangesAsync();

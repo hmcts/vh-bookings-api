@@ -195,11 +195,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
 
             personHearingRole = new HearingRole(2, "hearing role 2") {UserRole = _personUserRole};
             
-            _caseType1 = new CaseType(12, "case 1")
-            {
-                HearingTypes = [new HearingType("Hearing type 1")],
-                CaseRoles = []
-            };
+            _caseType1 = new CaseType(12, "case 1");
             
             await _context.CaseTypes.AddAsync(_caseType1);
             await _context.SaveChangesAsync();

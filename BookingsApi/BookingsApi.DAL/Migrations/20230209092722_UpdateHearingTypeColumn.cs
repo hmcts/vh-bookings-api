@@ -8,7 +8,7 @@ namespace BookingsApi.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.UpdateData(
-                table: nameof(HearingType),
+                table: "HearingType",
                 keyColumn: "Id",
                 keyValue: 284,
                 column: "Name",
@@ -18,7 +18,7 @@ namespace BookingsApi.DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.UpdateData(
-                table: nameof(HearingType),
+                table: "HearingType",
                 keyColumn: "Id",
                 keyValue: 284,
                 column: "Name",

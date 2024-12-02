@@ -19,7 +19,7 @@ namespace BookingsApi.DAL.Migrations
                 });
             
             migrationBuilder.InsertData(
-                nameof(HearingType),
+                "HearingType",
                 new[] { "Id", "Name", "CaseTypeId" },
                 new object[,]
                 {
@@ -160,7 +160,7 @@ namespace BookingsApi.DAL.Migrations
 
             for (int hearingTypeId = 274; hearingTypeId <= 286; hearingTypeId++)
             {
-                migrationBuilder.DeleteData(nameof(HearingType), "Id", hearingTypeId);
+                migrationBuilder.DeleteData("HearingType", "Id", hearingTypeId);
             }
 
             migrationBuilder.DeleteData(nameof(CaseType), "Id", 51);

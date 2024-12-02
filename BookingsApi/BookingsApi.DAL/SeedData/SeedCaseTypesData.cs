@@ -72,7 +72,7 @@ namespace BookingsApi.DAL.SeedData
         public void AddHearingTypes(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-                table: nameof(HearingType),
+                table: "HearingType",
                 columns: new[] {"Id", "Name", "CaseTypeId"},
                 values: new object[,]
                 {
@@ -114,7 +114,7 @@ namespace BookingsApi.DAL.SeedData
         {
             migrationBuilder.Sql($"delete from {nameof(HearingRole)}");
             migrationBuilder.Sql($"delete from {"CaseRole"}");
-            migrationBuilder.Sql($"delete from {nameof(HearingType)}");
+            migrationBuilder.Sql($"delete from {"HearingType"}");
             migrationBuilder.Sql($"delete from {nameof(CaseType)}");
             migrationBuilder.Sql($"delete from {nameof(UserRole)}");
             migrationBuilder.Sql($"delete from {nameof(HearingVenue)}");
@@ -123,7 +123,7 @@ namespace BookingsApi.DAL.SeedData
             migrationBuilder.Sql($"dbcc checkident('{nameof(CaseType)}',reseed,0)");
             migrationBuilder.Sql($"dbcc checkident('{nameof(UserRole)}',reseed,0)");
             migrationBuilder.Sql($"dbcc checkident('{"CaseRole"}',reseed,0)");
-            migrationBuilder.Sql($"dbcc checkident('{nameof(HearingType)}',reseed,0)");
+            migrationBuilder.Sql($"dbcc checkident('{"HearingType"}',reseed,0)");
         }
     }
 }

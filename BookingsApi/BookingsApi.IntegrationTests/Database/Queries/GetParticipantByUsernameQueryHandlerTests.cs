@@ -28,7 +28,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
-            var firstParticipant = seededHearing.GetParticipants().First();
+            var firstParticipant = seededHearing.GetParticipants()[0];
             var query = new GetParticipantsByUsernameQuery(firstParticipant.Person.Username);
             var participant = (await _handler.Handle(query)).FirstOrDefault();
 

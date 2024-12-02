@@ -19,7 +19,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         private BookingsDbContext _context;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
         private VideoHearing _hearing;
-        private CaseType _genericCaseType;
         private List<string> _personsToRemove;
 
         private List<ExistingParticipantDetails> _existingParticipants;
@@ -34,7 +33,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             _personsToRemove = new List<string>();
             _context = new BookingsDbContext(BookingsDbContextOptions);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(_context);
-            _genericCaseType = await CaseTypes.Get(_context).FirstAsync(x => x.Name == "Generic");
+            await CaseTypes.Get(_context).FirstAsync(x => x.Name == "Generic");
 
             var hearingService = new HearingService(_context);
 

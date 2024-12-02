@@ -9,7 +9,7 @@ namespace BookingsApi.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-                table: nameof(HearingType),
+                table: "HearingType",
                 columns: new[] { "Id", "Name", "CaseTypeId" },
                 values: new object[,]
                 {

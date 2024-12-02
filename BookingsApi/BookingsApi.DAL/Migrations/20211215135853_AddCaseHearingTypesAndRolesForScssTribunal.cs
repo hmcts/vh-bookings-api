@@ -18,7 +18,7 @@ namespace BookingsApi.DAL.Migrations
                     { 40, "SSCS Tribunal" }
                 });
             migrationBuilder.InsertData(
-                nameof(HearingType),
+                "HearingType",
                 new[] { "Id", "Name", "CaseTypeId" },
                 new object[,]
                 {
@@ -88,7 +88,7 @@ namespace BookingsApi.DAL.Migrations
 
             for (int hearingTypeId = 179; hearingTypeId <= 185; hearingTypeId++)
             {
-                migrationBuilder.DeleteData(nameof(HearingType), "Id", hearingTypeId);
+                migrationBuilder.DeleteData("HearingType", "Id", hearingTypeId);
             }
 
             for (int hearingRoleId = 769; hearingRoleId <= 790; hearingRoleId++)

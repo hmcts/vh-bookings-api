@@ -1,8 +1,6 @@
 ﻿using BookingsApi.Domain;
-using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
-using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common;
 

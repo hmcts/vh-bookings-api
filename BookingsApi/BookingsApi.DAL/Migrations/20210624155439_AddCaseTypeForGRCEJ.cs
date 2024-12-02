@@ -26,7 +26,7 @@ namespace BookingsApi.DAL.Migrations
                 });
 
             migrationBuilder.InsertData(
-                nameof(HearingType),
+                "HearingType",
                 new[] { "Id", "Name", "CaseTypeId" },
                 new object[,]
                 {
