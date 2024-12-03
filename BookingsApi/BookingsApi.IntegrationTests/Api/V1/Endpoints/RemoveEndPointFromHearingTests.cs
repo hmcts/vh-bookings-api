@@ -22,7 +22,7 @@ public class RemoveEndPointFromHearingTests : ApiTest
         using var client = Application.CreateClient();
         
         // act
-        var result = await client.DeleteAsync(ApiUriFactory.JVEndPointEndpoints.RemoveEndPointFromHearing(hearingId, endpointId));
+        var result = await client.DeleteAsync(ApiUriFactory.JvEndPointEndpoints.RemoveEndPointFromHearing(hearingId, endpointId));
 
         // assert
         result.IsSuccessStatusCode.Should().BeFalse();
@@ -44,7 +44,7 @@ public class RemoveEndPointFromHearingTests : ApiTest
         var hearingId = seededHearing.Id;
         var endpointId = endpoint.Id;
         // act
-        var result = await client.DeleteAsync(ApiUriFactory.JVEndPointEndpoints.RemoveEndPointFromHearing(hearingId, endpointId));
+        var result = await client.DeleteAsync(ApiUriFactory.JvEndPointEndpoints.RemoveEndPointFromHearing(hearingId, endpointId));
 
         // assert
         result.IsSuccessStatusCode.Should().BeTrue();
@@ -75,7 +75,7 @@ public class RemoveEndPointFromHearingTests : ApiTest
         var hearingId = seededHearing.Id;
         var endpointId = endpoint.Id;
         // act
-        var result = await client.DeleteAsync(ApiUriFactory.JVEndPointEndpoints.RemoveEndPointFromHearing(hearingId, endpointId));
+        var result = await client.DeleteAsync(ApiUriFactory.JvEndPointEndpoints.RemoveEndPointFromHearing(hearingId, endpointId));
 
         // assert
         result.IsSuccessStatusCode.Should().BeTrue();
@@ -98,7 +98,7 @@ public class RemoveEndPointFromHearingTests : ApiTest
         using var client = Application.CreateClient();
         
         // act
-        var result = await client.DeleteAsync(ApiUriFactory.JVEndPointEndpoints.RemoveEndPointFromHearing(hearingId, endpointId));
+        var result = await client.DeleteAsync(ApiUriFactory.JvEndPointEndpoints.RemoveEndPointFromHearing(hearingId, endpointId));
 
         // assert
         result.IsSuccessStatusCode.Should().BeFalse();
@@ -120,7 +120,7 @@ public class RemoveEndPointFromHearingTests : ApiTest
         var endpointId = Guid.NewGuid();
         
         // act
-        var result = await client.DeleteAsync(ApiUriFactory.JVEndPointEndpoints.RemoveEndPointFromHearing(hearingId, endpointId));
+        var result = await client.DeleteAsync(ApiUriFactory.JvEndPointEndpoints.RemoveEndPointFromHearing(hearingId, endpointId));
 
         // assert
         result.IsSuccessStatusCode.Should().BeFalse();

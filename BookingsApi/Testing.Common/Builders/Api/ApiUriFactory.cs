@@ -1,5 +1,4 @@
 ﻿using System;
-using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
 
 namespace Testing.Common.Builders.Api
@@ -90,7 +89,7 @@ namespace Testing.Common.Builders.Api
             public static string SearchForNonJudicialPersonsByContactEmail(string contactEmail) => $"{ApiRoot}/?contactEmail={contactEmail}";
         }
             
-        public static class JVEndPointEndpoints
+        public static class JvEndPointEndpoints
         {
             private static string ApiRoot => "hearings";
             public static string RemoveEndPointFromHearing(Guid hearingId, Guid endpointId) => $"{ApiRoot}/{hearingId}/endpoints/{endpointId}";
