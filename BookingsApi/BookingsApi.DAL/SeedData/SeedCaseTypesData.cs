@@ -69,7 +69,7 @@ namespace BookingsApi.DAL.SeedData
                 });
         }
 
-        public void AddHearingTypes(MigrationBuilder migrationBuilder)
+        public static void AddHearingTypes(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
                 table: "HearingType",
