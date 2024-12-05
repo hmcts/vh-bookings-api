@@ -7,7 +7,6 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.JudiciaryParticipants;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
-using BookingsApi.Domain.SpecialMeasure;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
@@ -33,38 +32,6 @@ namespace BookingsApi.Domain
         }
 
         /// <summary>
-        /// Instantiate a hearing when the hearing type is known, typically used for V1
-        /// </summary>
-        protected Hearing(
-            CaseType caseType,
-            HearingType hearingType,
-            DateTime scheduledDateTime,
-            int scheduledDuration,
-            HearingVenue hearingVenue,
-            string hearingRoomName,
-            string otherInformation,
-            string createdBy,
-            bool audioRecordingRequired,
-            string cancelReason)
-            : this()
-        {
-            ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue);
-
-            ScheduledDateTime = scheduledDateTime;
-            ScheduledDuration = scheduledDuration;
-            CaseTypeId = caseType.Id;
-            HearingTypeId = hearingType?.Id;
-            HearingVenueId = hearingVenue.Id;
-
-            Status = BookingStatus.Booked;
-            HearingRoomName = hearingRoomName;
-            OtherInformation = otherInformation;
-            CreatedBy = createdBy;
-            AudioRecordingRequired = audioRecordingRequired;
-            CancelReason = cancelReason;
-        }
-
-        /// <summary>
         /// Instantiate a hearing without a hearing type, typically used for V2
         /// </summary>
         protected Hearing(
@@ -75,10 +42,20 @@ namespace BookingsApi.Domain
             string hearingRoomName,
             string otherInformation,
             string createdBy,
-            bool audioRecordingRequired,
-            string cancelReason) : this(caseType, null, scheduledDateTime, scheduledDuration, hearingVenue,
-            hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason)
+            bool audioRecordingRequired) : this()
         {
+            ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue);
+            
+            ScheduledDateTime = scheduledDateTime;
+            ScheduledDuration = scheduledDuration;
+            CaseTypeId = caseType.Id;
+            HearingVenueId = hearingVenue.Id;
+            
+            Status = BookingStatus.Booked;
+            HearingRoomName = hearingRoomName;
+            OtherInformation = otherInformation;
+            CreatedBy = createdBy;
+            AudioRecordingRequired = audioRecordingRequired;
         }
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
@@ -86,8 +63,6 @@ namespace BookingsApi.Domain
         public int? HearingVenueId { get; set; }
         public int CaseTypeId { get; set; }
         public virtual CaseType CaseType { get; set; }
-        public int? HearingTypeId { get; set; }
-        public virtual HearingType HearingType { get; protected set; }
         protected virtual IList<Case> Cases { get; set; }
         public DateTime ScheduledDateTime { get; protected set; }
         public int ScheduledDuration { get; protected set; }
@@ -186,32 +161,6 @@ namespace BookingsApi.Domain
         {
             endpoints.ForEach(AddEndpoint);
         }
-
-        [Obsolete("Use AddIndividual with externalReferenceId instead")]
-        public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
-        {
-            if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
-            {
-                throw new DomainRuleException(nameof(person),
-                    $"Participant {person.ContactEmail} already exists in the hearing");
-            }
-
-            Participant participant = new Individual(person, hearingRole, caseRole)
-            {
-                DisplayName = displayName,
-                CreatedBy = CreatedBy
-            };
-            Participants.Add(participant);
-
-            if (hearingRole.IsInterpreter() && CaseType.SupportsAudioRecording())
-            {
-                AudioRecordingRequired = true;
-            }
-
-            UpdatedDate = DateTime.UtcNow;
-
-            return participant;
-        }
         
         public Participant AddIndividual(string externalReferenceId, Person person, HearingRole hearingRole, string displayName)
         {
@@ -228,29 +177,6 @@ namespace BookingsApi.Domain
                 AudioRecordingRequired = true;
             }
 
-            UpdatedDate = DateTime.UtcNow;
-
-            return participant;
-        }
-
-        [Obsolete("Use AddRepresentative with externalReferenceId instead")]
-        public Participant AddRepresentative(Person person, HearingRole hearingRole, CaseRole caseRole,
-            string displayName,
-            string representee)
-        {
-            if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
-            {
-                throw new DomainRuleException(nameof(person), "Participant already exists in the hearing");
-            }
-
-            Participant participant = new Representative(person, hearingRole, caseRole)
-            {
-                Representee = representee
-            };
-
-            participant.DisplayName = displayName;
-            participant.CreatedBy = CreatedBy;
-            Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
 
             return participant;
@@ -289,55 +215,6 @@ namespace BookingsApi.Domain
             }
         }
 
-        [Obsolete("Use AddJudiciaryJudge instead")]
-        public Participant AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
-        {
-            if (!hearingRole.IsJudge())
-            {
-                throw new DomainRuleException(nameof(hearingRole), "Hearing role should be Judge");
-            }
-
-            if (DoesParticipantExistByUsername(person.Username))
-            {
-                throw new DomainRuleException(nameof(person),
-                    "Judge with given username already exists in the hearing");
-            }
-
-            if (DoesJudgeExist())
-            {
-                throw new DomainRuleException(nameof(person),
-                    "A participant with Judge role already exists in the hearing");
-            }
-
-            Participant participant = new Judge(person, hearingRole, caseRole)
-            {
-                DisplayName = displayName,
-                CreatedBy = CreatedBy
-            };
-            Participants.Add(participant);
-            UpdatedDate = DateTime.UtcNow;
-            UpdateBookingStatusJudgeRequirement();
-            return participant;
-        }
-
-        [Obsolete("Use AddJudiciaryPanelMember instead")]
-        public Participant AddJudicialOfficeHolder(Person person, HearingRole hearingRole, CaseRole caseRole,
-            string displayName)
-        {
-            if (person.ContactEmail != null && DoesParticipantExistByContactEmail(person.ContactEmail))
-            {
-                throw new DomainRuleException(nameof(person), "Judicial office holder already exists in the hearing");
-            }
-
-            var participant = new JudicialOfficeHolder(person, hearingRole, caseRole)
-            {
-                DisplayName = displayName
-            };
-            Participants.Add(participant);
-            UpdatedDate = DateTime.UtcNow;
-            return participant;
-        }
-
         public void RemoveJudiciaryParticipantByPersonalCode(string judiciaryParticipantPersonalCode)
         {
             ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveJudiciaryParticipantCloseToStartTime);
@@ -355,7 +232,6 @@ namespace BookingsApi.Domain
         }
 
         public bool HasHost =>
-            GetParticipants().Any(x => x.HearingRole.Name == "Judge") ||
             JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
         public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName,
@@ -721,11 +597,6 @@ namespace BookingsApi.Domain
             return Participants.Any(x => x.Person.ContactEmail == contactEmail);
         }
 
-        private bool DoesParticipantExistByUsername(string username)
-        {
-            return Participants.Any(x => x.Person.Username == username);
-        }
-
         private bool DoesEndpointExist(string sip)
         {
             return Endpoints.Any(x => x.Sip.Equals(sip, StringComparison.InvariantCultureIgnoreCase));
@@ -752,7 +623,7 @@ namespace BookingsApi.Domain
                 judiciaryJudges = judiciaryJudges.Where(x => x.JudiciaryPerson.PersonalCode != personalCodeToIgnore);
             }
 
-            return Participants.Any(x => x is Judge) || judiciaryJudges.Any();
+            return judiciaryJudges.Any();
         }
 
         private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue)
@@ -857,21 +728,12 @@ namespace BookingsApi.Domain
         }
 
         /// <summary>
-        /// ### important! Ensure that this hearings, participant and judiciaryParticipant entities are eagerly loaded before invoking this method. Will assume there is no judge  the properties are null
+        /// ### important! Ensure that this hearing, participant and judiciaryParticipant entities are eagerly loaded before invoking this method.
+        /// Will assume there is no judge the properties are null
         /// </summary>
-        public ParticipantBase GetJudge()
+        public JudiciaryParticipant GetJudge()
         {
-            var judge = GetNonJudiciaryJudge();
-            var judiciaryJudge = GetJudiciaryJudge();
-
-            return (ParticipantBase)judge ?? judiciaryJudge;
-        }
-
-        private Participant GetNonJudiciaryJudge()
-        {
-            var judge = Participants.FirstOrDefault(p => p is Judge);
-
-            return judge;
+            return GetJudiciaryJudge();
         }
 
         private JudiciaryParticipant GetJudiciaryJudge()
@@ -952,45 +814,13 @@ namespace BookingsApi.Domain
 
             ConferenceSupplier = commandVideoSupplier;
         }
-
-        public void ReassignJudge(Judge newJudge)
-        {
-            ArgumentNullException.ThrowIfNull(newJudge);
-
-            ValidateReassignJudgeAllowed();
-
-            var judiciaryJudge = GetJudiciaryJudge();
-            if (judiciaryJudge != null)
-            {
-                throw new DomainRuleException(nameof(newJudge),
-                    DomainRuleErrorMessages.CannotAddJudgeWhenJudiciaryJudgeAlreadyExists);
-            }
-
-            var existingJudge = Participants.FirstOrDefault(p => p is Judge);
-            if (existingJudge != null)
-            {
-                Participants.Remove(existingJudge);
-            }
-
-            Participants.Add(newJudge);
-
-            UpdatedDate = DateTime.UtcNow;
-        }
-
+        
         public void ReassignJudiciaryJudge(JudiciaryJudge newJudge, InterpreterLanguage interpreterLanguage = null,
             string otherLanguage = null)
         {
             ArgumentNullException.ThrowIfNull(newJudge);
 
             ValidateReassignJudgeAllowed();
-
-            var nonJudiciaryJudge = GetNonJudiciaryJudge();
-            if (nonJudiciaryJudge != null)
-            {
-                throw new DomainRuleException(nameof(newJudge),
-                    DomainRuleErrorMessages.CannotAddJudiciaryJudgeWhenJudgeAlreadyExists);
-            }
-
             ValidateAddJudiciaryParticipant(newJudge.JudiciaryPerson,
                 roleToIgnore: newJudge.HearingRoleCode.ToString());
 

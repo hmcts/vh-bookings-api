@@ -12,7 +12,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 .WithJudiciaryJudge()
                 .Build();
             var judiciaryJudge = hearing.GetJudiciaryParticipants()
-                .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+                .First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
             var personalCode = judiciaryJudge.JudiciaryPerson.PersonalCode;
             var newDisplayName = "New Display Name";
 
@@ -52,7 +52,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 .WithJudiciaryJudge()
                 .Build();
             var participant = hearing.GetJudiciaryParticipants()
-                .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+                .First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
             var updatedDateBefore = hearing.UpdatedDate;
 
             hearing.UpdateJudiciaryParticipantByPersonalCode(participant.JudiciaryPerson.PersonalCode,
@@ -69,7 +69,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 .WithJudiciaryJudge()
                 .Build();
             var judiciaryJudge = hearing.GetJudiciaryParticipants()
-                .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+                .First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
             var personalCode = judiciaryJudge.JudiciaryPerson.PersonalCode;
             var newDisplayName = "New Display Name";
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
@@ -91,7 +91,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 .WithJudiciaryJudge()
                 .Build();
             var judiciaryJudge = hearing.GetJudiciaryParticipants()
-                .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+                .First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
             var personalCode = judiciaryJudge.JudiciaryPerson.PersonalCode;
             var newDisplayName = displayName;
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
@@ -101,22 +101,6 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == "Display name cannot be empty").Should().BeTrue();
-        }
-
-        [Test]
-        public void Should_raise_exception_if_judiciary_judge_does_not_exist()
-        {
-            var hearing = new VideoHearingBuilder(addJudge: false)
-                .Build();
-            var personalCode = "Non Existing Personal Code";
-            var newDisplayName = "New Display Name";
-            var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
-
-            var action = () =>
-                hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode, null, null);
-
-            action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Exists(x => x.Message == DomainRuleErrorMessages.JudiciaryParticipantNotFound).Should().BeTrue();
         }
 
         [TestCase(JudiciaryParticipantHearingRoleCode.Judge)]
@@ -130,14 +114,14 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             if (newHearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember)
                 hearing.UpdateStatus(BookingStatus.BookedWithoutJudge, "System", "reason");
             var judiciaryPanelMember = hearing.GetJudiciaryParticipants()
-                .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
+                .First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
             var personalCode = judiciaryPanelMember.JudiciaryPerson.PersonalCode;
             var newDisplayName = "New Display Name";
 
             hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode, null, null);
 
             var updatedJudiciaryPanelMember = hearing.GetJudiciaryParticipants()
-                .FirstOrDefault(
+                .First(
                     x => x.JudiciaryPerson.PersonalCode == judiciaryPanelMember.JudiciaryPerson.PersonalCode);
             updatedJudiciaryPanelMember.DisplayName.Should().Be(newDisplayName);
             updatedJudiciaryPanelMember.HearingRoleCode.Should().Be(newHearingRoleCode);
@@ -152,7 +136,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 .WithJudiciaryPanelMember()
                 .Build();
             var judiciaryPanelMember = hearing.GetJudiciaryParticipants()
-                .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
+                .First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
             var personalCode = judiciaryPanelMember.JudiciaryPerson.PersonalCode;
             var newDisplayName = displayName;
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
@@ -165,7 +149,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void Should_raise_exception_if_judiciary_panel_member_does_not_exist()
+        public void Should_raise_exception_if_judiciary_participant_does_not_exist()
         {
             var hearing = new VideoHearingBuilder(addJudge: false)
                 .Build();
@@ -187,7 +171,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 .WithJudiciaryPanelMember()
                 .Build();
             var judiciaryPanelMember = hearing.GetJudiciaryParticipants()
-                .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
+                .First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
             var personalCode = judiciaryPanelMember.JudiciaryPerson.PersonalCode;
             var newDisplayName = "New Display Name";
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge;
@@ -209,7 +193,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 .WithJudiciaryJudge()
                 .Build();
             var judiciaryPanelMember = hearing.GetJudiciaryParticipants()
-                .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
+                .First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
             var personalCode = judiciaryPanelMember.JudiciaryPerson.PersonalCode;
             var newDisplayName = "New Display Name";
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge;

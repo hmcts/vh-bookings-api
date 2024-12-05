@@ -20,7 +20,7 @@ public class AllocateHearingAutomaticallyTests : ApiTest
         // arrange
         var caseNumber = "TestSearchQueryInt";
         var nonGenericCaseTypeName = "Financial Remedy";
-        var hearing = await Hooks.SeedVideoHearing(options =>
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.Case = new Case(caseNumber,"Integration");
             options.CaseTypeName = nonGenericCaseTypeName;
@@ -63,7 +63,7 @@ public class AllocateHearingAutomaticallyTests : ApiTest
         // arrange
         var caseNumber = "TestSearchQueryInt";
         var nonGenericCaseTypeName = "Financial Remedy";
-        var hearing = await Hooks.SeedVideoHearing(options =>
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.Case = new Case(caseNumber, "Integration");
             options.CaseTypeName = nonGenericCaseTypeName;
@@ -89,7 +89,7 @@ public class AllocateHearingAutomaticallyTests : ApiTest
         // arrange
         var caseNumber = "TestSearchQueryInt";
         var nonGenericCaseTypeName = "Financial Remedy";
-        var hearing = await Hooks.SeedVideoHearing(options =>
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.Case = new Case(caseNumber, "Integration");
             options.CaseTypeName = nonGenericCaseTypeName;

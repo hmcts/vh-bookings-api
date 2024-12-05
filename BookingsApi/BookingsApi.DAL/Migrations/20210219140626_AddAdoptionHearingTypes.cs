@@ -17,7 +17,7 @@ namespace BookingsApi.DAL.Migrations
                 });
             
             migrationBuilder.InsertData(
-                nameof(HearingType),
+                "HearingType",
                 new[] { "Id", "Name", "CaseTypeId" },
                 new object[,]
                 {
@@ -26,7 +26,7 @@ namespace BookingsApi.DAL.Migrations
                 });
             
             migrationBuilder.InsertData(
-                nameof(CaseRole),
+                "CaseRole",
                 new[] { "Id", "Name", "Group", "CaseTypeId" },
                 new object[,]
                 {
@@ -84,12 +84,12 @@ namespace BookingsApi.DAL.Migrations
 
             for (var i = 173; i < 175; i++)
             {
-                migrationBuilder.DeleteData(nameof(HearingType), "Id", i);
+                migrationBuilder.DeleteData("HearingType", "Id", i);
             }
 
             for (var i = 194; i < 198; i++)
             {
-                migrationBuilder.DeleteData(nameof(CaseRole), "Id", i);
+                migrationBuilder.DeleteData("CaseRole", "Id", i);
             }
 
             for (var i = 666; i < 697; i++)

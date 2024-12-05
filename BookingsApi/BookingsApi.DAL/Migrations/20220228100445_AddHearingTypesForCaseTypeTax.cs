@@ -8,7 +8,7 @@ namespace BookingsApi.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-              nameof(HearingType),
+              "HearingType",
               new[] { "Id", "Name", "CaseTypeId" },
               new object[,]
               {
@@ -19,8 +19,8 @@ namespace BookingsApi.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(nameof(HearingType), "Id", 267);
-            migrationBuilder.DeleteData(nameof(HearingType), "Id", 268);
+            migrationBuilder.DeleteData("HearingType", "Id", 267);
+            migrationBuilder.DeleteData("HearingType", "Id", 268);
         }
     }
 }

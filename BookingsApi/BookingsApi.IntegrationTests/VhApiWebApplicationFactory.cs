@@ -36,7 +36,7 @@ namespace BookingsApi.IntegrationTests
         protected override void ConfigureClient(HttpClient client)
         {
             base.ConfigureClient(client);
-            client.Timeout = System.TimeSpan.FromMinutes(20); // this should stop timeouts and cancelled ops when debugging
+            client.Timeout = TimeSpan.FromMinutes(20); // this should stop timeouts and cancelled ops when debugging
             client.SetFakeBearerToken("admin", ["ROLE_ADMIN", "ROLE_GENTLEMAN"]);
         }
     }

@@ -21,7 +21,7 @@ namespace BookingsApi.DAL.Migrations
                 });
             
             migrationBuilder.InsertData(
-                nameof(HearingType),
+                "HearingType",
                 new[] { "Id", "Name", "CaseTypeId", "Code" },
                 new object[,]
                 {
@@ -31,7 +31,7 @@ namespace BookingsApi.DAL.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: nameof(CaseRole),
+                table: "CaseRole",
                 columns: new[] { "Id", "Name", "Group", "CaseTypeId" },
                 values: new object[,]
                 {
@@ -99,7 +99,7 @@ namespace BookingsApi.DAL.Migrations
             for (int caseRoleId = 350; caseRoleId <= 355; caseRoleId++)
             {
                 migrationBuilder.DeleteData(
-                    table: nameof(CaseRole),
+                    table: "CaseRole",
                     keyColumn: "Id",
                     keyValue: caseRoleId);
             }
@@ -107,7 +107,7 @@ namespace BookingsApi.DAL.Migrations
             for (int hearingTypeId = 300; hearingTypeId <= 302; hearingTypeId++)
             {
                 migrationBuilder.DeleteData(
-                    table: nameof(HearingType),
+                    table: "HearingType",
                     keyColumn: "Id",
                     keyValue: hearingTypeId);
             }

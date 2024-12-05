@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Contract.V2.Enums;
 
 namespace BookingsApi.Contract.V2.Responses;

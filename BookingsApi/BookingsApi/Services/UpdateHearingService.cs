@@ -1,22 +1,37 @@
-using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.Helpers;
-using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Mappings.V2.Extensions;
-using ContractJudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode;
+using ContractJudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V2.Enums.JudiciaryParticipantHearingRoleCode;
+using DomainJudiciaryParticipantHearingRoleCode = BookingsApi.Domain.Enumerations.JudiciaryParticipantHearingRoleCode;
 
 namespace BookingsApi.Services
 {
     public interface IUpdateHearingService
     {
-        [Obsolete("Use UpdateParticipantsV2 instead")]
-        Task UpdateParticipantsV1(UpdateHearingParticipantsRequest request, VideoHearing hearing);
+        /// <summary>
+        /// Update participants for a hearing, including adding, updating, removing participants and linked participants
+        /// </summary>
+        /// <param name="request">Proposed changes</param>
+        /// <param name="hearing">Hearing to update</param>
+        /// <param name="hearingRoles">Available roles</param>
+        /// <returns></returns>
         Task UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles);
-        [Obsolete("Use UpdateEndpointsV2 instead")]
-        Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing);
+        
+        /// <summary>
+        /// Update endpoints for a hearing, including adding, updating, removing endpoints
+        /// </summary>
+        /// <param name="request">Proposed changes</param>
+        /// <param name="hearing">Hearing to update</param>
+        /// <returns></returns>
         Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing);
+        
+        /// <summary>
+        /// Update judiciary participants for a hearing, including adding, updating, removing judiciary participants
+        /// </summary>
+        /// <param name="request">Proposed changes</param>
+        /// <param name="hearing">Hearing to update</param>
+        /// <returns></returns>
         Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequest request, VideoHearing hearing);
     }
     
@@ -39,40 +54,14 @@ namespace BookingsApi.Services
             _judiciaryParticipantService = judiciaryParticipantService;
         }
 
-        public async Task UpdateParticipantsV1(UpdateHearingParticipantsRequest request, VideoHearing hearing)
-        {
-            await _hearingParticipantService.UpdateParticipants(request, hearing, sendNotification: false);
-        }
-        
+        /// <inheritdoc />
         public async Task UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, 
             VideoHearing hearing, List<HearingRole> hearingRoles)
         {
             await _hearingParticipantService.UpdateParticipantsV2(request, hearing, hearingRoles, sendNotification: false);
         }
-        
-        public async Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing)
-        {
-            var sipAddressStem = _endpointService.GetSipAddressStem((BookingSupplier)hearing.ConferenceSupplier);
-            foreach (var endpointToAdd in request.NewEndpoints)
-            {
-                var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
-                    sipAddressStem);
 
-                await _endpointService.AddEndpoint(hearing.Id, newEp);
-            }
-
-            foreach (var endpointToUpdate in request.ExistingEndpoints)
-            {
-                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id,
-                    endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName, null, null);
-            }
-
-            foreach (var endpointIdToRemove in request.RemovedEndpointIds)
-            {
-                await _endpointService.RemoveEndpoint(hearing, endpointIdToRemove);
-            }
-        }
-        
+        /// <inheritdoc />
         public async Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing)
         {
             var sipAddressStem = _endpointService.GetSipAddressStem((BookingSupplier)hearing.ConferenceSupplier);
@@ -97,9 +86,10 @@ namespace BookingsApi.Services
             }
         }
 
+        /// <inheritdoc />
         public async Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequest request, VideoHearing hearing)
         {
-            var oldJudge = hearing.GetJudiciaryParticipants().FirstOrDefault(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            var oldJudge = hearing.GetJudiciaryParticipants().FirstOrDefault(jp => jp.HearingRoleCode == DomainJudiciaryParticipantHearingRoleCode.Judge);
             
             var newJudge = request.NewJudiciaryParticipants.Find(jp => jp.HearingRoleCode == ContractJudiciaryParticipantHearingRoleCode.Judge);
             if (newJudge != null)

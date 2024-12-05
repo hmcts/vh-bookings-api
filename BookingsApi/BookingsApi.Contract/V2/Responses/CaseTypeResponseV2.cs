@@ -16,12 +16,10 @@ namespace BookingsApi.Contract.V2.Responses
         ///     Unique identifier
         /// </summary>
         public int Id { get; set; }
-
-        /// <summary>
-        ///     The hearing types
-        /// </summary>
-        public List<HearingTypeResponseV2> HearingTypes { get; set; }
         
+        /// <summary>
+        /// The service identifier
+        /// </summary>
         public string ServiceId { get; set; }
     }
 }

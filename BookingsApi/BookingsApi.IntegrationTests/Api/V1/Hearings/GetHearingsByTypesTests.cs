@@ -1,3 +1,4 @@
+using BookingsApi.Client;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 
@@ -33,27 +34,51 @@ public class GetHearingsByTypesTests : ApiTest
         hearingResponse.Should().NotBeNull();
         hearingResponse.Hearings[0].Hearings
             .Exists(x => x.HearingId == hearing.Id && x.JudgeName == hearing.GetJudge().DisplayName).Should().BeTrue();
-
     }
-    
+
     [Test]
-    public async Task should_return_bad_request_when_hearing_types_are_invalid()
+    public async Task should_return_validation_problem_if_case_type_does_not_exist()
     {
         // arrange
         var request = new GetHearingRequest
         {
-            Types = new List<int>{ -1 }
+            Types = [9999999]
         };
-            
+        var client = GetBookingsApiClient();
+        
         // act
-        using var client = Application.CreateClient();
-        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.GetHearingsByTypes, RequestBody.Set(request));
-
+        var act = async () => await client.GetHearingsByTypesAsync(request);
+        
         // assert
-        result.IsSuccessStatusCode.Should().BeFalse();
-        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors.SelectMany(x => x.Value).Should()
-            .Contain($"Invalid value for hearing types");
+        var exception = await act.Should().ThrowAsync<BookingsApiException>();
+        exception.And.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        var bookingsApiException = exception.And.As<BookingsApiException<ValidationProblemDetails>>();
+        
+        var errors = bookingsApiException.Result.Errors;
+        errors.Should().ContainKey("Hearing types");
+        errors["Hearing types"].Should().Contain("Invalid value for hearing types");
+    }
+    
+    [Test]
+    public async Task should_return_validation_problem_if_hearing_venue_does_not_exist()
+    {
+        // arrange
+        var request = new GetHearingRequest
+        {
+            VenueIds = [9999999]
+        };
+        var client = GetBookingsApiClient();
+        
+        // act
+        var act = async () => await client.GetHearingsByTypesAsync(request);
+        
+        // assert
+        var exception = await act.Should().ThrowAsync<BookingsApiException>();
+        exception.And.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        var bookingsApiException = exception.And.As<BookingsApiException<ValidationProblemDetails>>();
+        
+        var errors = bookingsApiException.Result.Errors;
+        errors.Should().ContainKey("Venue ids");
+        errors["Venue ids"].Should().Contain("Invalid value for venue ids");
     }
 }

@@ -17,7 +17,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_find_contact_by_email_case_insensitive()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             
             var person = seededHearing.GetParticipants().First(x => x is Individual).Person;
             var contactEmail = person.ContactEmail;
@@ -34,7 +34,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_find_contact_by_email_when_searched_from_middle_of_string()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             var person = seededHearing.GetParticipants().First(x => x is Individual).Person;
             var contactEmail = person.ContactEmail;
             

@@ -29,11 +29,9 @@ namespace BookingsApi.UnitTests.Services
             hearing.Participants[0].ChangePerson(new PersonBuilder(treatPersonAsNew: false).Build());
             hearing.Participants[1].ChangePerson(new PersonBuilder(treatPersonAsNew: false).Build());
             
-            var judgeAsExistingParticipant = 1;
-            var multidayHearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count(x => x is not Judge) - 2;
-            var mulitdayHearingConfirmationForExistingParticipantsMessageCount = 2;
-            var totalMessages = multidayHearingConfirmationForNewParticipantsMessageCount
-                + mulitdayHearingConfirmationForExistingParticipantsMessageCount + judgeAsExistingParticipant;
+            var multiDayHearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 2;
+            var multiDayHearingConfirmationForExistingParticipantsMessageCount = 2 + hearing.JudiciaryParticipants.Count;
+            var totalMessages = multiDayHearingConfirmationForNewParticipantsMessageCount + multiDayHearingConfirmationForExistingParticipantsMessageCount;
             var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
             
             await _clonedMultidaysAsynchronousProcess.Start(hearing, 2, videoHearingUpdateDate);
@@ -42,9 +40,9 @@ namespace BookingsApi.UnitTests.Services
             messages.Length.Should().Be(totalMessages);
 
             messages.Count(x => x.IntegrationEvent is NewParticipantMultidayHearingConfirmationEvent).
-                Should().Be(multidayHearingConfirmationForNewParticipantsMessageCount);
+                Should().Be(multiDayHearingConfirmationForNewParticipantsMessageCount);
             messages.Count(x => x.IntegrationEvent is ExistingParticipantMultidayHearingConfirmationEvent).
-                Should().Be(mulitdayHearingConfirmationForExistingParticipantsMessageCount + judgeAsExistingParticipant);
+                Should().Be(multiDayHearingConfirmationForExistingParticipantsMessageCount);
         }
     }
 }

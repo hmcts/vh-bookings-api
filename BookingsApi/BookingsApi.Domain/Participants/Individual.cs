@@ -11,13 +11,6 @@ namespace BookingsApi.Domain.Participants
         {
         }
 
-        [Obsolete("Use the constructor with the external reference id")]
-        public Individual(Person person, HearingRole hearingRole, CaseRole caseRole) : base(person, hearingRole,
-            caseRole)
-        {
-
-        }
-
         public Individual(string externalReferenceId, Person person, HearingRole hearingRole, string displayName) : base(
             externalReferenceId, person, hearingRole, displayName)
         {

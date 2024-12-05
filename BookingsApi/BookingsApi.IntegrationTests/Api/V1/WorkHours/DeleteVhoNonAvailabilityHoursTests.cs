@@ -73,11 +73,13 @@ public class DeleteVhoNonAvailabilityHoursTests : ApiTest
         
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
         db.Attach(justiceUser);
-        justiceUser.AddOrUpdateNonAvailability(new DateTime(2099, 7, 1), new DateTime(2099, 7, 2));
+        justiceUser.AddOrUpdateNonAvailability(
+            new DateTime(2099, 7, 1, 0, 0, 0, DateTimeKind.Utc),
+            new DateTime(2099, 7, 2, 0, 0, 0, DateTimeKind.Utc));
         await db.SaveChangesAsync();
         db.ChangeTracker.Clear();
         
-        var nonAvailability = justiceUser.VhoNonAvailability.First();
+        var nonAvailability = justiceUser.VhoNonAvailability[0];
         
         // act
         using var client = Application.CreateClient();

@@ -9,20 +9,12 @@ namespace BookingsApi.Controllers.V1
     [Route("justiceuser")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class JusticeUserController : ControllerBase
+    public class JusticeUserController(
+        IQueryHandler queryHandler,
+        ICommandHandler commandHandler,
+        ILogger<JusticeUserController> logger)
+        : ControllerBase
     {
-        private readonly IQueryHandler _queryHandler;
-        private readonly ICommandHandler _commandHandler;
-        private readonly ILogger<JusticeUserController> _logger;
-
-        public JusticeUserController(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            ILogger<JusticeUserController> logger)
-        {
-            _queryHandler = queryHandler;
-            _commandHandler = commandHandler;
-            _logger = logger;
-        }
-
         /// <summary>
         /// Add a new justice user
         /// </summary>
@@ -51,9 +43,9 @@ namespace BookingsApi.Controllers.V1
             };
             try
             {
-                await _commandHandler.Handle(command);
+                await commandHandler.Handle(command);
                 var justiceUser =
-                    await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(
+                    await queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(
                         new GetJusticeUserByUsernameQuery(request.Username));
 
                 var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
@@ -63,7 +55,7 @@ namespace BookingsApi.Controllers.V1
             }
             catch (JusticeUserAlreadyExistsException e)
             {
-                _logger.LogError(e, "Detected an existing user for the username {Username}", request.Username);
+                logger.LogError(e, "Detected an existing user for the username {Username}", request.Username);
                 return Conflict(e.Message);
             }
         }
@@ -92,9 +84,9 @@ namespace BookingsApi.Controllers.V1
             var command = new EditJusticeUserCommand(request.Id, request.Username, request.FirstName, request.LastName,
                 request.ContactTelephone, userRoleIds);
 
-            await _commandHandler.Handle(command);
+            await commandHandler.Handle(command);
             var justiceUser =
-                await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(
+                await queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(
                     new GetJusticeUserByUsernameQuery(request.Username));
 
             var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
@@ -116,7 +108,7 @@ namespace BookingsApi.Controllers.V1
         {
             var query = new GetJusticeUserByUsernameQuery(username);
             var justiceUser =
-                await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(query);
+                await queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(query);
 
             if (justiceUser == null)
                 return NotFound();
@@ -142,7 +134,7 @@ namespace BookingsApi.Controllers.V1
         {
             var query = new GetJusticeUserListQuery(term, includeDeleted);
             var userList =
-                await _queryHandler.Handle<GetJusticeUserListQuery, List<JusticeUser>>(query);
+                await queryHandler.Handle<GetJusticeUserListQuery, List<JusticeUser>>(query);
 
             return Ok(userList.Select(JusticeUserToResponseMapper.Map).ToList());
         }
@@ -167,7 +159,7 @@ namespace BookingsApi.Controllers.V1
             }
 
             var command = new DeleteJusticeUserCommand(id);
-            await _commandHandler.Handle(command);
+            await commandHandler.Handle(command);
             return NoContent();
         }
 
@@ -193,7 +185,7 @@ namespace BookingsApi.Controllers.V1
 
             var command = new RestoreJusticeUserCommand(request.Id);
 
-            await _commandHandler.Handle(command);
+            await commandHandler.Handle(command);
             return NoContent();
 
         }

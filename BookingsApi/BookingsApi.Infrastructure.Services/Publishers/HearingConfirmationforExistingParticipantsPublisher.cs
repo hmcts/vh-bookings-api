@@ -24,7 +24,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in existingParticipants)
             {
-                var participantDto = ParticipantDtoMapper.MapToDto(participant, videoHearing.OtherInformation);
+                var participantDto = ParticipantDtoMapper.MapToDto(participant);
                 
                 await _eventPublisher.PublishAsync(new ExistingParticipantHearingConfirmationEvent(EventDtoMappers.MapToHearingConfirmationDto(
                     videoHearing.Id, videoHearing.ScheduledDateTime, participantDto, @case)));

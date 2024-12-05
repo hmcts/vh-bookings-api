@@ -1,5 +1,6 @@
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -18,9 +19,9 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_hearings_for_username()
         {
-            var hearing1 = await Hooks.SeedVideoHearing();
-            var hearing2 = await Hooks.SeedVideoHearing();
-            var hearing3 = await Hooks.SeedVideoHearing();
+            var hearing1 = await Hooks.SeedVideoHearingV2();
+            var hearing2 = await Hooks.SeedVideoHearingV2();
+            var hearing3 = await Hooks.SeedVideoHearingV2();
 
             var individual = hearing2.GetParticipants().First(x => x.HearingRole.UserRole.IsIndividual);
             var username = individual.Person.Username;
@@ -34,19 +35,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             result.Exists(x => x.Id == hearing3.Id).Should().BeFalse();
         }
         
-        [Test]
-        public async Task Should_throw_exception_when_searching_with_judge_username()
-        {
-            var hearing = await Hooks.SeedVideoHearing();
-            await Hooks.SeedVideoHearing();
-            await Hooks.SeedVideoHearing();
-
-            var username = hearing.GetParticipants().First(x => x is Judge).Person.Username;
-
-            var query = new GetHearingsByUsernameForDeletionQuery(username);
-
-            Assert.ThrowsAsync<PersonIsAJudgeException>(() => _handler.Handle(query)).Message.Should().Contain("is a judge");
-        }
 
         [Test]
         public void should_throw_person_not_found_exception_if_username_not_found()

@@ -17,7 +17,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_participants_in_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var participants = await _handler.Handle(new GetParticipantsInHearingQuery(seededHearing.Id));
@@ -30,8 +30,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 participant.HearingRole.Should().NotBeNull();
                 participant.HearingRole.Name.Should().NotBeNull();
 
-                participant.CaseRole.Should().NotBeNull();
-                participant.CaseRole.Name.Should().NotBeNull();
                 var person = participant.Person;
                 var existingPerson = seededHearing.GetParticipants().First(x => x.Person.ContactEmail == person.ContactEmail)
                     .Person;

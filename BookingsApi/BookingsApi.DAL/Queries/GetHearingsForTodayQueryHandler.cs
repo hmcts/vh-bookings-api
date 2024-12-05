@@ -24,7 +24,7 @@ namespace BookingsApi.DAL.Queries
             var hearingQuery = _context.VideoHearings
                 .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.Person).ThenInclude(x => x.Organisation)
-                .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
+                .Include(x => x.Participants)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole).ThenInclude(x => x.UserRole)
                 .Include(x => x.HearingCases).ThenInclude(x => x.Case)
                 .Include(x => x.Endpoints)

@@ -12,14 +12,12 @@ public class ApiTest
     protected TestDataManager Hooks { get; private set; }
     private IConfigurationRoot _configRoot;
     private string _databaseConnectionString;
-    protected Person GenericJudge { get; private set; }
 
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
         RegisterSettings();
         RunMigrations();
-        GenericJudge = Hooks.SeedGenericJudgePerson().Result;
         Application = new VhApiWebApplicationFactory();
     }
 
@@ -29,6 +27,8 @@ public class ApiTest
         await Hooks.ClearSeededHearings();
         await Hooks.ClearSeededJusticeUsersAsync();
         await Hooks.ClearJudiciaryPersonsAsync();
+        await Hooks.ClearSeededPersonsAsync();
+        await Hooks.ClearSeededJobHistory();
     }
 
     private void RegisterSettings()
@@ -47,5 +47,11 @@ public class ApiTest
 
         var context = new BookingsDbContext(BookingsDbContextOptions);
         context.Database.Migrate();
+    }
+
+    protected BookingsApiClient GetBookingsApiClient()
+    {
+        var client = Application.CreateClient();
+        return BookingsApiClient.GetClient(client);
     }
 }

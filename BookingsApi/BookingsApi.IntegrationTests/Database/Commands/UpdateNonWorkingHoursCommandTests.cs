@@ -68,7 +68,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var justiceUserId = _justiceUser.Id;
             var originalNonWorkingHoursLength = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
-                .First(x => x.Id == _justiceUser.Id).VhoNonAvailability.Count;
+                .FirstAsync(x => x.Id == _justiceUser.Id).Result.VhoNonAvailability.Count;
 
             var newHour1 = new
             {
@@ -84,10 +84,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Act
             await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(justiceUserId, newHours));
             var newNonWorkingHoursLength = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
-                .First(x => x.Id == _justiceUser.Id).VhoNonAvailability.Count(x => x.JusticeUserId == justiceUserId);
+                .FirstAsync(x => x.Id == _justiceUser.Id).Result.VhoNonAvailability.Count(x => x.JusticeUserId == justiceUserId);
 
             // Assert
-            Assert.AreEqual(originalNonWorkingHoursLength + 1, newNonWorkingHoursLength);
+            (originalNonWorkingHoursLength + 1).Should().Be(newNonWorkingHoursLength);
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Arrange
             await SeedNonWorkingHours();
             var userId = _justiceUser.Id;
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             await Hooks.AddAllocation(seededHearing, _justiceUser);
             
             var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));

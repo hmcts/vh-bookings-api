@@ -10,12 +10,6 @@ namespace BookingsApi.Domain.Participants
         protected Representative()
         {
         }
-
-        [Obsolete("Use the constructor with the external reference id")]
-        public Representative(Person person, HearingRole hearingRole, CaseRole caseRole) : base(person, hearingRole,
-            caseRole)
-        {
-        }
         
         public Representative(string externalReferenceId, Person person, HearingRole hearingRole, string displayName,
             string representee) : base(

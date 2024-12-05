@@ -27,14 +27,14 @@ namespace BookingsApi.UnitTests.Mappings.V1
         [TestCase(null)]
         public void Should_map_all_properties(string caseNumber)
         {
-            var @case = string.IsNullOrEmpty(caseNumber) ? hearingsByCaseNumber[0].GetCases().FirstOrDefault():
+            var @case = string.IsNullOrEmpty(caseNumber) ? hearingsByCaseNumber[0].GetCases().First():
                                                         hearingsByCaseNumber[0].GetCases().FirstOrDefault(c => c.Number.ToLower().Trim() == caseNumber.ToLower().Trim());
 
             var result = hearingMapper.MapHearingToDetailedResponse(hearingsByCaseNumber, caseNumber);
-           
-            var judgeParticipant = hearingsByCaseNumber[0].GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
+
+            var judgeParticipant = hearingsByCaseNumber[0].GetJudge();
             var courtroomAccountName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
-            var courtroomAccount = (judgeParticipant != null && judgeParticipant.Person != null) ? judgeParticipant.Person.Username : string.Empty;
+            var courtroomAccount = judgeParticipant?.JudiciaryPerson != null ? judgeParticipant.JudiciaryPerson.Email : string.Empty;
             result[0].CaseName.Should().Be(@case.Name);
             result[0].CaseNumber.Should().Be(@case.Number);
             result[0].Id.Should().Be(hearingsByCaseNumber[0].Id);
@@ -70,8 +70,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var @case = hearingsByCaseNumber[0].GetCases().FirstOrDefault();
             hearingsByCaseNumber.ForEach(h =>
             {
-                var judge = h.GetParticipants().First(x => x is Judge);
-                h.RemoveParticipant(judge, false);
+                h.RemoveJudiciaryParticipantByPersonalCode(h.GetJudge().JudiciaryPerson.PersonalCode);
             });
 
             var result = hearingMapper.MapHearingToDetailedResponse(hearingsByCaseNumber, string.Empty);
@@ -88,7 +87,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
 
         private static VideoHearing GetHearing(bool addCase)
         {
-            var hearing = new VideoHearingBuilder().Build();
+            var hearing = new VideoHearingBuilder(addJudge:true).Build();
 
             if(addCase)
             {

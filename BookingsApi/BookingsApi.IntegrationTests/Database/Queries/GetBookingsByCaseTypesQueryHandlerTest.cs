@@ -1,5 +1,5 @@
 ﻿using BookingsApi.DAL.Queries;
-using BookingsApi.Domain.Participants;
+using BookingsApi.DAL.Queries.BaseQueries;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -21,11 +21,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_all_case_types_if_no_filter_is_given()
         {
-            var firstHearing = (await Hooks.SeedVideoHearing()).Id;
-            var financialRemedyHearing = (await Hooks.SeedVideoHearing(opts => opts.CaseTypeName = FinancialRemedy)).Id;
+            var firstHearing = (await Hooks.SeedVideoHearingV2()).Id;
+            var financialRemedyHearing = (await Hooks.SeedVideoHearingV2(opts => opts.CaseTypeName = FinancialRemedy)).Id;
 
             // we have to (potentially) look through all the existing hearings to find these
-            var query = new GetBookingsByCaseTypesQuery { Limit = _context.VideoHearings.Count() };
+            var hearingCount = await _context.VideoHearings.CountAsync();
+            var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = hearingCount };
             var result = await _handler.Handle(query);
 
             var hearingIds = result.Select(hearing => hearing.Id).ToList();
@@ -39,8 +40,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_only_return_filtered_case_types()
         {
-            await Hooks.SeedVideoHearing();
-            var financialRemedyHearing = await Hooks.SeedVideoHearing(opt
+            await Hooks.SeedVideoHearingV2();
+            var financialRemedyHearing = await Hooks.SeedVideoHearingV2(opt
                 =>
             {
                 opt.CaseTypeName = FinancialRemedy;
@@ -56,12 +57,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             hearingTypes.Should().Equal(FinancialRemedy);
         }
 
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_video_hearings_filtered_by_case_number()
         {
-            await Hooks.SeedVideoHearing();
+            await Hooks.SeedVideoHearingV2();
             
-            var videoHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
+            var videoHearing = await Hooks.SeedVideoHearingV2(opt => opt.CaseTypeName = FinancialRemedy);
 
             var query = new GetBookingsByCaseTypesQuery(new List<int> { videoHearing.CaseTypeId }) 
             { 
@@ -73,12 +74,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             result.All(h => h.HearingCases.Any(hc => hc.Case.Number == TestDataManager.CaseNumber)).Should().BeTrue();
         }
         
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_video_hearings_filtered_by_case_number_on_partial_match()
         {
-            await Hooks.SeedVideoHearing();
+            await Hooks.SeedVideoHearingV2();
             
-            var videoHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
+            var videoHearing = await Hooks.SeedVideoHearingV2(opt => opt.CaseTypeName = FinancialRemedy);
 
             var query = new GetBookingsByCaseTypesQuery(new List<int> { videoHearing.CaseTypeId }) 
             { 
@@ -93,15 +94,15 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             result.All(h => h.HearingCases.Any(hc => hc.Case.Number == TestDataManager.CaseNumber)).Should().BeTrue();  
         }
 
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_video_hearings_filtered_by_lastName()
         {
             var participantLastName = "Automation";
 
-            await Hooks.SeedVideoHearing();
+            await Hooks.SeedVideoHearingV2();
 
             
-            var query = new GetBookingsByCaseTypesQuery
+            var query = new GetBookingsByCaseTypesQuery(new List<int>())
             {
                 LastName = participantLastName
             };
@@ -110,17 +111,17 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             AssertHearingsAreFilteredByLastName(result, participantLastName);
         }
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_video_hearings_with_no_judge()
         {
 
-            var bookingsWithNoJudge = await Hooks.SeedVideoHearing(options =>
+            var bookingsWithNoJudge = await Hooks.SeedVideoHearingV2(options =>
             {
                 options.AddJudge = false;
                 options.AddPanelMember = false;
             });
 
-            var bookingsWithJudge = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
+            var bookingsWithJudge = await Hooks.SeedVideoHearingV2(opt => opt.CaseTypeName = FinancialRemedy);
 
             var query = new GetBookingsByCaseTypesQuery(new List<int> { bookingsWithJudge.CaseTypeId, bookingsWithNoJudge.CaseTypeId })
             {
@@ -132,17 +133,17 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertHearingsContainsNoJudge(hearings.ToList());
         }
         
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_video_hearings_with_no_judiciary_judge()
         {
 
-            var bookingsWithNoJudge = await Hooks.SeedVideoHearing(options =>
+            var bookingsWithNoJudge = await Hooks.SeedVideoHearingV2(options =>
             {
                 options.AddJudge = false;
                 options.AddPanelMember = false;
             });
             
-            var bookingsWithJudiciaryJudge = await Hooks.SeedVideoHearing(configureOptions: options =>
+            var bookingsWithJudiciaryJudge = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
                 options.AddJudge = true;
             });
@@ -157,7 +158,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertHearingsContainsNoJudge(hearings.ToList());
         }
 
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_video_hearings_filtered_by_venue_ids()
         {
             
@@ -167,13 +168,13 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var venue2 = venues[1];
             var venue3 = venues[2];
   
-            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue1);
-            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue2);
-            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue3);
+            await Hooks.SeedVideoHearingV2(opt => opt.HearingVenue = venue1);
+            await Hooks.SeedVideoHearingV2(opt => opt.HearingVenue = venue2);
+            await Hooks.SeedVideoHearingV2(opt => opt.HearingVenue = venue3);
 
             var venueIdsToFilterOn = new List<int> { venue1.Id, venue3.Id };
             
-            var query = new GetBookingsByCaseTypesQuery
+            var query = new GetBookingsByCaseTypesQuery(new List<int>())
             {
                 VenueIds = venueIdsToFilterOn
             };
@@ -183,7 +184,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertHearingsAreFilteredByVenueIds(result, venueIdsToFilterOn);
         }
 
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_video_hearings_filtered_by_multiple_criteria()
         {
                         var venues = await _context.Venues.AsNoTracking().ToListAsync();
@@ -192,9 +193,9 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var venue2 = venues[1];
             var venue3 = venues[2];
         
-            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue1);
-            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue2);
-            await Hooks.SeedVideoHearing(opt =>
+            await Hooks.SeedVideoHearingV2(opt => opt.HearingVenue = venue1);
+            await Hooks.SeedVideoHearingV2(opt => opt.HearingVenue = venue2);
+            await Hooks.SeedVideoHearingV2(opt =>
             {
                 opt.CaseTypeName = FinancialRemedy;
                 opt.HearingVenue = venue3;
@@ -202,7 +203,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             
             var venueIdsToFilterOn = new List<int> { venue1.Id, venue3.Id };
             
-            var query = new GetBookingsByCaseTypesQuery
+            var query = new GetBookingsByCaseTypesQuery(new List<int>())
             {
                 CaseNumber = TestDataManager.CaseNumber,
                 VenueIds = venueIdsToFilterOn
@@ -214,7 +215,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertHearingsAreFilteredByVenueIds(result, venueIdsToFilterOn);
         }
         
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_video_hearings_filtered_by_user_id()
         {
             
@@ -226,7 +227,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             var usersIdsToFilterOn = new List<Guid> { user1.Id, user2.Id };
             
-            var query = new GetBookingsByCaseTypesQuery
+            var query = new GetBookingsByCaseTypesQuery(new List<int>())
             {
                 SelectedUsers = usersIdsToFilterOn
             };
@@ -236,11 +237,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertHearingsAreFilteredByUsersIds(result, usersIdsToFilterOn);
         }
         
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_video_hearings_filtered_by_not_allocated_empty()
         {
             
-            var query = new GetBookingsByCaseTypesQuery
+            var query = new GetBookingsByCaseTypesQuery(new List<int>())
             {
                 Unallocated = true
             };
@@ -250,17 +251,17 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             result.All(x=>x.AllocatedTo == null).Should().BeTrue();
         }
         
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_video_hearings_filtered_by_not_allocated_not_empty()
         {
-                        await Hooks.SeedVideoHearing();
-            await Hooks.SeedVideoHearing();
-            await Hooks.SeedVideoHearing();
+                        await Hooks.SeedVideoHearingV2();
+            await Hooks.SeedVideoHearingV2();
+            await Hooks.SeedVideoHearingV2();
             await Hooks.SeedAllocatedJusticeUser("team.lead@hearings.reform.hmcts.net", "firstName", 
-                "secondname");
+                "secondName");
             
             
-            var query = new GetBookingsByCaseTypesQuery
+            var query = new GetBookingsByCaseTypesQuery(new List<int>())
             {
                 Unallocated = true
             };
@@ -272,17 +273,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
         private static void AssertHearingsContainsNoJudge(List<VideoHearing> hearings)
         {
-            var containsHearingsFilteredWithNoJudge = hearings
-                .SelectMany(r => r.Participants)
-                .Distinct()
-                .All(r => r is not Judge);
-            
             var containsHearingsFilteredWithNoJudiciaryJudge = hearings
                 .SelectMany(r => r.JudiciaryParticipants)
                 .Distinct()
                 .All(r => r.HearingRoleCode != Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
 
-            containsHearingsFilteredWithNoJudge.Should().BeTrue();
             containsHearingsFilteredWithNoJudiciaryJudge.Should().BeTrue();
 
             hearings.Count.Should().Be(1);
@@ -328,18 +323,18 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public void Should_throw_on_invalid_cursor()
         {
             Assert.ThrowsAsync<FormatException>(() =>
-                _handler.Handle(new GetBookingsByCaseTypesQuery { Cursor = "invalid" }));
+                _handler.Handle(new GetBookingsByCaseTypesQuery(new List<int>()) { Cursor = "invalid" }));
         }
 
         [Test]
         public async Task Should_limit_hearings_returned()
         {
-            await Hooks.SeedVideoHearing();
-            await Hooks.SeedVideoHearing();
-            await Hooks.SeedVideoHearing();
+            await Hooks.SeedVideoHearingV2();
+            await Hooks.SeedVideoHearingV2();
+            await Hooks.SeedVideoHearingV2();
 
 
-            var query = new GetBookingsByCaseTypesQuery { Limit = 2 };
+            var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 2 };
             var result = await _handler.Handle(query);
 
             result.Count.Should().Be(2);
@@ -353,7 +348,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var createdHearings = new List<Guid>();
             while (IdsAreInOrder(createdHearings) || createdHearings.Count < 3)
             {
-                createdHearings.Add((await Hooks.SeedVideoHearing()).Id);
+                createdHearings.Add((await Hooks.SeedVideoHearingV2()).Id);
             }
 
             // And paging through the results
@@ -361,7 +356,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var allHearings = new List<VideoHearing>();
             while (true)
             {
-                var result = await _handler.Handle(new GetBookingsByCaseTypesQuery { Limit = 1, Cursor = cursor });
+                var result = await _handler.Handle(new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 1, Cursor = cursor });
                 allHearings.AddRange(result);
                 if (result.NextCursor == null) break;
                 cursor = result.NextCursor;
@@ -369,32 +364,24 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             // They should all have different id's
             var ids = allHearings.Select(x => x.Id);
-            ids.Distinct().Count().Should().Be(_context.VideoHearings.Count());
+            ids.Distinct().Count().Should().Be(_context.VideoHearings.CountAsync().Result);
         }
 
         [Test]
         public async Task Should_return_hearings_on_or_after_the_from_date()
         {
-            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(1));
-            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(2));
+            await Hooks.SeedVideoHearingV2(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(1));
+            await Hooks.SeedVideoHearingV2(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(2));
             var startDate = DateTime.UtcNow.Date.AddDays(3);
-            var includedHearings = _context.VideoHearings
-                .Include("Participants.Person")
-                .Include("Participants.HearingRole.UserRole")
-                .Include("Participants.CaseRole")
-                .Include("HearingCases.Case")
-                .Include(x => x.HearingType)
-                .Include(x => x.CaseType)
-                .Include(x => x.HearingVenue)
-                .AsNoTracking().Where(x => x.ScheduledDateTime > startDate);
-
+            var includedHearings = await VideoHearings.Get(_context)
+                .Where(x => x.ScheduledDateTime > startDate).ToListAsync();
 
             var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 100, StartDate = startDate };
 
             var hearings = await _handler.Handle(query);
             var hearingIds = hearings.Select(hearing => hearing.Id).ToList();
 
-            hearingIds.Count.Should().Be(includedHearings.Count());
+            hearingIds.Count.Should().Be(includedHearings.Count);
             foreach (var hearing in includedHearings)
             {
                 hearingIds.Should().Contain(hearing.Id);
@@ -405,30 +392,24 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_return_hearings_on_or_after_the_from_date_and_before_to_date()
         {
             
-            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(1));
-            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(3));
-            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(4));
-            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(5));
+            await Hooks.SeedVideoHearingV2(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(1));
+            await Hooks.SeedVideoHearingV2(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(3));
+            await Hooks.SeedVideoHearingV2(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(4));
+            await Hooks.SeedVideoHearingV2(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(5));
 
             var startDate = DateTime.UtcNow.Date.AddDays(2);
             var endDate = DateTime.UtcNow.Date.AddDays(3);
 
-            var includedHearings = _context.VideoHearings
-                .Include("Participants.Person")
-                .Include("Participants.HearingRole.UserRole")
-                .Include("Participants.CaseRole")
-                .Include("HearingCases.Case")
-                .Include(x => x.HearingType)
-                .Include(x => x.CaseType)
-                .Include(x => x.HearingVenue)
-                .AsNoTracking().Where(x => x.ScheduledDateTime > startDate && x.ScheduledDateTime <= endDate);
+            var includedHearings = await VideoHearings.Get(_context)
+                .Where(x => x.ScheduledDateTime > startDate && x.ScheduledDateTime <= endDate)
+                .ToListAsync();
 
             var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 100, StartDate = startDate, EndDate = endDate };
 
             var hearings = await _handler.Handle(query);
             var hearingIds = hearings.Select(hearing => hearing.Id).ToList();
 
-            hearingIds.Count.Should().Be(includedHearings.Count());
+            hearingIds.Count.Should().Be(includedHearings.Count);
 
             foreach (var hearing in includedHearings)
             {

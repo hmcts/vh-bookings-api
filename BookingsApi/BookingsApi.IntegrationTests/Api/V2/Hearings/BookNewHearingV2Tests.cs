@@ -10,7 +10,7 @@ using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
 using Testing.Common.Builders.Api.V2;
 using Testing.Common.Stubs;
-using JudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode;
+using JudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V2.Enums.JudiciaryParticipantHearingRoleCode;
 using ScreeningType = BookingsApi.Contract.V2.Enums.ScreeningType;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings;

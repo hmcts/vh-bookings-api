@@ -8,7 +8,7 @@ namespace BookingsApi.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-                table: nameof(CaseRole),
+                table: "CaseRole",
                 columns: new[] { "Id", "Name", "Group", "CaseTypeId", },
                 values: new object[,]
                 {

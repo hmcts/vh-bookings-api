@@ -1,4 +1,5 @@
-using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Client;
+using BookingsApi.Contract.V2.Enums;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings
 {
@@ -8,7 +9,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
         public async Task should_fail_booking()
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing(status: Domain.Enumerations.BookingStatus.Booked, configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(status: Domain.Enumerations.BookingStatus.Booked, configureOptions: options =>
             {
                 options.ScheduledDate = DateTime.UtcNow;
                 options.AddJudge = false;
@@ -20,21 +21,16 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             var result = await client
                 .PatchAsync(ApiUriFactory.HearingsEndpoints.FailBookingUri(hearingId), RequestBody.Set(string.Empty));
 
-            var getHearing = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetHearingDetailsById(hearingId.ToString()));
-
             // Assert
             result.IsSuccessStatusCode.Should().BeTrue();
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getHearing.Content);
-
-            hearingResponse.Status.Should().Be(Contract.V1.Enums.BookingStatus.Failed);
-            AssertCommon(hearingResponse);
-        }
-        
-        private static void AssertCommon(HearingDetailsResponse hearingResponse)
-        {
-            hearingResponse.UpdatedBy.Should().Be("System");
-            hearingResponse.ConfirmedBy.Should().BeNull();
+            
+            
+            var bookingsApiClient = BookingsApiClient.GetClient(client);
+            var getHearing = await bookingsApiClient.GetHearingDetailsByIdV2Async(hearingId);
+            getHearing.Status.Should().Be(BookingStatusV2.Failed);
+            getHearing.UpdatedBy.Should().Be("System");
+            getHearing.ConfirmedBy.Should().BeNull();
         }
     }
 }

@@ -25,7 +25,6 @@
         {
             var efQuery = _context.VideoHearings
                 .Include(x=> x.Participants).ThenInclude(x=> x.Person).ThenInclude(x=> x.Organisation)
-                .Include(x=> x.Participants).ThenInclude(x=> x.CaseRole)
                 .Include(x=> x.Participants).ThenInclude(x=> x.HearingRole).ThenInclude(x=> x.UserRole)
                 .Include(x=> x.HearingCases).ThenInclude(x=> x.Case)
                 .Include(x => x.CaseType)

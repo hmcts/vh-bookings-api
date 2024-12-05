@@ -14,14 +14,13 @@ namespace BookingsApi.Mappings.V1
             var response = new List<AudioRecordedHearingsBySearchResponse>();
             foreach (var hearing in videoHearing)
             {
-                var judgeParticipant = hearing.GetParticipants()
-                    .FirstOrDefault(s => s is Judge);
+                var judgeParticipant = hearing.GetJudge();
 
                 var courtroomAccountName = judgeParticipant != null 
                     ? judgeParticipant.DisplayName 
                     : string.Empty;
-                var courtroomAccount = (judgeParticipant?.Person != null) 
-                    ? judgeParticipant.Person.Username 
+                var courtroomAccount = judgeParticipant?.JudiciaryPerson != null
+                    ? judgeParticipant.JudiciaryPerson.Email
                     : string.Empty;
 
                 var @case = string.IsNullOrEmpty(caseNumber)

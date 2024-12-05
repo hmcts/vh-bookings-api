@@ -4,7 +4,6 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using BookingsApi.Common.Configuration;
-using BookingsApi.Common.Security;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
@@ -12,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using Testing.Common.Configuration;
+using Testing.Common.Security;
 
 namespace BookingsApi.AcceptanceTests.Api;
 

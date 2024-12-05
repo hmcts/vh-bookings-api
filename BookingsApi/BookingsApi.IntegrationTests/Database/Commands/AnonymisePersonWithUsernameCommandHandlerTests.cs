@@ -41,7 +41,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             foreach (var person in seededHearing.GetPersons())
             {
-                var updatedPerson = returnedVideoHearingAfterFirstAnonymisationRequest.GetPersons().FirstOrDefault(p => p.Id == person.Id);
+                var updatedPerson = returnedVideoHearingAfterFirstAnonymisationRequest.GetPersons().First(p => p.Id == person.Id);
                 updatedPerson.FirstName.Should().NotBe(person.FirstName);
                 updatedPerson.LastName.Should().NotBe(person.LastName);
                 updatedPerson.MiddleNames.Should().NotBe(person.MiddleNames);

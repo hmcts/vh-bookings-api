@@ -56,7 +56,7 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         await _commandHandler.Handle(command);
         
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        var justiceUser = db.JusticeUsers.First(ju => ju.Username == command.Username);
+        var justiceUser = await db.JusticeUsers.FirstAsync(ju => ju.Username == command.Username);
         Hooks.AddJusticeUserForCleanup(justiceUser.Id);
         
         Assert.ThrowsAsync<JusticeUserAlreadyExistsException>(async () =>

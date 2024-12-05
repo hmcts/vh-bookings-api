@@ -1,3 +1,4 @@
+using BookingsApi.Common.Helpers;
 using BookingsApi.DAL.Helper;
 
 namespace BookingsApi.DAL.Commands

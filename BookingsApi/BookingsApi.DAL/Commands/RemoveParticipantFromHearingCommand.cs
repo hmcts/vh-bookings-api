@@ -27,9 +27,9 @@ namespace BookingsApi.DAL.Commands
         public async Task Handle(RemoveParticipantFromHearingCommand command)
         {
             var hearing = await _context.VideoHearings
+                .Include(x=> x.JudiciaryParticipants).ThenInclude(x=> x.JudiciaryPerson)
                 .Include(x => x.Participants).ThenInclude(x => x.Person.Organisation)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
-                .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(h => h.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);

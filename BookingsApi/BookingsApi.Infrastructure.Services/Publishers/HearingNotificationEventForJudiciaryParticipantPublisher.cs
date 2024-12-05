@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using BookingsApi.Common;
+﻿using System.Collections.Generic;
 using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
-using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.Infrastructure.Services.Publishers
 {

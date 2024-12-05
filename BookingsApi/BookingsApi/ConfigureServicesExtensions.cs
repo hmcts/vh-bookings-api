@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using BookingsApi.Common.DotNet6.Helpers;
-using BookingsApi.Common.Security;
 using BookingsApi.DAL.Services;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.Publishers;
@@ -88,9 +87,6 @@ public static class ConfigureServicesExtensions
         services.AddMemoryCache();
 
         services.AddSingleton<ITelemetryInitializer, BadRequestTelemetry>();
-
-        services.AddScoped<ITokenProvider, AzureTokenProvider>();
-
         services.AddScoped<IQueryHandlerFactory, QueryHandlerFactory>();
         services.AddScoped<IQueryHandler, QueryHandler>();
 
@@ -98,7 +94,6 @@ public static class ConfigureServicesExtensions
         services.AddScoped<ICommandHandler, CommandHandler>();
         services.AddScoped<IHearingService, HearingService>();
         services.AddScoped<IRandomGenerator, RandomGenerator>();
-        services.AddScoped<IVhLogger, VhLogger>();
         services.AddScoped<IHearingAllocationService, HearingAllocationService>();
         services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
 

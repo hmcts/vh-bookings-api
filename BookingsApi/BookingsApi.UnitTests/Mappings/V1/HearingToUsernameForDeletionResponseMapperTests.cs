@@ -71,7 +71,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
             foreach (var participant in hearing.Participants)
             {
                 participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "Judge"), };
-                participant.CaseRole = new CaseRole(1, "Name");
             }
             return hearing;
         }

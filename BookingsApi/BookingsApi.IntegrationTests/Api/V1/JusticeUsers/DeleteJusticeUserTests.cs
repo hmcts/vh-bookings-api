@@ -21,7 +21,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Id == justiceUserToDelete.Id);
+            var justiceUser = await db.JusticeUsers.FirstOrDefaultAsync(x => x.Id == justiceUserToDelete.Id);
             justiceUser.Should().BeNull();
         }
 

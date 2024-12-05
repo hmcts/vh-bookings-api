@@ -28,7 +28,7 @@ namespace BookingsApi.Mappings.V2
                 LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponseV2
                     { LinkedId = x.LinkedId, TypeV2 = x.Type.MapToContractEnum() }).ToList(),
                 InterpreterLanguage = participant.InterpreterLanguage != null
-                    ? InterpreterLanguageToResponseMapper.MapInterpreterLanguageToResponse(participant
+                    ? InterpreterLanguageToResponseMapperV2.MapInterpreterLanguageToResponse(participant
                         .InterpreterLanguage)
                     : null,
                 OtherLanguage = participant.OtherLanguage

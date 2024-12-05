@@ -15,9 +15,9 @@ public class GetAllocationHearingsQueryHandlerTest : DatabaseTestsBase
     {
         _context = new BookingsDbContext(BookingsDbContextOptions);
         _handler = new GetAllocationHearingsQueryHandler(_context);
-        _seededHearing1 = await Hooks.SeedVideoHearing();
-        _seededHearing2 = await Hooks.SeedVideoHearing();
-        _seededHearing3 = await Hooks.SeedVideoHearing();
+        _seededHearing1 = await Hooks.SeedVideoHearingV2();
+        _seededHearing2 = await Hooks.SeedVideoHearingV2();
+        _seededHearing3 = await Hooks.SeedVideoHearingV2();
     }
     
     [Test]

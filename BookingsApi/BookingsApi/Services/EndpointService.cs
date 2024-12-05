@@ -14,20 +14,6 @@ namespace BookingsApi.Services
         Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint);
 
         /// <summary>
-        /// Update an endpoint
-        /// </summary>
-        /// <param name="hearing"></param>
-        /// <param name="id"></param>
-        /// <param name="defenceAdvocateContactEmail"></param>
-        /// <param name="displayName"></param>
-        /// <param name="languageCode"></param>
-        /// <param name="otherLanguage"></param>
-        /// <returns></returns>
-        [Obsolete("Use the overload that includes a ScreeningDto")]
-        Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName,
-            string languageCode, string otherLanguage);
-        
-        /// <summary>
         /// Update an endpoint (V2)
         /// </summary>
         /// <param name="hearing"></param>
@@ -91,11 +77,6 @@ namespace BookingsApi.Services
             }
 
             return endpoint;
-        }
-
-        public async Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName, string languageCode, string otherLanguage)
-        {
-            await UpdateEndpoint(hearing, id, defenceAdvocateContactEmail, displayName, languageCode, otherLanguage, null);
         }
 
         public async Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName,

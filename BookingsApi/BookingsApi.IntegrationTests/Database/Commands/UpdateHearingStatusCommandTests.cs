@@ -18,7 +18,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task should_be_able_to_update_status()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var newBookingStatus = BookingStatus.ConfirmedWithoutJudge;
 
@@ -34,7 +34,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task should_be_able_to_transition_across_statuses()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var expectedFinalStatus = BookingStatus.Created;
 
@@ -60,7 +60,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_deallocate_when_status_is_changed_to_cancelled()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             var justiceUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             await Hooks.AddAllocation(seededHearing, justiceUser);

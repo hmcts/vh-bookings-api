@@ -27,7 +27,7 @@ namespace BookingsApi.DAL.Migrations
         public void AddJudgeCaseRoles(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-                table: nameof(CaseRole),
+                table: "CaseRole",
                 columns: new[] { "Id", "Name", "Group", "CaseTypeId" },
                 values: new object[,]
                 {

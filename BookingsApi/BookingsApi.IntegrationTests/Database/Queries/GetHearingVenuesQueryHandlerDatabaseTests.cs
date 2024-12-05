@@ -39,7 +39,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 new(100003, "test-venue-4") { ExpirationDate = DateTime.UtcNow.Date.AddDays(1) } // NOT EXPIRED
             };
             foreach (var venue in _testVenues)
-                _context.Venues.Add(venue);
+                await _context.Venues.AddAsync(venue);
             
             await _context.SaveChangesAsync();
             

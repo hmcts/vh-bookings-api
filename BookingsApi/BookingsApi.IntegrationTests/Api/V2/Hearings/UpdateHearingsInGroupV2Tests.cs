@@ -1,21 +1,17 @@
 using BookingsApi.Common;
-using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using BookingsApi.Validations.V1;
 using BookingsApi.Validations.V2;
 using FizzWare.NBuilder;
 using Testing.Common.Builders.Domain;
-using ContractJudiciaryRoleCode = BookingsApi.Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode;
+using ContractJudiciaryRoleCode = BookingsApi.Contract.V2.Enums.JudiciaryParticipantHearingRoleCode;
 using DomainJudiciaryRoleCode = BookingsApi.Domain.Enumerations.JudiciaryParticipantHearingRoleCode;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings
@@ -165,7 +161,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var expectedNewUser =
                 PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
             var expectedWelcomeNewUser =
-                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).Where(x => x is not JudicialOfficeHolder)
+                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing)
                     .ToList().Count;
             AssertNotificationEvents(firstHearing, expectedExistingUser, expectedNewUser, expectedWelcomeNewUser);
         }
@@ -712,7 +708,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             new()
             {
                 HearingId = hearing.Id,
-                CaseNumber = hearing.GetCases().First().Number,
+                CaseNumber = hearing.GetCases()[0].Number,
                 ScheduledDateTime = hearing.ScheduledDateTime,
                 ScheduledDuration = hearing.ScheduledDuration,
                 HearingVenueCode = hearing.HearingVenue.VenueCode,
@@ -809,7 +805,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var newJudge = requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Find(jp => jp.HearingRoleCode == ContractJudiciaryRoleCode.Judge);
             if (newJudge != null)
             {
-                ((JudiciaryParticipant)hearing.GetJudge()).JudiciaryPerson.PersonalCode.Should().Be(newJudge.PersonalCode);
+                hearing.GetJudge().JudiciaryPerson.PersonalCode.Should().Be(newJudge.PersonalCode);
             }
         }
 

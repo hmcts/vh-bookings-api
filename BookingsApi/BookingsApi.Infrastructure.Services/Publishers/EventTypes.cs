@@ -9,7 +9,6 @@
         NewParticipantMultidayHearingConfirmationEvent,
         ExistingParticipantMultidayHearingConfirmationEvent,
         HearingNotificationForJudiciaryParticipantEvent,
-        HearingNotificationForNewJudicialOfficersEvent,
         JudiciaryParticipantAddedEvent
     }
 }

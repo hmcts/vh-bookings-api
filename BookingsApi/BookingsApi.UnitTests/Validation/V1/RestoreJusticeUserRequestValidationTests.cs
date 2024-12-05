@@ -33,7 +33,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
-            result.Errors.Any(x => x.ErrorMessage == RestoreJusticeUserRequestValidation.NoUsernameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == RestoreJusticeUserRequestValidation.NoUsernameErrorMessage)
                 .Should().BeTrue();
         }
     }

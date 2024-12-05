@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using BookingsApi.Common.Helpers;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
@@ -12,7 +13,7 @@ namespace BookingsApi.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-               nameof(CaseRole),
+               "CaseRole",
                new[] { "Id", "Name", "Group", "CaseTypeId", "CreatedDate" },
                new object[,]
                {
@@ -56,8 +57,8 @@ namespace BookingsApi.DAL.Migrations
             for (int hearingRoleId = 1094; hearingRoleId <= 1113; hearingRoleId++)
                 migrationBuilder.DeleteData(nameof(HearingRole), "Id", hearingRoleId);
 
-            migrationBuilder.DeleteData(nameof(CaseRole), "Id", 344);
-            migrationBuilder.DeleteData(nameof(CaseRole), "Id", 343);
+            migrationBuilder.DeleteData("CaseRole", "Id", 344);
+            migrationBuilder.DeleteData("CaseRole", "Id", 343);
         }
     }
 }

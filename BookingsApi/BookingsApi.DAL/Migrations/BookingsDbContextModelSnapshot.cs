@@ -246,8 +246,6 @@ namespace BookingsApi.DAL.Migrations
 
                     b.HasIndex("CaseTypeId");
 
-                    b.HasIndex("HearingTypeId");
-
                     b.HasIndex("HearingVenueId");
 
                     b.ToTable("Hearing", (string)null);
@@ -725,8 +723,6 @@ namespace BookingsApi.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CaseRoleId");
-
                     b.HasIndex("HearingId");
 
                     b.HasIndex("HearingRoleId");
@@ -791,57 +787,6 @@ namespace BookingsApi.DAL.Migrations
                         .HasFilter("[Username] IS NOT NULL");
 
                     b.ToTable("Person", (string)null);
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.Questionnaire", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<Guid>("ParticipantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.ToTable("Questionnaire", (string)null);
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.RefData.CaseRole", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CaseTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Group")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CaseTypeId");
-
-                    b.ToTable("CaseRole", (string)null);
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.RefData.CaseType", b =>
@@ -916,8 +861,6 @@ namespace BookingsApi.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CaseRoleId");
-
                     b.HasIndex("Code")
                         .IsUnique()
                         .HasFilter("[Code] IS NOT NULL");
@@ -925,51 +868,6 @@ namespace BookingsApi.DAL.Migrations
                     b.HasIndex("UserRoleId");
 
                     b.ToTable("HearingRole", (string)null);
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.RefData.HearingType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CaseTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExpirationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Live")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("WelshName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CaseTypeId");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasFilter("[Code] IS NOT NULL");
-
-                    b.ToTable("HearingType", (string)null);
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.RefData.InterpreterLanguage", b =>
@@ -1103,38 +1001,6 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("ScreeningEntity", (string)null);
                 });
 
-            modelBuilder.Entity("BookingsApi.Domain.SuitabilityAnswer", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Data")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ExtendedData")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("QuestionnaireId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionnaireId");
-
-                    b.ToTable("SuitabilityAnswer", (string)null);
-                });
-
             modelBuilder.Entity("BookingsApi.Domain.VhoNonAvailability", b =>
                 {
                     b.Property<long>("Id")
@@ -1226,20 +1092,6 @@ namespace BookingsApi.DAL.Migrations
                     b.HasDiscriminator().HasValue("Individual");
                 });
 
-            modelBuilder.Entity("BookingsApi.Domain.Participants.Judge", b =>
-                {
-                    b.HasBaseType("BookingsApi.Domain.Participants.Participant");
-
-                    b.HasDiscriminator().HasValue("Judge");
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.Participants.JudicialOfficeHolder", b =>
-                {
-                    b.HasBaseType("BookingsApi.Domain.Participants.Participant");
-
-                    b.HasDiscriminator().HasValue("JudicialOfficeHolder");
-                });
-
             modelBuilder.Entity("BookingsApi.Domain.Participants.Representative", b =>
                 {
                     b.HasBaseType("BookingsApi.Domain.Participants.Participant");
@@ -1300,17 +1152,11 @@ namespace BookingsApi.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookingsApi.Domain.RefData.HearingType", "HearingType")
-                        .WithMany()
-                        .HasForeignKey("HearingTypeId");
-
                     b.HasOne("BookingsApi.Domain.HearingVenue", "HearingVenue")
                         .WithMany()
                         .HasForeignKey("HearingVenueId");
 
                     b.Navigation("CaseType");
-
-                    b.Navigation("HearingType");
 
                     b.Navigation("HearingVenue");
                 });
@@ -1399,10 +1245,6 @@ namespace BookingsApi.DAL.Migrations
 
             modelBuilder.Entity("BookingsApi.Domain.Participants.Participant", b =>
                 {
-                    b.HasOne("BookingsApi.Domain.RefData.CaseRole", "CaseRole")
-                        .WithMany()
-                        .HasForeignKey("CaseRoleId");
-
                     b.HasOne("BookingsApi.Domain.Hearing", "Hearing")
                         .WithMany("Participants")
                         .HasForeignKey("HearingId")
@@ -1425,8 +1267,6 @@ namespace BookingsApi.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CaseRole");
-
                     b.Navigation("Hearing");
 
                     b.Navigation("HearingRole");
@@ -1445,24 +1285,6 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("Organisation");
                 });
 
-            modelBuilder.Entity("BookingsApi.Domain.Questionnaire", b =>
-                {
-                    b.HasOne("BookingsApi.Domain.Participants.Participant", "Participant")
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Participant");
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.RefData.CaseRole", b =>
-                {
-                    b.HasOne("BookingsApi.Domain.RefData.CaseType", null)
-                        .WithMany("CaseRoles")
-                        .HasForeignKey("CaseTypeId");
-                });
-
             modelBuilder.Entity("BookingsApi.Domain.RefData.CaseType", b =>
                 {
                     b.HasOne("BookingsApi.Domain.Jurisdiction", null)
@@ -1472,10 +1294,6 @@ namespace BookingsApi.DAL.Migrations
 
             modelBuilder.Entity("BookingsApi.Domain.RefData.HearingRole", b =>
                 {
-                    b.HasOne("BookingsApi.Domain.RefData.CaseRole", null)
-                        .WithMany("HearingRoles")
-                        .HasForeignKey("CaseRoleId");
-
                     b.HasOne("BookingsApi.Domain.RefData.UserRole", "UserRole")
                         .WithMany()
                         .HasForeignKey("UserRoleId")
@@ -1483,13 +1301,6 @@ namespace BookingsApi.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("UserRole");
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.RefData.HearingType", b =>
-                {
-                    b.HasOne("BookingsApi.Domain.RefData.CaseType", null)
-                        .WithMany("HearingTypes")
-                        .HasForeignKey("CaseTypeId");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.SpecialMeasure.Screening", b =>
@@ -1528,17 +1339,6 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("Participant");
 
                     b.Navigation("Screening");
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.SuitabilityAnswer", b =>
-                {
-                    b.HasOne("BookingsApi.Domain.Questionnaire", "Questionnaire")
-                        .WithMany("SuitabilityAnswers")
-                        .HasForeignKey("QuestionnaireId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Questionnaire");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.VhoNonAvailability", b =>
@@ -1615,23 +1415,6 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("LinkedParticipants");
 
                     b.Navigation("Screening");
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.Questionnaire", b =>
-                {
-                    b.Navigation("SuitabilityAnswers");
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.RefData.CaseRole", b =>
-                {
-                    b.Navigation("HearingRoles");
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.RefData.CaseType", b =>
-                {
-                    b.Navigation("CaseRoles");
-
-                    b.Navigation("HearingTypes");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.RefData.UserRole", b =>

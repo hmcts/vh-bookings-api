@@ -9,14 +9,13 @@
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591;CS1591;CS0612;CS0618</NoWarn>
     <DocumentationFile>
     </DocumentationFile>
     <UserSecretsId>D76B6EB8-F1A2-4A51-9B8F-21E1B6B81E4F</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
-
   <PropertyGroup>
     <UseAppHost>false</UseAppHost>
   </PropertyGroup>
@@ -46,9 +45,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="8.0.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="VH.Core.Configuration" Version="0.1.13" />
-    <PackageReference Include="ZymLabs.NSwag.FluentValidation" Version="0.6.3" />
+    <PackageReference Include="ZymLabs.NSwag.FluentValidation" Version="0.7.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -82,8 +81,4 @@
     <Error Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' != '0'" />
     <RemoveDir Directories="$(OutDir)References" />
   </Target>
-
-  <PropertyGroup>
-    <NoWarn>CS0612;CS0618</NoWarn>
-  </PropertyGroup>
 </Project>

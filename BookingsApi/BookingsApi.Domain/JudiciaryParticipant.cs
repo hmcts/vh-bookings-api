@@ -28,7 +28,9 @@ namespace BookingsApi.Domain
             UpdatedDate = _currentUTC;
         }
         
+#pragma warning disable S1144
         public Guid JudiciaryPersonId { get; private set; }
+#pragma warning restore S1144
         public JudiciaryPerson JudiciaryPerson { get; private set; }
         public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; private set; }
         public Guid HearingId { get; private set; }

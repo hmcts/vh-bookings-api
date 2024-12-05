@@ -11,7 +11,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
     public class CloneHearingToCommandMapperTests
     {
         private IRandomGenerator _randomGenerator;
-        private const string _sipAddressStem = "@WhereAreYou.com";
+        private const string SipAddressStem = "@WhereAreYou.com";
 
         [SetUp]
         public void Setup()
@@ -29,8 +29,8 @@ namespace BookingsApi.UnitTests.Mappings.V1
                 .WithJudiciaryJudge()
                 .WithJudiciaryPanelMember()
                 .Build();
-            hearing.AddEndpoint(new Endpoint("Endpoint1", $"{Guid.NewGuid():N}@hmcts.net", "1234", null));
-            hearing.AddEndpoint(new Endpoint("Endpoint2", $"{Guid.NewGuid():N}@hmcts.net", "2345",
+            hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "Endpoint1", $"{Guid.NewGuid():N}@hmcts.net", "1234", null));
+            hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "Endpoint2", $"{Guid.NewGuid():N}@hmcts.net", "2345",
                 hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative)));
             hearing.AddCase("HBS/1234","Case 1 Test", true);
        
@@ -41,14 +41,13 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var newDate = hearing.ScheduledDateTime.AddDays(1);
 
             var command = CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, _randomGenerator,
-                _sipAddressStem, totalDays, hearingDay, duration);
+                SipAddressStem, totalDays, hearingDay, duration);
 
             command.HearingRoomName.Should().Be(hearing.HearingRoomName);
             command.OtherInformation.Should().Be(hearing.OtherInformation);
             command.CreatedBy.Should().Be(hearing.CreatedBy);
             
             command.CaseType.Should().Be(hearing.CaseType);
-            command.HearingType.Should().Be(hearing.HearingType);
 
             command.ScheduledDateTime.Should().Be(newDate);
             command.ScheduledDateTime.Hour.Should().Be(hearing.ScheduledDateTime.Hour);
@@ -64,7 +63,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
                 existingPerson.Should().NotBeNull();
                 var existingPat = hearing.Participants.Single(x => x.Person == existingPerson);
                 newParticipant.DisplayName.Should().Be(existingPat.DisplayName);
-                newParticipant.CaseRole.Should().Be(existingPat.CaseRole);
                 newParticipant.HearingRole.Should().Be(existingPat.HearingRole);
 
                 if (existingPat.GetType() != typeof(Representative)) continue;
@@ -102,7 +100,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             foreach (var mappedJudiciaryParticipant in mappedJudiciaryParticipants)
             {
                 mappedJudiciaryParticipant.PersonalCode.Should().NotBeNullOrEmpty();
-                var judiciaryParticipant = judiciaryParticipants.FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == mappedJudiciaryParticipant.PersonalCode);
+                var judiciaryParticipant = judiciaryParticipants.First(x => x.JudiciaryPerson.PersonalCode == mappedJudiciaryParticipant.PersonalCode);
 
                 judiciaryParticipant.Should().NotBeNull();
                 mappedJudiciaryParticipant.PersonalCode.Should().Be(judiciaryParticipant.JudiciaryPerson.PersonalCode);

@@ -27,7 +27,6 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.Person)
                 .Include(x => x.HearingRole)
                 .Include(x => x.HearingRole.UserRole)
-                .Include(x => x.CaseRole)
                 .Where(x => x.Person.Username == query.Username)
                 .ToListAsync();   
         }

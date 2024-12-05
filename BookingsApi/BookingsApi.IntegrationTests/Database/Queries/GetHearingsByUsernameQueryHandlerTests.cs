@@ -18,9 +18,9 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_hearings_for_username()
         {
-            var hearing1 = await Hooks.SeedVideoHearing();
-            var hearing2 = await Hooks.SeedVideoHearing();
-            var hearing3 = await Hooks.SeedVideoHearing();
+            var hearing1 = await Hooks.SeedVideoHearingV2();
+            var hearing2 = await Hooks.SeedVideoHearingV2();
+            var hearing3 = await Hooks.SeedVideoHearingV2();
 
             var username = hearing2.GetPersons()[0].Username;
             
@@ -36,7 +36,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_hearings_with_linked_participants_for_username()
         {
-            var seededHearing = await Hooks.SeedVideoHearing(withLinkedParticipants: true);
+            var seededHearing = await Hooks.SeedVideoHearingV2(withLinkedParticipants: true);
             var username = seededHearing.GetParticipants().First(p => p is Individual && p.LinkedParticipants.Any()).Person.Username;
             var query = new GetHearingsByUsernameQuery(username);
 

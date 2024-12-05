@@ -25,7 +25,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
         public async Task Should_add_judiciary_participant_to_hearing(JudiciaryParticipantHearingRoleCode judiciaryParticipantHearingRoleCode)
         {
-            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
                 options.AddJudge = false;
             });
@@ -85,7 +85,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_throw_exception_when_judiciary_person_does_not_exist()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             const string displayName = "Display Name";
             var personalCode = Guid.NewGuid().ToString();
             const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;

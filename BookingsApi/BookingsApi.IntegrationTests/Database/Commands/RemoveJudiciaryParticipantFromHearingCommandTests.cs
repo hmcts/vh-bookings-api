@@ -36,7 +36,7 @@ public class RemoveJudiciaryParticipantFromHearingCommandTests : DatabaseTestsBa
     [Test]
     public async Task Should_throw_exception_when_participant_does_not_exist()
     {
-        var seededHearing = await Hooks.SeedVideoHearing();
+        var seededHearing = await Hooks.SeedVideoHearingV2();
         TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
         var judiciaryPerson = new JudiciaryPersonBuilder(Guid.NewGuid().ToString()).Build();

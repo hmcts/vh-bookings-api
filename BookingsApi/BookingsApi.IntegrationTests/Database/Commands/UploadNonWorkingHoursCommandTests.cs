@@ -80,9 +80,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _commandHandler.Handle(command);
 
             var justiceUserOneNonWorkHours = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
-                .First(x => x.Id == justiceUserOne.Id).VhoNonAvailability[0];
+                .FirstAsync(x => x.Id == justiceUserOne.Id).Result.VhoNonAvailability[0];
             var justiceUserTwoNonWorkHours = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
-                .First(x => x.Id == justiceUserTwo.Id).VhoNonAvailability[0];
+                .FirstAsync(x => x.Id == justiceUserTwo.Id).Result.VhoNonAvailability[0];
 
             // Assert
             justiceUserOneNonWorkHours.StartTime.Should().Be(justiceUserOneNonWorkingHoursStartTime);
@@ -138,8 +138,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_deallocate_hearings_when_users_no_longer_available()
         {
             // Arrange
-            var seededHearing1 = await Hooks.SeedVideoHearing();
-            var seededHearing2 = await Hooks.SeedVideoHearing();
+            var seededHearing1 = await Hooks.SeedVideoHearingV2();
+            var seededHearing2 = await Hooks.SeedVideoHearingV2();
             var allocatedUser1 = await Hooks.SeedJusticeUser("cso1@email.com", "Cso1", "Test");
             var allocatedUser2 = await Hooks.SeedJusticeUser("cso2@email.com", "Cso2", "Test");
             await using var db = new BookingsDbContext(BookingsDbContextOptions);

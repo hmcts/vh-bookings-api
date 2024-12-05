@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BookingsApi.Contract.V1.Requests;
-using BookingsApi.Contract.V1.Requests.Enums;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain.Constants;
 using FizzWare.NBuilder;
@@ -12,6 +11,7 @@ namespace Testing.Common.Builders.Api.V2;
 
 public class SimpleBookNewHearingRequestV2
 {
+    public const string JudgePersonalCode = "VH-GENERIC-ACCOUNT-00";
     private readonly BookNewHearingRequestV2 _requestV2;
 
     public SimpleBookNewHearingRequestV2(string caseName, DateTime scheduledDateTime, string judiciaryJudgePersonCode)

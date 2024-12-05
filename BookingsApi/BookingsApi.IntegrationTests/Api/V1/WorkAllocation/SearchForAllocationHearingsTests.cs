@@ -16,7 +16,7 @@ public class SearchForAllocationHearingsTests: ApiTest
         var venueWithoutWorkAllocationEnabled = await db.Venues.FirstAsync(x => !x.IsWorkAllocationEnabled);
         var caseNumber = $"TestSearchQuery_{Guid.NewGuid():N}";
         var nonGenericCaseTypeName = "Financial Remedy";
-        var hearingWithWorkAllocationVenue = await Hooks.SeedVideoHearing(options =>
+        var hearingWithWorkAllocationVenue = await Hooks.SeedVideoHearingV2(options =>
         {
             options.Case = new Case(caseNumber,"Integration");
             options.CaseTypeName = nonGenericCaseTypeName;
@@ -24,7 +24,7 @@ public class SearchForAllocationHearingsTests: ApiTest
         });
 
         var justiceUser = await Hooks.SeedJusticeUser("user@test.com", "Test", "User");
-        var hearingWithWorkAllocationVenueAndAllocation = await Hooks.SeedVideoHearing(options =>
+        var hearingWithWorkAllocationVenueAndAllocation = await Hooks.SeedVideoHearingV2(options =>
         {
             options.Case = new Case(caseNumber,"Integration");
             options.CaseTypeName = nonGenericCaseTypeName;
@@ -32,7 +32,7 @@ public class SearchForAllocationHearingsTests: ApiTest
         });
         await Hooks.AddAllocation(hearingWithWorkAllocationVenueAndAllocation, justiceUser);
 
-        var hearingWithoutWorkAllocationVenue = await Hooks.SeedVideoHearing(options =>
+        var hearingWithoutWorkAllocationVenue = await Hooks.SeedVideoHearingV2(options =>
         {
             options.Case = new Case(caseNumber,"Integration");
             options.CaseTypeName = nonGenericCaseTypeName;

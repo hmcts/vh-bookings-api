@@ -34,8 +34,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task should_update_person()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
-            var person = seededHearing.GetPersons().First();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
+            var person = seededHearing.GetPersons()[0];
             
             var command = new UpdatePersonUsernameCommand(person.Id, "new.me@hmcts.net");
 

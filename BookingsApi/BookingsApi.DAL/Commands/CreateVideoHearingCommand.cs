@@ -16,7 +16,6 @@ namespace BookingsApi.DAL.Commands
             Cases = requiredDto.Cases;
             ConferenceSupplier = requiredDto.Supplier;
             
-            HearingType = optionalDto.HearingType;
             Participants = optionalDto.Participants ?? new List<NewParticipant>();
             HearingRoomName = optionalDto.HearingRoomName;
             OtherInformation = optionalDto.OtherInformation;
@@ -24,7 +23,6 @@ namespace BookingsApi.DAL.Commands
             
             AudioRecordingRequired = optionalDto.AudioRecordingRequired;
             Endpoints = optionalDto.Endpoints;
-            CancelReason = optionalDto.CancelReason;
             
             LinkedParticipants = optionalDto.LinkedParticipants ?? new List<LinkedParticipantDto>();
             JudiciaryParticipants = optionalDto.JudiciaryParticipants ?? new List<NewJudiciaryParticipant>();
@@ -35,7 +33,6 @@ namespace BookingsApi.DAL.Commands
         
         public Guid NewHearingId { get; set; }
         public CaseType CaseType { get; }
-        public HearingType HearingType { get; }
         public DateTime ScheduledDateTime { get; }
         public int ScheduledDuration { get; }
         public HearingVenue Venue { get; }
@@ -46,7 +43,6 @@ namespace BookingsApi.DAL.Commands
         public string CreatedBy { get; }
         public bool AudioRecordingRequired { get; }
         public List<NewEndpoint> Endpoints { get; }
-        public string CancelReason { get; }
         public Guid? SourceId { get; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }
         public List<NewJudiciaryParticipant> JudiciaryParticipants { get; }
@@ -54,48 +50,41 @@ namespace BookingsApi.DAL.Commands
         public VideoSupplier? ConferenceSupplier { get; set; }
     }
 
-    public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>
+    public class CreateVideoHearingCommandHandler(BookingsDbContext context, IHearingService hearingService)
+        : ICommandHandler<CreateVideoHearingCommand>
     {
-        private readonly BookingsDbContext _context;
-        private readonly IHearingService _hearingService;
-
-        public CreateVideoHearingCommandHandler(BookingsDbContext context, IHearingService hearingService)
-        {
-            _context = context;
-            _hearingService = hearingService;
-        }
-
         public async Task Handle(CreateVideoHearingCommand command)
         {
             var videoHearing = new VideoHearing(command.CaseType, 
-                command.HearingType,
                 command.ScheduledDateTime,
                 command.ScheduledDuration, 
                 command.Venue, 
                 command.HearingRoomName,
                 command.OtherInformation, 
                 command.CreatedBy, 
-                command.AudioRecordingRequired, 
-                command.CancelReason);
+                command.AudioRecordingRequired)
+            {
+                // Ideally, the domain object would implement the clone method and so this change is a work around.
+                IsFirstDayOfMultiDayHearing = command.IsMultiDayFirstHearing
+            };
 
-            // Ideally, the domain object would implement the clone method and so this change is a work around.
-            videoHearing.IsFirstDayOfMultiDayHearing = command.IsMultiDayFirstHearing;
             // denotes this hearing is cloned
             if (command.SourceId.HasValue)
                 videoHearing.SourceId = command.SourceId;
 
-            await _context.VideoHearings.AddAsync(videoHearing);
-            var languages = await _context.InterpreterLanguages.Where(x => x.Live).ToListAsync();
-            var participants = await _hearingService.AddParticipantToService(videoHearing, command.Participants, languages);
+            await context.VideoHearings.AddAsync(videoHearing);
+            await context.Entry(videoHearing).Reference(x => x.CaseType).LoadAsync();
+            var languages = await context.InterpreterLanguages.Where(x => x.Live).ToListAsync();
+            var participants = await hearingService.AddParticipantToService(videoHearing, command.Participants, languages);
 
-            await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
+            await hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
 
             foreach (var newJudiciaryParticipant in command.JudiciaryParticipants)
-                await _hearingService.AddJudiciaryParticipantToVideoHearing(videoHearing, newJudiciaryParticipant, languages);
+                await hearingService.AddJudiciaryParticipantToVideoHearing(videoHearing, newJudiciaryParticipant, languages);
             
             videoHearing.AddCases(command.Cases);
 
-            if (command.Endpoints != null && command.Endpoints.Count > 0)
+            if (command.Endpoints is { Count: > 0 })
             {
                 var dtos = command.Endpoints;
                 var newEndpoints = new List<Endpoint>();
@@ -126,7 +115,7 @@ namespace BookingsApi.DAL.Commands
             {
                 var participant = videoHearing.GetParticipants().Single(x=> x.ExternalReferenceId == participantForScreening.ExternalReferenceId);
                 var screeningDto = participantForScreening.Screening;
-                _hearingService.UpdateParticipantScreeningRequirement(videoHearing, participant, screeningDto);
+                hearingService.UpdateParticipantScreeningRequirement(videoHearing, participant, screeningDto);
             }
 
             
@@ -136,7 +125,7 @@ namespace BookingsApi.DAL.Commands
                 var screeningDto = endpointForScreening.Screening;
                 videoHearing.AssignScreeningForEndpoint(endpoint, screeningDto.ScreeningType, screeningDto.ProtectedFrom);
             }
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;
         }
     }

@@ -72,7 +72,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             mapped.CaseTypeName.Should().Be("Generic");
             mapped.CourtAddress.Should().Be("Birmingham Civil and Family Justice Centre");
             mapped.CourtRoom.Should().Be("Roome03");
-            mapped.CourtRoomAccount.Should().NotBeNullOrEmpty();
+            mapped.CourtRoomAccount.Should().BeEmpty();
         }
 
         [Test]
@@ -81,7 +81,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var hearing = new VideoHearingBuilder(addJudge:false).Build();
             hearing.AddCase("234", "X vs Y", true);
             hearing.CaseType = new CaseType(1, "Generic");
-            hearing.GetParticipants()[3].HearingRole = new HearingRole(5, "Winger") { UserRole = new UserRole(5, "Winger") };
+            hearing.GetParticipants()[2].HearingRole = new HearingRole(5, "Winger") { UserRole = new UserRole(5, "Winger") };
 
             var mapped = _mapper.MapHearingResponse(hearing);
             mapped.Should().NotBeNull();
@@ -92,7 +92,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             mapped.CaseTypeName.Should().Be("Generic");
             mapped.CourtAddress.Should().Be("Birmingham Civil and Family Justice Centre");
             mapped.CourtRoom.Should().Be("Roome03");
-            mapped.CourtRoomAccount.Should().BeNullOrEmpty();
+            mapped.CourtRoomAccount.Should().BeEmpty();
         }
 
         [Test]
@@ -119,7 +119,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         public void Should_set_judge_name_to_missing_if_empty()
         {
             var mockedHearing = MockHearingWithCase();
-            var judge = mockedHearing.Participants.First(x => x is Judge);
+            var judge = mockedHearing.GetJudge();
             judge.DisplayName = "";
             mockedHearing.CaseType = new CaseType(1, "Generic");
 
@@ -132,7 +132,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         public void Should_set_allocatedVHO_to_Not_Allocated()
         {
             var mockedHearing = MockHearingWithCase();
-            var judge = mockedHearing.Participants.First(x => x is Judge);
+            var judge = mockedHearing.GetJudge();
             judge.DisplayName = "";
             mockedHearing.CaseType = new CaseType(1, "Generic");
             
@@ -147,7 +147,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         public void Should_set_allocatedVHO_to_Not_Required()
         {
             var mockedHearing = MockHearingWithCase();
-            var judge = mockedHearing.Participants.First(x => x is Judge);
+            var judge = mockedHearing.GetJudge();
             judge.DisplayName = "";
             mockedHearing.CaseType = new CaseType(3, "Generic");
             mockedHearing.CaseTypeId = 3;

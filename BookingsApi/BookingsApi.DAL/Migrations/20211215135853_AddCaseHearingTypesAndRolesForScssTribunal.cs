@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Domain.Enumerations;
+using BookingsApi.Common.Helpers;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -17,7 +18,7 @@ namespace BookingsApi.DAL.Migrations
                     { 40, "SSCS Tribunal" }
                 });
             migrationBuilder.InsertData(
-                nameof(HearingType),
+                "HearingType",
                 new[] { "Id", "Name", "CaseTypeId" },
                 new object[,]
                 {
@@ -31,7 +32,7 @@ namespace BookingsApi.DAL.Migrations
                 });
             
             migrationBuilder.InsertData(
-                nameof(CaseRole),
+                "CaseRole",
                 new[] { "Id", "Name", "Group", "CaseTypeId" },
                 new object[,]
                 {
@@ -87,7 +88,7 @@ namespace BookingsApi.DAL.Migrations
 
             for (int hearingTypeId = 179; hearingTypeId <= 185; hearingTypeId++)
             {
-                migrationBuilder.DeleteData(nameof(HearingType), "Id", hearingTypeId);
+                migrationBuilder.DeleteData("HearingType", "Id", hearingTypeId);
             }
 
             for (int hearingRoleId = 769; hearingRoleId <= 790; hearingRoleId++)
@@ -97,7 +98,7 @@ namespace BookingsApi.DAL.Migrations
             
             for (int CaseRoleId = 255; CaseRoleId <= 259; CaseRoleId++)
             {
-                migrationBuilder.DeleteData(nameof(CaseRole), "Id", CaseRoleId);
+                migrationBuilder.DeleteData("CaseRole", "Id", CaseRoleId);
             }
             
             migrationBuilder.DeleteData(nameof(CaseType), "Id", 40);

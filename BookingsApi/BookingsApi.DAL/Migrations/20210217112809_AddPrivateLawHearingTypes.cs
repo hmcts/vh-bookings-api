@@ -17,7 +17,7 @@ namespace BookingsApi.DAL.Migrations
                 });
             
             migrationBuilder.InsertData(
-                table: nameof(HearingType),
+                table: "HearingType",
                 columns: new[] { "Id", "Name", "CaseTypeId" },
                 values: new object[,]
                 {
@@ -31,7 +31,7 @@ namespace BookingsApi.DAL.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: nameof(CaseRole),
+                table: "CaseRole",
                 columns: new[] {"Id", "Name", "Group", "CaseTypeId"},
                 values: new object[,]
                 {

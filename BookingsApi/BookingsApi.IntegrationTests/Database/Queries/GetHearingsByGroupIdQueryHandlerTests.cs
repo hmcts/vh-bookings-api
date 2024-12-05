@@ -16,7 +16,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_hearings_for_single_day_by_groupId()
         {
-            var hearing = await Hooks.SeedVideoHearing(isMultiDayFirstHearing:true);
+            var hearing = await Hooks.SeedVideoHearingV2(isMultiDayFirstHearing:true);
             var groupId = hearing.SourceId;
 
             var result = new List<VideoHearing>();

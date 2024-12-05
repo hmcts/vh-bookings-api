@@ -39,7 +39,7 @@ namespace BookingsApi.Domain
         public string PostNominals { get; set; }
         public string Email { get; set; }
         public string WorkPhone { get; set; }
-        public DateTime CreatedDate { get; }
+        public DateTime CreatedDate { get; private set; }
         public DateTime UpdatedDate { get; private set; }
         public bool HasLeft { get; set; }
         public bool Leaver { get; set; }

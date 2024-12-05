@@ -15,16 +15,19 @@
     </PackageReference>
     <PackageReference Include="Microsoft.TestPlatform" Version="17.9.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
-    <PackageReference Include="NUnit" Version="4.1.0" />
+    <PackageReference Include="NUnit" Version="4.2.2" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.25.0.90414">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BookingsApi.Domain\BookingsApi.Domain.csproj" />
     <ProjectReference Include="..\BookingsApi\BookingsApi.csproj" />
     <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domain\AnonymisationData\" />
   </ItemGroup>
 </Project>

@@ -31,7 +31,7 @@ namespace BookingsApi.Mappings.V2
                 Pin = endpoint.Pin,
                 DefenceAdvocateId = endpoint.DefenceAdvocate?.Id,
                 InterpreterLanguage = endpoint.InterpreterLanguage != null ?
-                    InterpreterLanguageToResponseMapper.MapInterpreterLanguageToResponse(endpoint.InterpreterLanguage) :
+                    InterpreterLanguageToResponseMapperV2.MapInterpreterLanguageToResponse(endpoint.InterpreterLanguage) :
                     null,
                 OtherLanguage = endpoint.OtherLanguage,
                 Screening = screeningResponse

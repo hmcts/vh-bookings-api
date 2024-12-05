@@ -201,7 +201,8 @@ public class BookingService : IBookingService
     
     public async Task ValidateScheduleUpdateForHearingInGroup(VideoHearing hearingInGroup, DateTime newScheduledDateTime)
     {
-        var hearingsInGroupQuery = new GetHearingsByGroupIdQuery(hearingInGroup.SourceId.Value);
+        ArgumentNullException.ThrowIfNull(hearingInGroup);
+        var hearingsInGroupQuery = new GetHearingsByGroupIdQuery(hearingInGroup.SourceId!.Value);
         var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(hearingsInGroupQuery);
         
         if (hearingsInGroup.Exists(h => 
@@ -220,7 +221,7 @@ public class BookingService : IBookingService
             var @case = originalHearing.GetCases()[0];
             foreach (var participant in originalHearing.Participants)
             {
-                var participantDto = ParticipantDtoMapper.MapToDto(participant, originalHearing.OtherInformation);
+                var participantDto = ParticipantDtoMapper.MapToDto(participant);
                 await _eventPublisher.PublishAsync(new HearingAmendmentNotificationEvent(EventDtoMappers.MapToHearingConfirmationDto(originalHearing.Id, 
                     originalHearing.ScheduledDateTime, participantDto, @case),  updatedHearing.ScheduledDateTime));
             }

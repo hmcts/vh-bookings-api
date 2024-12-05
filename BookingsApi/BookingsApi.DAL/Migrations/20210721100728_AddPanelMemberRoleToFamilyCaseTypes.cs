@@ -11,7 +11,7 @@ namespace BookingsApi.DAL.Migrations
             //Panel Member UserId is incorrect updated in UpdatePanelMemberUserRoleId migration
 
              migrationBuilder.InsertData(
-                nameof(CaseRole),
+                "CaseRole",
                 new[] { "Id", "Name", "Group", "CaseTypeId" },
                 new object[,]
                 {
