@@ -78,6 +78,7 @@ public class BookNewHearingV2Tests : ApiTest
         
         var hearingReadyEvent = messages.First(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent);
         var integrationEvent = hearingReadyEvent.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
+        integrationEvent!.Hearing.IsVenueWelsh.Should().BeFalse();
         integrationEvent!.Hearing.ConferenceRoomType.Should().Be(ConferenceRoomType.VMR);
         integrationEvent.Hearing.VideoSupplier.Should().Be(VideoSupplier.Kinly);
         integrationEvent.Endpoints[0].Role.Should().Be(ConferenceRole.Guest,
@@ -168,6 +169,39 @@ public class BookNewHearingV2Tests : ApiTest
         var hearingReadyEvent = messages.First(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent);
         var integrationEvent = hearingReadyEvent.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
         integrationEvent!.Hearing.VideoSupplier.Should().Be(VideoSupplier.Vodafone);
+    }
+    
+    [Test]
+    public async Task should_book_a_hearing_with_with_welsh_venue()
+    {
+        // arrange
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
+        request.HearingVenueCode = "101959";
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
+        _hearingIds.Add(hearingResponse.Id);
+
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingResponse.Id);
+        Array.Exists(messages, x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().BeTrue();
+        
+        var hearingReadyEvent = messages.First(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent);
+        var integrationEvent = hearingReadyEvent.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
+        integrationEvent!.Hearing.IsVenueWelsh.Should().BeTrue();
     }
 
     [Test]
@@ -618,7 +652,7 @@ public class BookNewHearingV2Tests : ApiTest
         var caseName = "Bookings Api Integration Automated";
         var request = new SimpleBookNewHearingRequestV2(caseName, hearingSchedule, personalCode).Build();
         request.ServiceId = "ZZY1"; // intentionally incorrect case
-        request.HearingVenueCode = "231596";
+        request.HearingVenueCode = "231596"; // BIRMINGHAM CIVIL AND FAMILY JUSTICE CENTRE
         return request;
     }
 }
