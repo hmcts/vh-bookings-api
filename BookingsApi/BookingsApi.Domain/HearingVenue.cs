@@ -23,8 +23,11 @@ namespace BookingsApi.Domain
         public string VenueCode { get; }
         public bool IsScottish { get; }
         public bool IsWorkAllocationEnabled { get; }
+        public string Region { get; set; }
         
         public DateTime? ExpirationDate { get; set; }
+        
+        public bool IsWelsh() => Region != null && Region.Equals("Wales", StringComparison.CurrentCultureIgnoreCase);
 
         private void ValidateArguments(int id, string name)
         {
