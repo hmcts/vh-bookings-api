@@ -1,6 +1,8 @@
 # vh-bookings-api
 
-[![Build Status](https://dev.azure.com/hmcts/Video%20Hearings/_apis/build/status/vh-bookings-api/hmcts.vh-bookings-api.sds.master-release?repoName=hmcts%2Fvh-bookings-api&branchName=master)](https://dev.azure.com/hmcts/Video%20Hearings/_build/latest?definitionId=664&repoName=hmcts%2Fvh-bookings-api&branchName=master)
+[![Build Status](https://dev.azure.com/hmcts/Video%20Hearings/_apis/build/status/vh-bookings-api/hmcts.vh-bookings-api.sds.master-release?repoName=hmcts/vh-bookings-api&branchName=master)](https://dev.azure.com/hmcts/Video%20Hearings/_build/latest?definitionId=664&repoName=hmcts/vh-bookings-api&branchName=master)
+
+
 
 [![BookingsApi.Client package in vh-packages feed in Azure Artifacts](https://feeds.dev.azure.com/hmcts/cf3711aa-2aed-4f62-81a8-2afaee0ce26d/_apis/public/Packaging/Feeds/vh-packages/Packages/900b1d86-dad9-4013-b8ff-cc19a79e7605/Badge)](https://dev.azure.com/hmcts/Video%20Hearings/_artifacts/feed/vh-packages/NuGet/BookingsApi.Client?preferRelease=true)
 
