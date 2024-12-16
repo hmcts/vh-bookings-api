@@ -98,7 +98,6 @@ stages:
       #         gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
       - job: PublishAcceptanceTests
-        dependsOn: package_nuget
         displayName: Publish Acceptance Tests
         variables:
           projectPath: '${{ variables.appName }}/${{ variables.appName }}'
