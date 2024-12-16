@@ -17,45 +17,45 @@ pool:
   vmImage: ubuntu-22.04
 
 stages:
-  # ####################################################
-  # # CI Build Checks. #################################
-  # - stage: CI_Build
-  #   displayName: CI Build
-  #   variables:
-  #     - template: variables/shared.yaml
-  #   jobs:
-  #     - job: CI_Helm
-  #       displayName: 'Helm CI'
-  #       steps:
-  #         - checkout: self
+  ####################################################
+  # CI Build Checks. #################################
+  - stage: CI_Build
+    displayName: CI Build
+    variables:
+      - template: variables/shared.yaml
+    jobs:
+      - job: CI_Helm
+        displayName: 'Helm CI'
+        steps:
+          - checkout: self
 
-  #         - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
-  #           parameters:
-  #             chartPath: ${{ variables.chartPath }}
-  #             chartValuesPath: ${{ variables.chartPath }}
+          - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
+            parameters:
+              chartPath: ${{ variables.chartPath }}
+              chartValuesPath: ${{ variables.chartPath }}
 
-  #     - job: UnitAndIntegrationTests
-  #       displayName: 'Unit and Integration Tests'
-  #       steps:
-  #         - checkout: self
+      - job: UnitAndIntegrationTests
+        displayName: 'Unit and Integration Tests'
+        steps:
+          - checkout: self
 
-  #         - template: templates/dotnet/build-test-analyse.yml@azTemplates
-  #           parameters:
-  #             dotnetVersion: ${{ variables.dotnetVersion }}
-  #             nugetConfigPath: nuget.config
-  #             appName: ${{ variables.appName }}
-  #             dockerComposeTestFile: docker-compose.tests.yml
-  #             sonarExtraProperties: |
-  #               sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
-  #               sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*
-  #               sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*, **/BookingsApi.DAL/Migrations/**/*
-  #               sonar.issue.ignore.multicriteria=e1,e2,e3
-  #               sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.cs
-  #               sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S107
-  #               sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.cs
-  #               sonar.issue.ignore.multicriteria.e2.ruleKey=csharpsquid:S1133
-  #               sonar.issue.ignore.multicriteria.e3.resourceKey=**/*.cs
-  #               sonar.issue.ignore.multicriteria.e3.ruleKey=csharpsquid:CS1591
+          - template: templates/dotnet/build-test-analyse.yml@azTemplates
+            parameters:
+              dotnetVersion: ${{ variables.dotnetVersion }}
+              nugetConfigPath: nuget.config
+              appName: ${{ variables.appName }}
+              dockerComposeTestFile: docker-compose.tests.yml
+              sonarExtraProperties: |
+                sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
+                sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*
+                sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*, **/BookingsApi.DAL/Migrations/**/*
+                sonar.issue.ignore.multicriteria=e1,e2,e3
+                sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.cs
+                sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S107
+                sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.cs
+                sonar.issue.ignore.multicriteria.e2.ruleKey=csharpsquid:S1133
+                sonar.issue.ignore.multicriteria.e3.resourceKey=**/*.cs
+                sonar.issue.ignore.multicriteria.e3.ruleKey=csharpsquid:CS1591
 
   ####################################################
   # Pre Release Tasks. ###############################
@@ -64,40 +64,41 @@ stages:
     variables:
       - template: variables/shared.yaml
     jobs:
-      # - job: Generate_Entity_Framework_Script
-      #   displayName: 'Generate Entity Framework Script'
-      #   steps:
-      #     - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-      #       parameters:
-      #         efVersion: ${{ variables.efDotnetToolVersion }}
-      #         outputPath: $(Build.StagingDirectory)
-      #         contextName: ${{ variables.efContextName }}
-      #         workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
-      #         migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
-      #         projectName: ${{ variables.efProjectName }}
+      - job: Generate_Entity_Framework_Script
+        displayName: 'Generate Entity Framework Script'
+        steps:
+          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+            parameters:
+              efVersion: ${{ variables.efDotnetToolVersion }}
+              outputPath: $(Build.StagingDirectory)
+              contextName: ${{ variables.efContextName }}
+              workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
+              migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
+              projectName: ${{ variables.efProjectName }}
 
-      # - job: Generate_RefData_Entity_Framework_Script
-      #   displayName: 'Generate RefData Entity Framework Script'
-      #   steps:
-      #     - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-      #       parameters:
-      #         efVersion: ${{ variables.efDotnetToolVersion }}
-      #         outputPath: $(Build.StagingDirectory)
-      #         contextName: ${{ variables.efContextNameRefData }}
-      #         workingPath: $(System.DefaultWorkingDirectory)/RefData
-      #         migrationsPath: RefData/Migrations
-      #         projectName: ${{ variables.efProjectNameRefData }}
+      - job: Generate_RefData_Entity_Framework_Script
+        displayName: 'Generate RefData Entity Framework Script'
+        steps:
+          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+            parameters:
+              efVersion: ${{ variables.efDotnetToolVersion }}
+              outputPath: $(Build.StagingDirectory)
+              contextName: ${{ variables.efContextNameRefData }}
+              workingPath: $(System.DefaultWorkingDirectory)/RefData
+              migrationsPath: RefData/Migrations
+              projectName: ${{ variables.efProjectNameRefData }}
 
-      # - job: package_nuget
-      #   displayName: 'Package NuGet Packages'
-      #   steps:
-      #     - template: templates\dotnet\package-nuget-packages.yml@azTemplates
-      #       parameters:
-      #         nugetProjectPath: '${{ variables.appName }}/${{ variables.nuget_package_name }}'
-      #         vstsFeed: '${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}'
-      #         gitVersionConfigPath: ${{ variables.git_version_config_path }}
+      - job: package_nuget
+        displayName: 'Package NuGet Packages'
+        steps:
+          - template: templates\dotnet\package-nuget-packages.yml@azTemplates
+            parameters:
+              nugetProjectPath: '${{ variables.appName }}/${{ variables.nuget_package_name }}'
+              vstsFeed: '${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}'
+              gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
       - job: PublishAcceptanceTests
+        dependsOn: package_nuget
         displayName: Publish Acceptance Tests
         variables:
           projectPath: '${{ variables.appName }}/${{ variables.appName }}'
@@ -159,79 +160,80 @@ stages:
               imageTags:
                 - '${{ variables.prTagName }}'
 
-  # ##################################################
-  # # Deploy Nuget Packages. #########################
-  # - stage: Push_Nuget
-  #   dependsOn: Pre_Release_Tasks
-  #   displayName: Deploy NuGet Packages
-  #   variables:
-  #     - template: variables/dev.yaml
-  #     - template: variables/shared.yaml
-  #       parameters:
-  #         env: ${{ variables.env }}
-  #   jobs:
-  #     - job: Publish_Nuget
-  #       displayName: Publish NuGet Packages
-  #       steps:
-  #         - template: templates\dotnet\push-nuget-packages.yml@azTemplates
-  #           parameters:
-  #             vstsFeed: '${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}'
+  ##################################################
+  # Deploy Nuget Packages. #########################
+  - stage: Push_Nuget
+    dependsOn: Pre_Release_Tasks
+    displayName: Deploy NuGet Packages
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+    jobs:
+      - job: Publish_Nuget
+        displayName: Publish NuGet Packages
+        steps:
+          - template: templates\dotnet\push-nuget-packages.yml@azTemplates
+            parameters:
+              vstsFeed: '${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}'
 
-  # #####################################################
-  # # Run Entity Framework Dev. #########################
-  # - stage: Run_Entity_Framework_Dev
-  #   displayName: Run Entity Framework Dev
-  #   dependsOn: Dock
-  #   variables:
-  #     - template: variables/dev.yaml
-  #     - template: variables/shared.yaml
-  #       parameters:
-  #         env: ${{ variables.env }}
-  #   jobs:
-  #     - job: Run_Entity_Framework_Dev
-  #       pool:
-  #         vmImage: 'windows-latest' # This Job Must be Run on Windows
-  #       displayName: Run Entity Framework Dev
-  #       steps:
-  #         - download: current
-  #           displayName: Download Sql Artifact
+  #####################################################
+  # Run Entity Framework Dev. #########################
+  - stage: Run_Entity_Framework_Dev
+    displayName: Run Entity Framework Dev
+    dependsOn: Dock
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+    jobs:
+      - job: Run_Entity_Framework_Dev
+        pool:
+          vmImage: 'windows-latest' # This Job Must be Run on Windows
+        displayName: Run Entity Framework Dev
+        steps:
+          - download: current
+            displayName: Download Sql Artifact
 
-  #         - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
-  #           parameters:
-  #             sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
-  #             sqlServerName: ${{ variables.vhSQLServerName }}
-  #             databaseName: ${{ variables.BookingsApiDbName }}
-  #             azureSubscription: ${{ variables.subscriptionName }}
-  #             sqlScriptLocation: '$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql'
-  #             kvfirewallRequired: false
-  #             kvName: ${{ variables.vhKeyVault }}
-  #             kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
-  #             kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
+          - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
+            parameters:
+              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+              sqlServerName: ${{ variables.vhSQLServerName }}
+              databaseName: ${{ variables.BookingsApiDbName }}
+              azureSubscription: ${{ variables.subscriptionName }}
+              sqlScriptLocation: '$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql'
+              kvfirewallRequired: false
+              kvName: ${{ variables.vhKeyVault }}
+              kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
+              kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
 
-  #     - job: Run_Entity_Framework_RefData_Dev
-  #       pool:
-  #         vmImage: 'windows-latest' # This Job Must be Run on Windows
-  #       displayName: Run Entity Framework Ref Data Dev
-  #       dependsOn: Run_Entity_Framework_Dev
-  #       steps:
-  #         - download: current
-  #           displayName: Download Sql Artifact
+      - job: Run_Entity_Framework_RefData_Dev
+        pool:
+          vmImage: 'windows-latest' # This Job Must be Run on Windows
+        displayName: Run Entity Framework Ref Data Dev
+        dependsOn: Run_Entity_Framework_Dev
+        steps:
+          - download: current
+            displayName: Download Sql Artifact
 
-  #         - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
-  #           parameters:
-  #             sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
-  #             sqlServerName: ${{ variables.vhSQLServerName }}
-  #             databaseName: ${{ variables.BookingsApiDbName }}
-  #             azureSubscription: ${{ variables.subscriptionName }}
-  #             sqlScriptLocation: '$(Pipeline.Workspace)/${{ variables.efContextNameRefData }}-$(Build.BuildId)/${{ variables.efContextNameRefData }}.sql'
-  #             kvfirewallRequired: false
-  #             kvName: ${{ variables.vhKeyVault }}
-  #             kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
-  #             kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
+          - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
+            parameters:
+              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+              sqlServerName: ${{ variables.vhSQLServerName }}
+              databaseName: ${{ variables.BookingsApiDbName }}
+              azureSubscription: ${{ variables.subscriptionName }}
+              sqlScriptLocation: '$(Pipeline.Workspace)/${{ variables.efContextNameRefData }}-$(Build.BuildId)/${{ variables.efContextNameRefData }}.sql'
+              kvfirewallRequired: false
+              kvName: ${{ variables.vhKeyVault }}
+              kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
+              kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
 
   #####################################################
   # Deploy Helm Chart to Dev. #########################
   - stage: Install
+    dependsOn: Run_Entity_Framework_Dev
     displayName: Deploy Helm Chart Dev AKS
     variables:
       - group: vh-github-app-credentials
