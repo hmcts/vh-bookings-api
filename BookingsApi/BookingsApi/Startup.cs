@@ -114,7 +114,7 @@ namespace BookingsApi
                 options.TokenValidationParameters.ValidateLifetime = true;
                 options.Audience = serviceSettings.BookingsApiResourceId;
                 options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
-                options.RequireHttpsMetadata = !SettingsConfiguration.DisableHttpsRedirection;
+                options.RequireHttpsMetadata = true;
             });
 
             serviceCollection.AddAuthorization();
