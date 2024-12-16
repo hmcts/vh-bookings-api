@@ -57,57 +57,57 @@ stages:
   #               sonar.issue.ignore.multicriteria.e3.resourceKey=**/*.cs
   #               sonar.issue.ignore.multicriteria.e3.ruleKey=csharpsquid:CS1591
 
-  # ####################################################
-  # # Pre Release Tasks. ###############################
-  # - stage: Pre_Release_Tasks
-  #   displayName: Pre-Release Tasks
-  #   variables:
-  #     - template: variables/shared.yaml
-  #   jobs:
-  #     - job: Generate_Entity_Framework_Script
-  #       displayName: 'Generate Entity Framework Script'
-  #       steps:
-  #         - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-  #           parameters:
-  #             efVersion: ${{ variables.efDotnetToolVersion }}
-  #             outputPath: $(Build.StagingDirectory)
-  #             contextName: ${{ variables.efContextName }}
-  #             workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
-  #             migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
-  #             projectName: ${{ variables.efProjectName }}
+  ####################################################
+  # Pre Release Tasks. ###############################
+  - stage: Pre_Release_Tasks
+    displayName: Pre-Release Tasks
+    variables:
+      - template: variables/shared.yaml
+    jobs:
+      # - job: Generate_Entity_Framework_Script
+      #   displayName: 'Generate Entity Framework Script'
+      #   steps:
+      #     - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+      #       parameters:
+      #         efVersion: ${{ variables.efDotnetToolVersion }}
+      #         outputPath: $(Build.StagingDirectory)
+      #         contextName: ${{ variables.efContextName }}
+      #         workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
+      #         migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
+      #         projectName: ${{ variables.efProjectName }}
 
-  #     - job: Generate_RefData_Entity_Framework_Script
-  #       displayName: 'Generate RefData Entity Framework Script'
-  #       steps:
-  #         - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-  #           parameters:
-  #             efVersion: ${{ variables.efDotnetToolVersion }}
-  #             outputPath: $(Build.StagingDirectory)
-  #             contextName: ${{ variables.efContextNameRefData }}
-  #             workingPath: $(System.DefaultWorkingDirectory)/RefData
-  #             migrationsPath: RefData/Migrations
-  #             projectName: ${{ variables.efProjectNameRefData }}
+      # - job: Generate_RefData_Entity_Framework_Script
+      #   displayName: 'Generate RefData Entity Framework Script'
+      #   steps:
+      #     - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+      #       parameters:
+      #         efVersion: ${{ variables.efDotnetToolVersion }}
+      #         outputPath: $(Build.StagingDirectory)
+      #         contextName: ${{ variables.efContextNameRefData }}
+      #         workingPath: $(System.DefaultWorkingDirectory)/RefData
+      #         migrationsPath: RefData/Migrations
+      #         projectName: ${{ variables.efProjectNameRefData }}
 
-  #     - job: package_nuget
-  #       displayName: 'Package NuGet Packages'
-  #       steps:
-  #         - template: templates\dotnet\package-nuget-packages.yml@azTemplates
-  #           parameters:
-  #             nugetProjectPath: '${{ variables.appName }}/${{ variables.nuget_package_name }}'
-  #             vstsFeed: '${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}'
-  #             gitVersionConfigPath: ${{ variables.git_version_config_path }}
+      # - job: package_nuget
+      #   displayName: 'Package NuGet Packages'
+      #   steps:
+      #     - template: templates\dotnet\package-nuget-packages.yml@azTemplates
+      #       parameters:
+      #         nugetProjectPath: '${{ variables.appName }}/${{ variables.nuget_package_name }}'
+      #         vstsFeed: '${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}'
+      #         gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
-  #     - job: PublishAcceptanceTests
-  #       dependsOn: package_nuget
-  #       displayName: Publish Acceptance Tests
-  #       variables:
-  #         projectPath: '${{ variables.appName }}/${{ variables.appName }}'
-  #       steps:
-  #         - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
-  #           parameters:
-  #             netVersion: ${{ variables.dotnetVersion }}
-  #             vstsFeedId: '${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}'
-  #             coreProjectPath: $(projectPath)
+      - job: PublishAcceptanceTests
+        dependsOn: package_nuget
+        displayName: Publish Acceptance Tests
+        variables:
+          projectPath: '${{ variables.appName }}/${{ variables.appName }}'
+        steps:
+          - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
+            parameters:
+              netVersion: ${{ variables.dotnetVersion }}
+              vstsFeedId: '${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}'
+              coreProjectPath: $(projectPath)
 
   #####################################################
   # Build Docker Image & Generate EF Script. ##########
@@ -233,7 +233,6 @@ stages:
   #####################################################
   # Deploy Helm Chart to Dev. #########################
   - stage: Install
-    dependsOn: Run_Entity_Framework_Dev
     displayName: Deploy Helm Chart Dev AKS
     variables:
       - group: vh-github-app-credentials
