@@ -17,6 +17,7 @@ namespace BookingsApi.Infrastructure.Services.Dtos
         public string CaseTypeServiceId { get; set; }
         public VideoSupplier VideoSupplier { get; set; }
         public ConferenceRoomType ConferenceRoomType { get; set; }
+        public bool IsVenueWelsh { get; set; } = false;
     }
 
     public enum ConferenceRoomType

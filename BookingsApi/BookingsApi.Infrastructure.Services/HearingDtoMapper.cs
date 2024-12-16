@@ -26,10 +26,11 @@ namespace BookingsApi.Infrastructure.Services
                 CaseNumber = @case.Number,
                 CaseName= @case.Name,
                 HearingVenueName = hearing.HearingVenue.Name,
+                IsVenueWelsh = hearing.HearingVenue.IsWelsh(),
                 RecordAudio = hearing.AudioRecordingRequired,
                 CaseTypeServiceId = hearing.CaseType.ServiceId ?? RefData.DefaultCaseTypeServiceId,
                 VideoSupplier = hearing.ConferenceSupplier,
-                ConferenceRoomType = roomType
+                ConferenceRoomType = roomType,
             };
         }
         

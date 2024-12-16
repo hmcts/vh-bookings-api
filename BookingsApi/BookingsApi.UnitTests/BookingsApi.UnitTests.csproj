@@ -27,7 +27,4 @@
     <ProjectReference Include="..\BookingsApi\BookingsApi.csproj" />
     <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Domain\AnonymisationData\" />
-  </ItemGroup>
 </Project>
