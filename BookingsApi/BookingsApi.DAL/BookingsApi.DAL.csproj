@@ -24,9 +24,4 @@
     <Compile Remove="Migrations\20240913141057_AddScreening.cs" />
     <Compile Remove="Migrations\20240913141057_AddScreening.Designer.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>
