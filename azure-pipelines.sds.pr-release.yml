@@ -47,7 +47,7 @@ stages:
               dockerComposeTestFile: docker-compose.tests.yml
               sonarExtraProperties: |
                 sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
-                sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*, **/RefData/*
+                sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*, RefData/*
                 sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*, **/BookingsApi.DAL/Migrations/**/*
                 sonar.issue.ignore.multicriteria=e1,e2,e3
                 sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.cs
