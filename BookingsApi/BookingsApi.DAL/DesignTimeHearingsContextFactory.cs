@@ -11,7 +11,6 @@ namespace BookingsApi.DAL
                 .AddJsonFile("appsettings.json", true)
                 .AddEnvironmentVariables()
                 .Build();
-            Console.WriteLine(config.GetConnectionString("VhBookings"));
             var builder = new DbContextOptionsBuilder<BookingsDbContext>();
             builder.UseSqlServer(config.GetConnectionString("VhBookings"));
             var context = new BookingsDbContext(builder.Options);
