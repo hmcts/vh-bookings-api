@@ -83,9 +83,10 @@ public class EndpointsControllerV2(
             await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
         if (hearing == null) throw new HearingNotFoundException(hearingId);
         await endpointService.UpdateEndpoint(hearing, endpointId,
-            updateEndpointRequest.DefenceAdvocateContactEmail, updateEndpointRequest.DisplayName,
-            updateEndpointRequest.InterpreterLanguageCode, updateEndpointRequest.OtherLanguage,
-            updateEndpointRequest.Screening?.MapToDalDto());
+            new UpdateEndpointDto(updateEndpointRequest.DefenceAdvocateContactEmail, updateEndpointRequest.DisplayName,
+                updateEndpointRequest.InterpreterLanguageCode, updateEndpointRequest.OtherLanguage,
+                updateEndpointRequest.ExternalParticipantId, updateEndpointRequest.MeasuresExternalId,
+                updateEndpointRequest.Screening?.MapToDalDto()));
         
         return NoContent();
     }

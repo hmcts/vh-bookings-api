@@ -8,7 +8,7 @@ namespace BookingsApi.DAL.Commands
     public class UpdateEndPointOfHearingCommand : ICommand
     {
         public UpdateEndPointOfHearingCommand(Guid hearingId, Guid endpointId, string displayName, Participant defenceAdvocate,
-            string languageCode, string otherLanguage, ScreeningDto screening)
+            string languageCode, string otherLanguage, ScreeningDto screening, string externalReferenceId, string measuresExternalId)
         {
             HearingId = hearingId;
             EndpointId = endpointId;
@@ -17,6 +17,8 @@ namespace BookingsApi.DAL.Commands
             LanguageCode = languageCode;
             OtherLanguage = otherLanguage;
             Screening = screening;
+            ExternalReferenceId = externalReferenceId;
+            MeasuresExternalId = measuresExternalId;
         }
 
         public Guid HearingId { get; }
@@ -25,6 +27,8 @@ namespace BookingsApi.DAL.Commands
         public Participant DefenceAdvocate { get; }
         public string LanguageCode { get; set; }
         public string OtherLanguage { get; set; }
+        public string ExternalReferenceId { get; set; }
+        public string MeasuresExternalId { get; set; }
         public ScreeningDto Screening { get; }
         
         /// <summary>
@@ -85,6 +89,8 @@ namespace BookingsApi.DAL.Commands
             endpoint.UpdateLanguagePreferences(language, command.OtherLanguage);
             
             _hearingService.UpdateEndpointScreeningRequirement(hearing, endpoint, command.Screening);
+            endpoint.ExternalReferenceId = command.ExternalReferenceId;
+            endpoint.MeasuresExternalId = command.MeasuresExternalId;
             await _context.SaveChangesAsync();
 
             command.UpdatedEndpoint = endpoint;

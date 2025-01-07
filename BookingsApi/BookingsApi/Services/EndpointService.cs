@@ -3,6 +3,15 @@ using BookingsApi.Infrastructure.Services;
 
 namespace BookingsApi.Services
 {
+    public record UpdateEndpointDto(
+        string DefenceAdvocateContactEmail,
+        string DisplayName,
+        string LanguageCode,
+        string OtherLanguage,
+        string ExternalReferenceId,
+        string MeasuresExternalId,
+        ScreeningDto ScreeningDto);
+    
     public interface IEndpointService
     {
         /// <summary>
@@ -18,14 +27,9 @@ namespace BookingsApi.Services
         /// </summary>
         /// <param name="hearing"></param>
         /// <param name="id"></param>
-        /// <param name="defenceAdvocateContactEmail"></param>
-        /// <param name="displayName"></param>
-        /// <param name="languageCode"></param>
-        /// <param name="otherLanguage"></param>
-        /// <param name="screeningDto"></param>
+        /// <param name="updateEndpointDto"></param>
         /// <returns></returns>
-        Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName,
-            string languageCode, string otherLanguage, ScreeningDto screeningDto);
+        Task UpdateEndpoint(VideoHearing hearing, Guid id, UpdateEndpointDto updateEndpointDto);
         
         /// <summary>
         /// Remove an endpoint from a hearing
@@ -79,14 +83,14 @@ namespace BookingsApi.Services
             return endpoint;
         }
 
-        public async Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName,
-            string languageCode, string otherLanguage, ScreeningDto screeningDto)
+        public async Task UpdateEndpoint(VideoHearing hearing, Guid id, UpdateEndpointDto updateEndpointDto)
         {
             var defenceAdvocate =
-                DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(defenceAdvocateContactEmail,
+                DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(updateEndpointDto.DefenceAdvocateContactEmail,
                     hearing.GetParticipants());
-            var command = new UpdateEndPointOfHearingCommand(hearing.Id, id, displayName, defenceAdvocate, languageCode,
-                otherLanguage, screeningDto);
+            var command = new UpdateEndPointOfHearingCommand(hearing.Id, id, updateEndpointDto.DisplayName,
+                defenceAdvocate, updateEndpointDto.LanguageCode,
+                updateEndpointDto.OtherLanguage, updateEndpointDto.ScreeningDto, updateEndpointDto.ExternalReferenceId, updateEndpointDto.MeasuresExternalId);
             await _commandHandler.Handle(command);
 
             var endpoint = command.UpdatedEndpoint;
@@ -95,7 +99,7 @@ namespace BookingsApi.Services
             {
                var conferenceRole = endpoint.GetEndpointConferenceRole(hearing.GetParticipants(), hearing.GetEndpoints());
                 await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearing.Id, endpoint.Sip,
-                    displayName, defenceAdvocate?.Person.ContactEmail, conferenceRole));
+                    updateEndpointDto.DisplayName, defenceAdvocate?.Person.ContactEmail, conferenceRole));
                 await PublishUpdateHearingEvent(hearing.Id);
             }
         }

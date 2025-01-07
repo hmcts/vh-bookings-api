@@ -45,6 +45,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
                 .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
                 .Include(x => x.Endpoints).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Endpoint)
+                .AsSplitQuery()
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
                         
             if (hearing == null)
@@ -58,8 +59,14 @@ namespace BookingsApi.DAL.Commands
             {
                 hearing.RemoveParticipantById(removedParticipantId, false);
             }
-            
-            var languages = await context.InterpreterLanguages.Where(x=> x.Live).ToListAsync();
+
+            // only query languages required
+            var languageCodesRequired = command.NewParticipants.Where(x => x.InterpreterLanguageCode != null)
+                .Select(x => x.InterpreterLanguageCode).Distinct().ToList();
+            command.ExistingParticipants.Where(x => x.InterpreterLanguageCode != null)
+                .Select(x => x.InterpreterLanguageCode).Distinct().ToList().ForEach(x => languageCodesRequired.Add(x));
+
+            var languages = await context.InterpreterLanguages.Where(x => x.Live && languageCodesRequired.Contains(x.Code)).ToListAsync();
             await hearingService.AddParticipantToService(hearing, command.NewParticipants, languages);
             
             var participants = hearing.GetParticipants().ToList();
