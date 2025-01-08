@@ -24,6 +24,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="SpecFlow" Version="3.9.74" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BookingsApi.Client\BookingsApi.Client.csproj" />

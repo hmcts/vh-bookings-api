@@ -1,9 +1,11 @@
-﻿using BookingsApi.DAL;
+﻿using Bogus;
+using BookingsApi.DAL;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
+using Person = BookingsApi.Domain.Person;
 
 namespace BookingsApi.UnitTests.DAL.Queries
 {
@@ -16,6 +18,7 @@ namespace BookingsApi.UnitTests.DAL.Queries
         private Person _person1, _person2, _person3, _person4, _anonymisedPerson;
         private JudiciaryPerson _judiciaryJudge, _judiciaryJoh;
         private CaseType _caseType1;
+        private static readonly Faker Faker = new();
 
         [SetUp]
         public async Task Setup()
@@ -26,18 +29,18 @@ namespace BookingsApi.UnitTests.DAL.Queries
 
             _userRole = new UserRole(2, "user role 2");
 
-            _hearingRole = new HearingRole(2, "hearing role 2") {UserRole = _userRole};
+            _hearingRole = new HearingRole(2, "hearing role 2") { UserRole = _userRole };
 
-            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), FakeValidUserName());
-            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), FakeValidUserName());
-            _person3 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), FakeValidUserName());
-            _person4 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), FakeValidUserName());
-            
+            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.FirstName(), Faker.Name.LastName(), Faker.Internet.Email(), FakeValidUserName());
+            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.FirstName(), Faker.Name.LastName(), Faker.Internet.Email(), FakeValidUserName());
+            _person3 = new Person(Faker.Name.Suffix(), Faker.Name.FirstName(), Faker.Name.LastName(), Faker.Internet.Email(), FakeValidUserName());
+            _person4 = new Person(Faker.Name.Suffix(), Faker.Name.FirstName(), Faker.Name.LastName(), Faker.Internet.Email(), FakeValidUserName());
+
             _judiciaryJudge = new JudiciaryPersonBuilder("Judge123").Build();
             _judiciaryJoh = new JudiciaryPersonBuilder("Joh123").Build();
-            
+
             _anonymisedPerson =
-                new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), $"{Faker.Internet.Email()}@email.net");
+                new Person(Faker.Name.Suffix(), Faker.Name.FirstName(), Faker.Name.LastName(), Faker.Internet.Email(), $"{Faker.Internet.Email()}@email.net");
 
             _caseType1 = new CaseType(12, "case 1");
 
@@ -58,13 +61,13 @@ namespace BookingsApi.UnitTests.DAL.Queries
         {
             var venue = new HearingVenue(1, "venue 1");
             await _context.Venues.AddAsync(venue);
-            
+
             var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
 
             var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
-            
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
+
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person1, _hearingRole, "Individual 1");
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person2, _hearingRole, "Individual 123");
 
@@ -96,13 +99,13 @@ namespace BookingsApi.UnitTests.DAL.Queries
         {
             var venue = new HearingVenue(1, "venue 1");
             await _context.Venues.AddAsync(venue);
-            
+
             var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
 
             var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
-            
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
+
             hearing1.AddJudiciaryJudge(_judiciaryJudge, "Judge 123");
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person2, _hearingRole, "Individual 123");
 
@@ -135,12 +138,12 @@ namespace BookingsApi.UnitTests.DAL.Queries
 
             var venue = new HearingVenue(1, "venue 1");
             await _context.Venues.AddAsync(venue);
-            
+
             var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
 
             var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
 
             hearing1.AddJudiciaryJudge(_judiciaryJudge, "Judge 123");
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person2, _hearingRole, "Individual 123");
@@ -149,7 +152,7 @@ namespace BookingsApi.UnitTests.DAL.Queries
             hearing2.AddIndividual(Guid.NewGuid().ToString(), _person4, _hearingRole, "Individual 123");
 
             //setting the scheduled time for a hearing that does not fall in between cut off date and last run date 
-            typeof(VideoHearing).GetProperty("ScheduledDateTime")?.SetValue(hearing1, DateTime.UtcNow.AddMonths(-10)); 
+            typeof(VideoHearing).GetProperty("ScheduledDateTime")?.SetValue(hearing1, DateTime.UtcNow.AddMonths(-10));
             await _context.VideoHearings.AddRangeAsync(hearing1, hearing2);
             await _context.SaveChangesAsync();
 
@@ -160,7 +163,7 @@ namespace BookingsApi.UnitTests.DAL.Queries
 
             _context.JobHistory.Remove(jobHistory);
         }
-        
+
         [Test]
         public async Task GetAnonymisationDataQuery_since_the_begining_of_time_when_no_successful_JobHistory_dates_to_run_from()
         {
@@ -171,12 +174,12 @@ namespace BookingsApi.UnitTests.DAL.Queries
 
             var venue = new HearingVenue(1, "venue 1");
             await _context.Venues.AddAsync(venue);
-            
+
             var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
 
             var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
 
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person1, _hearingRole, "Individual 1");
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person2, _hearingRole, "Individual 123");
@@ -184,9 +187,9 @@ namespace BookingsApi.UnitTests.DAL.Queries
             hearing2.AddIndividual(Guid.NewGuid().ToString(), _person3, _hearingRole, "Individual 3");
             hearing2.AddIndividual(Guid.NewGuid().ToString(), _person4, _hearingRole, "Individual 123");
 
-            typeof(VideoHearing).GetProperty("ScheduledDateTime")?.SetValue(hearing1, DateTime.UtcNow.AddMonths(-24)); 
+            typeof(VideoHearing).GetProperty("ScheduledDateTime")?.SetValue(hearing1, DateTime.UtcNow.AddMonths(-24));
             //Not valid because still within 3 month cut off period
-            typeof(VideoHearing).GetProperty("ScheduledDateTime")?.SetValue(hearing2, DateTime.UtcNow.AddMonths(-1)); 
+            typeof(VideoHearing).GetProperty("ScheduledDateTime")?.SetValue(hearing2, DateTime.UtcNow.AddMonths(-1));
             await _context.VideoHearings.AddRangeAsync(hearing1, hearing2);
             await _context.SaveChangesAsync();
 
@@ -203,26 +206,26 @@ namespace BookingsApi.UnitTests.DAL.Queries
         {
             var venue = new HearingVenue(1, "venue 1");
             await _context.Venues.AddAsync(venue);
-            
+
             var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
 
             var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
-            
-            var hearing3 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
 
-            
+            var hearing3 = new VideoHearing(_caseType1, DateTime.Today, 40,
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
+
+
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person1, _hearingRole, "Individual 1");
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person2, _hearingRole, "Individual 123");
 
             hearing2.AddIndividual(Guid.NewGuid().ToString(), _person3, _hearingRole, "Individual 3");
             hearing2.AddIndividual(Guid.NewGuid().ToString(), _person4, _hearingRole, "Individual 123");
-            
+
             hearing3.AddIndividual(Guid.NewGuid().ToString(), _person1, _hearingRole, "Individual 1");
             hearing3.AddIndividual(Guid.NewGuid().ToString(), _person2, _hearingRole, "Individual 123");
-            
+
             var videoHearingType = typeof(VideoHearing);
             videoHearingType.GetProperty("ScheduledDateTime").SetValue(hearing1, DateTime.UtcNow.AddMonths(-3));
             videoHearingType.GetProperty("ScheduledDateTime").SetValue(hearing3, DateTime.UtcNow.AddMonths(-3));
@@ -250,13 +253,13 @@ namespace BookingsApi.UnitTests.DAL.Queries
         {
             var venue = new HearingVenue(1, "venue 1");
             await _context.Venues.AddAsync(venue);
-            
+
             var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
 
             var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
-            
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
+
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person1, _hearingRole, "Individual 1");
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person2, _hearingRole, "Individual 123");
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _anonymisedPerson, _hearingRole, "Individual 123");
@@ -291,13 +294,13 @@ namespace BookingsApi.UnitTests.DAL.Queries
         {
             var venue = new HearingVenue(1, "venue 1");
             await _context.Venues.AddAsync(venue);
-            
+
             var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
 
             var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
-                venue, "Room 1", null, Faker.Name.First(), false);
-            var automationTestAccountPersonEntry = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), username);
+                venue, "Room 1", null, Faker.Name.FirstName(), false);
+            var automationTestAccountPersonEntry = new Person(Faker.Name.Suffix(), Faker.Name.FirstName(), Faker.Name.LastName(), Faker.Internet.Email(), username);
 
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person1, _hearingRole, "Individual 1");
             hearing1.AddIndividual(Guid.NewGuid().ToString(), _person2, _hearingRole, "Individual 123");
@@ -338,7 +341,7 @@ namespace BookingsApi.UnitTests.DAL.Queries
                 JobName = SchedulerJobsNames.AnonymiseHearings;
             }
         }
-        
+
         private static string FakeValidUserName() => $"{Faker.Internet.UserName()}@hearings.reform.hmcts.net";
     }
 }

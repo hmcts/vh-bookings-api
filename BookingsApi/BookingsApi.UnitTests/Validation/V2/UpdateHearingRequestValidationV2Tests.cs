@@ -1,3 +1,4 @@
+using Bogus;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Validations.V2;
 using FizzWare.NBuilder;
@@ -7,6 +8,7 @@ namespace BookingsApi.UnitTests.Validation.V2;
 public class UpdateHearingRequestValidationV2Tests
 {
     private UpdateHearingRequestValidationV2 _validator;
+    private static readonly Faker Faker = new();
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
@@ -84,8 +86,8 @@ public class UpdateHearingRequestValidationV2Tests
     {
         var cases = Builder<CaseRequestV2>.CreateListOfSize(1).Build().ToList();
         cases[0].IsLeadCase = false;
-        cases[0].Name = $"auto test validation {Faker.RandomNumber.Next(0, 9999999)}";
-        cases[0].Number = $"{Faker.RandomNumber.Next(0, 9999)}/{Faker.RandomNumber.Next(0, 9999)}";
+        cases[0].Name = $"auto test validation {Faker.Random.Number(0, 9999999)}";
+        cases[0].Number = $"{Faker.Random.Number(0, 9999)}/{Faker.Random.Number(0, 9999)}";
         return new UpdateHearingRequestV2
         {
             ScheduledDuration = 60,

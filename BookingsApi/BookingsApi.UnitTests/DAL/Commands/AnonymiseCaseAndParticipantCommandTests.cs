@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using Bogus;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
+using Person = BookingsApi.Domain.Person;
 
 namespace BookingsApi.UnitTests.DAL.Commands
 {
@@ -19,6 +21,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
         private UserRole _personUserRole;
         private HearingRole personHearingRole;
         private HearingVenue _hearingVenue1;
+        private static readonly Faker Faker = new();
         
         [SetUp]
         public async Task SetUp()
@@ -138,13 +141,13 @@ namespace BookingsApi.UnitTests.DAL.Commands
         [Test]
         public async Task AnonymiseCaseAndParticipantCommand_Anonymises_Case_Names_With_Matching_Hearing_Ids()
         {
-            var caseName1 = Faker.Name.First();
-            var caseName2 = Faker.Name.First();
-            var caseName3 = Faker.Name.First();
+            var caseName1 = Faker.Name.FirstName();
+            var caseName2 = Faker.Name.FirstName();
+            var caseName3 = Faker.Name.FirstName();
 
-            _hearing1.AddCase(Faker.RandomNumber.Next().ToString(), caseName1, false);
-            _hearing2.AddCase(Faker.RandomNumber.Next().ToString(), caseName2, false);
-            _hearing3.AddCase(Faker.RandomNumber.Next().ToString(), caseName3, false);
+            _hearing1.AddCase(Faker.Random.Number().ToString(), caseName1, false);
+            _hearing2.AddCase(Faker.Random.Number().ToString(), caseName2, false);
+            _hearing3.AddCase(Faker.Random.Number().ToString(), caseName3, false);
 
             await _context.SaveChangesAsync();
             
@@ -170,9 +173,9 @@ namespace BookingsApi.UnitTests.DAL.Commands
         [Test]
         public async Task AnonymiseCaseAndParticipantCommand_Skips_Anonymised_Case()
         {
-            var caseName1 = $"{Faker.Name.First()}{AnonymiseCaseAndParticipantCommandHandler.AnonymisedNameSuffix}";
+            var caseName1 = $"{Faker.Name.FirstName()}{AnonymiseCaseAndParticipantCommandHandler.AnonymisedNameSuffix}";
 
-            _hearing1.AddCase(Faker.RandomNumber.Next().ToString(), caseName1, false);
+            _hearing1.AddCase(Faker.Random.Number().ToString(), caseName1, false);
 
             await _context.SaveChangesAsync();
             
@@ -210,13 +213,13 @@ namespace BookingsApi.UnitTests.DAL.Commands
 
             // TODO: investigate impact to switching to VideoHearingBuilder
             _hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40, _hearingVenue1, 
-                Faker.Name.First(), Faker.Name.First(), null, false);
+                Faker.Name.FirstName(), Faker.Name.FirstName(), null, false);
             
             _hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40, _hearingVenue1, 
-                Faker.Name.First(), Faker.Name.First(), null, false);
+                Faker.Name.FirstName(), Faker.Name.FirstName(), null, false);
             
             _hearing3 = new VideoHearing(_caseType1, DateTime.Today, 40, _hearingVenue1, 
-                Faker.Name.First(), Faker.Name.First(), null, false);
+                Faker.Name.FirstName(), Faker.Name.FirstName(), null, false);
             
             _hearing1.AddJudiciaryJudge(_judgePerson, "Judge 123");
             _hearing1.AddIndividual(Guid.NewGuid().ToString(), _individualPerson, personHearingRole, "Individual 123");
