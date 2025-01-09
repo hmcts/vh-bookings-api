@@ -53,16 +53,14 @@ namespace BookingsApi.Services
         private readonly ICommandHandler _commandHandler;
         private readonly IEventPublisher _eventPublisher;
         private readonly SupplierConfiguration _supplierConfiguration;
-        private readonly IFeatureToggles _featureToggles;
 
         public EndpointService(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IEventPublisher eventPublisher, IOptions<SupplierConfiguration> supplierConfiguration, IFeatureToggles featureToggles)
+            IEventPublisher eventPublisher, IOptions<SupplierConfiguration> supplierConfiguration)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _eventPublisher = eventPublisher;
             _supplierConfiguration = supplierConfiguration.Value;
-            _featureToggles = featureToggles;
         }
         
         public async Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint)

@@ -21,7 +21,6 @@ namespace BookingsApi.Controllers.V2
         IRandomGenerator randomGenerator,
         IUpdateHearingService updateHearingService,
         IEndpointService endpointService,
-        IFeatureToggles featureToggles,
         IHearingService hearingService)
         : ControllerBase
     {
