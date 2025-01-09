@@ -1,7 +1,6 @@
 using BookingsApi.Client;
 using Microsoft.Extensions.Configuration;
 using Testing.Common.Configuration;
-using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests;
 
