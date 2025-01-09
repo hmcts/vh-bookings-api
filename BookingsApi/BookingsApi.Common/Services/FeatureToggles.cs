@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using LaunchDarkly.Logging;
 using LaunchDarkly.Sdk;
 using LaunchDarkly.Sdk.Server;
@@ -23,6 +24,7 @@ namespace BookingsApi.Common.Services
             _ldClient = new LdClient(config);
         }
         
+        [SuppressMessage("Major Code Smell", "S1144:Unused private methods should be removed", Justification = "Kept in for future implementations")]
         private bool GetBoolToggle(string key)
         {
             if (!_ldClient.Initialized)
