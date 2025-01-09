@@ -76,8 +76,9 @@ namespace BookingsApi.Services
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
                 await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id,
-                    endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName,
-                    endpointToUpdate.InterpreterLanguageCode, endpointToUpdate.OtherLanguage, endpointToUpdate.Screening?.MapToDalDto());
+                    new UpdateEndpointDto(endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName,
+                        endpointToUpdate.InterpreterLanguageCode, endpointToUpdate.OtherLanguage,
+                        endpointToUpdate.ExternalParticipantId, endpointToUpdate.MeasuresExternalId,endpointToUpdate.Screening?.MapToDalDto()));
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)

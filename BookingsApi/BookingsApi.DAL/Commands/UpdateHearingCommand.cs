@@ -47,6 +47,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x=>x.HearingCases).ThenInclude(x=> x.Case)
                 .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser).ThenInclude(x => x.VhoWorkHours)
                 .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser).ThenInclude(x => x.VhoNonAvailability)
+                .AsSplitQuery()
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
