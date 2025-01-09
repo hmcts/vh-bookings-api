@@ -12,9 +12,6 @@ namespace BookingsApi.Controllers.V2;
 /// </summary>
 [Consumes("application/json")]
 [Produces("application/json")]
-[Route(template: "v{version:apiVersion}/hearings")]
-[Route("hearings")]
-[ApiVersion("2.0")]
 [ApiController]
 public class MultiDaysControllerV2(
     IQueryHandler queryHandler,
