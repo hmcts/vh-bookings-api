@@ -56,7 +56,6 @@ public class GetPersonsByClosedHearingsQueryHandler(BookingsDbContext context)
             .Where(p => !p.Person.Username.ToLower().StartsWith("ithc")) //Used by ITHC
             .Where(p => !p.Person.Username.ToLower().StartsWith("performance")) //Used for perfomance testing
             .Where(p => !p.Person.Username.ToLower().Contains("test"))
-            .Where(p => !p.Person.Username.ToLower().Contains("kinly.clerk"))
             .Where(p => !p.Person.ContactEmail.ToLower().EndsWith("testusersdomain.net"))
             .Select(p => p.Person.Username).Distinct()
             .ToListAsync();

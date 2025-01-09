@@ -128,18 +128,6 @@ namespace BookingsApi.Services
             await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
         }
 
-        public string GetSipAddressStem(BookingSupplier? supplier)
-        {
-            if (supplier.HasValue)
-            {
-                return supplier == BookingSupplier.Vodafone
-                    ? _supplierConfiguration.SipAddressStemVodafone
-                    : _supplierConfiguration.SipAddressStemKinly;
-            }
-
-            return _featureToggles.UseVodafoneToggle()
-                ? _supplierConfiguration.SipAddressStemVodafone
-                : _supplierConfiguration.SipAddressStemKinly;
-        }
+        public string GetSipAddressStem(BookingSupplier? supplier) => _supplierConfiguration.SipAddressStemVodafone;
     }
 }
