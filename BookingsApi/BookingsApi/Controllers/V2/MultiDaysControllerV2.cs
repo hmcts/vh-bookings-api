@@ -38,7 +38,7 @@ public class MultiDaysControllerV2(
     }
 
     /// <summary>
-    /// Create a new hearing with the details of a given hearing on given dates. Used by S&L until they migrate to v2 route
+    /// Create a new hearing with the details of a given hearing on given dates. Used by S&amp;L until they migrate to v2 route
     /// </summary>
     /// <param name="hearingId">Original hearing to clone</param>
     /// <param name="request">List of dates to create a new hearing on</param>

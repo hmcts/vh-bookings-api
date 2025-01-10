@@ -35,7 +35,7 @@ public class EndpointsControllerV2(
     }
     
     /// <summary>
-    /// Add an endpoint to a given hearing, used by S&L until they migrate to v2 route
+    /// Add an endpoint to a given hearing, used by S&amp;L until they migrate to v2 route
     /// </summary>
     /// <param name="hearingId"></param>
     /// <param name="addEndpointRequest"></param>
@@ -94,7 +94,7 @@ public class EndpointsControllerV2(
     }
     
     /// <summary>
-    /// Update an endpoint of a given hearing, used by S&L until they migrate to v2 route
+    /// Update an endpoint of a given hearing, used by S&amp;L until they migrate to v2 route
     /// </summary>
     /// <param name="hearingId"></param>
     /// <param name="endpointId"></param>

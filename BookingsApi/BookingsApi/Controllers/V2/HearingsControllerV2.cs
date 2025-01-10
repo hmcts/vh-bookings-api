@@ -1,7 +1,6 @@
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
-using BookingsApi.DAL.Services;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V2;
 
@@ -21,8 +20,7 @@ namespace BookingsApi.Controllers.V2
         IRandomGenerator randomGenerator,
         IUpdateHearingService updateHearingService,
         IEndpointService endpointService,
-        IFeatureToggles featureToggles,
-        IHearingService hearingService)
+        IFeatureToggles featureToggles)
         : ControllerBase
     {
         /// <summary>
