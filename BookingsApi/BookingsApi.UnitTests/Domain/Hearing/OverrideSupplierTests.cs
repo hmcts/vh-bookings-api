@@ -25,7 +25,7 @@ public class OverrideSupplierTests
         // arrange
         var newSupplier = VideoSupplier.Vodafone;
         var hearing = new VideoHearingBuilder().Build();
-        hearing.OverrideSupplier(VideoSupplier.Kinly);
+        hearing.OverrideSupplier(VideoSupplier.Vodafone);
         
         // act
         hearing.OverrideSupplier(newSupplier);
@@ -41,7 +41,7 @@ public class OverrideSupplierTests
         // arrange
         var newSupplier = VideoSupplier.Vodafone;
         var hearing = new VideoHearingBuilder().Build();
-        hearing.OverrideSupplier(VideoSupplier.Kinly);
+        hearing.OverrideSupplier(VideoSupplier.Vodafone);
         hearing.UpdateStatus(status, "test", null);
         
         // act / assert

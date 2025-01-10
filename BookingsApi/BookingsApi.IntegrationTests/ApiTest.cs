@@ -1,7 +1,6 @@
 using BookingsApi.Client;
 using Microsoft.Extensions.Configuration;
 using Testing.Common.Configuration;
-using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests;
 
@@ -42,8 +41,7 @@ public class ApiTest
         var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
         dbContextOptionsBuilder.UseSqlServer(_databaseConnectionString);
         BookingsDbContextOptions = dbContextOptionsBuilder.Options;
-        Hooks = new TestDataManager(BookingsDbContextOptions, "Bookings Api Integration Test",
-            new FeatureTogglesStub().UseVodafoneToggle());
+        Hooks = new TestDataManager(BookingsDbContextOptions, "Bookings Api Integration Test");
 
         var context = new BookingsDbContext(BookingsDbContextOptions);
         context.Database.Migrate();

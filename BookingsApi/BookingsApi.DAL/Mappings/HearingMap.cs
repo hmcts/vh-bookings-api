@@ -27,7 +27,7 @@ namespace BookingsApi.DAL.Mappings
             builder.Property<int?>("HearingTypeId").IsRequired(false);
             builder.Property(x => x.SourceId);
             
-            builder.Property<VideoSupplier>("ConferenceSupplier").HasColumnName("ConferenceSupplier").HasDefaultValue(VideoSupplier.Kinly);
+            builder.Property<VideoSupplier>("ConferenceSupplier").HasColumnName("ConferenceSupplier").HasDefaultValue(VideoSupplier.Vodafone);
             builder.Ignore(x => x.IsFirstDayOfMultiDayHearing);
 
             builder.HasMany<HearingCase>("HearingCases").WithOne(x => x.Hearing).HasForeignKey(x => x.HearingId);

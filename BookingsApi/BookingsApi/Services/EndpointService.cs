@@ -53,16 +53,14 @@ namespace BookingsApi.Services
         private readonly ICommandHandler _commandHandler;
         private readonly IEventPublisher _eventPublisher;
         private readonly SupplierConfiguration _supplierConfiguration;
-        private readonly IFeatureToggles _featureToggles;
 
         public EndpointService(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IEventPublisher eventPublisher, IOptions<SupplierConfiguration> supplierConfiguration, IFeatureToggles featureToggles)
+            IEventPublisher eventPublisher, IOptions<SupplierConfiguration> supplierConfiguration)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _eventPublisher = eventPublisher;
             _supplierConfiguration = supplierConfiguration.Value;
-            _featureToggles = featureToggles;
         }
         
         public async Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint)
@@ -128,18 +126,6 @@ namespace BookingsApi.Services
             await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
         }
 
-        public string GetSipAddressStem(BookingSupplier? supplier)
-        {
-            if (supplier.HasValue)
-            {
-                return supplier == BookingSupplier.Vodafone
-                    ? _supplierConfiguration.SipAddressStemVodafone
-                    : _supplierConfiguration.SipAddressStemKinly;
-            }
-
-            return _featureToggles.UseVodafoneToggle()
-                ? _supplierConfiguration.SipAddressStemVodafone
-                : _supplierConfiguration.SipAddressStemKinly;
-        }
+        public string GetSipAddressStem(BookingSupplier? supplier) => _supplierConfiguration.SipAddressStemVodafone;
     }
 }

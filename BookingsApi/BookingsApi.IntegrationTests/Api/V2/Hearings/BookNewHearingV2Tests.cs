@@ -1,4 +1,3 @@
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
@@ -9,7 +8,6 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
 using Testing.Common.Builders.Api.V2;
-using Testing.Common.Stubs;
 using JudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V2.Enums.JudiciaryParticipantHearingRoleCode;
 using ScreeningType = BookingsApi.Contract.V2.Enums.ScreeningType;
 
@@ -38,9 +36,6 @@ public class BookNewHearingV2Tests : ApiTest
     public async Task should_book_a_hearing_with_codes_instead_of_names()
     {
         // arrange
-        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
-        featureToggles!.UseVodafone = false;
-        
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
         request.BookingSupplier = null;
         request.Endpoints.Add(new EndpointRequestV2
@@ -61,7 +56,7 @@ public class BookNewHearingV2Tests : ApiTest
         var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
         var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
         _hearingIds.Add(hearingResponse.Id);
-        hearingResponse.BookingSupplier.Should().Be(BookingSupplier.Kinly);
+        hearingResponse.BookingSupplier.Should().Be(BookingSupplier.Vodafone);
         
         createdResponse.Should().BeEquivalentTo(hearingResponse);
         var judiciaryJudgeRequest = request.JudicialOfficeHolders[0];
@@ -80,60 +75,15 @@ public class BookNewHearingV2Tests : ApiTest
         var integrationEvent = hearingReadyEvent.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
         integrationEvent!.Hearing.IsVenueWelsh.Should().BeFalse();
         integrationEvent!.Hearing.ConferenceRoomType.Should().Be(ConferenceRoomType.VMR);
-        integrationEvent.Hearing.VideoSupplier.Should().Be(VideoSupplier.Kinly);
+        integrationEvent.Hearing.VideoSupplier.Should().Be(VideoSupplier.Vodafone);
         integrationEvent.Endpoints[0].Role.Should().Be(ConferenceRole.Guest,
             "Endpoint should be a guest if there are no screening requirements");
-    }
-
-    [Test]
-    public async Task should_still_use_kinly_as_default_supplier_when_override_but_toggle_off()
-    {
-        // arrange
-        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
-        featureToggles!.UseVodafone = false;
-        var request = await CreateBookingRequestWithServiceIdsAndCodes();
-        request.BookingSupplier = BookingSupplier.Vodafone;
-
-        // act
-        using var client = Application.CreateClient();
-        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
-
-        // assert
-        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
-        result.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        var getHearingUri = result.Headers.Location;
-        var getResponse = await client.GetAsync(getHearingUri);
-        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
-        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
-        _hearingIds.Add(hearingResponse.Id);
-        hearingResponse.BookingSupplier.Should().Be(BookingSupplier.Kinly);
-
-        createdResponse.Should().BeEquivalentTo(hearingResponse);
-        var judiciaryJudgeRequest = request.JudicialOfficeHolders[0];
-        createdResponse.JudicialOfficeHolders.Should().Contain(x =>
-            x.PersonalCode == judiciaryJudgeRequest.PersonalCode &&
-            x.HearingRoleCode == judiciaryJudgeRequest.HearingRoleCode &&
-            x.DisplayName == judiciaryJudgeRequest.DisplayName
-        );
-        createdResponse.BookingSupplier.Should().Be(BookingSupplier.Kinly);
-        
-        var serviceBusStub =
-            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingResponse.Id);
-        Array.Exists(messages, x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().BeTrue();
-        
-        var hearingReadyEvent = messages.First(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent);
-        var integrationEvent = hearingReadyEvent.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
-        integrationEvent!.Hearing.VideoSupplier.Should().Be(VideoSupplier.Kinly);
     }
 
     [Test]
     public async Task should_book_a_hearing_with_with_conference_supplier_overriden()
     {
         // arrange
-        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
-        featureToggles!.UseVodafone = true;
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
         request.BookingSupplier = BookingSupplier.Vodafone;
 

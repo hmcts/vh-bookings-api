@@ -21,7 +21,6 @@ namespace BookingsApi.Controllers.V2
         IRandomGenerator randomGenerator,
         IUpdateHearingService updateHearingService,
         IEndpointService endpointService,
-        IFeatureToggles featureToggles,
         IHearingService hearingService)
         : ControllerBase
     {
@@ -38,12 +37,7 @@ namespace BookingsApi.Controllers.V2
         public async Task<IActionResult> BookNewHearingWithCode(BookNewHearingRequestV2 request)
         {
             request.SanitizeRequest();
-            if(!featureToggles.UseVodafoneToggle())
-            {
-                request.BookingSupplier = BookingSupplier.Kinly;
-            }
-            request.BookingSupplier ??=
-                featureToggles.UseVodafoneToggle() ? BookingSupplier.Vodafone : BookingSupplier.Kinly;
+            request.BookingSupplier ??= BookingSupplier.Vodafone;
             var result = await new BookNewHearingRequestInputValidationV2().ValidateAsync(request);
             if (!result.IsValid)
             {

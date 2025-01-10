@@ -1,14 +1,13 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using LaunchDarkly.Logging;
 using LaunchDarkly.Sdk;
 using LaunchDarkly.Sdk.Server;
-using LaunchDarkly.Sdk.Server.Interfaces;
 
 namespace BookingsApi.Common.Services
 {
     public interface IFeatureToggles
     { 
-        bool UseVodafoneToggle();
     }
 
     public class FeatureToggles : IFeatureToggles
@@ -16,7 +15,6 @@ namespace BookingsApi.Common.Services
         private readonly LdClient _ldClient;
         private readonly Context _context;
         private const string LdUser = "vh-booking-api";
-        private const string VodafoneToggleKey = "vodafone";
 
         public FeatureToggles(string sdkKey, string environmentName)
         {
@@ -26,8 +24,7 @@ namespace BookingsApi.Common.Services
             _ldClient = new LdClient(config);
         }
         
-        public bool UseVodafoneToggle() => GetBoolToggle(VodafoneToggleKey);
-        
+        [SuppressMessage("Major Code Smell", "S1144:Unused private methods should be removed", Justification = "Kept in for future implementations")]
         private bool GetBoolToggle(string key)
         {
             if (!_ldClient.Initialized)
