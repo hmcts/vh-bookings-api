@@ -153,6 +153,8 @@ public class UpdateEndpointV2Tests : ApiTest
         var hearing = await Hooks.SeedVideoHearingV2(options => { options.Case = new Case("Case1 Num", "Case1 Name"); },
             BookingStatus.Created);
 
+        var endpoint = hearing.Endpoints[0];
+        
         var request = new UpdateEndpointRequestV2()
         {
             DisplayName = ""
@@ -160,7 +162,8 @@ public class UpdateEndpointV2Tests : ApiTest
         using var client = Application.CreateClient();
         
         // act
-        var result = await client.PatchAsync($"hearings/{hearing.Id}/endpoints/", RequestBody.Set(request));
+        var result =
+            await client.PatchAsync($"hearings/{hearing.Id}/endpoints/{endpoint.Id}", RequestBody.Set(request));
         
         // assert
         result.IsSuccessStatusCode.Should().BeFalse();

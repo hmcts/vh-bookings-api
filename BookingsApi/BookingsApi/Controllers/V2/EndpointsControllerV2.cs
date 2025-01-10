@@ -93,6 +93,13 @@ public class EndpointsControllerV2(
         return await UpdateEndpoint(hearingId, endpointId, updateEndpointRequest);
     }
     
+    /// <summary>
+    /// Update an endpoint of a given hearing, used by S&L until they migrate to v2 route
+    /// </summary>
+    /// <param name="hearingId"></param>
+    /// <param name="endpointId"></param>
+    /// <param name="updateEndpointRequest"></param>
+    /// <returns></returns>
     [HttpPatch("hearings/{hearingId}/endpoints/{endpointId}")]
     [ApiExplorerSettings(IgnoreApi = true)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
