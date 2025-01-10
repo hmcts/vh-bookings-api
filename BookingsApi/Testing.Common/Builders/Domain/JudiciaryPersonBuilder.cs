@@ -22,7 +22,7 @@ namespace Testing.Common.Builders.Domain
                         $"Automation_LastName",
                         _faker.Name.FullName(),
                         $"{_faker.Random.Number(1000, 100000)}",
-                        $"Automation_{_faker.Random.Number()}@hmcts.net", 
+                        $"Automation_{_faker.Random.Number(0,1000)}@hmcts.net", 
                         _faker.Phone.PhoneNumber(),
                         false,
                         false,

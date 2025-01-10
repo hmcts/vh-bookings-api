@@ -21,7 +21,7 @@ namespace Testing.Common.Builders.Domain
             }
             _person = new Builder(_settings).CreateNew<Person>().WithFactory(() =>
                 {
-                    var contactEmail = $"vh_automation_{_faker.Random.Number()}@hmcts.net";
+                    var contactEmail = $"vh_automation_{_faker.Random.Number(0,1000)}@hmcts.net";
                     var person = new Person(
                         _faker.Name.Prefix(),
                         "VH Automation_FirstName",
@@ -30,7 +30,7 @@ namespace Testing.Common.Builders.Domain
                         username:contactEmail
                         );
                     if (treatPersonAsNew) return person;
-                    var username = $"vh_automation_{_faker.Random.Number()}@hearings.reform.hmcts.net";
+                    var username = $"vh_automation_{0,1000}@hearings.reform.hmcts.net";
                     person.UpdateUsername(username);
 
                     return person;
@@ -55,7 +55,7 @@ namespace Testing.Common.Builders.Domain
                         $"Automation_FirstName", 
                         $"Automation_LastName", 
                         contactEmail, 
-                        $"Automation_{_faker.Random.Number()}@hearings.reform.hmcts.net"))
+                        $"Automation_{_faker.Random.Number(0,1000)}@hearings.reform.hmcts.net"))
                 .Build();
         }
 

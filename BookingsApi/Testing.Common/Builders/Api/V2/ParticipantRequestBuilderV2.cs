@@ -15,7 +15,7 @@ namespace Testing.Common.Builders.Api.V2
                 .With(x => x.Title = _faker.Name.Prefix())
                 .With(x => x.FirstName = "Automation_FirstName")
                 .With(x => x.LastName = "Automation_LastName")
-                .With(x => x.ContactEmail = $"Automation_{_faker.Random.Number()}@hmcts.net")
+                .With(x => x.ContactEmail = $"Automation_{_faker.Random.Number(0,1000)}@hmcts.net")
                 .With(x => x.TelephoneNumber = "01234567890")
                 .Build();
         }
