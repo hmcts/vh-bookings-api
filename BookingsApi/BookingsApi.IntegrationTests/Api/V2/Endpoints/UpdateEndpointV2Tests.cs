@@ -145,4 +145,27 @@ public class UpdateEndpointV2Tests : ApiTest
         Array.Exists(messages, x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent).Should().BeTrue();
 
     }
+
+    [Test(Description = "Ensures that the S&L route matches, rather than repeat the whole test suite")]
+    public async Task should_return_validation_problem_when_updating_with_invalid_data_old_route()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearingV2(options => { options.Case = new Case("Case1 Num", "Case1 Name"); },
+            BookingStatus.Created);
+
+        var request = new UpdateEndpointRequestV2()
+        {
+            DisplayName = ""
+        };
+        using var client = Application.CreateClient();
+        
+        // act
+        var result = await client.PatchAsync($"hearings/{hearing.Id}/endpoints/", RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var content = await result.Content.ReadAsStringAsync();
+        content.Should().Contain("'Display Name' must not be empty.");
+    }
 }
