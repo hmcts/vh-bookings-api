@@ -17,7 +17,6 @@ public class GetSipAddressStemTests
         _mocker = AutoMock.GetLoose();
         _supplierConfig = new SupplierConfiguration
         {
-            SipAddressStemKinly = "KinlyConfigStem",
             SipAddressStemVodafone = "VodaConfigStem"
         };
         _mocker.Mock<IOptions<SupplierConfiguration>>().Setup(o => o.Value).Returns(_supplierConfig);
