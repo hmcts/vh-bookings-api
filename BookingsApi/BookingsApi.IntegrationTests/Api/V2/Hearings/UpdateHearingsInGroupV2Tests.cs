@@ -1,3 +1,4 @@
+using Bogus;
 using BookingsApi.Common;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
@@ -23,6 +24,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             Empty,
             Null
         }
+
+        private static readonly Faker Faker = new();
         
         [Test]
         public async Task should_update_hearings_in_group()

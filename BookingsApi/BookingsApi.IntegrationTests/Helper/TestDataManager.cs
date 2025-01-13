@@ -1,3 +1,4 @@
+using Bogus;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
@@ -9,12 +10,12 @@ using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
-using Faker;
 using Microsoft.Extensions.Configuration;
 using NuGet.Packaging;
 using Testing.Common.Builders.Domain;
 using Testing.Common.Configuration;
 using JobHistory = BookingsApi.Domain.JobHistory;
+using Person = BookingsApi.Domain.Person;
 
 namespace BookingsApi.IntegrationTests.Helper
 {
@@ -30,6 +31,7 @@ namespace BookingsApi.IntegrationTests.Helper
         private readonly List<long> _seededAllocationIds = new();
         private readonly List<Guid> _seededJobHistoryIds = [];
         public static string CaseNumber => "2222/3511";
+        private static readonly Faker Faker = new();
 
         public void AddHearingForCleanup(Guid id)
         {
@@ -245,7 +247,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
-            var person4 = new PersonBuilder($"Automation/{RandomNumber.Next()}@hmcts.net").Build();
+            var person4 = new PersonBuilder($"Automation/{Faker.Random.Number(0, 9999999)}@hmcts.net").Build();
 
             var applicantLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Applicant);
             var applicantRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Representative);
@@ -291,7 +293,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
             if (@case == null)
             {
-                videoHearing.AddCase(CaseNumber, $"{defaultCaseName} {RandomNumber.Next(900000, 999999)}", true);
+                videoHearing.AddCase(CaseNumber, $"{defaultCaseName} {Faker.Random.Number(0, 999999)}", true);
             }
             else
             {
@@ -600,13 +602,13 @@ namespace BookingsApi.IntegrationTests.Helper
                 new JudiciaryPersonStaging(
                     Guid.NewGuid().ToString(),
                     Guid.NewGuid().ToString(),
-                    Name.Prefix(),
-                    Name.First(),
-                    Name.Last(),
-                    Name.FullName(),
-                    Name.Suffix(),
-                    Internet.Email(),
-                    Phone.Number(),
+                    Faker.Name.Prefix(),
+                    Faker.Name.FirstName(),
+                    Faker.Name.LastName(),
+                    Faker.Name.FullName(),
+                    Faker.Name.Suffix(),
+                    Faker.Internet.Email(),
+                    Faker.Phone.PhoneNumber(),
                     "Yes",
                     "No");
             await db.JudiciaryPersonsStaging.AddAsync(judiciaryPersonStaging);

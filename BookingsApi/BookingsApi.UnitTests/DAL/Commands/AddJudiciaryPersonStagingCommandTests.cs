@@ -1,4 +1,5 @@
-﻿using BookingsApi.DAL;
+﻿using Bogus;
+using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
     {
         private BookingsDbContext _context;
         private AddJudiciaryPersonStagingCommandHandler _handler;
+        private static readonly Faker Faker = new();
         
         [OneTimeSetUp]
         public void InitialSetup()
@@ -34,17 +36,17 @@ namespace BookingsApi.UnitTests.DAL.Commands
         {
             var command = new AddJudiciaryPersonStagingCommand
             {
-                ExternalRefId = Faker.Name.First(),
-                PersonalCode = Faker.Name.First(),
-                Title = Faker.Name.First(),
-                KnownAs = Faker.Name.First(),
-                Surname = Faker.Name.First(),
-                Fullname = Faker.Name.First(),
-                PostNominals = Faker.Name.First(),
-                Email = Faker.Name.First(),
-                WorkPhone = Faker.Phone.Number(),
-                Leaver = Faker.Name.First(),
-                LeftOn = Faker.Name.First(),
+                ExternalRefId = Faker.Name.FirstName(),
+                PersonalCode = Faker.Name.FirstName(),
+                Title = Faker.Name.FirstName(),
+                KnownAs = Faker.Name.FirstName(),
+                Surname = Faker.Name.FirstName(),
+                Fullname = Faker.Name.FirstName(),
+                PostNominals = Faker.Name.FirstName(),
+                Email = Faker.Name.FirstName(),
+                WorkPhone = Faker.Phone.PhoneNumber(),
+                Leaver = Faker.Name.FirstName(),
+                LeftOn = Faker.Name.FirstName(),
                 Deleted = true,
                 DeletedOn = "2023-01-01"
             };

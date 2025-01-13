@@ -1,13 +1,14 @@
 ﻿using System;
-using Faker;
 using FizzWare.NBuilder;
 using BookingsApi.Domain;
+using Bogus;
 
 namespace Testing.Common.Builders.Domain
 {
     public class JudiciaryPersonBuilder
     {
         private readonly JudiciaryPerson _judiciaryPerson;
+        private Faker _faker = new Faker();
 
         public JudiciaryPersonBuilder(string personalCode = null)
         {
@@ -16,13 +17,13 @@ namespace Testing.Common.Builders.Domain
                     new JudiciaryPerson(
                         Guid.NewGuid().ToString(),
                         personalCode,
-                        Name.Prefix(),
+                        _faker.Name.Prefix(),
                         $"Automation_FirstName",
                         $"Automation_LastName",
-                        Name.FullName(),
-                        $"{RandomNumber.Next(1000, 100000)}",
-                        $"Automation_{RandomNumber.Next()}@hmcts.net", 
-                        Phone.Number(),
+                        _faker.Name.FullName(),
+                        $"{_faker.Random.Number(1000, 100000)}",
+                        $"Automation_{_faker.Random.Number(0, 9999999)}@hmcts.net", 
+                        _faker.Phone.PhoneNumber(),
                         false,
                         false,
                         string.Empty))

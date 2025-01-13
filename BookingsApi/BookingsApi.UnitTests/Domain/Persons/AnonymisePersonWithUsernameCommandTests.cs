@@ -1,8 +1,10 @@
-﻿using BookingsApi.DAL;
+﻿using Bogus;
+using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain;
 using Microsoft.EntityFrameworkCore;
+using Person = BookingsApi.Domain.Person;
 
 namespace BookingsApi.UnitTests.Domain.Persons
 {
@@ -11,6 +13,7 @@ namespace BookingsApi.UnitTests.Domain.Persons
         private BookingsDbContext _context;
         private AnonymisePersonWithUsernameCommandHandler _command;
         private Person _person1, _person2;
+        private static readonly Faker Faker = new();
 
         [OneTimeSetUp]
         public void InitialSetup()
@@ -23,8 +26,8 @@ namespace BookingsApi.UnitTests.Domain.Persons
         [SetUp]
         public async Task SetUp()
         {
-            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
-            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
+            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.FirstName(), Faker.Name.LastName(), Faker.Internet.Email(), Faker.Internet.Email());
+            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.FirstName(), Faker.Name.LastName(), Faker.Internet.Email(), Faker.Internet.Email());
             
             await _context.Persons.AddRangeAsync(_person1, _person2);
             
@@ -53,8 +56,8 @@ namespace BookingsApi.UnitTests.Domain.Persons
             
             await _command.Handle(query);
 
-            var anonymisedPerson = _context.Persons.First(p => p.Id == _person1.Id);
-            var unAnonymisedPerson = _context.Persons.First(p => p.Id == _person2.Id);
+            var anonymisedPerson = await _context.Persons.FirstAsync(p => p.Id == _person1.Id);
+            var unAnonymisedPerson = await _context.Persons.FirstAsync(p => p.Id == _person2.Id);
 
             anonymisedPerson.FirstName.Should().NotBe(personEntryBeforeAnonymisation.FirstName);
             anonymisedPerson.LastName.Should().NotBe(personEntryBeforeAnonymisation.LastName);
@@ -72,7 +75,7 @@ namespace BookingsApi.UnitTests.Domain.Persons
         [Test]
         public async Task AnonymisePersonWithUsernameCommand_Anonymises_Organisation_When_OrganisationId_Is_Not_Null()
         {
-            var organisation = new Organisation(Faker.Company.Suffix());
+            var organisation = new Organisation(Faker.Company.CompanyName());
 
             _person1.UpdateOrganisation(organisation);
 
@@ -80,7 +83,7 @@ namespace BookingsApi.UnitTests.Domain.Persons
             
             await _command.Handle(new AnonymisePersonWithUsernameCommand {Username = _person1.Username});
 
-            var anonymisedOrganisation = _context.Persons.Select(x => x.Organisation).FirstOrDefault(x => x.Id == organisation.Id);
+            var anonymisedOrganisation = await _context.Persons.Select(x => x.Organisation).FirstOrDefaultAsync(x => x.Id == organisation.Id);
             anonymisedOrganisation.Name.Should().NotBe(organisationNameBeforeAnonymisation);
         }
 

@@ -1,3 +1,4 @@
+using Bogus;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Enumerations;
@@ -11,6 +12,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
 
 public class UpdateHearingV2Tests : ApiTest
 {
+    private static readonly Faker Faker = new();
 
     [Test]
     public async Task should_return_bad_request_and_validation_errors_when_payload_fails_validation()
@@ -368,8 +370,8 @@ public class UpdateHearingV2Tests : ApiTest
     {
         var cases = Builder<CaseRequestV2>.CreateListOfSize(1).Build().ToList();
         cases[0].IsLeadCase = false;
-        cases[0].Name = $"auto test validation {Faker.RandomNumber.Next(0, 9999999)}";
-        cases[0].Number = $"{Faker.RandomNumber.Next(0, 9999)}/{Faker.RandomNumber.Next(0, 9999)}";
+        cases[0].Name = $"auto test validation {Faker.Random.Number(0, 9999999)}";
+        cases[0].Number = $"{Faker.Random.Number(0, 9999999)}/{Faker.Random.Number(0, 9999999)}";
         return new UpdateHearingRequestV2
         {
             ScheduledDuration = 60,
