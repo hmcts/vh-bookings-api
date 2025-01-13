@@ -1,7 +1,6 @@
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
-using BookingsApi.DAL.Services;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V2;
 
@@ -21,8 +20,7 @@ namespace BookingsApi.Controllers.V2
         IRandomGenerator randomGenerator,
         IUpdateHearingService updateHearingService,
         IEndpointService endpointService,
-        IFeatureToggles featureToggles,
-        IHearingService hearingService)
+        IFeatureToggles featureToggles)
         : ControllerBase
     {
         /// <summary>
@@ -260,72 +258,6 @@ namespace BookingsApi.Controllers.V2
             await bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, videoHearingUpdateDate);
 
             return NoContent();
-        }
-
-        /// <summary>
-        /// Create a new hearing with the details of a given hearing on given dates
-        /// </summary>
-        /// <param name="hearingId">Original hearing to clone</param>
-        /// <param name="request">List of dates to create a new hearing on</param>
-        /// <returns></returns>
-        [HttpPost("{hearingId}/clone")]
-        [OpenApiOperation("CloneHearing")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponseV2>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [MapToApiVersion("2.0")]
-        public async Task<IActionResult> CloneHearing([FromRoute] Guid hearingId,
-            [FromBody] CloneHearingRequestV2 request)
-        {
-            var query = new GetHearingByIdQuery(hearingId);
-            var videoHearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
-
-            if (videoHearing == null)
-                return NotFound();
-
-            var videoHearingUpdateDate = videoHearing.UpdatedDate.TrimSeconds();
-
-            var validationResult = await new CloneHearingRequestValidationV2().ValidateAsync(request);
-            if (!validationResult.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(validationResult.Errors);
-                return ValidationProblem(ModelState);
-            }
-
-            var datesValidationResult =
-                new CloneHearingRequestValidationV2(videoHearing)
-                    .ValidateDates(request);
-            if (!datesValidationResult.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(datesValidationResult.Errors);
-                return ValidationProblem(ModelState);
-            }
-
-            var orderedDates = request.Dates.OrderBy(x => x).ToList();
-            var totalDays = orderedDates.Count + 1; // include original hearing
-            var sipAddressStem = endpointService.GetSipAddressStem((BookingSupplier?)videoHearing.ConferenceSupplier);
-            var commands = orderedDates.Select((newDate, index) =>
-            {
-                var hearingDay = index + 2; // zero index including original hearing
-                return CloneHearingToCommandMapper.CloneToCommand(videoHearing, newDate, randomGenerator,
-                    sipAddressStem, totalDays, hearingDay, request.ScheduledDuration);
-            }).ToList();
-
-            var existingCase = videoHearing.GetCases()[0];
-            await hearingService.RenameHearingForMultiDayBooking(hearingId,
-                $"{existingCase.Name} Day {1} of {totalDays}");
-            var hearingsList = new List<VideoHearing>();
-            foreach (var command in commands)
-            {
-                // dbcontext is not thread safe. loop one at a time
-                var hearing = await bookingService.SaveNewHearing(command);
-                hearingsList.Add(hearing);
-            }
-
-            // publish multi day hearing notification event
-            await bookingService.PublishMultiDayHearing(videoHearing, totalDays, videoHearingUpdateDate);
-            var response = hearingsList.Select(HearingToDetailsResponseV2Mapper.Map).ToList();
-
-            return Ok(response);
         }
 
         private async Task<HearingVenue> GetHearingVenue(string venueCode)
