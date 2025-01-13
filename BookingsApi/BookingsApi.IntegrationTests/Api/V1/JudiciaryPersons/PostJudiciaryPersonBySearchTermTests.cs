@@ -37,6 +37,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryPersons
             response.Should().ContainEquivalentOf(_mapper.MapJudiciaryPersonToResponse(activePerson));
         }
         
-        private static string GenerateEmail() => $"{EmailPrefix}_{Faker.Random.Number()}@email.com";
+        private static string GenerateEmail() => $"{EmailPrefix}_{Faker.Random.Number(0, 9999999)}@email.com";
     }
 }

@@ -145,9 +145,9 @@ namespace BookingsApi.UnitTests.DAL.Commands
             var caseName2 = Faker.Name.FirstName();
             var caseName3 = Faker.Name.FirstName();
 
-            _hearing1.AddCase(Faker.Random.Number().ToString(), caseName1, false);
-            _hearing2.AddCase(Faker.Random.Number().ToString(), caseName2, false);
-            _hearing3.AddCase(Faker.Random.Number().ToString(), caseName3, false);
+            _hearing1.AddCase(Faker.Random.Number(0, 9999999).ToString(), caseName1, false);
+            _hearing2.AddCase(Faker.Random.Number(0, 9999999).ToString(), caseName2, false);
+            _hearing3.AddCase(Faker.Random.Number(0, 9999999).ToString(), caseName3, false);
 
             await _context.SaveChangesAsync();
             

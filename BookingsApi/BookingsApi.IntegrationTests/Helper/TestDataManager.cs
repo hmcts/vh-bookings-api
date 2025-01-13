@@ -247,7 +247,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
-            var person4 = new PersonBuilder($"Automation/{Faker.Random.Number()}@hmcts.net").Build();
+            var person4 = new PersonBuilder($"Automation/{Faker.Random.Number(0, 9999999)}@hmcts.net").Build();
 
             var applicantLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Applicant);
             var applicantRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Representative);
@@ -293,7 +293,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
             if (@case == null)
             {
-                videoHearing.AddCase(CaseNumber, $"{defaultCaseName} {Faker.Random.Number(900000, 999999)}", true);
+                videoHearing.AddCase(CaseNumber, $"{defaultCaseName} {Faker.Random.Number(0, 999999)}", true);
             }
             else
             {

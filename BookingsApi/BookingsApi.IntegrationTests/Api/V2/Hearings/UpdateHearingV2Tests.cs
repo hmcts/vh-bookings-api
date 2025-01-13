@@ -371,7 +371,7 @@ public class UpdateHearingV2Tests : ApiTest
         var cases = Builder<CaseRequestV2>.CreateListOfSize(1).Build().ToList();
         cases[0].IsLeadCase = false;
         cases[0].Name = $"auto test validation {Faker.Random.Number(0, 9999999)}";
-        cases[0].Number = $"{Faker.Random.Number(0, 9999)}/{Faker.Random.Number(0, 9999)}";
+        cases[0].Number = $"{Faker.Random.Number(0, 9999999)}/{Faker.Random.Number(0, 9999999)}";
         return new UpdateHearingRequestV2
         {
             ScheduledDuration = 60,

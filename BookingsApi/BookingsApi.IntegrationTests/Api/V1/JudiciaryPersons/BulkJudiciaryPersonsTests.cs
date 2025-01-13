@@ -23,7 +23,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryPersons
                     Fullname = "Fullname",
                     Surname = "Surname",
                     PostNominals = "PostNominals",
-                    Email = $"automation_{Faker.Random.Number()}@email.com",
+                    Email = $"automation_{Faker.Random.Number(0, 9999999)}@email.com",
                     WorkPhone = "WorkPhone"
                 }
             };
