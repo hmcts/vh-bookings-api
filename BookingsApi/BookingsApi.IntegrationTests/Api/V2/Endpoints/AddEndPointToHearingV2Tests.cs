@@ -67,6 +67,27 @@ public class AddEndPointToHearingV2Tests : ApiTest
         errors.Should().ContainKey(nameof(request.DisplayName));
         errors[nameof(request.DisplayName)].Should().Contain("'Display Name' must not be empty.");
     }
+    
+    [Test]
+    public async Task should_return_validation_problem_when_adding_endpoint_with_invalid_data_old_route()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearingV2(options => { options.Case = new Case("Case1 Num", "Case1 Name"); },
+            BookingStatus.Created);
+
+        using var client = Application.CreateClient();
+
+        var request = new EndpointRequestV2();
+        
+        // act
+        var result = await client.PostAsync($"hearings/{hearing.Id}/endpoints/", RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var content = await result.Content.ReadAsStringAsync();
+        content.Should().Contain("'Display Name' must not be empty.");
+    }
 
     [Test]
     public async Task should_return_not_found_when_adding_to_a_hearing_that_does_not_exist()
