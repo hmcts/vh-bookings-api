@@ -144,20 +144,17 @@
           "System.Memory.Data": "1.0.2"
         }
       },
+      "Bogus": {
+        "type": "Transitive",
+        "resolved": "35.6.1",
+        "contentHash": "QPJ8zLL0ScEunEoUNhMDigD4ykA/n7vXCZUQdGCFGHBfP2mNYjiCzR9Cj12eaFaDlwkhIC1HKQZihWl8OgbLsw=="
+      },
       "Castle.Core": {
         "type": "Transitive",
         "resolved": "5.1.1",
         "contentHash": "rpYtIczkzGpf+EkZgDr9CClTdemhsrwA/W5hMoPjLkRFnXzH44zDLoovXeKtmxb1ykXK9aJVODSpiJml8CTw2g==",
         "dependencies": {
           "System.Diagnostics.EventLog": "6.0.0"
-        }
-      },
-      "Faker.NETCore": {
-        "type": "Transitive",
-        "resolved": "1.0.2",
-        "contentHash": "teRWZFwtBSuMRo2jxB4/DfCo3nprjMtjb7tjBfhrnz+BPhQMivW9cVo06kLr4GAJjrCOvCNQ2sJckRwGvMmK0Q==",
-        "dependencies": {
-          "NETStandard.Library": "1.6.0"
         }
       },
       "FluentAssertions": {
@@ -3436,10 +3433,10 @@
       "testing.common": {
         "type": "Project",
         "dependencies": {
+          "Bogus": "[35.6.1, )",
           "BookingsApi.Common": "[1.0.0, )",
           "BookingsApi.Contract": "[1.0.0, )",
           "BookingsApi.Domain": "[1.0.0, )",
-          "Faker.NETCore": "[1.0.2, )",
           "FluentAssertions": "[6.12.0, )",
           "Microsoft.AspNetCore.Mvc": "[2.2.0, )",
           "Microsoft.EntityFrameworkCore": "[8.0.4, )",

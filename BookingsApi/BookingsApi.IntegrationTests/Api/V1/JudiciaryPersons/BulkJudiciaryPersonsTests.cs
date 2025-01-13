@@ -1,11 +1,13 @@
+using Bogus;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using Faker;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryPersons
 {
     public class BulkJudiciaryPersonsTests : ApiTest
     {
+        private static readonly Faker Faker = new();
+        
         [Test]
         public async Task Should_insert_judiciary_person()
         {
@@ -21,7 +23,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryPersons
                     Fullname = "Fullname",
                     Surname = "Surname",
                     PostNominals = "PostNominals",
-                    Email = $"automation_{RandomNumber.Next()}@email.com",
+                    Email = $"automation_{Faker.Random.Number(0, 9999999)}@email.com",
                     WorkPhone = "WorkPhone"
                 }
             };

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bogus;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain.Constants;
@@ -13,6 +14,8 @@ public class SimpleBookNewHearingRequestV2
 {
     public const string JudgePersonalCode = "VH-GENERIC-ACCOUNT-00";
     private readonly BookNewHearingRequestV2 _requestV2;
+
+    private static readonly Faker Faker = new();
 
     public SimpleBookNewHearingRequestV2(string caseName, DateTime scheduledDateTime, string judiciaryJudgePersonCode)
     {
@@ -70,8 +73,8 @@ public class SimpleBookNewHearingRequestV2
 
         var cases = Builder<CaseRequestV2>.CreateListOfSize(1).Build().ToList();
         cases[0].IsLeadCase = false;
-        cases[0].Name = $"{caseName} {Faker.RandomNumber.Next(0, 9999999)}";
-        cases[0].Number = $"{Faker.RandomNumber.Next(0, 9999)}/{Faker.RandomNumber.Next(0, 9999)}";
+        cases[0].Name = $"{caseName} {Faker.Random.Number(0, 9999999)}";
+        cases[0].Number = $"{Faker.Random.Number(0, 9999999)}/{Faker.Random.Number(0, 9999999)}";
 
         const string createdBy = "bookingsapi.acautomation@hmcts.net";
             

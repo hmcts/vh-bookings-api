@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Bogus;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Validations.V1;
@@ -9,6 +10,8 @@ namespace BookingsApi.UnitTests.Validation.V1
     public class AddJusticeUserRequestValidationTests
     {
         private AddJusticeUserRequestValidation _validator;
+
+        private static readonly Faker Faker = new();
         
         [OneTimeSetUp]
         public void OneTimeSetUp()

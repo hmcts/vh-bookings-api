@@ -1,12 +1,14 @@
+using Bogus;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Mappings.V1;
-using Faker;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryPersons
 {
     public class PostJudiciaryPersonBySearchTermTests : ApiTest
     {
+        private static readonly Faker Faker = new();
+        
         private readonly JudiciaryPersonToResponseMapper _mapper = new();
         private const string EmailPrefix = "PostJudiciaryPersonBySearchTermTests_";
         
@@ -35,6 +37,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryPersons
             response.Should().ContainEquivalentOf(_mapper.MapJudiciaryPersonToResponse(activePerson));
         }
         
-        private static string GenerateEmail() => $"{EmailPrefix}_{RandomNumber.Next()}@email.com";
+        private static string GenerateEmail() => $"{EmailPrefix}_{Faker.Random.Number(0, 9999999)}@email.com";
     }
 }
