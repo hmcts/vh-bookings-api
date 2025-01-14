@@ -21,8 +21,7 @@ namespace BookingsApi.IntegrationTests.Helper
 {
     public class TestDataManager(
         DbContextOptions<BookingsDbContext> dbContextOptions,
-        string defaultCaseName,
-        bool useVodafone)
+        string defaultCaseName)
     {
         private readonly List<Guid> _seededHearings = new();
         public List<string> JudiciaryPersons { get; } = new();
@@ -316,9 +315,7 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 var config = ConfigRootBuilder.Build();
                 var hearingDay = index + 2;
-                var stem = useVodafone
-                    ? config.GetValue<string>("SupplierConfiguration:SipAddressStemKinly")
-                    : config.GetValue<string>("SupplierConfiguration:SipAddressStemVodafone");
+                var stem = config.GetValue<string>("SupplierConfiguration:SipAddressStemVodafone");
                 return CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, new RandomGenerator(), stem,
                     totalDays, hearingDay, duration);
             }).ToList();
