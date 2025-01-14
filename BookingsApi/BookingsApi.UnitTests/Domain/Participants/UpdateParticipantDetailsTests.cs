@@ -17,7 +17,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
             var beforeUpdatedDate = individualParticipant.UpdatedDate;
 
             individualParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber, organisationName);
-            individualParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            individualParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate.Value);
             individualParticipant.Person.Title.Should().Be(title);
             individualParticipant.DisplayName.Should().Be(displayName);
             individualParticipant.Person.TelephoneNumber.Should().Be(telephoneNumber);
@@ -34,7 +34,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
             var beforeUpdatedDate = representativeParticipant.UpdatedDate;
 
             representativeParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber, organisationName);
-            representativeParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            representativeParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate.Value);
             representativeParticipant.Person.Title.Should().Be(title);
             representativeParticipant.DisplayName.Should().Be(displayName);
             representativeParticipant.Person.TelephoneNumber.Should().Be(telephoneNumber);

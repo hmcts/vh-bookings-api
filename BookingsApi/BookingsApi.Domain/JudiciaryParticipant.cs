@@ -7,25 +7,22 @@ namespace BookingsApi.Domain
 {
     public class JudiciaryParticipant : ParticipantBase
     {
-        private readonly DateTime _currentUTC = DateTime.UtcNow;
-
-        public JudiciaryParticipant(string displayName, JudiciaryPerson judiciaryPerson, JudiciaryParticipantHearingRoleCode hearingRoleCode, string optionalContactEmail = null, string optionalContactTelephone = null)
+        public JudiciaryParticipant(
+            string displayName, 
+            JudiciaryPerson judiciaryPerson, 
+            JudiciaryParticipantHearingRoleCode hearingRoleCode, 
+            string optionalContactEmail = null, 
+            string optionalContactTelephone = null) : this()
         {
-            Id = Guid.NewGuid();
             UpdateDisplayName(displayName);
             JudiciaryPerson = judiciaryPerson;
             UpdateHearingRoleCode(hearingRoleCode);
             ContactEmail = String.IsNullOrWhiteSpace(optionalContactEmail) ? null : optionalContactEmail;
             ContactTelephone =  String.IsNullOrWhiteSpace(optionalContactTelephone) ? null : optionalContactTelephone;
-            CreatedDate = _currentUTC;
-            UpdatedDate = _currentUTC;
         }
         
         protected JudiciaryParticipant()
         {
-            Id = Guid.NewGuid();
-            CreatedDate = _currentUTC;
-            UpdatedDate = _currentUTC;
         }
         
 #pragma warning disable S1144
@@ -35,8 +32,6 @@ namespace BookingsApi.Domain
         public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; private set; }
         public Guid HearingId { get; private set; }
         public virtual Hearing Hearing { get; private set; }
-        public DateTime? CreatedDate { get; set; }
-        public DateTime? UpdatedDate { get; set; }
         
         /// <summary>
         /// Do not use GETTER for this property. Use GetEmail() instead
@@ -69,14 +64,14 @@ namespace BookingsApi.Domain
 
             DisplayName = displayName;
 
-            UpdatedDate = _currentUTC;
+            UpdatedDate = DateTime.UtcNow;
         }
         
         public void UpdateHearingRoleCode(JudiciaryParticipantHearingRoleCode hearingRoleCode)
         {
             HearingRoleCode = hearingRoleCode;
             
-            UpdatedDate = _currentUTC;
+            UpdatedDate = DateTime.UtcNow;
         }
         
         public void UpdateLanguagePreferences(InterpreterLanguage language, string otherLanguage)

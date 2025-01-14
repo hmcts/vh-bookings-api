@@ -46,7 +46,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatedIndividual.Person.Title.Should().Be(title);
             updatedIndividual.DisplayName.Should().Be(displayName);
             updatedIndividual.Person.TelephoneNumber.Should().Be(telephoneNumber);
-            updatedIndividual.UpdatedDate.Should().BeAfter(updatedIndividual.CreatedDate);
+            updatedIndividual.UpdatedDate.Should().BeAfter(updatedIndividual.CreatedDate.Value);
         }
 
         [Test]

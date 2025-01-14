@@ -9,16 +9,9 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain.Participants;
 
-public abstract class Participant : ParticipantBase, IScreenableEntity
+public abstract class Participant() : ParticipantBase, IScreenableEntity
 {
-    protected readonly ValidationFailures ValidationFailures = new();
-
-    protected Participant()
-    {
-        Id = Guid.NewGuid();
-        CreatedDate = DateTime.UtcNow;
-        LinkedParticipants = new List<LinkedParticipant>();
-    }
+    protected readonly ValidationFailures ValidationFailures = [];
 
     protected Participant(string externalReferenceId, Person person, HearingRole hearingRole, string displayName) : this()
     {
@@ -35,8 +28,6 @@ public abstract class Participant : ParticipantBase, IScreenableEntity
     public Person Person { get; protected set; }
     public Guid HearingId { get; set; }
     public virtual Hearing Hearing { get; protected set; }
-    public DateTime CreatedDate { get; set; }
-    public DateTime UpdatedDate { get; set; }
     public string CreatedBy { get; set; }
     public string UpdatedBy { get; set; }
     public string ExternalReferenceId { get; set; }
@@ -44,8 +35,8 @@ public abstract class Participant : ParticipantBase, IScreenableEntity
     public int? InterpreterLanguageId { get; protected set; }
     public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
     public string OtherLanguage { get; set; }
-    public IList<LinkedParticipant> LinkedParticipants { get; set; }
-        
+    public IList<LinkedParticipant> LinkedParticipants { get; set; } = new List<LinkedParticipant>();
+
     public Guid? ScreeningId { get; set; }
     public virtual Screening Screening { get; set; }
 
@@ -124,9 +115,9 @@ public abstract class Participant : ParticipantBase, IScreenableEntity
 
     public bool DoesPersonAlreadyExist()
     {
-        return Person?.CreatedDate.TrimMilliseconds() != CreatedDate.TrimMilliseconds()
-               || Person.UpdatedDate.TrimMilliseconds() != CreatedDate.TrimMilliseconds()
-               || (Person.Username is not null && Person.Username != Person.ContactEmail);
+        return Person?.CreatedDate.TrimMilliseconds() != CreatedDate?.TrimMilliseconds()
+               || Person?.UpdatedDate.TrimMilliseconds() != CreatedDate?.TrimMilliseconds()
+               || (Person?.Username is not null && Person.Username != Person.ContactEmail);
     }
 
     public void ChangePerson(Person newPerson)
