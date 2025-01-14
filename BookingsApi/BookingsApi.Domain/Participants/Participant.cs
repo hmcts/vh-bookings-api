@@ -11,12 +11,11 @@ namespace BookingsApi.Domain.Participants;
 
 public abstract class Participant : ParticipantBase, IScreenableEntity
 {
-    protected readonly ValidationFailures ValidationFailures = new();
+    protected readonly ValidationFailures ValidationFailures = [];
 
     protected Participant()
     {
         Id = Guid.NewGuid();
-        CreatedDate = DateTime.UtcNow;
         LinkedParticipants = new List<LinkedParticipant>();
     }
 
@@ -35,8 +34,6 @@ public abstract class Participant : ParticipantBase, IScreenableEntity
     public Person Person { get; protected set; }
     public Guid HearingId { get; set; }
     public virtual Hearing Hearing { get; protected set; }
-    public DateTime CreatedDate { get; set; }
-    public DateTime UpdatedDate { get; set; }
     public string CreatedBy { get; set; }
     public string UpdatedBy { get; set; }
     public string ExternalReferenceId { get; set; }
