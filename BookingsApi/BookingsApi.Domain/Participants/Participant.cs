@@ -115,8 +115,8 @@ public abstract class Participant() : ParticipantBase, IScreenableEntity
 
     public bool DoesPersonAlreadyExist()
     {
-        return Person?.CreatedDate.TrimMilliseconds() != CreatedDate?.TrimMilliseconds()
-               || Person?.UpdatedDate.TrimMilliseconds() != CreatedDate?.TrimMilliseconds()
+        return Person?.CreatedDate?.TrimMilliseconds() != CreatedDate?.TrimMilliseconds()
+               || Person?.UpdatedDate?.TrimMilliseconds() != CreatedDate?.TrimMilliseconds()
                || (Person?.Username is not null && Person.Username != Person.ContactEmail);
     }
 

@@ -17,7 +17,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         public EventType EventType => EventType.NewParticipantHearingConfirmationEvent;
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var videoHearingUpdateDate = videoHearing.UpdatedDate.TrimSeconds();
+            var videoHearingUpdateDate = videoHearing.UpdatedDate.Value.TrimSeconds();
             var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing, videoHearingUpdateDate);
 
             var @case = videoHearing.GetCases()[0];

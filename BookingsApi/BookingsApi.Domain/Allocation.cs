@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
 namespace BookingsApi.Domain
 {
     [ExcludeFromCodeCoverage]
     public class Allocation : TrackableEntity<long>
     {
-        public Allocation()
-        {
-            CreatedDate = DateTime.UtcNow;
-            UpdatedDate = DateTime.UtcNow;
-        }
         public Guid HearingId { get; set; }
         public virtual Hearing Hearing { get; set; }
         public Guid JusticeUserId { get; set; }

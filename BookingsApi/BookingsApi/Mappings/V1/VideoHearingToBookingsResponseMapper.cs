@@ -43,7 +43,7 @@ namespace BookingsApi.Mappings.V1
                 CaseTypeName = videoHearing.CaseType.Name,
                 CourtAddress = videoHearing.HearingVenue.Name,
                 CourtRoom = videoHearing.HearingRoomName,
-                CreatedDate = videoHearing.CreatedDate,
+                CreatedDate = videoHearing.CreatedDate.Value,
                 CreatedBy = videoHearing.CreatedBy,
                 LastEditDate = videoHearing.UpdatedDate,
                 LastEditBy = videoHearing.UpdatedBy,

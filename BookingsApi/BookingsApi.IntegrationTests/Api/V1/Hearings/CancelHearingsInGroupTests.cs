@@ -48,7 +48,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                 var hearingBeforeUpdate = hearingsToCancel.Find(h => h.Id == hearing.Id);
                 
                 hearing.Status.Should().Be(BookingStatus.Cancelled);
-                hearing.UpdatedDate.Should().BeAfter(hearingBeforeUpdate.UpdatedDate);
+                hearing.UpdatedDate.Should().BeAfter(hearingBeforeUpdate.UpdatedDate.Value);
                 hearing.UpdatedBy.Should().Be(request.UpdatedBy);
                 hearing.CancelReason.Should().Be(request.CancelReason);
                 hearing.Allocations.Should().BeEmpty();

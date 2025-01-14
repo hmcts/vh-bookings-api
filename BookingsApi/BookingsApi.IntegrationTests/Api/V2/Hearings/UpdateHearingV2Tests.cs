@@ -329,7 +329,7 @@ public class UpdateHearingV2Tests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.OK);
         
         var response = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
-        response.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+        response.UpdatedDate.Should().BeAfter(beforeUpdatedDate.Value);
         response.UpdatedBy.Should().Be(request.UpdatedBy);
     }
 

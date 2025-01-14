@@ -252,7 +252,7 @@ namespace BookingsApi.Controllers.V2
             var totalDays = hearings.Count;
             var firstHearingId = hearings[0].HearingId;
             var firstHearing = await bookingService.GetHearingById(firstHearingId);
-            var videoHearingUpdateDate = firstHearing.UpdatedDate.TrimSeconds();
+            var videoHearingUpdateDate = firstHearing.UpdatedDate.Value.TrimSeconds();
 
             // publish multi day hearing notification event
             await bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, videoHearingUpdateDate);

@@ -61,7 +61,7 @@ namespace BookingsApi.UnitTests.Services
             var newParticipantWelcomeMessageCount = hearing.Participants.Count - 1;
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 1;
             var hearingConfirmationForExistingParticipantsMessageCount = 1;
-            var updateDate = hearing.UpdatedDate.TrimSeconds();
+            var updateDate = hearing.UpdatedDate.Value.TrimSeconds();
             var totalMessages = newParticipantWelcomeMessageCount + createConferenceMessageCount + hearingConfirmationForNewParticipantsMessageCount
                                 + hearingConfirmationForExistingParticipantsMessageCount + hearing.JudiciaryParticipants.Count;
 

@@ -5,23 +5,31 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
 {
-    public class Person : AggregateRoot<Guid>
+    public class Person : TrackableAggregateRoot<Guid>
     {
-        private readonly ValidationFailures _validationFailures = new ValidationFailures();
+        private readonly ValidationFailures _validationFailures = [];
 
         /// <summary>
         /// Instantiate a person when the username is known, typically used for existing persons
         /// </summary>
-        public Person(string title, string firstName, string lastName, string contactEmail, string username)
+        public Person(
+            string title, 
+            string firstName, 
+            string lastName, 
+            string contactEmail, 
+            string username) : this()
         {
-            Id = Guid.NewGuid();
             ValidateArguments(firstName, lastName);
             Title = title;
             FirstName = firstName;
             LastName = lastName;
             Username = username;
             ContactEmail = contactEmail;
-            CreatedDate = UpdatedDate = DateTime.UtcNow;
+        }
+
+        protected Person()
+        {
+            Id = Guid.NewGuid();
         }
 
         public string Title { get; set; }
@@ -33,8 +41,6 @@ namespace BookingsApi.Domain
         public string TelephoneNumber { get; set; }
         protected long? OrganisationId { get; set; }
         public virtual Organisation Organisation { get; set; }
-        public DateTime CreatedDate { get; private set; }
-        public DateTime UpdatedDate { get; private set; }
 
         public void UpdateOrganisation(Organisation organisation)
         {

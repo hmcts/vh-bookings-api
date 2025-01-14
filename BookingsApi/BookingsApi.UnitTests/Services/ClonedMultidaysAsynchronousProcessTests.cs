@@ -32,7 +32,7 @@ namespace BookingsApi.UnitTests.Services
             var multiDayHearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 2;
             var multiDayHearingConfirmationForExistingParticipantsMessageCount = 2 + hearing.JudiciaryParticipants.Count;
             var totalMessages = multiDayHearingConfirmationForNewParticipantsMessageCount + multiDayHearingConfirmationForExistingParticipantsMessageCount;
-            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
+            var videoHearingUpdateDate = hearing.UpdatedDate.Value.TrimSeconds();
             
             await _clonedMultidaysAsynchronousProcess.Start(hearing, 2, videoHearingUpdateDate);
             

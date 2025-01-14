@@ -19,8 +19,8 @@ namespace BookingsApi.DAL.Mappings
             builder.Property<string>("HearingVenueName").HasMaxLength(450);
             builder.Property(x => x.ScheduledDateTime).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
             builder.Property(x => x.ScheduledDuration);
-            builder.Property(x => x.CreatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
-            builder.Property(x => x.UpdatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            builder.Property(x => x.CreatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v.Value, DateTimeKind.Utc));
+            builder.Property(x => x.UpdatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v.Value, DateTimeKind.Utc));
             builder.Property(x => x.Status).HasColumnName("HearingStatusId");
             builder.Property<bool>("QuestionnaireNotRequired").HasDefaultValue(false);
             builder.Property(x => x.CancelReason).HasMaxLength(255);

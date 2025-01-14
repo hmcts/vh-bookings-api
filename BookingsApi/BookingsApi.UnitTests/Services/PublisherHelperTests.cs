@@ -13,7 +13,7 @@ namespace BookingsApi.UnitTests.Services
         public void Should_return_new_participants_when_new_persons_added_as_participants()
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
-            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
+            var videoHearingUpdateDate = hearing.UpdatedDate.Value.TrimSeconds();
             
             PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing, videoHearingUpdateDate).Count().Should().Be(hearing.Participants.Count);
         }
@@ -23,7 +23,7 @@ namespace BookingsApi.UnitTests.Services
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
             hearing.Participants.ToList()[0].ChangePerson(new PersonBuilder(treatPersonAsNew: false).Build());
-            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
+            var videoHearingUpdateDate = hearing.UpdatedDate.Value.TrimSeconds();
             
             PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing, videoHearingUpdateDate).Count().Should().Be(hearing.Participants.Count - 1);
         }
@@ -35,7 +35,7 @@ namespace BookingsApi.UnitTests.Services
             var participants = hearing.Participants.ToList();
             participants[0].ChangePerson(new PersonBuilder(treatPersonAsNew: false).Build());
             participants[1].ChangePerson(new PersonBuilder(treatPersonAsNew: true).Build());
-            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
+            var videoHearingUpdateDate = hearing.UpdatedDate.Value.TrimSeconds();
             
             PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing, videoHearingUpdateDate).Count().Should().Be(hearing.Participants.Count - 1);
         }
@@ -44,13 +44,13 @@ namespace BookingsApi.UnitTests.Services
         public void Should_return_ONLY_new_participants_when_new_persons_added_as_participants_TO_existing_hearing()
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
-            var dateWhenHearingCreated = hearing.CreatedDate.AddDays(-10);
+            var dateWhenHearingCreated = hearing.CreatedDate.Value.AddDays(-10);
             hearing.GetType().GetProperty("CreatedDate")?.SetValue(hearing, dateWhenHearingCreated, null);
 
             var participants = hearing.Participants.ToList();
             participants.Skip(1).ToList().ForEach(x => x.Person.GetType().GetProperty("CreatedDate")?.SetValue(x.Person, dateWhenHearingCreated, null));
             participants.Skip(1).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate")?.SetValue(x, dateWhenHearingCreated.AddDays(1), null));
-            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
+            var videoHearingUpdateDate = hearing.UpdatedDate.Value.TrimSeconds();
             
             PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing, videoHearingUpdateDate).Count().Should().Be(1);
         }
@@ -63,7 +63,7 @@ namespace BookingsApi.UnitTests.Services
             var participants = hearing.Participants.ToList();
 
             participants.SkipLast(newParticipants).ToList().ForEach(x => x.ChangePerson(new PersonBuilder(treatPersonAsNew:false).Build()));
-            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
+            var videoHearingUpdateDate = hearing.UpdatedDate.Value.TrimSeconds();
             
             PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing, videoHearingUpdateDate).Count().Should().Be(hearing.Participants.Count - newParticipants);
         }
@@ -79,7 +79,7 @@ namespace BookingsApi.UnitTests.Services
 
             participants.SkipLast(newParticipants).ToList().ForEach(x => x.ChangePerson(new PersonBuilder(treatPersonAsNew:false).Build()));
             firstParticipant.Person.GetType().GetProperty("Username")?.SetValue(firstParticipant.Person, firstParticipant.Person.ContactEmail, null);
-            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
+            var videoHearingUpdateDate = hearing.UpdatedDate.Value.TrimSeconds();
             
             PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing, videoHearingUpdateDate).Count().Should().Be(hearing.Participants.Count - newParticipants - participantWithAccountNotSet);
         }
@@ -88,14 +88,14 @@ namespace BookingsApi.UnitTests.Services
         public void Should_return_ONLY_existing_participants_when_existing_persons_added_as_participants_TO_existing_hearing()
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
-            var dateWhenHearingCreated = hearing.CreatedDate.AddDays(-10);
+            var dateWhenHearingCreated = hearing.CreatedDate.Value.AddDays(-10);
             var existingParticipants = 2;
             
             hearing.GetType().GetProperty("CreatedDate")?.SetValue(hearing, dateWhenHearingCreated, null);
 
             var participants = hearing.Participants.ToList();
             participants.Skip(participants.Count - existingParticipants).ToList().ForEach(x => x.ChangePerson(new PersonBuilder(treatPersonAsNew:false).Build()));
-            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
+            var videoHearingUpdateDate = hearing.UpdatedDate.Value.TrimSeconds();
             
             PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing, videoHearingUpdateDate).Should().HaveCount(existingParticipants);
         }

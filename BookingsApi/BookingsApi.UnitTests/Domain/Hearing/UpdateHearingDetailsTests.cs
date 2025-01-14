@@ -31,7 +31,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration,
                 hearingRoomName, otherInformation, updatedBy, casesToUpdate, audioRecordingRequired);
 
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate.Value);
             var updatedCases = hearing.GetCases();
             updatedCases[0].Name.Should().Be(caseName);
             updatedCases[0].Number.Should().Be(caseNumber);
@@ -91,7 +91,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 hearing.GetCases().ToList(), hearing.AudioRecordingRequired);
             
             // assert
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate.Value);
             hearing.UpdatedBy.Should().Be(updatedBy);
         }
     }

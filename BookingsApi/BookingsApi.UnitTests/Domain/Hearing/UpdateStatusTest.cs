@@ -27,7 +27,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newStatus = BookingStatus.Created;
             hearing.UpdateStatus(newStatus, "testuser", null);
             hearing.Status.Should().Be(BookingStatus.Created);
-            hearing.UpdatedDate.Should().BeAfter(updatedDate);
+            hearing.UpdatedDate.Should().BeAfter(updatedDate.Value);
         }
 
         [Test]

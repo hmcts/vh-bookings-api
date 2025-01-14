@@ -136,7 +136,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var updatedParticipant = updatedVideoHearing.Participants.Single(x => x.Id == participantToUpdate.Id);
 
             updatedParticipant.Should().NotBeNull();
-            updatedParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            updatedParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate.Value);
             updatedParticipant.Person.Title.Should().Be(updateParticipantDetails.Title);
             updatedParticipant.DisplayName.Should().Be(updateParticipantDetails.DisplayName);
             updatedParticipant.Person.TelephoneNumber.Should().Be(updateParticipantDetails.TelephoneNumber);
@@ -182,7 +182,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var updatedRepresentative = (Representative)updatedVideoHearing.Participants.Single(x => x.Id == participantToUpdate.Id);
 
             updatedRepresentative.Should().NotBeNull();
-            updatedRepresentative.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            updatedRepresentative.UpdatedDate.Should().BeAfter(beforeUpdatedDate.Value);
             updatedRepresentative.Person.Title.Should().Be(updateParticipantDetails.Title);
             updatedRepresentative.DisplayName.Should().Be(updateParticipantDetails.DisplayName);
             updatedRepresentative.Person.TelephoneNumber.Should().Be(updateParticipantDetails.TelephoneNumber);

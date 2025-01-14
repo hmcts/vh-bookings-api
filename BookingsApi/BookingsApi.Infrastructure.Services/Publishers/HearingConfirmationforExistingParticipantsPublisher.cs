@@ -18,8 +18,8 @@ namespace BookingsApi.Infrastructure.Services.Publishers
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var updateDate = videoHearing.UpdatedDate.TrimSeconds();
-            var existingParticipants = PublisherHelper.GetExistingParticipantsSinceLastUpdate(videoHearing, updateDate);
+            var updateDate = videoHearing.UpdatedDate?.TrimSeconds();
+            var existingParticipants = PublisherHelper.GetExistingParticipantsSinceLastUpdate(videoHearing, updateDate.Value);
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in existingParticipants)

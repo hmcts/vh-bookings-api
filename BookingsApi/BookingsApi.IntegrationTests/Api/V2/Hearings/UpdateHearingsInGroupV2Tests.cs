@@ -138,7 +138,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 var requestHearing = request.Hearings.First(x => x.HearingId == updatedHearing.Id);
                 var originalHearing = hearings.First(x => x.Id == updatedHearing.Id);
                 
-                updatedHearing.UpdatedDate.Should().BeAfter(originalHearing.UpdatedDate);
+                updatedHearing.UpdatedDate.Should().BeAfter(originalHearing.UpdatedDate.Value);
                 updatedHearing.UpdatedBy.Should().Be(request.UpdatedBy);
                 var updatedCase = updatedHearing.GetCases().FirstOrDefault();
                 updatedCase.Number.Should().Be(requestHearing.CaseNumber);
@@ -156,7 +156,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 AssertJudiciaryParticipantsUpdated(updatedHearing, requestHearing);
                 AssertEventsPublished(updatedHearing, requestHearing, 1);
             }
-            var updateDateHearing = updatedHearings[0].UpdatedDate.TrimSeconds();
+            var updateDateHearing = updatedHearings[0].UpdatedDate.Value.TrimSeconds();
             var firstHearing = updatedHearings[0];
             var expectedExistingUser =
                 PublisherHelper.GetExistingParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count +

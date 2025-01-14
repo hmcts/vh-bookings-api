@@ -41,7 +41,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
         public void Should_return_true_when_existing_person_added_as_participant()
         {
             _individual.Person.GetType().GetProperty("CreatedDate").SetValue(_individual.Person,
-                _individual.Person.CreatedDate.AddDays(-10), null);
+                _individual.Person.CreatedDate.Value.AddDays(-10), null);
 
             _individual.DoesPersonAlreadyExist().Should().BeTrue();
         }

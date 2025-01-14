@@ -4,14 +4,12 @@ using BookingsApi.Domain.Dtos;
 
 namespace BookingsApi.Domain
 {
-    public class JudiciaryPerson : AggregateRoot<Guid>
+    public class JudiciaryPerson : TrackableAggregateRoot<Guid>
     {
-        private readonly DateTime _currentUTC = DateTime.UtcNow;
         public JudiciaryPerson(string externalRefId, string personalCode, string title, string knownAs, string surname,
             string fullname, string postNominals, string email, string workPhone, bool hasLeft, bool leaver, string leftOn,
-            bool deleted = false, string deletedOn = null)
+            bool deleted = false, string deletedOn = null) : this()
         {
-            Id = Guid.NewGuid();
             ExternalRefId = externalRefId;
             PersonalCode = personalCode;
             Title = title;
@@ -21,13 +19,16 @@ namespace BookingsApi.Domain
             PostNominals = postNominals;
             Email = email;
             WorkPhone = workPhone;
-            CreatedDate = _currentUTC;
-            UpdatedDate = _currentUTC;
             HasLeft = hasLeft;
             Leaver = leaver;
             LeftOn = leftOn;
             Deleted = deleted;
             DeletedOn = deletedOn;
+        }
+
+        protected JudiciaryPerson()
+        {
+            Id = Guid.NewGuid();
         }
 
         public string ExternalRefId { get; set; }
@@ -39,8 +40,6 @@ namespace BookingsApi.Domain
         public string PostNominals { get; set; }
         public string Email { get; set; }
         public string WorkPhone { get; set; }
-        public DateTime CreatedDate { get; private set; }
-        public DateTime UpdatedDate { get; private set; }
         public bool HasLeft { get; set; }
         public bool Leaver { get; set; }
         public string LeftOn { get; set; }

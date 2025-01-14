@@ -62,7 +62,7 @@ public class MultiDaysControllerV2(
         if (videoHearing == null)
             return NotFound();
 
-        var videoHearingUpdateDate = videoHearing.UpdatedDate.TrimSeconds();
+        var videoHearingUpdateDate = videoHearing.UpdatedDate.Value.TrimSeconds();
 
         var validationResult = await new CloneHearingRequestValidationV2().ValidateAsync(request);
         if (!validationResult.IsValid)

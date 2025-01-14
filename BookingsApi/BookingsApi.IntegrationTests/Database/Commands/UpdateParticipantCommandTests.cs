@@ -42,7 +42,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
 
             updatedIndividual.Should().NotBeNull();
-            updatedIndividual.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            updatedIndividual.UpdatedDate.Should().BeAfter(beforeUpdatedDate.Value);
             updatedIndividual.Person.Title.Should().Be(title);
             updatedIndividual.DisplayName.Should().Be(displayName);
             updatedIndividual.Person.TelephoneNumber.Should().Be(telephoneNumber);
@@ -78,7 +78,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var updatedRepresentative=(Representative) updateParticipantCommand.UpdatedParticipant;
 
             updatedRepresentative.Should().NotBeNull();
-            updatedRepresentative.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            updatedRepresentative.UpdatedDate.Should().BeAfter(beforeUpdatedDate.Value);
             updatedRepresentative.Person.Title.Should().Be(title);
             updatedRepresentative.DisplayName.Should().Be(displayName);
             updatedRepresentative.Person.TelephoneNumber.Should().Be(telephoneNumber);

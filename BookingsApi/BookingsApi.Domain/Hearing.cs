@@ -11,10 +11,9 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
 {
-    public abstract class Hearing : AggregateRoot<Guid>
+    public abstract class Hearing : TrackableAggregateRoot<Guid>
     {
-        private readonly ValidationFailures _validationFailures = new();
-        private readonly DateTime _currentUTC = DateTime.UtcNow;
+        private readonly ValidationFailures _validationFailures = [];
         private bool _isFirstDayOfMultiDayHearing;
 
         protected Hearing()
@@ -22,8 +21,6 @@ namespace BookingsApi.Domain
             Id = Guid.NewGuid();
             Cases = new List<Case>();
             Participants = new List<Participant>();
-            CreatedDate = _currentUTC;
-            UpdatedDate = _currentUTC;
             HearingCases = new List<HearingCase>();
             Endpoints = new List<Endpoint>();
             Allocations = new List<Allocation>();
@@ -67,10 +64,8 @@ namespace BookingsApi.Domain
         public DateTime ScheduledDateTime { get; protected set; }
         public int ScheduledDuration { get; protected set; }
         public BookingStatus Status { get; protected set; }
-        public DateTime CreatedDate { get; protected set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
-        public DateTime UpdatedDate { get; protected set; }
         public string ConfirmedBy { get; set; }
         public DateTime? ConfirmedDate { get; protected set; }
         public IList<Participant> Participants { get; }

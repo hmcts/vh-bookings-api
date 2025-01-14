@@ -83,7 +83,7 @@ namespace BookingsApi.UnitTests.Services
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
             hearing.IsFirstDayOfMultiDayHearing = true;
-            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
+            var videoHearingUpdateDate = hearing.UpdatedDate.Value.TrimSeconds();
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count;  //  all participants treated as new to the hearing in this scenario
             var judiciaryMultiDayHearingNotificationCount = hearing.JudiciaryParticipants.Count; // all judiciary participants treated as new to this hearing get a hearing confirmation
             var totalMessages = hearingConfirmationForNewParticipantsMessageCount + judiciaryMultiDayHearingNotificationCount;
