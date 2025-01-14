@@ -23,7 +23,6 @@ namespace BookingsApi.Domain
         
         protected JudiciaryParticipant()
         {
-            // Id = Guid.NewGuid();
         }
         
 #pragma warning disable S1144
