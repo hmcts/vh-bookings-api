@@ -9,15 +9,9 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain.Participants;
 
-public abstract class Participant : ParticipantBase, IScreenableEntity
+public abstract class Participant() : ParticipantBase, IScreenableEntity
 {
     protected readonly ValidationFailures ValidationFailures = [];
-
-    protected Participant()
-    {
-        Id = Guid.NewGuid();
-        LinkedParticipants = new List<LinkedParticipant>();
-    }
 
     protected Participant(string externalReferenceId, Person person, HearingRole hearingRole, string displayName) : this()
     {
@@ -41,8 +35,8 @@ public abstract class Participant : ParticipantBase, IScreenableEntity
     public int? InterpreterLanguageId { get; protected set; }
     public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
     public string OtherLanguage { get; set; }
-    public IList<LinkedParticipant> LinkedParticipants { get; set; }
-        
+    public IList<LinkedParticipant> LinkedParticipants { get; set; } = new List<LinkedParticipant>();
+
     public Guid? ScreeningId { get; set; }
     public virtual Screening Screening { get; set; }
 

@@ -7,9 +7,13 @@ namespace BookingsApi.Domain
 {
     public class JudiciaryParticipant : ParticipantBase
     {
-        public JudiciaryParticipant(string displayName, JudiciaryPerson judiciaryPerson, JudiciaryParticipantHearingRoleCode hearingRoleCode, string optionalContactEmail = null, string optionalContactTelephone = null)
+        public JudiciaryParticipant(
+            string displayName, 
+            JudiciaryPerson judiciaryPerson, 
+            JudiciaryParticipantHearingRoleCode hearingRoleCode, 
+            string optionalContactEmail = null, 
+            string optionalContactTelephone = null) : this()
         {
-            Id = Guid.NewGuid();
             UpdateDisplayName(displayName);
             JudiciaryPerson = judiciaryPerson;
             UpdateHearingRoleCode(hearingRoleCode);
@@ -19,7 +23,7 @@ namespace BookingsApi.Domain
         
         protected JudiciaryParticipant()
         {
-            Id = Guid.NewGuid();
+            // Id = Guid.NewGuid();
         }
         
 #pragma warning disable S1144
