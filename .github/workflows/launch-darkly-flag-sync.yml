@@ -18,5 +18,4 @@ jobs:
         with:
           accessToken: ${{ secrets.LD_SERVICE_TOKEN }}
           projKey: VH
-          debug: true
           prune: true
