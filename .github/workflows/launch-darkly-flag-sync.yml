@@ -1,5 +1,10 @@
 name: Find LaunchDarkly flag code references
-on: push
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * *' # Run every day at midnight
 # cancel in-flight workflow run if another push was triggered
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
