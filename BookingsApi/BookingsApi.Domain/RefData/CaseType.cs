@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace BookingsApi.Domain.RefData
 {
@@ -12,6 +11,7 @@ namespace BookingsApi.Domain.RefData
             Id = id;
             Name = name;
             Live = true;
+            IsAudioRecordingAllowed = true;
         }
         
         public string Name { get; set; }
@@ -19,9 +19,11 @@ namespace BookingsApi.Domain.RefData
         public string ServiceId { get; set; }
         public bool Live { get; set; }
         public DateTime? ExpirationDate { get; set; }
+        public bool IsAudioRecordingAllowed { get; set; }
 
         public bool SupportsAudioRecording()
         {
+            // TODO replace with IsAudioRecordingAllowed
             return ServiceId != CccServiceId && ServiceId != CacdServiceId;
         }
         
