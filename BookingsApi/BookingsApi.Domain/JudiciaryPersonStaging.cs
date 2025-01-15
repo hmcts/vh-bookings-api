@@ -3,10 +3,8 @@ using BookingsApi.Domain.Ddd;
 
 namespace BookingsApi.Domain
 {
-    public class JudiciaryPersonStaging : AggregateRoot<Guid>
+    public class JudiciaryPersonStaging : TrackableAggregateRoot<Guid>
     {
-        private readonly DateTime _currentUTC = DateTime.UtcNow;
-        
         public JudiciaryPersonStaging(string externalRefId, string personalCode, string title, string knownAs, string surname,
             string fullname, string postNominals, string email, string workPhone, string leaver, string leftOn, 
             bool deleted = false, string deletedOn = null)
@@ -21,8 +19,6 @@ namespace BookingsApi.Domain
             PostNominals = postNominals;
             Email = email;
             WorkPhone = workPhone;
-            CreatedDate = _currentUTC;
-            UpdatedDate = _currentUTC;
             Leaver = leaver;
             LeftOn = leftOn;
             Deleted = deleted;
@@ -40,8 +36,6 @@ namespace BookingsApi.Domain
         public string WorkPhone { get; set; }
         public string Leaver { get; set; }
         public string LeftOn { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
         public bool Deleted { get; private set; }
         public string DeletedOn { get; private set; }
     }
