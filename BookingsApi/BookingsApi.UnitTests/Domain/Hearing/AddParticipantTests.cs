@@ -68,6 +68,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder(scheduledDateTime:dateTime).Build();
             hearing.AudioRecordingRequired = false;
             var interpreterHearingRole = new HearingRole(12, "Interpreter");
+            hearing.CaseType.IsAudioRecordingAllowed = true;
 
             var newPerson = new PersonBuilder(true).Build();
             var beforeAddCount = hearing.GetParticipants().Count;
@@ -76,6 +77,26 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var afterAddCount = hearing.GetParticipants().Count;
 
             hearing.AudioRecordingRequired.Should().BeTrue();
+
+            afterAddCount.Should().BeGreaterThan(beforeAddCount);
+        }
+
+        [Test]
+        public void Should_add_interpreter_to_hearing_and_not_turn_on_audio_recording_when_audio_recording_is_not_allowed_for_case_type()
+        {
+            var dateTime = DateTime.UtcNow.AddMinutes(25);
+            var hearing = new VideoHearingBuilder(scheduledDateTime:dateTime).Build();
+            hearing.AudioRecordingRequired = false;
+            var interpreterHearingRole = new HearingRole(12, "Interpreter");
+            hearing.CaseType.IsAudioRecordingAllowed = false;
+
+            var newPerson = new PersonBuilder(true).Build();
+            var beforeAddCount = hearing.GetParticipants().Count;
+
+            hearing.AddIndividual(Guid.NewGuid().ToString(), newPerson, interpreterHearingRole, "Interpreter Display Name");
+            var afterAddCount = hearing.GetParticipants().Count;
+
+            hearing.AudioRecordingRequired.Should().BeFalse();
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
         }
