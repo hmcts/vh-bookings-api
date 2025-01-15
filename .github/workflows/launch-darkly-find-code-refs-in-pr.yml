@@ -1,0 +1,17 @@
+on: pull_request
+
+jobs:
+  find-feature-flags:
+    runs-on: ubuntu-latest
+    name: Find LaunchDarkly feature flags in diff
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Find flags
+        uses: launchdarkly/find-code-references-in-pull-request@v2
+        id: find-flags
+        with:
+          project-key: default
+          environment-key: production
+          access-token: ${{ secrets.LD_SERVICE_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
