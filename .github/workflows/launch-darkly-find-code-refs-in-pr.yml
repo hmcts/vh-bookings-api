@@ -1,3 +1,4 @@
+name: Find LaunchDarkly feature flags in diff
 on: pull_request
 
 jobs:
