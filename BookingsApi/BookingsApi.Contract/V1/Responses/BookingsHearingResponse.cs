@@ -36,6 +36,11 @@ namespace BookingsApi.Contract.V1.Responses
         public string CaseTypeName { get; set; }
 
         /// <summary>
+        /// Gets or sets the flag for whether audio recording is allowed for the case type.
+        /// </summary>
+        public bool CaseTypeIsAudioRecordingAllowed { get; set; }
+
+        /// <summary>
         /// Gets or sets the court room.
         /// </summary>
         public string CourtRoom { get; set; }
