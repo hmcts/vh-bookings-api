@@ -1,12 +1,11 @@
 ﻿using System.Text.Json;
+using Asp.Versioning.ApiExplorer;
 using BookingsApi.Common.DotNet6.Helpers;
 using BookingsApi.DAL.Services;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.DependencyInjection;
 using NSwag;
 using NSwag.Generation.AspNetCore;
@@ -36,7 +35,7 @@ public static class ConfigureServicesExtensions
             opt.ApiVersionReader = ApiVersionReader.Combine(
                 new UrlSegmentApiVersionReader()
             );
-        }).AddVersionedApiExplorer(setup =>
+        }).AddApiExplorer(setup =>
         {
             setup.GroupNameFormat = "'v'VVV"; // version format: 'v'[major][.minor][-status]
             setup.SubstituteApiVersionInUrl = true;

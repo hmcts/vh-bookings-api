@@ -5,6 +5,7 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using System.Net;
 global using System.Threading.Tasks;
+global using Asp.Versioning;
 global using BookingsApi.Common;
 global using BookingsApi.Common.Configuration;
 global using BookingsApi.Common.Services;
