@@ -27,6 +27,7 @@ public class HearingToDetailsResponseV2MapperTests
         result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
         result.ServiceId.Should().Be(hearing.CaseType.ServiceId);
         result.ServiceName.Should().Be(hearing.CaseType.Name);
+        result.ServiceIsAudioRecordingAllowed.Should().Be(hearing.CaseType.IsAudioRecordingAllowed);
         result.HearingVenueCode.Should().Be(hearing.HearingVenue.VenueCode);
         result.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
         result.IsHearingVenueScottish.Should().Be(hearing.HearingVenue.IsScottish);

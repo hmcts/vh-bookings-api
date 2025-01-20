@@ -41,6 +41,7 @@ namespace BookingsApi.Mappings.V1
                 ScheduledDuration = videoHearing.ScheduledDuration,
                 ScheduledDateTime = videoHearing.ScheduledDateTime,
                 CaseTypeName = videoHearing.CaseType.Name,
+                CaseTypeIsAudioRecordingAllowed = videoHearing.CaseType.IsAudioRecordingAllowed,
                 CourtAddress = videoHearing.HearingVenue.Name,
                 CourtRoom = videoHearing.HearingRoomName,
                 CreatedDate = videoHearing.CreatedDate,

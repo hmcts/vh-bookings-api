@@ -61,7 +61,10 @@ namespace BookingsApi.UnitTests.Mappings.V1
         public void Should_map_properties_of_hearing()
         {
             var mockedHearing = MockHearingWithCase();
-            mockedHearing.CaseType = new CaseType(1, "Generic");
+            mockedHearing.CaseType = new CaseType(1, "Generic")
+            {
+                IsAudioRecordingAllowed = true
+            };
 
             var mapped = _mapper.MapHearingResponse(mockedHearing);
             mapped.Should().NotBeNull();
@@ -70,6 +73,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             mapped.HearingNumber.Should().Be("234");
             mapped.HearingName.Should().Be("X vs Y");
             mapped.CaseTypeName.Should().Be("Generic");
+            mapped.CaseTypeIsAudioRecordingAllowed.Should().Be(mockedHearing.CaseType.IsAudioRecordingAllowed);
             mapped.CourtAddress.Should().Be("Birmingham Civil and Family Justice Centre");
             mapped.CourtRoom.Should().Be("Roome03");
             mapped.CourtRoomAccount.Should().BeEmpty();
@@ -80,7 +84,10 @@ namespace BookingsApi.UnitTests.Mappings.V1
         {
             var hearing = new VideoHearingBuilder(addJudge:false).Build();
             hearing.AddCase("234", "X vs Y", true);
-            hearing.CaseType = new CaseType(1, "Generic");
+            hearing.CaseType = new CaseType(1, "Generic")
+            {
+                IsAudioRecordingAllowed = true
+            };
             hearing.GetParticipants()[2].HearingRole = new HearingRole(5, "Winger") { UserRole = new UserRole(5, "Winger") };
 
             var mapped = _mapper.MapHearingResponse(hearing);
@@ -90,6 +97,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             mapped.HearingNumber.Should().Be("234");
             mapped.HearingName.Should().Be("X vs Y");
             mapped.CaseTypeName.Should().Be("Generic");
+            mapped.CaseTypeIsAudioRecordingAllowed.Should().Be(hearing.CaseType.IsAudioRecordingAllowed);
             mapped.CourtAddress.Should().Be("Birmingham Civil and Family Justice Centre");
             mapped.CourtRoom.Should().Be("Roome03");
             mapped.CourtRoomAccount.Should().BeEmpty();

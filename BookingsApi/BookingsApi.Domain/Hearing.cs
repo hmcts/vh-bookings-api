@@ -167,7 +167,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
 
-            if (hearingRole.IsInterpreter() && CaseType.SupportsAudioRecording())
+            if (hearingRole.IsInterpreter() && CaseType.IsAudioRecordingAllowed)
             {
                 AudioRecordingRequired = true;
             }

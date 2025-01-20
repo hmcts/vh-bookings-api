@@ -21,5 +21,10 @@ namespace BookingsApi.Contract.V2.Responses
         /// The service identifier
         /// </summary>
         public string ServiceId { get; set; }
+
+        /// <summary>
+        /// Whether audio recording is allowed for the case type
+        /// </summary>
+        public bool IsAudioRecordingAllowed { get; set; }
     }
 }

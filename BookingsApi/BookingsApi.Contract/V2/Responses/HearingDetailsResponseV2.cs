@@ -47,6 +47,11 @@ public class HearingDetailsResponseV2
         public string ServiceName { get; set; }
 
         /// <summary>
+        ///     Whether audio recording is allowed for the service
+        /// </summary>
+        public bool ServiceIsAudioRecordingAllowed { get; set; }
+
+        /// <summary>
         ///     List of cases associated to the hearing
         /// </summary>
         public List<CaseResponseV2> Cases { get; set; }

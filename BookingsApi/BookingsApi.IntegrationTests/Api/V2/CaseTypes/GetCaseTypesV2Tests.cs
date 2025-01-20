@@ -1,4 +1,5 @@
 using BookingsApi.Client;
+using BookingsApi.Domain.RefData;
 
 namespace BookingsApi.IntegrationTests.Api.V2.CaseTypes;
 
@@ -8,7 +9,11 @@ public class GetCaseTypesV2Tests : ApiTest
     public async Task should_get_all_case_types_not_deleted()
     {
         // arrange
-        const string caseType = "ZZY1";
+        var caseType = new CaseType(3, "Generic")
+        {
+            ServiceId = "ZZY1",
+            IsAudioRecordingAllowed = true
+        };
         using var client = Application.CreateClient();
         var bookingsApiClient = BookingsApiClient.GetClient(client);
 
@@ -18,6 +23,9 @@ public class GetCaseTypesV2Tests : ApiTest
         // assert
         caseRoleResponses.Should().NotBeEmpty();
 
-        caseRoleResponses.Should().Contain(x => x.ServiceId == caseType);
+        var expectedCaseType = caseRoleResponses.FirstOrDefault(x => x.ServiceId == caseType.ServiceId);
+        expectedCaseType.Should().NotBeNull();
+        expectedCaseType.Id.Should().Be(caseType.Id);
+        expectedCaseType.IsAudioRecordingAllowed.Should().Be(caseType.IsAudioRecordingAllowed);
     }
 }

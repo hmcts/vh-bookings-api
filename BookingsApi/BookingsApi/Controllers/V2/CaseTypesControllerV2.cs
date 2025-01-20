@@ -24,7 +24,8 @@ public class CaseTypesController(IQueryHandler queryHandler) : ControllerBase
             {
                 Id = caseType.Id,
                 Name = caseType.Name,
-                ServiceId = caseType.ServiceId
+                ServiceId = caseType.ServiceId,
+                IsAudioRecordingAllowed = caseType.IsAudioRecordingAllowed
             }
         );
         return Ok(response);
