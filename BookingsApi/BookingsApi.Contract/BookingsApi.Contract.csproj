@@ -2,7 +2,7 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
-    <TargetFrameworks>net8.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <UserSecretsId>f9b9bfef-35a2-4b4c-8821-bc974e674f93</UserSecretsId>
     <TargetFramework />
   </PropertyGroup>
