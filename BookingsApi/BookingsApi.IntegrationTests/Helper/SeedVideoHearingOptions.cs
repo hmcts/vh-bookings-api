@@ -15,8 +15,14 @@ namespace BookingsApi.IntegrationTests.Helper
         public bool AudioRecordingRequired { get; set; } = false;
         
         /// <summary>
-        /// If true, it will screen the first individual from the participants list from another and an endpoint 
+        /// If true, it will screen the first individual from the participants list from another and an endpoint
+        /// and also screen the first endpoint from the same individual
         /// </summary>
         public bool AddScreening { get; set; } = false;
+
+        /// <summary>
+        /// If true, will set the first endpoint to have interpreter language preferences
+        /// </summary>
+        public bool AddInterpreterLanguages { get; set; } = false;
     }
 }

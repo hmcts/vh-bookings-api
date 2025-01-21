@@ -226,6 +226,15 @@ namespace BookingsApi.IntegrationTests.Helper
                 var endpoints = videoHearing.Endpoints.ToList();
                 videoHearing.AssignScreeningForParticipant(individuals[0], ScreeningType.Specific,
                     [individuals[1].ExternalReferenceId, endpoints[0].ExternalReferenceId]);
+                videoHearing.AssignScreeningForEndpoint(endpoints[0], ScreeningType.Specific,
+                    [individuals[1].ExternalReferenceId]);
+            }
+
+            if (options.AddInterpreterLanguages)
+            {
+                var endpoints = videoHearing.Endpoints.ToList();
+                var language = await db.InterpreterLanguages.FirstAsync(l => l.Code == "spa");
+                endpoints[0].UpdateLanguagePreferences(language, null);
             }
 
             await db.VideoHearings.AddAsync(videoHearing);
