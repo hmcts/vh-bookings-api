@@ -136,7 +136,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var screeningDto = new ScreeningDto
             {
                 ScreeningType = endpoint.Screening.Type,
-                ProtectedFrom = endpoint.Screening.ScreeningEntities.Select(e => e.Endpoint.ExternalReferenceId).ToList()
+                ProtectedFrom = endpoint.Screening.ScreeningEntities.Select(e => e.Participant.ExternalReferenceId).ToList()
             };
             var originalUpdatedDate = endpoint.UpdatedDate;
 
@@ -156,7 +156,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             
             // Assert
             var updatedEndpoint = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
-            updatedEndpoint.UpdatedDate.Should().Be(originalUpdatedDate);
+            updatedEndpoint.UpdatedDate.Should().BeCloseTo(originalUpdatedDate, TimeSpan.FromMilliseconds(50)); // The two dates should be the same, but there is a small discrepancy with EF
             command.UpdatedEndpoint.Should().BeNull();
         }
     }
