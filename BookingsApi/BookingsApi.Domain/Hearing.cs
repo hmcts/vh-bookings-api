@@ -772,8 +772,13 @@ namespace BookingsApi.Domain
             }
 
             var matched = GetMatchingParticipantsAndEndpointsByExternalReferenceIds(protectedFrom);
+            var originalParticipantUpdatedDate = participant.UpdatedDate;
             
             participant.AssignScreening(screeningType, matched.participants, matched.endpoints);
+
+            var hasChanged = participant.UpdatedDate != originalParticipantUpdatedDate;
+            if (!hasChanged) return;
+            
             UpdatedDate = DateTime.UtcNow;
         }
 

@@ -132,7 +132,12 @@ public class HearingService(BookingsDbContext context) : IHearingService
         }
             
         var screeningExists = participant.Screening != null;
+        var originalUpdatedDate = hearing.UpdatedDate;
         hearing.AssignScreeningForParticipant(participant, screeningDto.ScreeningType, screeningDto.ProtectedFrom);
+
+        var hasChanged = hearing.UpdatedDate != originalUpdatedDate;
+        if (!hasChanged) return;
+        
         // ef core does not automatically track entities created by domain methods
         context.Entry(participant.Screening).State = screeningExists? EntityState.Modified : EntityState.Added;
         foreach (var screeningEntity in participant.Screening.ScreeningEntities)

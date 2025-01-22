@@ -80,7 +80,8 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
         
         ScreeningHelper.AssignScreening(this, type, participants, endpoints);
 
-        if (Screening?.UpdatedDate == originalScreeningUpdatedDate) return;
+        var hasChanged = Screening?.UpdatedDate != originalScreeningUpdatedDate;
+        if (!hasChanged) return;
         
         UpdatedDate = DateTime.UtcNow;
     }

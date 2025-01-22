@@ -139,7 +139,13 @@ public abstract class Participant() : ParticipantBase, IScreenableEntity
         
     public void AssignScreening(ScreeningType type, List<Participant> participants, List<Endpoint> endpoints)
     {
+        var originalScreeningUpdatedDate = Screening?.UpdatedDate;
+        
         ScreeningHelper.AssignScreening(this, type, participants, endpoints);
+
+        var hasChanged = Screening?.UpdatedDate != originalScreeningUpdatedDate;
+        if (!hasChanged) return;
+        
         UpdatedDate = DateTime.UtcNow;
     }
 
