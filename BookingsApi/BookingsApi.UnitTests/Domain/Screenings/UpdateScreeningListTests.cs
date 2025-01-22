@@ -5,7 +5,7 @@ using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.UnitTests.Domain.Screenings;
 
-public class UpdateScreeningListTests : DomainTests
+public class UpdateScreeningListTests
 {
     private Endpoint _endpoint1;
     private Endpoint _endpoint2;
@@ -25,18 +25,18 @@ public class UpdateScreeningListTests : DomainTests
     }
     
     [Test]
-    public async Task Should_update_screening_list()
+    public void Should_update_screening_list()
     {
         // Arrange
         var endpointsToScreenFrom = new List<Endpoint> { _endpoint2 };
         var participantsToScreenFrom = new List<Participant> { _participant1 };
         _endpoint1.AssignScreening(ScreeningType.Specific, participantsToScreenFrom, endpointsToScreenFrom);
+        _endpoint1.SetProtected(nameof(_endpoint1.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
         var originalUpdatedDate = _endpoint1.Screening.UpdatedDate;
         
         // Act
         endpointsToScreenFrom = [_endpoint3];
         participantsToScreenFrom = [_participant2];
-        await ApplyDelay();
         _endpoint1.AssignScreening(ScreeningType.Specific, participantsToScreenFrom, endpointsToScreenFrom);
 
         // Assert
@@ -45,16 +45,16 @@ public class UpdateScreeningListTests : DomainTests
     }
 
     [Test]
-    public async Task Should_not_update_screening_list_when_not_changed()
+    public void Should_not_update_screening_list_when_not_changed()
     {
         // Arrange
         var endpointsToScreenFrom = new List<Endpoint> { _endpoint2 };
         var participantsToScreenFrom = new List<Participant> { _participant1 };
         _endpoint1.AssignScreening(ScreeningType.Specific, participantsToScreenFrom, endpointsToScreenFrom);
+        _endpoint1.SetProtected(nameof(_endpoint1.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
         var originalUpdatedDate = _endpoint1.Screening.UpdatedDate;
         
         // Act
-        await ApplyDelay();
         _endpoint1.AssignScreening(ScreeningType.Specific, participantsToScreenFrom, endpointsToScreenFrom);
         
         // Assert

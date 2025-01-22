@@ -2,7 +2,7 @@ using BookingsApi.Domain;
 
 namespace BookingsApi.UnitTests.Domain.EndPoints;
 
-public class UpdateExternalIdsTests : DomainTests
+public class UpdateExternalIdsTests
 {
     private Endpoint _endpoint;
 
@@ -13,15 +13,15 @@ public class UpdateExternalIdsTests : DomainTests
     }
     
     [Test]
-    public async Task Should_update_external_ids()
+    public void Should_update_external_ids()
     {
         // Arrange
         const string externalReferenceId = "external-reference-id";
         const string measuresExternalReferenceId = "measures-external-reference-id";
+        _endpoint.SetProtected(nameof(_endpoint.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
         var originalUpdatedDate = _endpoint.UpdatedDate;
         
         // Act
-        await ApplyDelay();
         _endpoint.UpdateExternalIds(externalReferenceId, measuresExternalReferenceId);
         
         // Assert
@@ -31,16 +31,16 @@ public class UpdateExternalIdsTests : DomainTests
     }
     
     [Test]
-    public async Task Should_not_update_external_ids_when_not_changed()
+    public void Should_not_update_external_ids_when_not_changed()
     {
         // Arrange
         const string externalReferenceId = "external-reference-id";
         const string measuresExternalReferenceId = "measures-external-reference-id";
         _endpoint.UpdateExternalIds(externalReferenceId, measuresExternalReferenceId);
+        _endpoint.SetProtected(nameof(_endpoint.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
         var originalUpdatedDate = _endpoint.UpdatedDate;
         
         // Act
-        await ApplyDelay();
         _endpoint.UpdateExternalIds(externalReferenceId, measuresExternalReferenceId);
         
         // Assert

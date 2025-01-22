@@ -4,7 +4,7 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.EndPoints;
 
-public class UpdateLanguagePreferencesTests : DomainTests
+public class UpdateLanguagePreferencesTests
 {
     private Endpoint _endpoint;
 
@@ -15,12 +15,12 @@ public class UpdateLanguagePreferencesTests : DomainTests
     }
         
     [Test]
-    public async Task should_update_language()
+    public void should_update_language()
     {
         var language = new InterpreterLanguage(1, "spa", "Spanish", null, InterpreterType.Verbal, true);
-        var originalUpdatedDate = DateTime.UtcNow;
-
-        await ApplyDelay();
+        _endpoint.SetProtected(nameof(_endpoint.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
+        var originalUpdatedDate = _endpoint.UpdatedDate;
+        
         _endpoint.UpdateLanguagePreferences(language, null);
         
         _endpoint.InterpreterLanguage.Should().Be(language);
@@ -28,12 +28,12 @@ public class UpdateLanguagePreferencesTests : DomainTests
     }
     
     [Test]
-    public async Task should_update_other_language()
+    public void should_update_other_language()
     {
-        var otherLanguage = "Other Language";
-        var originalUpdatedDate = DateTime.UtcNow;
-
-        await ApplyDelay();
+        const string otherLanguage = "Other Language";
+        _endpoint.SetProtected(nameof(_endpoint.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
+        var originalUpdatedDate = _endpoint.UpdatedDate;
+        
         _endpoint.UpdateLanguagePreferences(null, otherLanguage);
         
         _endpoint.OtherLanguage.Should().Be(otherLanguage);
@@ -44,22 +44,22 @@ public class UpdateLanguagePreferencesTests : DomainTests
     public void should_throw_exception_when_validation_fails()
     {
         var language = new InterpreterLanguage(1, "spa", "Spanish", null, InterpreterType.Verbal, true);
-        var otherLanguage = "Other Language";
+        const string otherLanguage = "Other Language";
 
-        Action action = () => _endpoint.UpdateLanguagePreferences(language, otherLanguage);
+        var action = () => _endpoint.UpdateLanguagePreferences(language, otherLanguage);
         action.Should().Throw<DomainRuleException>()
             .And.ValidationFailures.Should()
             .Contain(x => x.Name == "Endpoint" && x.Message == DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
     }
 
     [Test]
-    public async Task should_not_update_language_when_not_changed()
+    public void should_not_update_language_when_not_changed()
     {
         var language = new InterpreterLanguage(1, "spa", "Spanish", null, InterpreterType.Verbal, true);
         _endpoint.UpdateLanguagePreferences(language, null);
+        _endpoint.SetProtected(nameof(_endpoint.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
         var originalUpdatedDate = _endpoint.UpdatedDate;
-
-        await ApplyDelay();
+        
         _endpoint.UpdateLanguagePreferences(language, null);
 
         _endpoint.InterpreterLanguage.Should().Be(language);
@@ -67,13 +67,13 @@ public class UpdateLanguagePreferencesTests : DomainTests
     }
     
     [Test]
-    public async Task should_not_update_other_language_when_not_changed()
+    public void should_not_update_other_language_when_not_changed()
     {
-        var otherLanguage = "other-language";
+        const string otherLanguage = "other-language";
         _endpoint.UpdateLanguagePreferences(null, otherLanguage);
+        _endpoint.SetProtected(nameof(_endpoint.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
         var originalUpdatedDate = _endpoint.UpdatedDate;
-
-        await ApplyDelay();
+        
         _endpoint.UpdateLanguagePreferences(null, otherLanguage);
 
         _endpoint.OtherLanguage.Should().Be(otherLanguage);

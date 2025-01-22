@@ -2,7 +2,7 @@
 
 namespace BookingsApi.UnitTests.Domain.EndPoints
 {
-    public class UpdateDisplayNameTests : DomainTests
+    public class UpdateDisplayNameTests
     {
         private Endpoint _endpoint;
 
@@ -13,12 +13,12 @@ namespace BookingsApi.UnitTests.Domain.EndPoints
         }
 
         [Test]
-        public async Task Should_update_display_name()
+        public void Should_update_display_name()
         {
-            var newDisplayName = "New DisplayName";
+            const string newDisplayName = "New DisplayName";
+            _endpoint.SetProtected(nameof(_endpoint.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
             var originalUpdatedDate = _endpoint.UpdatedDate;
-
-            await ApplyDelay();
+            
             _endpoint.UpdateDisplayName(newDisplayName);
             
             _endpoint.DisplayName.Should().Be(newDisplayName);
@@ -26,12 +26,12 @@ namespace BookingsApi.UnitTests.Domain.EndPoints
         }
 
         [Test]
-        public async Task Should_throw_argument_null_exception_when_display_name_field_is_null()
+        public void Should_throw_argument_null_exception_when_display_name_field_is_null()
         {
+            _endpoint.SetProtected(nameof(_endpoint.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
             var originalUpdatedDate = _endpoint.UpdatedDate;
             
-            await ApplyDelay();
-            Action action = () => _endpoint.UpdateDisplayName(string.Empty);
+            var action = () => _endpoint.UpdateDisplayName(string.Empty);
             
             action.Should().Throw<ArgumentNullException>();
             _endpoint.DisplayName.Should().Be("Original DisplayName");
@@ -39,12 +39,12 @@ namespace BookingsApi.UnitTests.Domain.EndPoints
         }
 
         [Test]
-        public async Task Should_not_update_display_name_when_not_changed()
+        public void Should_not_update_display_name_when_not_changed()
         {
             var originalDisplayName = _endpoint.DisplayName;
+            _endpoint.SetProtected(nameof(_endpoint.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
             var originalUpdatedDate = _endpoint.UpdatedDate;
             
-            await ApplyDelay();
             _endpoint.UpdateDisplayName(_endpoint.DisplayName);
             
             _endpoint.DisplayName.Should().Be(originalDisplayName);

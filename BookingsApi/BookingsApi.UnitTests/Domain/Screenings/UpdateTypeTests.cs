@@ -3,19 +3,19 @@ using BookingsApi.Domain.SpecialMeasure;
 
 namespace BookingsApi.UnitTests.Domain.Screenings;
 
-public class UpdateTypeTests : DomainTests
+public class UpdateTypeTests
 {
     [Test]
-    public async Task Should_update_type()
+    public void Should_update_type()
     {
         // Arrange
         var participant = new ParticipantBuilder().IndividualParticipantApplicant;
         var screening = new Screening(ScreeningType.Specific, participant);
-        var newType = ScreeningType.All;
+        const ScreeningType newType = ScreeningType.All;
+        screening.SetProtected(nameof(screening.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
         var originalUpdatedDate = screening.UpdatedDate;
         
         // Act
-        await ApplyDelay();
         screening.UpdateType(newType);
         
         // Assert
@@ -24,16 +24,16 @@ public class UpdateTypeTests : DomainTests
     }
 
     [Test]
-    public async Task Should_not_update_type_when_not_changed()
+    public void Should_not_update_type_when_not_changed()
     {
         // Arrange
         var participant = new ParticipantBuilder().IndividualParticipantApplicant;
         var screening = new Screening(ScreeningType.Specific, participant);
         var type = screening.Type;
+        screening.SetProtected(nameof(screening.UpdatedDate), DateTime.UtcNow.AddMinutes(-1));
         var originalUpdatedDate = screening.UpdatedDate;
         
         // Act
-        await ApplyDelay();
         screening.UpdateType(type);
         
         // Assert
