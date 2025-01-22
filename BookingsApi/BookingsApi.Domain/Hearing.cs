@@ -143,10 +143,8 @@ namespace BookingsApi.Domain
                 defenceAdvocate = Participants.Single(x => x.Id == endpoint.DefenceAdvocate.Id);
             }
 
-            var newEndpoint = new Endpoint(endpoint.ExternalReferenceId, endpoint.DisplayName, endpoint.Sip, endpoint.Pin, defenceAdvocate)
-            {
-                MeasuresExternalId = endpoint.MeasuresExternalId
-            };
+            var newEndpoint = new Endpoint(endpoint.ExternalReferenceId, endpoint.DisplayName, endpoint.Sip, endpoint.Pin, defenceAdvocate);
+            newEndpoint.UpdateExternalIds(endpoint.ExternalReferenceId, endpoint.MeasuresExternalId);
             newEndpoint.UpdateLanguagePreferences(endpoint.InterpreterLanguage, endpoint.OtherLanguage);
             Endpoints.Add(newEndpoint);
             UpdatedDate = DateTime.UtcNow;

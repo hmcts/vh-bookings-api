@@ -60,8 +60,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var endpoint = seededHearing.GetEndpoints()[0];
             var updatedDisplayName = "updatedDisplayName";
+            var externalReferenceId = Guid.NewGuid().ToString();
+            var measuresExternalId = Guid.NewGuid().ToString();
             var command = new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id,
-                updatedDisplayName, null, null, null, null, Guid.NewGuid().ToString(), null);
+                updatedDisplayName, null, null, null, null, externalReferenceId, measuresExternalId);
             var originalUpdatedDate = endpoint.UpdatedDate;
             
             await _commandHandler.Handle(command);
@@ -71,6 +73,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
             updatedEndPoint.UpdatedDate.Should().BeAfter(originalUpdatedDate);
+            updatedEndPoint.ExternalReferenceId.Should().Be(externalReferenceId);
+            updatedEndPoint.MeasuresExternalId.Should().Be(measuresExternalId);
             command.UpdatedEndpoint.Id.Should().Be(updatedEndPoint.Id);
         }
         

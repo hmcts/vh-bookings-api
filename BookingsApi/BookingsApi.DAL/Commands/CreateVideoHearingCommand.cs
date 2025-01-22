@@ -93,10 +93,8 @@ namespace BookingsApi.DAL.Commands
                     var defenceAdvocate =
                         DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail,
                             videoHearing.GetParticipants());
-                    var endpoint = new Endpoint(dto.ExternalParticipantId, dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate)
-                    {
-                        MeasuresExternalId = dto.MeasuresExternalId,
-                    };
+                    var endpoint = new Endpoint(dto.ExternalParticipantId, dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
+                    endpoint.UpdateExternalIds(dto.ExternalParticipantId, dto.MeasuresExternalId);
                     var language = languages.GetLanguage(dto.LanguageCode, "Hearing");
                     endpoint.UpdateLanguagePreferences(language, dto.OtherLanguage);
                     newEndpoints.Add(endpoint);

@@ -39,6 +39,8 @@ public class Screening : TrackableEntity<Guid>
 
     public void UpdateType(ScreeningType type)
     {
+        if (type == Type) return;
+        
         Type = type;
         if (type == ScreeningType.All)
         {
@@ -49,6 +51,8 @@ public class Screening : TrackableEntity<Guid>
 
     public void UpdateScreeningList(List<Participant> participants, List<Endpoint> endpoints)
     {
+        if (!ScreeningListHasChanged(participants, endpoints)) return;
+        
         ScreeningEntities.Clear();
         foreach (var participant in participants)
         {
@@ -98,5 +102,21 @@ public class Screening : TrackableEntity<Guid>
     public List<ScreeningEntity> GetParticipants()
     {
         return ScreeningEntities.Where(x => x.ParticipantId != null || x.Participant?.Id != null).ToList();
+    }
+    
+    private bool ScreeningListHasChanged(List<Participant> participants, List<Endpoint> endpoints)
+    {
+        var existingParticipants = GetParticipants().Select(se => se.Participant).ToList();
+        var existingEndpoints = GetEndpoints().Select(se => se.Endpoint).ToList();
+        
+        if (participants.Count != existingParticipants.Count || endpoints.Count != existingEndpoints.Count)
+        {
+            return true;
+        }
+
+        var participantsMatch = participants.TrueForAll(p => existingParticipants.Exists(ep => ep.Id == p.Id));
+        var endpointsMatch = endpoints.TrueForAll(e => existingEndpoints.Exists(ee => ee.Id == e.Id));
+
+        return !(participantsMatch && endpointsMatch);
     }
 }
