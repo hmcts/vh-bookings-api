@@ -15,6 +15,8 @@ public static class ScreeningHelper
 {
     public static void AssignScreening(IScreenableEntity entity, ScreeningType type, List<Participant> participants, List<Endpoint> endpoints)
     {
+        var originalScreeningUpdatedDate = entity.Screening?.UpdatedDate;
+        
         var screening = entity.Screening;
         if (screening == null)
         {
@@ -33,6 +35,12 @@ public static class ScreeningHelper
             screening.UpdateType(type);
             screening.UpdateScreeningList(participants, endpoints);
         }
+        
+        var hasChanged = entity.Screening?.UpdatedDate != originalScreeningUpdatedDate;
+        if (!hasChanged) return;
+        
+        if (entity is ITrackable trackableEntity)
+            trackableEntity.UpdatedDate = DateTime.UtcNow;
     }
     
     public static void RemoveScreening(IScreenableEntity entity)
@@ -43,5 +51,8 @@ public static class ScreeningHelper
             entity.Screening = null;
             entity.ScreeningId = null;
         }
+        
+        if (entity is ITrackable trackableEntity)
+            trackableEntity.UpdatedDate = DateTime.UtcNow;
     }
 }

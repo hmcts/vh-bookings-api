@@ -76,12 +76,12 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
 
     public void AssignScreening(ScreeningType type, List<Participant> participants, List<Endpoint> endpoints)
     {
-        ScreenableEntityHelper.AssignScreening(this, type, participants, endpoints);
+        ScreeningHelper.AssignScreening(this, type, participants, endpoints);
     }
 
     public void RemoveScreening()
     {
-        ScreenableEntityHelper.RemoveScreening(this);
+        ScreeningHelper.RemoveScreening(this);
     }
 
     public void UpdateExternalIds(string externalReferenceId, string measuresExternalId)
