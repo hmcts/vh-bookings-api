@@ -1,7 +1,9 @@
 ﻿using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -58,14 +60,22 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var endpoint = seededHearing.GetEndpoints()[0];
             var updatedDisplayName = "updatedDisplayName";
-            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id,
-                updatedDisplayName, null, null, null, null, Guid.NewGuid().ToString(), null));
-
+            var externalReferenceId = Guid.NewGuid().ToString();
+            var measuresExternalId = Guid.NewGuid().ToString();
+            var command = new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id,
+                updatedDisplayName, null, null, null, null, externalReferenceId, measuresExternalId);
+            var originalUpdatedDate = endpoint.UpdatedDate;
+            
+            await _commandHandler.Handle(command);
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
+            updatedEndPoint.UpdatedDate.Should().BeAfter(originalUpdatedDate);
+            updatedEndPoint.ExternalReferenceId.Should().Be(externalReferenceId);
+            updatedEndPoint.MeasuresExternalId.Should().Be(measuresExternalId);
+            command.UpdatedEndpoint.Id.Should().Be(updatedEndPoint.Id);
         }
         
         [Test]
@@ -115,6 +125,43 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
             updatedEndPoint.DefenceAdvocate.Should().BeNull();
+        }
+
+        [Test]
+        public async Task Should_not_update_endpoint_when_it_has_not_changed()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearingV2(options =>
+            {
+                options.AddScreening = true;
+                options.AddInterpreterLanguages = true;
+            }, BookingStatus.Created);
+            var endpoint = seededHearing.GetEndpoints()[0];
+            var screeningDto = new ScreeningDto
+            {
+                ScreeningType = endpoint.Screening.Type,
+                ProtectedFrom = endpoint.Screening.ScreeningEntities.Select(e => e.Participant.ExternalReferenceId).ToList()
+            };
+            var originalUpdatedDate = endpoint.UpdatedDate;
+
+            var command = new UpdateEndPointOfHearingCommand(
+                seededHearing.Id,
+                endpoint.Id,
+                endpoint.DisplayName,
+                endpoint.DefenceAdvocate,
+                endpoint.InterpreterLanguage.Code,
+                endpoint.OtherLanguage,
+                screeningDto,
+                endpoint.ExternalReferenceId,
+                endpoint.MeasuresExternalId);
+            
+            // Act
+            await _commandHandler.Handle(command);
+            
+            // Assert
+            var updatedEndpoint = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            updatedEndpoint.UpdatedDate.Should().BeCloseTo(originalUpdatedDate, TimeSpan.FromMilliseconds(50)); // The two dates should be the same, but there is a small discrepancy with EF
+            command.UpdatedEndpoint.Should().BeNull();
         }
     }
 }

@@ -73,6 +73,8 @@ namespace BookingsApi.DAL.Commands
                 throw new EndPointNotFoundException(command.EndpointId);
             }
 
+            var originalUpdatedDate = endpoint.UpdatedDate;
+
             if (!string.IsNullOrWhiteSpace(endpoint.DisplayName)) endpoint.UpdateDisplayName(command.DisplayName);
             if (command.DefenceAdvocate != null)
             {
@@ -89,8 +91,11 @@ namespace BookingsApi.DAL.Commands
             endpoint.UpdateLanguagePreferences(language, command.OtherLanguage);
             
             _hearingService.UpdateEndpointScreeningRequirement(hearing, endpoint, command.Screening);
-            endpoint.ExternalReferenceId = command.ExternalReferenceId;
-            endpoint.MeasuresExternalId = command.MeasuresExternalId;
+            endpoint.UpdateExternalIds(command.ExternalReferenceId, command.MeasuresExternalId);
+
+            var endpointHasChanged = endpoint.UpdatedDate != originalUpdatedDate;
+            if (!endpointHasChanged) return;
+            
             await _context.SaveChangesAsync();
 
             command.UpdatedEndpoint = endpoint;

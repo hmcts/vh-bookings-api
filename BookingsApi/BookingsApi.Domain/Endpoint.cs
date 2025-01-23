@@ -19,8 +19,8 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
     public int? InterpreterLanguageId { get; protected set; }
     public virtual InterpreterLanguage InterpreterLanguage { get; protected set; }
     public string OtherLanguage { get; set; }
-    public string ExternalReferenceId { get; set; }
-    public string MeasuresExternalId { get; set; }
+    public string ExternalReferenceId { get; protected set; }
+    public string MeasuresExternalId { get; protected set; }
     public Guid? ScreeningId { get; set; }
     public virtual Screening Screening { get; set; }
 
@@ -39,7 +39,10 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
 
     public void AssignDefenceAdvocate(Participant defenceAdvocate)
     {
+        if (defenceAdvocate?.Id == DefenceAdvocate?.Id) return;
+        
         DefenceAdvocate = defenceAdvocate;
+        UpdatedDate = DateTime.UtcNow;
     }
 
     public void UpdateDisplayName(string displayName)
@@ -49,7 +52,10 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
             throw new ArgumentNullException(nameof(displayName));
         }
 
+        if (displayName == DisplayName) return;
+        
         DisplayName = displayName;
+        UpdatedDate = DateTime.UtcNow;
     }
 
     public void UpdateLanguagePreferences(InterpreterLanguage language, string otherLanguage)
@@ -60,6 +66,8 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
                 DomainRuleErrorMessages.LanguageAndOtherLanguageCannotBeSet);
         }
 
+        if (language?.Id == InterpreterLanguage?.Id && otherLanguage == OtherLanguage) return;
+
         InterpreterLanguage = language;
         OtherLanguage = otherLanguage;
 
@@ -69,12 +77,19 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
     public void AssignScreening(ScreeningType type, List<Participant> participants, List<Endpoint> endpoints)
     {
         ScreeningHelper.AssignScreening(this, type, participants, endpoints);
-        UpdatedDate = DateTime.UtcNow;
     }
 
     public void RemoveScreening()
     {
         ScreeningHelper.RemoveScreening(this);
+    }
+
+    public void UpdateExternalIds(string externalReferenceId, string measuresExternalId)
+    {
+        if (externalReferenceId == ExternalReferenceId && measuresExternalId == MeasuresExternalId) return;
+        
+        ExternalReferenceId = externalReferenceId;
+        MeasuresExternalId = measuresExternalId;
         UpdatedDate = DateTime.UtcNow;
     }
 }
