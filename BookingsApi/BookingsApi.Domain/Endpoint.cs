@@ -76,20 +76,12 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
 
     public void AssignScreening(ScreeningType type, List<Participant> participants, List<Endpoint> endpoints)
     {
-        var originalScreeningUpdatedDate = Screening?.UpdatedDate;
-        
-        ScreeningHelper.AssignScreening(this, type, participants, endpoints);
-
-        var hasChanged = Screening?.UpdatedDate != originalScreeningUpdatedDate;
-        if (!hasChanged) return;
-        
-        UpdatedDate = DateTime.UtcNow;
+        ScreenableEntityHelper.AssignScreening(this, type, participants, endpoints);
     }
 
     public void RemoveScreening()
     {
-        ScreeningHelper.RemoveScreening(this);
-        UpdatedDate = DateTime.UtcNow;
+        ScreenableEntityHelper.RemoveScreening(this);
     }
 
     public void UpdateExternalIds(string externalReferenceId, string measuresExternalId)
