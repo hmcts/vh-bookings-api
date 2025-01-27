@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__VhBookings=Data Source=localhost;Database=vhbookings;User Id=SA;Password=R4ndomP@assword;Trust Server Certificate=True;Encrypt=False
+
+    volumes:
+      - ../..:/workspaces:cached
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+
+    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
+    network_mode: service:db
+    # Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+    # user: root
+
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+  db:
+    image: mcr.microsoft.com/azure-sql-edge
+    # restart: unless-stopped
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: R4ndomP@assword
+    ports:
+      - 1433:1433
+    # Add "forwardPorts": ["1433"] to **devcontainer.json** to forward PostgreSQL locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
