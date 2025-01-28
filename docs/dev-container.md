@@ -1,9 +1,8 @@
 # Setup Dev Container
 
 ``` bash
-wget -qO- https://aka.ms/install-artifacts-credprovider.sh | bash
-dotnet tool restore
 dotnet restore --interactive BookingsApi/BookingsApi.sln
+dotnet tool restore
 ```
 
 ## TODO
