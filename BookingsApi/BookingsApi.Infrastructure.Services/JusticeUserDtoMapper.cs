@@ -4,11 +4,11 @@ using BookingsApi.Infrastructure.Services.Dtos;
 
 namespace BookingsApi.Infrastructure.Services
 {
-    public static class UserDtoMapper
+    public static class JusticeUserDtoMapper
     {
-        public static UserDto MapToDto(JusticeUser user)
+        public static JusticeUserDto MapToDto(JusticeUser user)
         {
-            return new UserDto
+            return new JusticeUserDto
             {
                 Username = user.Username,
                 UserId = user.Id.ToString(),

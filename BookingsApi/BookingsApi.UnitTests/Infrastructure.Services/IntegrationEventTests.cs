@@ -231,13 +231,13 @@ public class IntegrationEventTests
             new() { UserRole = new UserRole((int)UserRoleId.Vho, "Video Hearings Team Lead") }
         };
 
-        var allocationHearingsIntegrationEvent = new AllocationHearingsIntegrationEvent(hearings, csoUser);
+        var allocationHearingsIntegrationEvent = new HearingsAllocatedIntegrationEvent(hearings, csoUser);
         _eventPublisher.PublishAsync(allocationHearingsIntegrationEvent);
 
         _serviceBusQueueClient.Count.Should().Be(1);
         var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-        @event.IntegrationEvent.Should().BeOfType<AllocationHearingsIntegrationEvent>();
-        var typedEvent = (AllocationHearingsIntegrationEvent)@event.IntegrationEvent;
+        @event.IntegrationEvent.Should().BeOfType<HearingsAllocatedIntegrationEvent>();
+        var typedEvent = (HearingsAllocatedIntegrationEvent)@event.IntegrationEvent;
         typedEvent.Hearings.Should().NotContainNulls();
         typedEvent.AllocatedCso.Should().NotBeNull();
     }
