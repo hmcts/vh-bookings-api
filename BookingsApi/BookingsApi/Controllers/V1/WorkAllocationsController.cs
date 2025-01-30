@@ -113,7 +113,7 @@ namespace BookingsApi.Controllers.V1
             var todaysHearing = hearings.Where(x => x.ScheduledDateTime.Date == DateTime.UtcNow.Date).ToList();
             if(todaysHearing.Count != 0)
             {
-                await eventPublisher.PublishAsync(new AllocationHearingsIntegrationEvent(todaysHearing, justiceUser));
+                await eventPublisher.PublishAsync(new HearingsAllocatedIntegrationEvent(todaysHearing, justiceUser));
             }
         }
     }

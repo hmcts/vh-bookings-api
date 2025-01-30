@@ -79,8 +79,8 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
 
             // ensure hearing allocation event is published for all hearings today
             var message = ServiceBus.ReadMessageFromQueue();
-            message.IntegrationEvent.Should().BeOfType<AllocationHearingsIntegrationEvent>();
-            var allocationEvent = message.IntegrationEvent.As<AllocationHearingsIntegrationEvent>();
+            message.IntegrationEvent.Should().BeOfType<HearingsAllocatedIntegrationEvent>();
+            var allocationEvent = message.IntegrationEvent.As<HearingsAllocatedIntegrationEvent>();
             allocationEvent.Hearings.Select(x=> x.HearingId).Should().BeEquivalentTo(_hearings.SkipLast(1).Select(x=> x.Id).ToList());
             allocationEvent.AllocatedCso.Username.Should().Be(_hearings[0].AllocatedTo.Username);
         }
