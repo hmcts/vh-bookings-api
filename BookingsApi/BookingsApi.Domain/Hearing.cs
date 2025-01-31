@@ -357,17 +357,19 @@ namespace BookingsApi.Domain
             endpoint?.AssignDefenceAdvocate(null);
 
             participant.LinkedParticipants.Clear();
+            participant.Screening?.ScreeningEntities.Clear();
 
             // update screening list
             Participants
-                .Where(existingPat => existingPat.Screening != null)
+                .Where(existingPat => existingPat.Screening != null && 
+                                      existingPat.Screening.ScreeningEntities.Any(e => e.ParticipantId == participant.Id))
                 .ToList()
                 .ForEach(existingPat => existingPat.Screening.RemoveParticipant(participant));
 
-            Endpoints.Where(existingEndpoint => existingEndpoint.Screening != null)
+            Endpoints.Where(existingEndpoint => existingEndpoint.Screening != null && 
+                                                existingEndpoint.Screening.ScreeningEntities.Any(e => e.ParticipantId == participant.Id))
                 .ToList()
                 .ForEach(existingEndpoint => existingEndpoint.Screening.RemoveParticipant(participant));
-
             Participants.Remove(existingParticipant);
             UpdatedDate = DateTime.UtcNow;
         }

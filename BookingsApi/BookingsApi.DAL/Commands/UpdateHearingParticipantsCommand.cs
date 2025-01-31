@@ -62,7 +62,7 @@ namespace BookingsApi.DAL.Commands
                 // remove the participant from the screening options of the existing participants
                 foreach (var existingParticipantScreening in command.ExistingParticipants
                              .Where(existingParticipantScreening => existingParticipantScreening.Screening.ProtectedFrom
-                             .Exists(protectedFrom => string.Equals(protectedFrom, participantBeingRemoved.ExternalReferenceId))))
+                                 .Exists(protectedFrom => string.Equals(protectedFrom, participantBeingRemoved.ExternalReferenceId))))
                     existingParticipantScreening.Screening.ProtectedFrom.Remove(participantBeingRemoved.ExternalReferenceId);
             }
 
