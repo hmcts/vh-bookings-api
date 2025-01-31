@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain.Enumerations;
@@ -5,8 +6,6 @@ using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain.SpecialMeasure;
-
-using System;
 
 public class Screening : TrackableEntity<Guid>
 {
@@ -71,14 +70,11 @@ public class Screening : TrackableEntity<Guid>
     {
         var screeningEntity = ScreeningEntities.FirstOrDefault(x =>
             x.ParticipantId == participant.Id || x.Participant?.Id == participant.Id);
-        if (screeningEntity == null)
+        if (screeningEntity != null)
         {
-            throw new DomainRuleException(nameof(Screening),
-                DomainRuleErrorMessages.ParticipantDoesNotExistForScreening);
+            ScreeningEntities.Remove(screeningEntity);
+            UpdatedDate = DateTime.UtcNow;
         }
-
-        ScreeningEntities.Remove(screeningEntity);
-        UpdatedDate = DateTime.UtcNow;
     }
 
     public void RemoveEndpoint(Endpoint endpoint)

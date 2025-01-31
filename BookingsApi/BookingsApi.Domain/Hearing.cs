@@ -361,13 +361,11 @@ namespace BookingsApi.Domain
 
             // update screening list
             Participants
-                .Where(existingPat => existingPat.Screening != null && 
-                                      existingPat.Screening.ScreeningEntities.Any(e => e.ParticipantId == participant.Id))
+                .Where(existingPat => existingPat.Screening != null)
                 .ToList()
                 .ForEach(existingPat => existingPat.Screening.RemoveParticipant(participant));
 
-            Endpoints.Where(existingEndpoint => existingEndpoint.Screening != null && 
-                                                existingEndpoint.Screening.ScreeningEntities.Any(e => e.ParticipantId == participant.Id))
+            Endpoints.Where(existingEndpoint => existingEndpoint.Screening != null)
                 .ToList()
                 .ForEach(existingEndpoint => existingEndpoint.Screening.RemoveParticipant(participant));
             Participants.Remove(existingParticipant);
