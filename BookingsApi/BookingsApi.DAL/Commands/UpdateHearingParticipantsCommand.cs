@@ -60,8 +60,9 @@ namespace BookingsApi.DAL.Commands
                 var participantBeingRemoved = hearing.GetParticipants().Single(x => x.Id == removedParticipantId);
                 hearing.RemoveParticipant(participantBeingRemoved, false);
                 // remove the participant from the screening options of the existing participants
-                foreach (var existingParticipantScreening in command.ExistingParticipants
-                             .Where(existingParticipantScreening => existingParticipantScreening.Screening.ProtectedFrom
+                foreach (var existingParticipantScreening in command.ExistingParticipants.Where(existingParticipantScreening =>
+                             existingParticipantScreening.Screening?.ProtectedFrom != null &&
+                             existingParticipantScreening.Screening.ProtectedFrom
                                  .Exists(protectedFrom => string.Equals(protectedFrom, participantBeingRemoved.ExternalReferenceId))))
                     existingParticipantScreening.Screening.ProtectedFrom.Remove(participantBeingRemoved.ExternalReferenceId);
             }
