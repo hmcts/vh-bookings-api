@@ -703,6 +703,10 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         var participantA = individuals.Find(i => i.Screening != null);
         var participantB = individuals.Find(i => i.Screening == null);
         
+        //create a list of external reference ids to protect from, for participantA
+        var protectedFrom = participantA.Screening.GetEndpoints().Select(x=> x.Endpoint.ExternalReferenceId).ToList();
+        protectedFrom.Add(participantB.ExternalReferenceId);
+        
         var request = new UpdateHearingParticipantsRequestV2
         {
             ExistingParticipants =
@@ -719,13 +723,12 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
                     Screening = new ScreeningRequest()
                     {
                         Type = ScreeningType.Specific,
-                        ProtectedFrom= participantA.Screening.GetEndpoints().Select(x=> x.Endpoint.ExternalReferenceId).ToList()
+                        ProtectedFrom = protectedFrom
                     }
                 }
             ],
             RemovedParticipantIds = [participantB.Id]
         };
-        
         // act
         using var client = Application.CreateClient();
         var result = await client

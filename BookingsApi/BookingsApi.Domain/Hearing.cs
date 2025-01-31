@@ -357,6 +357,7 @@ namespace BookingsApi.Domain
             endpoint?.AssignDefenceAdvocate(null);
 
             participant.LinkedParticipants.Clear();
+            participant.Screening?.ScreeningEntities.Clear();
 
             // update screening list
             Participants
@@ -367,16 +368,8 @@ namespace BookingsApi.Domain
             Endpoints.Where(existingEndpoint => existingEndpoint.Screening != null)
                 .ToList()
                 .ForEach(existingEndpoint => existingEndpoint.Screening.RemoveParticipant(participant));
-
             Participants.Remove(existingParticipant);
             UpdatedDate = DateTime.UtcNow;
-        }
-
-        public void RemoveParticipantById(Guid participantId, bool validateParticipantCount = true)
-        {
-            ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
-            var participant = GetParticipants().Single(x => x.Id == participantId);
-            RemoveParticipant(participant, validateParticipantCount);
         }
 
         public virtual IList<Person> GetPersons()

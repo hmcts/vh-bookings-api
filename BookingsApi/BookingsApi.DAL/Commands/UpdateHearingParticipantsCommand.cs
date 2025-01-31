@@ -57,7 +57,14 @@ namespace BookingsApi.DAL.Commands
 
             foreach (var removedParticipantId in command.RemovedParticipantIds)
             {
-                hearing.RemoveParticipantById(removedParticipantId, false);
+                var participantBeingRemoved = hearing.GetParticipants().Single(x => x.Id == removedParticipantId);
+                hearing.RemoveParticipant(participantBeingRemoved, false);
+                // remove the participant from the screening options of the existing participants
+                foreach (var existingParticipantScreening in command.ExistingParticipants.Where(existingParticipantScreening =>
+                             existingParticipantScreening.Screening?.ProtectedFrom != null &&
+                             existingParticipantScreening.Screening.ProtectedFrom
+                                 .Exists(protectedFrom => string.Equals(protectedFrom, participantBeingRemoved.ExternalReferenceId))))
+                    existingParticipantScreening.Screening.ProtectedFrom.Remove(participantBeingRemoved.ExternalReferenceId);
             }
 
             // only query languages required
@@ -67,8 +74,11 @@ namespace BookingsApi.DAL.Commands
                 .Select(x => x.InterpreterLanguageCode).Distinct().ToList().ForEach(x => languageCodesRequired.Add(x));
 
             var languages = await context.InterpreterLanguages.Where(x => x.Live && languageCodesRequired.Contains(x.Code)).ToListAsync();
+           
+            //add new participants
             await hearingService.AddParticipantToService(hearing, command.NewParticipants, languages);
             
+            //process existing participants
             var participants = hearing.GetParticipants().ToList();
             foreach (var newExistingParticipantDetails in command.ExistingParticipants)
             {
