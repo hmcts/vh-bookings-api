@@ -372,13 +372,6 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        public void RemoveParticipantById(Guid participantId, bool validateParticipantCount = true)
-        {
-            ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
-            var participant = GetParticipants().Single(x => x.Id == participantId);
-            RemoveParticipant(participant, validateParticipantCount);
-        }
-
         public virtual IList<Person> GetPersons()
         {
             return Participants.Select(x => x.Person).ToList();
