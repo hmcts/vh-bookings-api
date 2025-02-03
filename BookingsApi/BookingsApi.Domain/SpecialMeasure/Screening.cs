@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
-using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain.SpecialMeasure;
 
@@ -68,8 +67,7 @@ public class Screening : TrackableEntity<Guid>
 
     public void RemoveParticipant(Participant participant)
     {
-        var screeningEntity = ScreeningEntities.FirstOrDefault(x =>
-            x.ParticipantId == participant.Id || x.Participant?.Id == participant.Id);
+        var screeningEntity = ScreeningEntities.FirstOrDefault(x => x.ParticipantId == participant.Id || x.Participant?.Id == participant.Id);
         if (screeningEntity != null)
         {
             ScreeningEntities.Remove(screeningEntity);
@@ -79,15 +77,12 @@ public class Screening : TrackableEntity<Guid>
 
     public void RemoveEndpoint(Endpoint endpoint)
     {
-        var screeningEntity =
-            ScreeningEntities.FirstOrDefault(x => x.EndpointId == endpoint.Id || x.Endpoint?.Id == endpoint.Id);
-        if (screeningEntity == null)
+        var screeningEntity = ScreeningEntities.FirstOrDefault(x => x.EndpointId == endpoint.Id || x.Endpoint?.Id == endpoint.Id);
+        if (screeningEntity != null)
         {
-            throw new DomainRuleException(nameof(Screening), DomainRuleErrorMessages.EndpointDoesNotExistForScreening);
+            ScreeningEntities.Remove(screeningEntity);
+            UpdatedDate = DateTime.UtcNow; 
         }
-
-        ScreeningEntities.Remove(screeningEntity);
-        UpdatedDate = DateTime.UtcNow;
     }
 
     public List<ScreeningEntity> GetEndpoints()

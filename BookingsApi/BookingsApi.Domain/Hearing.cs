@@ -366,6 +366,7 @@ namespace BookingsApi.Domain
             Endpoints.Where(existingEndpoint => existingEndpoint.Screening != null)
                 .ToList()
                 .ForEach(existingEndpoint => existingEndpoint.Screening.RemoveParticipant(participant));
+            
             Participants.Remove(existingParticipant);
             UpdatedDate = DateTime.UtcNow;
         }
