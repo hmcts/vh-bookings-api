@@ -350,10 +350,8 @@ namespace BookingsApi.Domain
 
             if (validateParticipantCount) ValidateHostCount();
 
-            var existingParticipant =
-                Participants.Single(x => x.Person.ContactEmail == participant.Person.ContactEmail);
-            var endpoint =
-                Endpoints.SingleOrDefault(e => e.DefenceAdvocate != null && e.DefenceAdvocate.Id == participant.Id);
+            var existingParticipant = Participants.Single(x => x.Person.ContactEmail == participant.Person.ContactEmail);
+            var endpoint = Endpoints.SingleOrDefault(e => e.DefenceAdvocate != null && e.DefenceAdvocate.Id == participant.Id);
             endpoint?.AssignDefenceAdvocate(null);
 
             participant.LinkedParticipants.Clear();
@@ -411,6 +409,7 @@ namespace BookingsApi.Domain
                 .ToList()
                 .ForEach(existingEndpoint => existingEndpoint.Screening.RemoveEndpoint(endpoint));
 
+            endpoint.Screening?.ScreeningEntities.Clear();
             Endpoints.Remove(endpoint);
             UpdatedDate = DateTime.UtcNow;
         }
