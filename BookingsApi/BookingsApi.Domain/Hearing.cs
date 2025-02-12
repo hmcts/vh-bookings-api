@@ -350,13 +350,12 @@ namespace BookingsApi.Domain
 
             if (validateParticipantCount) ValidateHostCount();
 
-            var existingParticipant =
-                Participants.Single(x => x.Person.ContactEmail == participant.Person.ContactEmail);
-            var endpoint =
-                Endpoints.SingleOrDefault(e => e.DefenceAdvocate != null && e.DefenceAdvocate.Id == participant.Id);
+            var existingParticipant = Participants.Single(x => x.Person.ContactEmail == participant.Person.ContactEmail);
+            var endpoint = Endpoints.SingleOrDefault(e => e.DefenceAdvocate != null && e.DefenceAdvocate.Id == participant.Id);
             endpoint?.AssignDefenceAdvocate(null);
 
             participant.LinkedParticipants.Clear();
+            participant.Screening?.ScreeningEntities.Clear();
 
             // update screening list
             Participants
@@ -367,16 +366,9 @@ namespace BookingsApi.Domain
             Endpoints.Where(existingEndpoint => existingEndpoint.Screening != null)
                 .ToList()
                 .ForEach(existingEndpoint => existingEndpoint.Screening.RemoveParticipant(participant));
-
+            
             Participants.Remove(existingParticipant);
             UpdatedDate = DateTime.UtcNow;
-        }
-
-        public void RemoveParticipantById(Guid participantId, bool validateParticipantCount = true)
-        {
-            ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
-            var participant = GetParticipants().Single(x => x.Id == participantId);
-            RemoveParticipant(participant, validateParticipantCount);
         }
 
         public virtual IList<Person> GetPersons()
@@ -417,9 +409,7 @@ namespace BookingsApi.Domain
             Endpoints.Where(existingEndpoint => existingEndpoint.Screening != null)
                 .ToList()
                 .ForEach(existingEndpoint => existingEndpoint.Screening.RemoveEndpoint(endpoint));
-
             endpoint.Screening?.ScreeningEntities.Clear();
-            
             Endpoints.Remove(endpoint);
             UpdatedDate = DateTime.UtcNow;
         }
