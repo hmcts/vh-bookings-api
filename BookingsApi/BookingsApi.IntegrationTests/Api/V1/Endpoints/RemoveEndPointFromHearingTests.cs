@@ -32,12 +32,13 @@ public class RemoveEndPointFromHearingTests : ApiTest
     }
     
     [Test]
-    public async Task should_remove_endpoint_from_and_publish_message_when_hearing_is_created_and_found()
+    public async Task should_remove_endpoint_that_has_screenings_from_and_publish_message_when_hearing_is_created_and_found()
     {
         // arrange
         var seededHearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.EndpointsToAdd = 3;
+            options.AddScreening = true;
         }, BookingStatus.Created);
         using var client = Application.CreateClient();
         var endpoint = seededHearing.GetEndpoints()[0];

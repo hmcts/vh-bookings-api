@@ -24,10 +24,20 @@
         public async Task Handle(RemoveEndPointFromHearingCommand command)
         {
             var hearing = await _context.VideoHearings
-                .Include(h => h.Participants).ThenInclude(x => x.Person)
-                .Include(x=> x.Participants).ThenInclude(x=> x.InterpreterLanguage)
-                .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
-                .Include(x=> x.Endpoints).ThenInclude(x=> x.InterpreterLanguage)
+                .Include(h => h.Participants)
+                    .ThenInclude(p => p.Screening)
+                    .ThenInclude(s => s.ScreeningEntities)
+                .Include(h => h.Participants)
+                    .ThenInclude(x => x.Person)
+                .Include(x=> x.Participants)
+                    .ThenInclude(x=> x.InterpreterLanguage)
+                .Include(h => h.Endpoints)
+                    .ThenInclude(e => e.Screening)
+                    .ThenInclude(s => s.ScreeningEntities)
+                .Include(x => x.Endpoints)
+                    .ThenInclude(x => x.DefenceAdvocate)
+                .Include(x => x.Endpoints)
+                    .ThenInclude(x=> x.InterpreterLanguage)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
