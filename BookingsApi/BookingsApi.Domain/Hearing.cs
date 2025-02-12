@@ -418,6 +418,8 @@ namespace BookingsApi.Domain
                 .ToList()
                 .ForEach(existingEndpoint => existingEndpoint.Screening.RemoveEndpoint(endpoint));
 
+            endpoint.Screening?.ScreeningEntities.Clear();
+            
             Endpoints.Remove(endpoint);
             UpdatedDate = DateTime.UtcNow;
         }
