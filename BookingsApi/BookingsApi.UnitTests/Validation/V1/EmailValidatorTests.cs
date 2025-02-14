@@ -148,7 +148,7 @@ namespace BookingsApi.UnitTests.Validation.V1
         [TestCase("Źź@créâtïvéàççénts.com")]
         [TestCase("Żż@créâtïvéàççénts.com")]
         [TestCase("Žž@créâtïvéàççénts.com")]
-        public void Should_pass_validation_when_email_contains_accented_characters(string email)
+        public void Should_pass_validation_when_email_contains_diacritic_characters(string email)
         {
             email.IsValidEmail().Should().BeTrue();
         }
