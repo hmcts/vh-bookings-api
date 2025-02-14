@@ -5,7 +5,7 @@ namespace BookingsApi.Validations;
 /// <summary>Simple validator to check email formats</summary>
 public static partial class EmailValidator
 {
-    private const string RegexPattern = @"^[!#$%'*/-9=?A-Z^-~-]+(?:\.[!#$%'*/-9=?A-Z^-~-]+)*@[a-zA-Z0-9]+([a-zA-Z0-9-]+)*(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$";
+    private const string RegexPattern = @"^(?!.*\.\.)[^\W_](?:[\p{L}\p{M}0-9!#$%'*/=?^_`{|}~.-]*[^\W_.])?@[a-zA-Z0-9\p{L}\p{M}-]+(?:\.[a-zA-Z0-9\p{L}\p{M}-]+)*\.[a-zA-Z\p{L}]{2,}$";
     [GeneratedRegex(RegexPattern)]
     private static partial Regex EmailRegex();  
     /// <summary>
