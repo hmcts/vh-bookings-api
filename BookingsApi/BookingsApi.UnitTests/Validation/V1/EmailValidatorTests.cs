@@ -48,7 +48,7 @@ namespace BookingsApi.UnitTests.Validation.V1
         {
             email.IsValidEmail().Should().BeTrue();
         }
-
+        
         [TestCase("abc.example.com")]
         [TestCase("x.@example.com")]
         [TestCase("x.x.@example.com")]
