@@ -409,7 +409,6 @@ namespace BookingsApi.Domain
             Endpoints.Where(existingEndpoint => existingEndpoint.Screening != null)
                 .ToList()
                 .ForEach(existingEndpoint => existingEndpoint.Screening.RemoveEndpoint(endpoint));
-
             endpoint.Screening?.ScreeningEntities.Clear();
             Endpoints.Remove(endpoint);
             UpdatedDate = DateTime.UtcNow;
