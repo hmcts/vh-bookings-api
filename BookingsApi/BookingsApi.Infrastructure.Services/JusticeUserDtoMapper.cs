@@ -11,6 +11,7 @@ namespace BookingsApi.Infrastructure.Services
             return new JusticeUserDto
             {
                 Username = user.Username,
+                AllocatedToName = $"{user.FirstName} {user.Lastname}",
                 UserId = user.Id.ToString(),
                 UserRoles = user.JusticeUserRoles.Select(jur => jur.UserRole.Name).ToArray()
             };
