@@ -60,6 +60,7 @@ public class AllocateHearingManuallyTests : ApiTest
         message.IntegrationEvent.Should().BeOfType<HearingsAllocatedIntegrationEvent>();
         var integrationEvent = message.IntegrationEvent as HearingsAllocatedIntegrationEvent;
         integrationEvent!.AllocatedCso.Username.Should().Be(j1.Username);
+        integrationEvent!.AllocatedCso.FullName.Should().Be($"{j1.FirstName} {j1.Lastname}");
         integrationEvent!.Hearings[0].HearingId.Should().Be(hearing.Id);
     }
 
