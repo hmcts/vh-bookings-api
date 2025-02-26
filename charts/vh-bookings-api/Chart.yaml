@@ -10,4 +10,4 @@ maintainers:
 dependencies:
   - name: java
     version: 5.2.1
-    repository: oci://hmctspublic.azurecr.io/helm
+    repository: https://hmctspublic.azurecr.io/helm/v1/repo/
