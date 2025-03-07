@@ -1,19 +1,12 @@
+using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
 
 namespace BookingsApi.Extensions;
 
-public class RequestBodyLoggingMiddleware
+public class RequestBodyLoggingMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public RequestBodyLoggingMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         var method = context.Request.Method;
@@ -37,11 +30,13 @@ public class RequestBodyLoggingMiddleware
             context.Request.Body.Position = 0;
 
             // Write request body to App Insights
-            var requestTelemetry = context.Features.Get<RequestTelemetry>();                              
-            requestTelemetry?.Properties.Add("RequestBody", requestBody);
+            var activity = Activity.Current;
+            activity?.SetTag("http.request.body", requestBody);
+            activity?.SetTag("http.request.method", method);
+            activity?.SetTag("http.request.path", context.Request.Path);
         }
 
         // Call next middleware in the pipeline
-        await _next(context);
+        await next(context);
     }
 }

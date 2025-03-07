@@ -5,7 +5,6 @@ using BookingsApi.DAL.Services;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Swagger;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using NSwag;
 using NSwag.Generation.AspNetCore;
@@ -85,7 +84,6 @@ public static class ConfigureServicesExtensions
     {
         services.AddMemoryCache();
 
-        services.AddSingleton<ITelemetryInitializer, BadRequestTelemetry>();
         services.AddScoped<IQueryHandlerFactory, QueryHandlerFactory>();
         services.AddScoped<IQueryHandler, QueryHandler>();
 

@@ -1,64 +1,62 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Diagnostics;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OpenTelemetry.Trace;
 
-namespace BookingsApi.Extensions
+namespace BookingsApi.Extensions;
+
+public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
 {
-    public class ExceptionMiddleware
+    public async Task InvokeAsync(HttpContext httpContext)
     {
-        private readonly ILogger<ExceptionMiddleware> _logger;
-        private readonly RequestDelegate _next;
+        try
+        {
+            await next(httpContext);
+        }
+        catch (DomainRuleException ex)
+        {
+            var modelState = new ModelStateDictionary();
+            modelState.AddDomainRuleErrors(ex.ValidationFailures);
+            var problemDetails = new ValidationProblemDetails(modelState);
+
+            httpContext.Response.ContentType = "application/json";
+            httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await httpContext.Response.WriteAsJsonAsync(problemDetails);
+        }
+        catch (EntityNotFoundException ex)
+        {
+            logger.LogError(ex, "Unexpected error");
+            await HandleExceptionAsync(httpContext, HttpStatusCode.NotFound, ex);
+            TraceException("Entity Not Found", ex);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error");
+            await HandleExceptionAsync(httpContext, HttpStatusCode.InternalServerError, ex);
+            TraceException("API Exception", ex);
+        }
+    }
         
-
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
+    private static void TraceException(string eventTitle, Exception exception)
+    { 
+        var activity = Activity.Current;
+        if (activity == null) return;
+        activity.DisplayName = eventTitle;
+        activity.RecordException(exception);
+        activity.SetStatus(ActivityStatusCode.Error);
+    }
+        
+    private static Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, Exception exception)
+    {
+        context.Response.StatusCode = (int) statusCode;
+        var sb = new StringBuilder(exception.Message);
+        var innerException = exception.InnerException;
+        while (innerException != null)
         {
-            _next = next;
-            _logger = logger;
+            sb.Append($" {innerException.Message}");
+            innerException = innerException.InnerException;
         }
-
-        public async Task InvokeAsync(HttpContext httpContext)
-        {
-            try
-            {
-                await _next(httpContext);
-            }
-            catch (DomainRuleException ex)
-            {
-                var modelState = new ModelStateDictionary();
-                modelState.AddDomainRuleErrors(ex.ValidationFailures);
-                var problemDetails = new ValidationProblemDetails(modelState);
-
-                httpContext.Response.ContentType = "application/json";
-                httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-                await httpContext.Response.WriteAsJsonAsync(problemDetails);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "Entity Not Found", ex, null, null);
-                await HandleExceptionAsync(httpContext, HttpStatusCode.NotFound, ex);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error");
-                ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "API Exception", ex, null,
-                    null);
-                await HandleExceptionAsync(httpContext, HttpStatusCode.InternalServerError, ex);
-            }
-        }
-
-        private static Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, Exception exception)
-        {
-            context.Response.StatusCode = (int) statusCode;
-            var sb = new StringBuilder(exception.Message);
-            var innerException = exception.InnerException;
-            while (innerException != null)
-            {
-                sb.Append($" {innerException.Message}");
-                innerException = innerException.InnerException;
-            }
-            return context.Response.WriteAsJsonAsync(sb.ToString());
-        }
-
+        return context.Response.WriteAsJsonAsync(sb.ToString());
     }
 }

@@ -1,22 +1,25 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Azure.Monitor.OpenTelemetry.AspNetCore;
+using Azure.Monitor.OpenTelemetry.Exporter;
+using BookingsApi.DAL;
+using BookingsApi.Domain.Configuration;
+using BookingsApi.Health;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
+using BookingsApi.Validations.Common;
+using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using BookingsApi.DAL;
-using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.Extensions.Hosting;
-using BookingsApi.Domain.Configuration;
-using BookingsApi.Health;
-using BookingsApi.Validations.Common;
-using FluentValidation;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 namespace BookingsApi
 {
@@ -36,15 +39,28 @@ namespace BookingsApi
             services.AddApiVersioning();
 
             services.AddControllers();
-
             
-            services.AddSingleton<ITelemetryInitializer, CloudRoleNameInitializer>();
-
+            var instrumentationKey = Configuration["ApplicationInsights:ConnectionString"];
+            
+            services.AddOpenTelemetry()
+                .ConfigureResource(r =>
+                {
+                    r.AddService("vh-booking-api")
+                        .AddTelemetrySdk()
+                        .AddAttributes(new Dictionary<string, object>
+                            { ["service.instance.id"] = Environment.MachineName });
+                })
+                .UseAzureMonitor(options => options.ConnectionString = instrumentationKey) 
+                .WithMetrics()
+                .WithTracing(tracerProvider =>
+                {
+                    tracerProvider
+                        .AddAspNetCoreInstrumentation(options => options.RecordException = true)
+                        .AddHttpClientInstrumentation()
+                        .AddAzureMonitorTraceExporter(options => options.ConnectionString = instrumentationKey );
+                });
             var envName = Configuration["Services:BookingsApiResourceId"]; // any service url will do here since we only care about the env name
             services.AddSingleton<IFeatureToggles>(new FeatureToggles(Configuration["LaunchDarkly:SdkKey"], envName));
-
-            services.AddApplicationInsightsTelemetry();
-
             services.AddValidatorsFromAssemblyContaining<RepresentativeValidation>(ServiceLifetime.Scoped, 
                 filter =>
                 {
