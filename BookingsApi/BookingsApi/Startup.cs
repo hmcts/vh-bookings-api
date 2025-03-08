@@ -1,5 +1,4 @@
 ﻿using Azure.Monitor.OpenTelemetry.AspNetCore;
-using Azure.Monitor.OpenTelemetry.Exporter;
 using BookingsApi.DAL;
 using BookingsApi.Domain.Configuration;
 using BookingsApi.Health;
@@ -23,32 +22,26 @@ using OpenTelemetry.Trace;
 
 namespace BookingsApi
 {
-    public class Startup
+    public class Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        private IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; } = configuration;
         public SettingsConfiguration SettingsConfiguration { get; private set; }
-
+        
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApiVersioning();
-
-            services.AddControllers();
             
             var instrumentationKey = Configuration["ApplicationInsights:ConnectionString"];
+            services.AddApiVersioning();
+            services.AddControllers();
             
             services.AddOpenTelemetry()
                 .ConfigureResource(r =>
                 {
-                    r.AddService("vh-booking-api")
+                    r.AddService("vh-bookings-api")
                         .AddTelemetrySdk()
                         .AddAttributes(new Dictionary<string, object>
-                            { ["service.instance.id"] = Environment.MachineName });
+                        { ["service.instance.id"] = Environment.MachineName });
                 })
                 .UseAzureMonitor(options => options.ConnectionString = instrumentationKey) 
                 .WithMetrics()
@@ -56,8 +49,7 @@ namespace BookingsApi
                 {
                     tracerProvider
                         .AddAspNetCoreInstrumentation(options => options.RecordException = true)
-                        .AddHttpClientInstrumentation()
-                        .AddAzureMonitorTraceExporter(options => options.ConnectionString = instrumentationKey );
+                        .AddHttpClientInstrumentation();
                 });
             var envName = Configuration["Services:BookingsApiResourceId"]; // any service url will do here since we only care about the env name
             services.AddSingleton<IFeatureToggles>(new FeatureToggles(Configuration["LaunchDarkly:SdkKey"], envName));
