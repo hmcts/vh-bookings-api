@@ -35,22 +35,26 @@ namespace BookingsApi
             services.AddApiVersioning();
             services.AddControllers();
             
-            services.AddOpenTelemetry()
-                .ConfigureResource(r =>
-                {
-                    r.AddService("vh-bookings-api")
-                        .AddTelemetrySdk()
-                        .AddAttributes(new Dictionary<string, object>
-                        { ["service.instance.id"] = Environment.MachineName });
-                })
-                .UseAzureMonitor(options => options.ConnectionString = instrumentationKey) 
-                .WithMetrics()
-                .WithTracing(tracerProvider =>
-                {
-                    tracerProvider
-                        .AddAspNetCoreInstrumentation(options => options.RecordException = true)
-                        .AddHttpClientInstrumentation();
-                });
+            if(String.IsNullOrWhiteSpace(instrumentationKey))
+                Console.WriteLine("Application Insights Instrumentation Key not found");
+            else
+                services.AddOpenTelemetry()
+                    .ConfigureResource(r =>
+                    {
+                        r.AddService("vh-bookings-api")
+                            .AddTelemetrySdk()
+                            .AddAttributes(new Dictionary<string, object>
+                            { ["service.instance.id"] = Environment.MachineName });
+                    })
+                    .UseAzureMonitor(options => options.ConnectionString = instrumentationKey) 
+                    .WithMetrics()
+                    .WithTracing(tracerProvider =>
+                    {
+                        tracerProvider
+                            .AddAspNetCoreInstrumentation(options => options.RecordException = true)
+                            .AddHttpClientInstrumentation();
+                    });
+            
             var envName = Configuration["Services:BookingsApiResourceId"]; // any service url will do here since we only care about the env name
             services.AddSingleton<IFeatureToggles>(new FeatureToggles(Configuration["LaunchDarkly:SdkKey"], envName));
             services.AddValidatorsFromAssemblyContaining<RepresentativeValidation>(ServiceLifetime.Scoped, 
