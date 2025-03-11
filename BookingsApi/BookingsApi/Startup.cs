@@ -52,7 +52,7 @@ namespace BookingsApi
                     {
                         tracerProvider
                             .AddAspNetCoreInstrumentation(options => options.RecordException = true)
-                            .AddHttpClientInstrumentation();
+                            .AddHttpClientInstrumentation(options => options.RecordException = true);
                     });
             
             var envName = Configuration["Services:BookingsApiResourceId"]; // any service url will do here since we only care about the env name
