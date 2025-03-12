@@ -8,12 +8,10 @@ java:
   readinessPath: /health/readiness
   startupPath: /health/startup
   replicas: 2
-  aadIdentityName: vh-aad-identity
   keyVaults:
     vh-infra-core:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
-      usePodIdentity: true
       secrets:
         - name: connectionstrings--applicationinsights
           alias: applicationinsights--connectionstring
@@ -23,7 +21,6 @@ java:
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
-      usePodIdentity: true
       secrets:
         - azuread--clientid
         - azuread--clientsecret
