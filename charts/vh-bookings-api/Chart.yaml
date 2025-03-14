@@ -2,12 +2,12 @@
 apiVersion: v2
 name: vh-bookings-api
 home: https://github.com/hmcts/vh-bookings-api
-version: 0.0.16
+version: 0.0.17
 description: Helm Chart for bookings Hearing bookings-api
 maintainers:
   - name: VH Devops
 
 dependencies:
   - name: java
-    version: 3.8.0
-    repository: https://hmctspublic.azurecr.io/helm/v1/repo/
+    version: 5.3.0
+    repository: oci://hmctspublic.azurecr.io/helm
