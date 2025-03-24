@@ -61,8 +61,7 @@ namespace BookingsApi.Services
             var command = new AddEndPointToHearingCommand(hearingId, newEndpoint);
             await commandHandler.Handle(command);
 
-            var updatedHearing =
-                await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            var updatedHearing = await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
             var endpoint = updatedHearing.GetEndpoints().First(x => x.DisplayName.Equals(newEndpoint.DisplayName));
 
             if (updatedHearing.Status == BookingStatus.Created || updatedHearing.Status == BookingStatus.ConfirmedWithoutJudge)

@@ -75,8 +75,7 @@ public class AddEndPointToHearingV2Tests : ApiTest
         endpointAddedIntegrationEvent!.Endpoint.DisplayName.Should().Be(request.DisplayName);
         endpointAddedIntegrationEvent.Endpoint.Role.Should().Be(ConferenceRole.Guest, "Endpoint should be a guest when no screening is required in hearing");
         // validate linked participants
-        endpointAddedIntegrationEvent.Endpoint.ParticipantsLinked.Select(x => x.ParticipantContactEmail).Should().BeEquivalentTo(request.LinkedParticipantEmails);
-        endpointAddedIntegrationEvent.Endpoint.ParticipantsLinked.Select(x => x.ParticipantId).Should().BeEquivalentTo(participants.Select(x => x.Id));
+        endpointAddedIntegrationEvent.Endpoint.ParticipantsLinked.Should().BeEquivalentTo(request.LinkedParticipantEmails);
         Array.Exists(messages, x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent).Should().BeTrue();
     }
     
