@@ -87,15 +87,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var endpoint = seededHearing.GetEndpoints()[0];
             var dA = seededHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
             var updatedDisplayName = "updatedDisplayName";
-            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, dA, null, null, null, Guid.NewGuid().ToString(), null));
+            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, [dA], null, null, null, Guid.NewGuid().ToString(), null));
 
 
-            var returnedVideoHearing =
-                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
-            updatedEndPoint.DefenceAdvocate.Should().NotBeNull();
-            updatedEndPoint.DefenceAdvocate.Id.Should().Be(dA.Id);
+            updatedEndPoint.ParticipantsLinked.Should().NotBeEmpty();
+            updatedEndPoint.ParticipantsLinked.Should().Contain(e => e.Id == dA.Id);
             endpoint.CreatedDate.Should().Be(updatedEndPoint.CreatedDate);
             updatedEndPoint.UpdatedDate.Should().BeAfter(updatedEndPoint.CreatedDate);
         }
@@ -109,22 +108,37 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var endpoint = seededHearing.GetEndpoints()[0];
             var dA = seededHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
             var updatedDisplayName = "updatedDisplayName";
-            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, dA, null, null, null, Guid.NewGuid().ToString(), null));
+            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id,
+                endpoint.Id,
+                updatedDisplayName,
+                [dA], 
+                null, 
+                null, 
+                null, 
+                Guid.NewGuid().ToString(), 
+                null));
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
-            updatedEndPoint.DefenceAdvocate.Should().NotBeNull();
-            updatedEndPoint.DefenceAdvocate.Id.Should().Be(dA.Id);
+            updatedEndPoint.ParticipantsLinked.Should().NotBeEmpty();
+            updatedEndPoint.ParticipantsLinked.Should().Contain(e => e.Id == dA.Id);
 
-            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id,
-                updatedDisplayName, null, null, null, null, Guid.NewGuid().ToString(), null));
-            returnedVideoHearing =
-                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id,
+                endpoint.Id,
+                updatedDisplayName, 
+                null, 
+                null, 
+                null, 
+                null, 
+                Guid.NewGuid().ToString(), 
+                null));
+            
+            returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
-            updatedEndPoint.DefenceAdvocate.Should().BeNull();
+            updatedEndPoint.ParticipantsLinked.Should().BeEmpty();
         }
 
         [Test]
@@ -148,7 +162,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 seededHearing.Id,
                 endpoint.Id,
                 endpoint.DisplayName,
-                endpoint.DefenceAdvocate,
+                endpoint.ParticipantsLinked,
                 endpoint.InterpreterLanguage.Code,
                 endpoint.OtherLanguage,
                 screeningDto,

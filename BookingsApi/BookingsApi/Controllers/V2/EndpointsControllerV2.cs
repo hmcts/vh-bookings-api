@@ -28,8 +28,7 @@ public class EndpointsControllerV2(
     [ProducesResponseType(typeof(EndpointResponseV2), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> AddEndPointToHearingV2Async(Guid hearingId,
-        EndpointRequestV2 addEndpointRequest)
+    public async Task<IActionResult> AddEndPointToHearingV2Async(Guid hearingId, EndpointRequestV2 addEndpointRequest)
     {
         return await AddEndpointToHearing(hearingId, addEndpointRequest);
     }
@@ -67,8 +66,7 @@ public class EndpointsControllerV2(
         }
         
         var sipAddressStem = endpointService.GetSipAddressStem(hearing.ConferenceSupplier.MapToContractEnum());
-        var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(addEndpointRequest, randomGenerator,
-            sipAddressStem);
+        var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(addEndpointRequest, randomGenerator, sipAddressStem);
         var endpoint = await endpointService.AddEndpoint(hearingId, newEp);
         var endpointResponse = EndpointToResponseV2Mapper.MapEndpointToResponse(endpoint);
 
@@ -123,10 +121,17 @@ public class EndpointsControllerV2(
         var hearing =
             await queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
         if (hearing == null) throw new HearingNotFoundException(hearingId);
+
+        var participantsLinked = updateEndpointRequest.LinkedParticipantEmails;
+        participantsLinked.Add(updateEndpointRequest.DefenceAdvocateContactEmail);
+        
         await endpointService.UpdateEndpoint(hearing, endpointId,
-            new UpdateEndpointDto(updateEndpointRequest.DefenceAdvocateContactEmail, updateEndpointRequest.DisplayName,
-                updateEndpointRequest.InterpreterLanguageCode, updateEndpointRequest.OtherLanguage,
-                updateEndpointRequest.ExternalParticipantId, updateEndpointRequest.MeasuresExternalId,
+            new UpdateEndpointDto(participantsLinked,
+                updateEndpointRequest.DisplayName,
+                updateEndpointRequest.InterpreterLanguageCode, 
+                updateEndpointRequest.OtherLanguage, 
+                updateEndpointRequest.ExternalParticipantId, 
+                updateEndpointRequest.MeasuresExternalId,
                 updateEndpointRequest.Screening?.MapToDalDto()));
         
         return NoContent();

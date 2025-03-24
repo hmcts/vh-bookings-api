@@ -5,23 +5,19 @@ using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.DAL.Commands
 {
-    public class UpdateHearingParticipantsCommand : ICommand
+    public class UpdateHearingParticipantsCommand(
+        Guid hearingId,
+        List<ExistingParticipantDetails> existingParticipants,
+        List<NewParticipant> newParticipants,
+        List<Guid> removedParticipantIds,
+        List<LinkedParticipantDto> linkedParticipants)
+        : ICommand
     {
-        public UpdateHearingParticipantsCommand(Guid hearingId, List<ExistingParticipantDetails> existingParticipants,
-            List<NewParticipant> newParticipants, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants)
-        {
-            HearingId = hearingId;
-            ExistingParticipants = existingParticipants;
-            NewParticipants = [..newParticipants];
-            RemovedParticipantIds = removedParticipantIds;
-            LinkedParticipants = linkedParticipants ?? new List<LinkedParticipantDto>();
-        }
-
-        public List<ExistingParticipantDetails> ExistingParticipants { get; }
-        public List<NewParticipant> NewParticipants { get; }
-        public List<Guid> RemovedParticipantIds { get; }
-        public Guid HearingId { get; set; }
-        public List<LinkedParticipantDto> LinkedParticipants { get; }
+        public List<ExistingParticipantDetails> ExistingParticipants { get; } = existingParticipants;
+        public List<NewParticipant> NewParticipants { get; } = [..newParticipants];
+        public List<Guid> RemovedParticipantIds { get; } = removedParticipantIds;
+        public Guid HearingId { get; set; } = hearingId;
+        public List<LinkedParticipantDto> LinkedParticipants { get; } = linkedParticipants ?? new List<LinkedParticipantDto>();
     }
     
     public class UpdateHearingParticipantsCommandHandler(BookingsDbContext context, IHearingService hearingService)
@@ -38,7 +34,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include(x=> x.Participants).ThenInclude(x=> x.InterpreterLanguage)
-                .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(x => x.Endpoints).ThenInclude(x => x.ParticipantsLinked).ThenInclude(p => p.Person)
                 .Include(x=> x.Endpoints).ThenInclude(x=> x.InterpreterLanguage)
                 // keep the following includes for the screening entities - cannot auto include due to cyclic dependency
                 .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)

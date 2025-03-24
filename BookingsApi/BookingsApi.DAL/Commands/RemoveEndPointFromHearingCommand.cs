@@ -35,7 +35,8 @@
                     .ThenInclude(e => e.Screening)
                     .ThenInclude(s => s.ScreeningEntities)
                 .Include(x => x.Endpoints)
-                    .ThenInclude(x => x.DefenceAdvocate)
+                    .ThenInclude(x => x.ParticipantsLinked)
+                    .ThenInclude(p => p.Person)
                 .Include(x => x.Endpoints)
                     .ThenInclude(x=> x.InterpreterLanguage)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);

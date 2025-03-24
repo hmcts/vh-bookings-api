@@ -2,52 +2,32 @@ using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Extensions;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BookingsApi.DAL.Commands
 {
-    public class CreateVideoHearingCommand : ICommand
+    public class CreateVideoHearingCommand(
+        CreateVideoHearingRequiredDto requiredDto,
+        CreateVideoHearingOptionalDto optionalDto)
+        : ICommand
     {
-        public CreateVideoHearingCommand(CreateVideoHearingRequiredDto requiredDto, CreateVideoHearingOptionalDto optionalDto)
-        {
-            CaseType = requiredDto.CaseType;
-            ScheduledDateTime = requiredDto.ScheduledDateTime;
-            ScheduledDuration = requiredDto.ScheduledDuration;
-            Venue = requiredDto.Venue;
-            Cases = requiredDto.Cases;
-            ConferenceSupplier = requiredDto.Supplier;
-            
-            Participants = optionalDto.Participants ?? new List<NewParticipant>();
-            HearingRoomName = optionalDto.HearingRoomName;
-            OtherInformation = optionalDto.OtherInformation;
-            CreatedBy = optionalDto.CreatedBy;
-            
-            AudioRecordingRequired = optionalDto.AudioRecordingRequired;
-            Endpoints = optionalDto.Endpoints;
-            
-            LinkedParticipants = optionalDto.LinkedParticipants ?? new List<LinkedParticipantDto>();
-            JudiciaryParticipants = optionalDto.JudiciaryParticipants ?? new List<NewJudiciaryParticipant>();
-            IsMultiDayFirstHearing = optionalDto.IsMultiDayFirstHearing;
-
-            SourceId = optionalDto.SourceId;
-        }
-        
         public Guid NewHearingId { get; set; }
-        public CaseType CaseType { get; }
-        public DateTime ScheduledDateTime { get; }
-        public int ScheduledDuration { get; }
-        public HearingVenue Venue { get; }
-        public List<NewParticipant> Participants { get; }
-        public List<Case> Cases { get; }
-        public string HearingRoomName { get; }
-        public string OtherInformation { get; }
-        public string CreatedBy { get; }
-        public bool AudioRecordingRequired { get; }
-        public List<NewEndpoint> Endpoints { get; }
-        public Guid? SourceId { get; }
-        public List<LinkedParticipantDto> LinkedParticipants { get; }
-        public List<NewJudiciaryParticipant> JudiciaryParticipants { get; }
-        public bool IsMultiDayFirstHearing { get; }
-        public VideoSupplier? ConferenceSupplier { get; set; }
+        public CaseType CaseType { get; } = requiredDto.CaseType;
+        public DateTime ScheduledDateTime { get; } = requiredDto.ScheduledDateTime;
+        public int ScheduledDuration { get; } = requiredDto.ScheduledDuration;
+        public HearingVenue Venue { get; } = requiredDto.Venue;
+        public List<NewParticipant> Participants { get; } = optionalDto.Participants ?? new List<NewParticipant>();
+        public List<Case> Cases { get; } = requiredDto.Cases;
+        public string HearingRoomName { get; } = optionalDto.HearingRoomName;
+        public string OtherInformation { get; } = optionalDto.OtherInformation;
+        public string CreatedBy { get; } = optionalDto.CreatedBy;
+        public bool AudioRecordingRequired { get; } = optionalDto.AudioRecordingRequired;
+        public List<NewEndpoint> Endpoints { get; } = optionalDto.Endpoints;
+        public Guid? SourceId { get; } = optionalDto.SourceId;
+        public List<LinkedParticipantDto> LinkedParticipants { get; } = optionalDto.LinkedParticipants ?? new List<LinkedParticipantDto>();
+        public List<NewJudiciaryParticipant> JudiciaryParticipants { get; } = optionalDto.JudiciaryParticipants ?? new List<NewJudiciaryParticipant>();
+        public bool IsMultiDayFirstHearing { get; } = optionalDto.IsMultiDayFirstHearing;
+        public VideoSupplier? ConferenceSupplier { get; set; } = requiredDto.Supplier;
     }
 
     public class CreateVideoHearingCommandHandler(BookingsDbContext context, IHearingService hearingService)
@@ -84,31 +64,21 @@ namespace BookingsApi.DAL.Commands
             
             videoHearing.AddCases(command.Cases);
 
-            if (command.Endpoints is { Count: > 0 })
-            {
-                var dtos = command.Endpoints;
-                var newEndpoints = new List<Endpoint>();
-                foreach (var dto in dtos)
-                {
-                    var defenceAdvocate =
-                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail,
-                            videoHearing.GetParticipants());
-                    var endpoint = new Endpoint(dto.ExternalParticipantId, dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
-                    endpoint.UpdateExternalIds(dto.ExternalParticipantId, dto.MeasuresExternalId);
-                    var language = languages.GetLanguage(dto.LanguageCode, "Hearing");
-                    endpoint.UpdateLanguagePreferences(language, dto.OtherLanguage);
-                    newEndpoints.Add(endpoint);
-                }
-
-                videoHearing.AddEndpoints(newEndpoints);
-            }
+            if (command.Endpoints.Count != 0)
+                AddEndpointToHearing(command, videoHearing, languages);
             
             if (command.ConferenceSupplier.HasValue)
-            {
                 videoHearing.OverrideSupplier(command.ConferenceSupplier.Value);
-            }
+            
             videoHearing.UpdateBookingStatusJudgeRequirement();
             
+            AddScreenings(command, videoHearing);
+            await context.SaveChangesAsync();
+            command.NewHearingId = videoHearing.Id;
+        }
+
+        private void AddScreenings(CreateVideoHearingCommand command, VideoHearing videoHearing)
+        {
             foreach (var participantForScreening in command.Participants.Where(x=> x.Screening != null))
             {
                 var participant = videoHearing.GetParticipants().Single(x=> x.ExternalReferenceId == participantForScreening.ExternalReferenceId);
@@ -116,15 +86,38 @@ namespace BookingsApi.DAL.Commands
                 hearingService.UpdateParticipantScreeningRequirement(videoHearing, participant, screeningDto);
             }
 
-            
+
             foreach (var endpointForScreening in (command.Endpoints ?? []).Where(x=> x.Screening != null))
             {
                 var endpoint = videoHearing.GetEndpoints().Single(x=> x.ExternalReferenceId == endpointForScreening.ExternalParticipantId);
                 var screeningDto = endpointForScreening.Screening;
                 videoHearing.AssignScreeningForEndpoint(endpoint, screeningDto.ScreeningType, screeningDto.ProtectedFrom);
             }
-            await context.SaveChangesAsync();
-            command.NewHearingId = videoHearing.Id;
+        }
+
+        private static void AddEndpointToHearing(CreateVideoHearingCommand command, VideoHearing videoHearing, List<InterpreterLanguage> languages)
+        {
+            var newEndpoints = new List<Endpoint>();
+            foreach (var dto in command.Endpoints)
+            {
+                var endpoint = new Endpoint(dto.ExternalParticipantId, dto.DisplayName, dto.Sip, dto.Pin);
+
+                if (!dto.LinkedParticipantEmails.IsNullOrEmpty())
+                {
+                    var participantsLinked =
+                        EndpointParticipantHelper.CheckAndReturnParticipantsLinkedToEndpoint(dto.LinkedParticipantEmails, videoHearing.GetParticipants().ToList());
+                
+                    foreach (var participant in participantsLinked)
+                        endpoint.AddLinkedParticipant(participant);
+                }
+                
+                endpoint.UpdateExternalIds(dto.ExternalParticipantId, dto.MeasuresExternalId);
+                var language = languages.GetLanguage(dto.LanguageCode, "Hearing");
+                endpoint.UpdateLanguagePreferences(language, dto.OtherLanguage);
+                newEndpoints.Add(endpoint);
+            }
+
+            videoHearing.AddEndpoints(newEndpoints);
         }
     }
 }

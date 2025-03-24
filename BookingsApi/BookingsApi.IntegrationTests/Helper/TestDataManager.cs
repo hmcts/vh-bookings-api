@@ -182,7 +182,7 @@ namespace BookingsApi.IntegrationTests.Helper
                     var pin = r.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
                     videoHearing.AddEndpoints(new List<Endpoint>
                     {
-                        new(Guid.NewGuid().ToString(), $"new endpoint {i}", $"{sip}@hmcts.net", pin, null)
+                        new(Guid.NewGuid().ToString(), $"new endpoint {i}", $"{sip}@hmcts.net", pin)
                     });
                 }
             }
@@ -199,7 +199,7 @@ namespace BookingsApi.IntegrationTests.Helper
             videoHearing.AddEndpoints(
                 new List<Endpoint>
                 {
-                    new(Guid.NewGuid().ToString(),"new endpoint 01", Guid.NewGuid().ToString(), "pin", null),
+                    new(Guid.NewGuid().ToString(),"new endpoint 01", Guid.NewGuid().ToString(), "pin"),
                     new(Guid.NewGuid().ToString(),"new endpoint 02", Guid.NewGuid().ToString(), "pin", defenceAdvocate),
                 });
 

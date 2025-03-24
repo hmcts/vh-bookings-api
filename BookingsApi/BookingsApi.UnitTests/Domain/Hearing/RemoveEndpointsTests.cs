@@ -1,5 +1,5 @@
-﻿using BookingsApi.Domain;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using BookingsApi.Domain;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
@@ -11,9 +11,9 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddEndpoints(new List<Endpoint>
             {
-                new Endpoint(Guid.NewGuid().ToString(),"new endpoint1", Guid.NewGuid().ToString(), "pin", null),
-                new Endpoint(Guid.NewGuid().ToString(),"new endpoint2", Guid.NewGuid().ToString(), "pin", null),
-                new Endpoint(Guid.NewGuid().ToString(),"new endpoint2", Guid.NewGuid().ToString(), "pin", null)
+                new Endpoint(Guid.NewGuid().ToString(),"new endpoint1", Guid.NewGuid().ToString(), "pin"),
+                new Endpoint(Guid.NewGuid().ToString(),"new endpoint2", Guid.NewGuid().ToString(), "pin"),
+                new Endpoint(Guid.NewGuid().ToString(),"new endpoint2", Guid.NewGuid().ToString(), "pin")
             });
             
             var beforeRemoveCount = hearing.GetEndpoints().Count;

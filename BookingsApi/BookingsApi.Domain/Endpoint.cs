@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
@@ -13,7 +14,6 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
     public string DisplayName { get; set; }
     public string Sip { get; set; }
     public string Pin { get; set; }
-    public Participant DefenceAdvocate { get; private set; }
     public Guid HearingId { get; set; }
     public virtual Hearing Hearing { get; protected set; }
     public int? InterpreterLanguageId { get; protected set; }
@@ -23,25 +23,46 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
     public string MeasuresExternalId { get; protected set; }
     public Guid? ScreeningId { get; set; }
     public virtual Screening Screening { get; set; }
+    public virtual IList<Participant> ParticipantsLinked { get; set; } = new List<Participant>();
 
     protected Endpoint()
     {
     }
 
-    public Endpoint(string externalReferenceId, string displayName, string sip, string pin, Participant defenceAdvocate)
+    public Endpoint(string externalReferenceId, string displayName, string sip, string pin, Participant defenceAdvocate) : this(externalReferenceId, displayName, sip, pin)
+    {
+        if(defenceAdvocate == null)
+            throw new ArgumentNullException(nameof(defenceAdvocate));
+        AddLinkedParticipant(defenceAdvocate);
+    }
+    
+    public Endpoint(string externalReferenceId, string displayName, string sip, string pin)
     {
         DisplayName = displayName;
         Sip = sip;
         Pin = pin;
-        DefenceAdvocate = defenceAdvocate;
         ExternalReferenceId = externalReferenceId;
     }
 
-    public void AssignDefenceAdvocate(Participant defenceAdvocate)
+    public void AddLinkedParticipant(Participant participant)
     {
-        if (defenceAdvocate?.Id == DefenceAdvocate?.Id) return;
+        if(participant == null)
+            throw new ArgumentNullException(nameof(participant));
         
-        DefenceAdvocate = defenceAdvocate;
+        if (ParticipantsLinked.Any(x => x.Id == participant.Id))
+            return;
+        
+        ParticipantsLinked.Add(participant);
+        UpdatedDate = DateTime.UtcNow;
+    }
+    
+    public void RemoveLinkedParticipant(Participant participant)
+    {
+        var linkedParticipant = ParticipantsLinked.FirstOrDefault(x => x.Id == participant.Id);
+        if (linkedParticipant == null)
+            return;
+        
+        ParticipantsLinked.Remove(linkedParticipant);
         UpdatedDate = DateTime.UtcNow;
     }
 

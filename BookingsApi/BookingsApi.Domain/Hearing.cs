@@ -135,17 +135,14 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException(nameof(endpoint),
                     $"Endpoint {endpoint.Sip} already exists in the hearing");
             }
-
-            Participant defenceAdvocate = null;
-
-            if (endpoint.DefenceAdvocate != null)
-            {
-                defenceAdvocate = Participants.Single(x => x.Id == endpoint.DefenceAdvocate.Id);
-            }
-
-            var newEndpoint = new Endpoint(endpoint.ExternalReferenceId, endpoint.DisplayName, endpoint.Sip, endpoint.Pin, defenceAdvocate);
+            
+            var newEndpoint = new Endpoint(endpoint.ExternalReferenceId, endpoint.DisplayName, endpoint.Sip, endpoint.Pin);
             newEndpoint.UpdateExternalIds(endpoint.ExternalReferenceId, endpoint.MeasuresExternalId);
             newEndpoint.UpdateLanguagePreferences(endpoint.InterpreterLanguage, endpoint.OtherLanguage);
+            
+            foreach (var participant in endpoint.ParticipantsLinked)
+                newEndpoint.AddLinkedParticipant(participant);
+            
             Endpoints.Add(newEndpoint);
             UpdatedDate = DateTime.UtcNow;
         }
@@ -351,9 +348,8 @@ namespace BookingsApi.Domain
             if (validateParticipantCount) ValidateHostCount();
 
             var existingParticipant = Participants.Single(x => x.Person.ContactEmail == participant.Person.ContactEmail);
-            var endpoint = Endpoints.SingleOrDefault(e => e.DefenceAdvocate != null && e.DefenceAdvocate.Id == participant.Id);
-            endpoint?.AssignDefenceAdvocate(null);
-
+            
+            participant.Endpoint?.RemoveLinkedParticipant(participant);
             participant.LinkedParticipants.Clear();
             participant.Screening?.ScreeningEntities.Clear();
 
@@ -399,8 +395,12 @@ namespace BookingsApi.Domain
         public void RemoveEndpoint(Endpoint endpoint)
         {
             ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveAnEndpointCloseToStartTime);
-            endpoint.AssignDefenceAdvocate(null);
-
+            endpoint.ParticipantsLinked.Clear();
+            
+            var participants = Participants.Where(p => p.EndpointId == endpoint.Id).ToList();
+            foreach (var participant in participants)
+                participant.EndpointId = null; 
+            
             Participants
                 .Where(existingPat => existingPat.Screening != null)
                 .ToList()

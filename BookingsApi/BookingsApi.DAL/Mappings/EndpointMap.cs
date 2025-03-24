@@ -15,12 +15,16 @@ namespace BookingsApi.DAL.Mappings
             builder.Property(x=> x.ExternalReferenceId);
             builder.Property(x => x.MeasuresExternalId);
             builder.HasOne<Hearing>("Hearing").WithMany("Endpoints").HasForeignKey(x => x.HearingId);
-            builder.HasOne(x => x.DefenceAdvocate);
+
             builder.HasOne(x => x.InterpreterLanguage).WithMany().HasForeignKey(x => x.InterpreterLanguageId).IsRequired(false);
             
             builder.HasOne(participant => participant.Screening)
                 .WithOne(screening => screening.Endpoint)
                 .HasForeignKey<Screening>(screening => screening.EndpointId);
+            
+            builder.HasMany(x => x.ParticipantsLinked)
+                .WithOne(x => x.Endpoint)
+                .HasForeignKey(participant => participant.EndpointId);
         }
     }
 }

@@ -28,6 +28,11 @@ namespace BookingsApi.DAL.Mappings
             builder.HasOne(participant => participant.Screening)
                 .WithOne(screening => screening.Participant)
                 .HasForeignKey<Screening>(screening => screening.ParticipantId);
+            
+            builder.HasOne(participant => participant.Endpoint)
+                .WithMany(endpoint => endpoint.ParticipantsLinked)
+                .HasForeignKey(p => p.EndpointId)
+                .OnDelete(DeleteBehavior.NoAction); 
         }
     }
 

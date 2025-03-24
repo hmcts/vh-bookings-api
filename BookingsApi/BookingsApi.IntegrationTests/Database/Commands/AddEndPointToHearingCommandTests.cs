@@ -29,7 +29,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 DisplayName = "displayName",
                 Sip = "sip",
                 Pin = "pin",
-                ContactEmail = null
+                LinkedParticipantEmails = null
             };
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(
                 new AddEndPointToHearingCommand(hearingId, newEndpoint)));
@@ -52,7 +52,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 DisplayName = displayName,
                 Sip = sip,
                 Pin = pin,
-                ContactEmail = null
+                LinkedParticipantEmails = null
             };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));
@@ -89,7 +89,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 DisplayName = displayName,
                 Sip = sip,
                 Pin = pin,
-                ContactEmail = dA.Person.ContactEmail
+                LinkedParticipantEmails = [dA.Person.ContactEmail]
             };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));
@@ -106,8 +106,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             newlyAddedEndPointInDb.DisplayName.Should().Be(displayName);
             newlyAddedEndPointInDb.Pin.Should().Be(pin);
             newlyAddedEndPointInDb.Sip.Should().Be(sip);
-            newlyAddedEndPointInDb.DefenceAdvocate.Should().NotBeNull();
-            newlyAddedEndPointInDb.DefenceAdvocate.Id.Should().Be(dA.Id);
+            newlyAddedEndPointInDb.ParticipantsLinked.Should().NotBeEmpty();
+            newlyAddedEndPointInDb.ParticipantsLinked.Should().Contain(e => e.Id == dA.Id);
         }
     }
 }

@@ -30,7 +30,7 @@ public static class NewEndpointGenerator
                 Pin = pin,
                 Sip = $"{sip}{sipAddressStem}",
                 DisplayName = endpointRequest.DisplayName,
-                ContactEmail = endpointRequest.DefenceAdvocateContactEmail,
+                LinkedParticipantEmails = endpointRequest.LinkedParticipantEmails,
                 OtherLanguage = endpointRequest.OtherLanguage,
                 LanguageCode = endpointRequest.InterpreterLanguageCode,
                 Screening = endpointRequest.Screening,
@@ -48,7 +48,7 @@ public class NewEndpointRequestDto
     public string ExternalReferenceId { get; set; }
     public string MeasuresExternalId { get; set; }
     public string DisplayName { get; set; }
-    public string DefenceAdvocateContactEmail { get; set; }
+    public List<string> LinkedParticipantEmails { get; set; }
     public string InterpreterLanguageCode { get; set; }
     public string OtherLanguage { get; set; }
     public ScreeningDto Screening { get; set; }

@@ -9,7 +9,7 @@ public class UpdateExternalIdsTests
     [SetUp]
     public void Setup()
     {
-        _endpoint = new Endpoint(Guid.NewGuid().ToString(),"Original DisplayName", "sip@videohearings.net", "1234", null);
+        _endpoint = new Endpoint(Guid.NewGuid().ToString(),"Original DisplayName", "sip@videohearings.net", "1234");
     }
     
     [Test]

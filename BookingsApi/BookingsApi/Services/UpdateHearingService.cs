@@ -67,18 +67,25 @@ namespace BookingsApi.Services
             var sipAddressStem = _endpointService.GetSipAddressStem((BookingSupplier)hearing.ConferenceSupplier);
             foreach (var endpointToAdd in request.NewEndpoints)
             {
-                var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
-                    sipAddressStem);
+                var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator, sipAddressStem);
 
                 await _endpointService.AddEndpoint(hearing.Id, newEp);
             }
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
             {
+                var participantsLinked = endpointToUpdate.LinkedParticipantEmails;
+                participantsLinked.Add(endpointToUpdate.DefenceAdvocateContactEmail);
+                
                 await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id,
-                    new UpdateEndpointDto(endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName,
-                        endpointToUpdate.InterpreterLanguageCode, endpointToUpdate.OtherLanguage,
-                        endpointToUpdate.ExternalParticipantId, endpointToUpdate.MeasuresExternalId,endpointToUpdate.Screening?.MapToDalDto()));
+                    new UpdateEndpointDto(participantsLinked, 
+                        endpointToUpdate.DisplayName, 
+                        endpointToUpdate.InterpreterLanguageCode, 
+                        endpointToUpdate.OtherLanguage,
+                        endpointToUpdate.ExternalParticipantId,
+                        endpointToUpdate.MeasuresExternalId,
+                        endpointToUpdate.Screening?.MapToDalDto()
+                    ));
             }
 
             foreach (var endpointIdToRemove in request.RemovedEndpointIds)

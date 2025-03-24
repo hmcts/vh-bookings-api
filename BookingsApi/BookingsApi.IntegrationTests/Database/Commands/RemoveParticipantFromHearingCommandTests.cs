@@ -4,6 +4,7 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
+using Microsoft.IdentityModel.Tokens;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
@@ -71,10 +72,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var beforeCount = seededHearing.GetParticipants().Count;
 
-            var endpoint = seededHearing.GetEndpoints().First(ep => ep.DefenceAdvocate != null);
-            _personsToRemove.Add(endpoint.DefenceAdvocate.Person.ContactEmail);
+            var endpoint = seededHearing.GetEndpoints().First(ep => !ep.ParticipantsLinked.IsNullOrEmpty());
+            var linkedParticpant = endpoint.ParticipantsLinked[0];
+            _personsToRemove.Add(linkedParticpant.Person.ContactEmail);
             await _commandHandler.Handle(
-                new RemoveParticipantFromHearingCommand(seededHearing.Id, endpoint.DefenceAdvocate));
+                new RemoveParticipantFromHearingCommand(seededHearing.Id, linkedParticpant));
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));

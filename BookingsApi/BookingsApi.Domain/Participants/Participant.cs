@@ -39,6 +39,9 @@ public abstract class Participant() : ParticipantBase, IScreenableEntity
 
     public Guid? ScreeningId { get; set; }
     public virtual Screening Screening { get; set; }
+    
+    public Guid? EndpointId { get; set; }
+    public virtual Endpoint Endpoint { get; set; }
 
     protected virtual void ValidateParticipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
     {

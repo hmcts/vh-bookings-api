@@ -72,7 +72,9 @@ namespace BookingsApi.DAL.Helper
             var endpointsToClone = hearing.GetEndpoints().Select(x => new NewEndpointRequestDto()
             {
                 DisplayName = x.DisplayName,
-                DefenceAdvocateContactEmail = x.DefenceAdvocate?.Person?.ContactEmail,
+                LinkedParticipantEmails = x.ParticipantsLinked?
+                    .Select(p => p.Person.ContactEmail)
+                    .ToList() ?? new List<string>(),
                 ExternalReferenceId = x.ExternalReferenceId,
                 MeasuresExternalId = x.MeasuresExternalId,
                 Screening = x.Screening.MapToScreeningDto(),
