@@ -5,4 +5,4 @@ java:
   releaseNameOverride: ${RELEASE_NAME}
   disableTraefikTls: false
   environment:
-    SERVICEBUSQUEUE__QUEUENAME: booking
+    SERVICEBUSQUEUE__QUEUENAME: booking-will
