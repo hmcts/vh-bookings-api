@@ -19,7 +19,7 @@ namespace BookingsApi.Contract.V2.Requests
         /// <summary>
         /// Participants linked to the endpoint
         /// </summary>
-        public IList<string> LinkedParticipantEmails { get; set; } = new List<string>();
+        public List<string> LinkedParticipantEmails { get; set; } = new ();
         
         /// <summary>
         ///     The code of the interpreter language (optional)

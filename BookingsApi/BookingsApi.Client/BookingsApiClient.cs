@@ -936,7 +936,7 @@ namespace BookingsApi.Client
         /// <summary>
         /// Get details for a given hearing
         /// </summary>
-        /// <param name="hearingId">ID for a hearing</param>
+        /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<HearingDetailsResponseV2> GetHearingDetailsByIdV2Async(System.Guid hearingId);
@@ -945,7 +945,7 @@ namespace BookingsApi.Client
         /// <summary>
         /// Get details for a given hearing
         /// </summary>
-        /// <param name="hearingId">ID for a hearing</param>
+        /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<HearingDetailsResponseV2> GetHearingDetailsByIdV2Async(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
@@ -7662,7 +7662,7 @@ namespace BookingsApi.Client
         /// <summary>
         /// Get details for a given hearing
         /// </summary>
-        /// <param name="hearingId">ID for a hearing</param>
+        /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<HearingDetailsResponseV2> GetHearingDetailsByIdV2Async(System.Guid hearingId)
@@ -7674,7 +7674,7 @@ namespace BookingsApi.Client
         /// <summary>
         /// Get details for a given hearing
         /// </summary>
-        /// <param name="hearingId">ID for a hearing</param>
+        /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<HearingDetailsResponseV2> GetHearingDetailsByIdV2Async(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
