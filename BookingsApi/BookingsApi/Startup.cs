@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 namespace BookingsApi
 {
@@ -33,8 +34,8 @@ namespace BookingsApi
             var instrumentationKey = Configuration["ApplicationInsights:ConnectionString"];
             services.AddApiVersioning();
             services.AddControllers();
-
-            if (String.IsNullOrWhiteSpace(instrumentationKey))
+            
+            if(String.IsNullOrWhiteSpace(instrumentationKey))
                 Console.WriteLine("Application Insights Instrumentation Key not found");
             else
                 services.AddOpenTelemetry()
@@ -45,7 +46,14 @@ namespace BookingsApi
                             .AddAttributes(new Dictionary<string, object>
                                 { ["service.instance.id"] = Environment.MachineName });
                     })
-                    .UseAzureMonitor(options => options.ConnectionString = instrumentationKey);
+                    .UseAzureMonitor(options => options.ConnectionString = instrumentationKey) 
+                    .WithMetrics()
+                    .WithTracing(tracerProvider =>
+                    {
+                        tracerProvider
+                            .AddAspNetCoreInstrumentation(options => options.RecordException = true)
+                            .AddHttpClientInstrumentation();
+                    });
             
             var envName = Configuration["Services:BookingsApiResourceId"]; // any service url will do here since we only care about the env name
             services.AddSingleton<IFeatureToggles>(new FeatureToggles(Configuration["LaunchDarkly:SdkKey"], envName));
