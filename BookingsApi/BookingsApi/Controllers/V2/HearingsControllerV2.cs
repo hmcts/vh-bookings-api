@@ -3,6 +3,7 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V2;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookingsApi.Controllers.V2
 {
@@ -13,6 +14,7 @@ namespace BookingsApi.Controllers.V2
     [Route(template: "v{version:apiVersion}/hearings")]
     [ApiController]
     [ApiVersion("2.0")]
+    [AllowAnonymous]    
     public class HearingsControllerV2(
         IQueryHandler queryHandler,
         IBookingService bookingService,
@@ -79,7 +81,7 @@ namespace BookingsApi.Controllers.V2
         /// <summary>
         /// Get details for a given hearing
         /// </summary>
-        /// <param name="hearingId">Id for a hearing</param>
+        /// <param name="hearingId">ID for a hearing</param>
         /// <returns>Hearing details</returns>
         [HttpGet("{hearingId}")]
         [OpenApiOperation("GetHearingDetailsByIdV2")]

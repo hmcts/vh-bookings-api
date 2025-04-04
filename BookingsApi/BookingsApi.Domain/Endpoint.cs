@@ -31,8 +31,7 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
 
     public Endpoint(string externalReferenceId, string displayName, string sip, string pin, Participant defenceAdvocate) : this(externalReferenceId, displayName, sip, pin)
     {
-        if(defenceAdvocate == null)
-            throw new ArgumentNullException(nameof(defenceAdvocate));
+        ArgumentNullException.ThrowIfNull(defenceAdvocate);
         AddLinkedParticipant(defenceAdvocate);
     }
     
@@ -46,9 +45,7 @@ public class Endpoint : TrackableEntity<Guid>, IScreenableEntity
 
     public void AddLinkedParticipant(Participant participant)
     {
-        if(participant == null)
-            throw new ArgumentNullException(nameof(participant));
-        
+        ArgumentNullException.ThrowIfNull(participant);
         if (ParticipantsLinked.Any(x => x.Id == participant.Id))
             return;
         
