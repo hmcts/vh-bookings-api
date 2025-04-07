@@ -17,7 +17,7 @@ namespace BookingsApi.Infrastructure.Services
                 DisplayName = source.DisplayName,
                 Sip = source.Sip,
                 Pin = source.Pin,
-                DefenceAdvocateContactEmail = source.DefenceAdvocate?.Person.ContactEmail,
+                ParticipantsLinked = source.ParticipantsLinked.Select(x => x.Person.ContactEmail).ToList(),
                 Role = source.GetEndpointConferenceRole(participants, endpoints)
             };
         }

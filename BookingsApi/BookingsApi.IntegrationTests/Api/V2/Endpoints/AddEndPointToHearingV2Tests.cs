@@ -45,6 +45,41 @@ public class AddEndPointToHearingV2Tests : ApiTest
     }
     
     [Test]
+    public async Task should_add_endpoint_to_hearing_with_multiple_participants_linked()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearingV2(options => { options.Case = new Case("Case1 Num", "Case1 Name"); },
+            BookingStatus.Created);
+
+        using var client = Application.CreateClient();
+        var bookingsApiClient = BookingsApiClient.GetClient(client);
+        var participants = hearing.GetParticipants().ToList();
+        var request = new EndpointRequestV2()
+        {
+            DisplayName = "add-endpoint",
+            LinkedParticipantEmails = new List<string> { participants[0].Person.ContactEmail, participants[1].Person.ContactEmail, participants[2].Person.ContactEmail, participants[3].Person.ContactEmail }
+        };
+        
+        // act
+        var response = await bookingsApiClient.AddEndPointToHearingV2Async(hearing.Id, request);
+        
+        // assert
+        response.Should().NotBeNull();
+        response.DisplayName.Should().Be(request.DisplayName);
+        
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearing.Id);
+        Array.Exists(messages, x => x.IntegrationEvent is EndpointAddedIntegrationEvent).Should().BeTrue();
+        
+        var endpointAddedIntegrationEvent = messages.First(x => x.IntegrationEvent is EndpointAddedIntegrationEvent).IntegrationEvent as EndpointAddedIntegrationEvent;
+        endpointAddedIntegrationEvent!.Endpoint.DisplayName.Should().Be(request.DisplayName);
+        endpointAddedIntegrationEvent.Endpoint.Role.Should().Be(ConferenceRole.Guest, "Endpoint should be a guest when no screening is required in hearing");
+        // validate linked participants
+        endpointAddedIntegrationEvent.Endpoint.ParticipantsLinked.Should().BeEquivalentTo(request.LinkedParticipantEmails);
+        Array.Exists(messages, x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent).Should().BeTrue();
+    }
+    
+    [Test]
     public async Task should_return_validation_problem_when_adding_endpoint_with_invalid_data()
     {
         // arrange

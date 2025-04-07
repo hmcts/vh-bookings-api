@@ -1,5 +1,4 @@
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2.Extensions;
 
 namespace BookingsApi.Mappings.V2;
@@ -50,19 +49,21 @@ internal static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
             ExternalReferenceId = x.ExternalParticipantId,
             MeasuresExternalId = x.MeasuresExternalId,
             DisplayName = x.DisplayName,
-            DefenceAdvocateContactEmail = x.DefenceAdvocateContactEmail,
+            LinkedParticipantEmails = GetLinkedParticipants(x),
             OtherLanguage = x.OtherLanguage,
             InterpreterLanguageCode = x.InterpreterLanguageCode,
             Screening = x.Screening?.MapToDalDto()
-            
         }).ToList();
+        
         return NewEndpointGenerator.GenerateNewEndpoints(dtos, randomGenerator, sipAddressStem);
     }
 
+    private static List<string> GetLinkedParticipants(EndpointRequestV2 x)
+        => String.IsNullOrWhiteSpace(x.DefenceAdvocateContactEmail) 
+            ? x.LinkedParticipantEmails
+            : new List<string> {x.DefenceAdvocateContactEmail}.Concat(x.LinkedParticipantEmails).ToList();
+    
+
     private static List<LinkedParticipantDto> MapLinkedParticipants(BookNewHearingRequestV2 requestV2)
-    {
-        var dto = LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(requestV2.LinkedParticipants)
-            .ToList();
-        return dto;
-    }
+        => LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(requestV2.LinkedParticipants).ToList();
 }

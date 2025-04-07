@@ -120,8 +120,8 @@ public class IntegrationEventTests
             
         hearing.AddEndpoints(new List<Endpoint>
         {
-            new Endpoint(Guid.NewGuid().ToString(),"one", Guid.NewGuid().ToString(), "1234", null),
-            new Endpoint(Guid.NewGuid().ToString(),"two", Guid.NewGuid().ToString(), "1234", representative)
+            new (Guid.NewGuid().ToString(),"one", Guid.NewGuid().ToString(), "1234"),
+            new (Guid.NewGuid().ToString(),"two", Guid.NewGuid().ToString(), "1234", representative)
         });
 
         var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
@@ -141,9 +141,8 @@ public class IntegrationEventTests
     public async Task Should_publish_message_to_queue_when_EndpointAddedIntegrationEvent_is_raised()
     {
         var hearing = new VideoHearingBuilder().Build();
-        hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "one", "sip", "1234", null));
-        var endpointAddedIntegrationEvent =
-            new EndpointAddedIntegrationEvent(hearing, hearing.GetEndpoints().First());
+        hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "one", "sip", "1234"));
+        var endpointAddedIntegrationEvent = new EndpointAddedIntegrationEvent(hearing, hearing.GetEndpoints().First());
         await _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
 
         _serviceBusQueueClient.Count.Should().Be(1);
@@ -180,8 +179,7 @@ public class IntegrationEventTests
     [Test]
     public async Task Should_publish_message_to_queue_when_EndpointUpdatedIntegrationEvent_is_raised()
     {
-        var endpointUpdatedIntegrationEvent =
-            new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name", "sol1@hmcts.net", ConferenceRole.Host);
+        var endpointUpdatedIntegrationEvent = new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name", ["sol1@hmcts.net"], ConferenceRole.Host);
         await _eventPublisher.PublishAsync(endpointUpdatedIntegrationEvent);
 
         _serviceBusQueueClient.Count.Should().Be(1);

@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Net;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.RefData;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
+using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
+using BookingsApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Testing.Common.Assertions;
-using BookingsApi.Services;
-using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
-using BookingsApi.Infrastructure.Services.Publishers;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
@@ -300,7 +300,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             }
 
             hearing.AddEndpoints(new List<Endpoint>
-                { new Endpoint(Guid.NewGuid().ToString(), "new endpoint", Guid.NewGuid().ToString(), "pin", null) });
+                { new (Guid.NewGuid().ToString(), "new endpoint", Guid.NewGuid().ToString(), "pin") });
 
             return hearing;
         }

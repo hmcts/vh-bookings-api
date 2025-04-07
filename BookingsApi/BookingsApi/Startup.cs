@@ -44,7 +44,7 @@ namespace BookingsApi
                         r.AddService("vh-bookings-api")
                             .AddTelemetrySdk()
                             .AddAttributes(new Dictionary<string, object>
-                            { ["service.instance.id"] = Environment.MachineName });
+                                { ["service.instance.id"] = Environment.MachineName });
                     })
                     .UseAzureMonitor(options => options.ConnectionString = instrumentationKey) 
                     .WithMetrics()

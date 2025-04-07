@@ -16,9 +16,9 @@ public class UpdateScreeningListTests
     [SetUp]
     public void Initialise()
     {
-        _endpoint1 = new Endpoint(Guid.NewGuid().ToString(),"EP 1", "ep1@videohearings.net", "1", null);
-        _endpoint2 = new Endpoint(Guid.NewGuid().ToString(),"EP 2", "ep2@videohearings.net", "2", null);
-        _endpoint3 = new Endpoint(Guid.NewGuid().ToString(),"EP 3", "ep3@videohearings.net", "3", null);
+        _endpoint1 = new Endpoint(Guid.NewGuid().ToString(),"EP 1", "ep1@videohearings.net", "1");
+        _endpoint2 = new Endpoint(Guid.NewGuid().ToString(),"EP 2", "ep2@videohearings.net", "2");
+        _endpoint3 = new Endpoint(Guid.NewGuid().ToString(),"EP 3", "ep3@videohearings.net", "3");
         var participants = new ParticipantBuilder().Build();
         _participant1 = participants[0];
         _participant2 = participants[1];

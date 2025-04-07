@@ -9,7 +9,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         {
             var hearing = new VideoHearingBuilder().Build();
             var beforeAddCount = hearing.GetEndpoints().Count;
-            hearing.AddEndpoint(new BookingsApi.Domain.Endpoint(Guid.NewGuid().ToString(),"DisplayName", "sip@address.com", "1111", null));
+            hearing.AddEndpoint(new BookingsApi.Domain.Endpoint(Guid.NewGuid().ToString(),"DisplayName", "sip@address.com", "1111"));
             var afterAddCount = hearing.GetEndpoints().Count;
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
         }
@@ -18,7 +18,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         public void should_not_add_existing_endpoint()
         {
             var hearing = new VideoHearingBuilder().Build();
-            var ep = new BookingsApi.Domain.Endpoint(Guid.NewGuid().ToString(),"DisplayName", "sip@address.com", "1111", null);
+            var ep = new BookingsApi.Domain.Endpoint(Guid.NewGuid().ToString(),"DisplayName", "sip@address.com", "1111");
             hearing.AddEndpoint(ep);
             var beforeAddCount = hearing.GetEndpoints().Count;
             Action action = () => hearing.AddEndpoint(ep);

@@ -24,5 +24,7 @@
   <ItemGroup>
     <Compile Remove="Migrations\20240913141057_AddScreening.cs" />
     <Compile Remove="Migrations\20240913141057_AddScreening.Designer.cs" />
+    <Compile Remove="Migrations\20250318152353_AddParticipantEndpointOnetoManyRelation.cs" />
+    <Compile Remove="Migrations\20250318152353_AddParticipantEndpointOnetoManyRelation.Designer.cs" />
   </ItemGroup>
 </Project>

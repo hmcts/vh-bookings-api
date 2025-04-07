@@ -10,7 +10,7 @@ public class AssignScreeningForEndpointTests
     public void should_throw_exception_if_endpoint_participant_from_themself()
     {
         var hearing = new VideoHearingBuilder().Build();
-        var endpoint = new Endpoint(Guid.NewGuid().ToString(), "display name", "defence", "sip", null);
+        var endpoint = new Endpoint(Guid.NewGuid().ToString(), "display name", "defence", "sip");
         hearing.AddEndpoint(endpoint);
         
         Action action = () => hearing.AssignScreeningForEndpoint(endpoint, ScreeningType.Specific, [endpoint.ExternalReferenceId]);

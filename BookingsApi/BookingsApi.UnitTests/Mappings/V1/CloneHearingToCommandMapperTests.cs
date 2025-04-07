@@ -29,7 +29,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
                 .WithJudiciaryJudge()
                 .WithJudiciaryPanelMember()
                 .Build();
-            hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "Endpoint1", $"{Guid.NewGuid():N}@hmcts.net", "1234", null));
+            hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "Endpoint1", $"{Guid.NewGuid():N}@hmcts.net", "1234"));
             hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "Endpoint2", $"{Guid.NewGuid():N}@hmcts.net", "2345",
                 hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative)));
             hearing.AddCase("HBS/1234","Case 1 Test", true);
@@ -40,8 +40,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
 
             var newDate = hearing.ScheduledDateTime.AddDays(1);
 
-            var command = CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, _randomGenerator,
-                SipAddressStem, totalDays, hearingDay, duration);
+            var command = CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, _randomGenerator, SipAddressStem, totalDays, hearingDay, duration);
 
             command.HearingRoomName.Should().Be(hearing.HearingRoomName);
             command.OtherInformation.Should().Be(hearing.OtherInformation);
@@ -81,9 +80,10 @@ namespace BookingsApi.UnitTests.Mappings.V1
             command.Endpoints.Count.Should().Be(hearing.GetEndpoints().Count);
             foreach (var ep in command.Endpoints)
             {
-                hearing.GetEndpoints().SingleOrDefault(x =>
+               hearing.GetEndpoints().SingleOrDefault(x =>
                     x.DisplayName == ep.DisplayName &&
-                    x.DefenceAdvocate?.Person?.ContactEmail == ep.ContactEmail).Should().NotBeNull();
+                    x.ParticipantsLinked.FirstOrDefault()?.Person?.ContactEmail == ep.LinkedParticipantEmails.FirstOrDefault())
+                   .Should().NotBeNull();
             }
             command.AudioRecordingRequired.Should().Be(hearing.AudioRecordingRequired);
             

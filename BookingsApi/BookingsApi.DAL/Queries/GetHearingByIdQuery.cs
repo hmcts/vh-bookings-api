@@ -29,7 +29,7 @@ namespace BookingsApi.DAL.Queries
                 .Include(x=> x.HearingCases).ThenInclude(x=> x.Case)
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue)
-                .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate).ThenInclude(x => x.Person)
+                .Include(x => x.Endpoints).ThenInclude(x => x.ParticipantsLinked).ThenInclude(x => x.Person)
                 .Include(x=> x.Endpoints).ThenInclude(x=> x.InterpreterLanguage)
                 .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser)
                 .Include(x => x.JudiciaryParticipants).ThenInclude(x => x.JudiciaryPerson)

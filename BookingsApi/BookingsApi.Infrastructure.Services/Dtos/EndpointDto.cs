@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace BookingsApi.Infrastructure.Services.Dtos
 {
     public class EndpointDto
@@ -5,7 +7,7 @@ namespace BookingsApi.Infrastructure.Services.Dtos
         public string DisplayName { get; set; }
         public string Sip { get; set; }
         public string Pin { get; set; }
-        public string DefenceAdvocateContactEmail { get; set; }
+        public List<string> ParticipantsLinked { get; set; } = new();
         public ConferenceRole Role { get; set; }
     }
 

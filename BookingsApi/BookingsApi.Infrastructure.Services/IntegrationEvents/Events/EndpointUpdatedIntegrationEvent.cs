@@ -1,24 +1,20 @@
 using System;
+using System.Collections.Generic;
 using BookingsApi.Infrastructure.Services.Dtos;
 
-namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
+namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+
+public class EndpointUpdatedIntegrationEvent(
+    Guid hearingId,
+    string sip,
+    string displayName,
+    List<string> participantsLinked,
+    ConferenceRole role)
+    : IIntegrationEvent
 {
-    public class EndpointUpdatedIntegrationEvent : IIntegrationEvent
-    {
-        public EndpointUpdatedIntegrationEvent(Guid hearingId, string sip, string displayName,
-            string defenceAdvocateContactEmail, ConferenceRole role)
-        {
-            HearingId = hearingId;
-            Sip = sip;
-            DisplayName = displayName;
-            DefenceAdvocate = defenceAdvocateContactEmail;
-            Role = role;
-        }
-        
-        public Guid HearingId { get; }
-        public string Sip { get; }
-        public string DisplayName { get; }
-        public string DefenceAdvocate { get; }
-        public ConferenceRole Role { get; }
-    }
+    public Guid HearingId { get; } = hearingId;
+    public string Sip { get; } = sip;
+    public string DisplayName { get; } = displayName;
+    public List<string> ParticipantsLinked { get; } = participantsLinked;
+    public ConferenceRole Role { get; } = role;
 }

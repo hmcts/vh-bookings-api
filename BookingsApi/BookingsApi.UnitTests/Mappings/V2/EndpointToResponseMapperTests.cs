@@ -1,4 +1,5 @@
-﻿using BookingsApi.Common.Services;
+﻿using System.Collections.Generic;
+using BookingsApi.Common.Services;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain;
@@ -17,8 +18,10 @@ namespace BookingsApi.UnitTests.Mappings.V2
             var randomGen = new Mock<IRandomGenerator>();
             var endpointRequest = new EndpointRequestV2
             {
-                DefenceAdvocateContactEmail = "TestUserName", DisplayName = "TestDispName",
-                Screening = new ScreeningRequest()
+                DefenceAdvocateContactEmail = "TestUserName", 
+                DisplayName = "TestDispName",
+                LinkedParticipantEmails = new List<string> {"email1.com", "email2.com"},
+                Screening = new ScreeningRequest
                 {
                     Type = ScreeningType.Specific,
                     ProtectedFrom = ["email1.com","endpoint1"]
@@ -30,7 +33,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             result.Should().NotBeNull();
             result.Sip.EndsWith(sipAddStream).Should().BeTrue();
             result.DisplayName.Should().Be(endpointRequest.DisplayName);
-            result.ContactEmail.Should().Be(endpointRequest.DefenceAdvocateContactEmail);
+            result.LinkedParticipantEmails.Should().Contain(endpointRequest.DefenceAdvocateContactEmail).And.Contain(endpointRequest.LinkedParticipantEmails);
             result.Screening.ScreeningType.Should().Be(BookingsApi.Domain.Enumerations.ScreeningType.Specific);
             result.Screening.ProtectedFrom.Should().BeEquivalentTo(endpointRequest.Screening.ProtectedFrom);
         }
@@ -38,9 +41,10 @@ namespace BookingsApi.UnitTests.Mappings.V2
         [Test]
         public void Should_map_endpoint_to_endpoint_response()
         {
-            var participant = new ParticipantBuilder().Build();
+            var participants = new ParticipantBuilder().Build();
 
-            var source = new Endpoint(Guid.NewGuid().ToString(), "displayName", "sip", "pin", participant[0]);
+            var source = new Endpoint(Guid.NewGuid().ToString(), "displayName", "sip", "pin");
+            source.AddLinkedParticipant(participants[0]);
             var interpreterLanguage = new InterpreterLanguage(1, "spa", "Spanish", "WelshValue", InterpreterType.Verbal, true);
             source.UpdateLanguagePreferences(interpreterLanguage, null);
             
@@ -51,7 +55,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             result.DisplayName.Should().Be(source.DisplayName);
             result.Sip.Should().Be(source.Sip);
             result.Pin.Should().Be(source.Pin);
-            result.DefenceAdvocateId.Should().Be(participant[0].Id);
+            result.LinkedParticipantIds.Should().Contain(participants[0].Id);
             result.InterpreterLanguage.Should().NotBeNull();
             result.InterpreterLanguage.Should().BeEquivalentTo(InterpreterLanguageToResponseMapperV2.MapInterpreterLanguageToResponse(interpreterLanguage));
         }
@@ -60,9 +64,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
         public void Should_map_endpoint_without_interpreter_language_to_endpoint_response()
         {
             // Arrange
-            var participant = new ParticipantBuilder().Build();
-
-            var endpoint = new Endpoint(Guid.NewGuid().ToString(), "displayName", "sip", "pin", participant[0]);
+            var endpoint = new Endpoint(Guid.NewGuid().ToString(), "displayName", "sip", "pin");
             endpoint.UpdateLanguagePreferences(null, "OtherLanguage");
             
             // Act

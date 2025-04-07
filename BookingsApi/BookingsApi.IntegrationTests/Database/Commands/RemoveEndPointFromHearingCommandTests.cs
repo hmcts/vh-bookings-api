@@ -1,6 +1,7 @@
 ﻿using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -63,7 +64,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var beforeCount = seededHearing.GetEndpoints().Count;
 
-            var endpoint = seededHearing.GetEndpoints().FirstOrDefault(ep => ep.DefenceAdvocate != null);
+            var endpoint = seededHearing.GetEndpoints().FirstOrDefault(ep => !ep.ParticipantsLinked.IsNullOrEmpty());
             await _commandHandler.Handle(new RemoveEndPointFromHearingCommand(seededHearing.Id, endpoint.Id));
 
             var returnedVideoHearing =

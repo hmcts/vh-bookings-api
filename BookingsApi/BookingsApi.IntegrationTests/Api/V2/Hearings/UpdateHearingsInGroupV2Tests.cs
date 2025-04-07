@@ -11,6 +11,7 @@ using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
 using FizzWare.NBuilder;
+using Microsoft.IdentityModel.Tokens;
 using Testing.Common.Builders.Domain;
 using ContractJudiciaryRoleCode = BookingsApi.Contract.V2.Enums.JudiciaryParticipantHearingRoleCode;
 using DomainJudiciaryRoleCode = BookingsApi.Domain.Enumerations.JudiciaryParticipantHearingRoleCode;
@@ -78,8 +79,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             {
                 var hearing = hearings.First(h => h.Id == requestHearing.HearingId);
                 
-                var defenceAdvocateEmail = requestHearing.Endpoints.ExistingEndpoints
-                    .First(e => e.DefenceAdvocateContactEmail != null).DefenceAdvocateContactEmail;
+                var defenceAdvocateEmail = requestHearing.Endpoints.ExistingEndpoints.First(e => !e.LinkedParticipantEmails.IsNullOrEmpty())
+                    .LinkedParticipantEmails[0];
                 var defenceAdvocateParticipant = hearing.Participants.First(p => p.Person.ContactEmail == defenceAdvocateEmail);
                 
                 // Add a participant
@@ -746,7 +747,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                     {
                         Id = e.Id,
                         DisplayName = e.DisplayName,
-                        DefenceAdvocateContactEmail = e.DefenceAdvocate?.Person.ContactEmail
+                        LinkedParticipantEmails = e.ParticipantsLinked.Select(p => p.Person.ContactEmail).ToList(),
                     }).ToList()
                 },
                 JudiciaryParticipants = new UpdateJudiciaryParticipantsRequest

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace BookingsApi.Contract.V2.Requests
 {
     public class EndpointRequestV2
@@ -8,9 +11,15 @@ namespace BookingsApi.Contract.V2.Requests
         public string DisplayName { get; set; }
         
         /// <summary>
-        /// The contact email of the defence advocated linked to the endpoint
+        /// The contact email of the defence advocated linked to the endpoint. Deprecated, use LinkedParticipants list instead
         /// </summary>
+        [Obsolete("Use LinkedParticipants list instead")]
         public string DefenceAdvocateContactEmail { get; set; }
+        
+        /// <summary>
+        /// Participants linked to the endpoint
+        /// </summary>
+        public List<string> LinkedParticipantEmails { get; set; } = new ();
         
         /// <summary>
         ///     The code of the interpreter language (optional)

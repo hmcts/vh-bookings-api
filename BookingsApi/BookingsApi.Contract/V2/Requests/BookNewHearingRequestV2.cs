@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text.Json.Serialization;
-using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Enums;
 
 namespace BookingsApi.Contract.V2.Requests
@@ -81,6 +79,6 @@ namespace BookingsApi.Contract.V2.Requests
         /// <summary>
         /// The supplier with whom to book a conference with
         /// </summary>
-        public BookingSupplier? BookingSupplier { get; set; }
+        public BookingSupplier? BookingSupplier { get; set; } = Enums.BookingSupplier.Vodafone;
     }
 }

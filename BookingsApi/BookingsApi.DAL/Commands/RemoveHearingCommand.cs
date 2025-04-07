@@ -1,31 +1,19 @@
 namespace BookingsApi.DAL.Commands
 {
-    public class RemoveHearingCommand : ICommand
+    public class RemoveHearingCommand(Guid hearingId) : ICommand
     {
-        public RemoveHearingCommand(Guid hearingId)
-        {
-            HearingId = hearingId;
-        }
-
-        public Guid HearingId { get; set; }
+        public Guid HearingId { get; set; } = hearingId;
     }
 
-    public class RemoveHearingCommandHandler : ICommandHandler<RemoveHearingCommand>
+    public class RemoveHearingCommandHandler(BookingsDbContext context) : ICommandHandler<RemoveHearingCommand>
     {
-        private readonly BookingsDbContext _context;
-
-        public RemoveHearingCommandHandler(BookingsDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task Handle(RemoveHearingCommand command)
         {
-            var hearingsIncCloned = await _context.VideoHearings
+            var hearingsIncCloned = await context.VideoHearings
                 .Include(x => x.HearingCases).ThenInclude(x => x.Case)
                 .Include(x => x.Participants).ThenInclude(x => x.Person).ThenInclude(x => x.Organisation)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
-                .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(x => x.Endpoints).ThenInclude(x => x.ParticipantsLinked).ThenInclude(p => p.Person)
                 .Include(x=> x.JudiciaryParticipants).ThenInclude(x=> x.JudiciaryPerson)
                 // keep the following includes for the screening entities - cannot auto include due to cyclic dependency
                 .Include(x => x.Participants).ThenInclude(x => x.Screening).ThenInclude(x=> x.ScreeningEntities).ThenInclude(x=> x.Participant)
@@ -39,22 +27,22 @@ namespace BookingsApi.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
 
-            _context.RemoveRange(hearingsIncCloned.SelectMany(x => x.Participants).Where(p => p.Screening != null)
+            context.RemoveRange(hearingsIncCloned.SelectMany(x => x.Participants).Where(p => p.Screening != null)
                 .Select(s => s.Screening).ToList());
-            _context.RemoveRange(hearingsIncCloned.SelectMany(x => x.Endpoints).Where(p => p.Screening != null)
+            context.RemoveRange(hearingsIncCloned.SelectMany(x => x.Endpoints).Where(p => p.Screening != null)
                 .Select(s => s.Screening).ToList());
-            _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetEndpoints()));
-            _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetCases()));
-            _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.Participants.SelectMany(p => p.LinkedParticipants)));
+            context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetEndpoints()));
+            context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetCases()));
+            context.RemoveRange(hearingsIncCloned.SelectMany(h => h.Participants.SelectMany(p => p.LinkedParticipants)));
 
             var persons = await GetPersonsToRemove(hearingsIncCloned);
             var organisations = persons.Where(p => p.Organisation != null).Select(x => x.Organisation).ToList();
 
-            _context.RemoveRange(organisations);
-            _context.RemoveRange(persons);
-            _context.RemoveRange(hearingsIncCloned);
+            context.RemoveRange(organisations);
+            context.RemoveRange(persons);
+            context.RemoveRange(hearingsIncCloned);
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
 
         private async Task<List<Person>> GetPersonsToRemove(List<VideoHearing> hearingsIncCloned)
@@ -63,7 +51,7 @@ namespace BookingsApi.DAL.Commands
             var distinctPersons = hearingsIncCloned.SelectMany(h => h.Participants.Select(x => x.Person)).Distinct().ToList();
             foreach (var person in distinctPersons)
             {
-                var hearingIdsForPerson = await _context.Participants.Where(x => x.PersonId == person.Id).Select(x=> x.HearingId).ToListAsync();
+                var hearingIdsForPerson = await context.Participants.Where(x => x.PersonId == person.Id).Select(x=> x.HearingId).ToListAsync();
                 var hearingIds = hearingsIncCloned.Select(x => x.Id).ToList();
                 // if all hearings for a person are being removed then remove the person
                 if (hearingIdsForPerson.TrueForAll(hearingIds.Contains))

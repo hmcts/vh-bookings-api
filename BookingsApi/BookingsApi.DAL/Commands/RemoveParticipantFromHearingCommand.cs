@@ -2,36 +2,23 @@ using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.DAL.Commands
 {
-    public class RemoveParticipantFromHearingCommand : ICommand
+    public class RemoveParticipantFromHearingCommand(Guid hearingId, Participant participant) : ICommand
     {
-        public RemoveParticipantFromHearingCommand(Guid hearingId, Participant participant)
-        {
-            HearingId = hearingId;
-            Participant = participant;
-        }
-
-        public Guid HearingId { get; set; }
-        public Participant Participant { get; set; }
-
+        public Guid HearingId { get; set; } = hearingId;
+        public Participant Participant { get; set; } = participant;
     }
     
-    public class RemoveParticipantFromHearingCommandHandler : ICommandHandler<RemoveParticipantFromHearingCommand>
+    public class RemoveParticipantFromHearingCommandHandler(BookingsDbContext context)
+        : ICommandHandler<RemoveParticipantFromHearingCommand>
     {
-        private readonly BookingsDbContext _context;
-
-        public RemoveParticipantFromHearingCommandHandler(BookingsDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task Handle(RemoveParticipantFromHearingCommand command)
         {
-            var hearing = await _context.VideoHearings
+            var hearing = await context.VideoHearings
                 .Include(x=> x.JudiciaryParticipants).ThenInclude(x=> x.JudiciaryPerson)
                 .Include(x => x.Participants).ThenInclude(x => x.Person.Organisation)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .Include(h => h.Participants).ThenInclude(x => x.LinkedParticipants)
-                .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(x => x.Endpoints).ThenInclude(x => x.ParticipantsLinked).ThenInclude(p => p.Person)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
             if (hearing == null)
@@ -39,7 +26,7 @@ namespace BookingsApi.DAL.Commands
             
             hearing.RemoveParticipant(command.Participant);
             hearing.UpdateBookingStatusJudgeRequirement();
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
     }
 }

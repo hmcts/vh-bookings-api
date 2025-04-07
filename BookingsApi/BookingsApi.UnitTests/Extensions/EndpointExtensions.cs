@@ -15,10 +15,8 @@ public class EndpointExtensions
     public void Setup()
     {
         _hearing = new VideoHearingBuilder().Build();
-        _hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "Ep1", Guid.NewGuid().ToString(), "pin",
-            null));
-        _hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "Ep2", Guid.NewGuid().ToString(), "pin",
-            null));
+        _hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "Ep1", Guid.NewGuid().ToString(), "pin"));
+        _hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "Ep2", Guid.NewGuid().ToString(), "pin"));
     }
     
     [Test]
