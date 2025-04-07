@@ -4,5 +4,3 @@ java:
   ingressHost: ${SERVICE_FQDN}
   releaseNameOverride: ${RELEASE_NAME}
   disableTraefikTls: false
-  environment:
-    SERVICEBUSQUEUE__QUEUENAME: booking-will
