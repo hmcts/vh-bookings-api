@@ -5,6 +5,7 @@ using BookingsApi.Domain.Helper;
 using BookingsApi.Domain.Validations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using BookingsApi.Common.Logging;
 
 namespace BookingsApi.DAL.Services;
 
@@ -187,7 +188,7 @@ public class HearingAllocationService(
             JusticeUser = cso
         });
         await context.SaveChangesAsync();
-        logger.LogInformation("Allocated hearing {HearingId} to cso {Cso}", hearing.Id, cso.Username);
+        logger.LogInformationAllocatedHearingToCso(hearing.Id, cso.Username);
     }
 
     /// <summary>
@@ -217,7 +218,7 @@ public class HearingAllocationService(
             if (!user.IsAvailable(hearing.ScheduledDateTime, hearing.ScheduledEndTime, _configuration))
             {
                 hearing.Deallocate();
-                logger.LogInformation("Deallocated hearing {HearingId}", hearing.Id);
+                logger.LogInformationDeallocatedHearing(hearing.Id);
             }
         }
     }
@@ -238,7 +239,7 @@ public class HearingAllocationService(
         if (!allocatedUser.IsAvailable(hearing.ScheduledDateTime, hearing.ScheduledEndTime, _configuration))
         {
             hearing.Deallocate();
-            logger.LogInformation("Deallocated hearing {HearingId}", hearing.Id);
+            logger.LogInformationDeallocatedHearing(hearing.Id);
         }
     }
 

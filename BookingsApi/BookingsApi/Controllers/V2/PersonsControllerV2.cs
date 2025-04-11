@@ -3,6 +3,7 @@ using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations;
 using BookingsApi.Validations.V2;
+using BookingsApi.Common.Logging;
 
 namespace BookingsApi.Controllers.V2;
 
@@ -118,7 +119,7 @@ public class PersonsControllerV2(
             .Where(x => x.Status == BookingStatus.Created &&
                         x.GetCases().Any(c => !c.Name.EndsWith(anonymisedText))).SelectMany(c => c.Participants)
             .Where(p => p.PersonId == personId && !p.DisplayName.EndsWith(anonymisedText)).ToList();
-        logger.LogDebug("Updating {Count} non-anonymised participants", nonAnonymisedParticipants.Count);
+        logger.LogDebugUpdateNonAnonymised(nonAnonymisedParticipants.Count);
 
         foreach (var participant in nonAnonymisedParticipants)
         {
