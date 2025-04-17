@@ -54,7 +54,8 @@ namespace BookingsApi.Controllers.V1
             return Ok(hearings.Select(e => new AllocatedCsoResponse
             {
                 HearingId = e.Id,
-                Cso = e.AllocatedTo != null ? JusticeUserToResponseMapper.Map(e.AllocatedTo) : null
+                Cso = e.AllocatedTo != null ? JusticeUserToResponseMapper.Map(e.AllocatedTo) : null,
+                SupportsWorkAllocation = e.HearingVenue.IsWorkAllocationEnabled
             }));
         }
 
