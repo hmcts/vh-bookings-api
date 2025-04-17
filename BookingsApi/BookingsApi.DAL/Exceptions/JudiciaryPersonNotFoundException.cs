@@ -28,6 +28,3 @@ public class JudiciaryPersonNotFoundException(string personalCode)
 
 public class JudiciaryLeaverNotFoundException(string username)
     : JudiciaryLeaverException($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} does not exist");
-    
-public class JudiciaryPersonAlreadyExistsException(string username)
-    : JudiciaryPersonException($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} already exists");

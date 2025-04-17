@@ -8,7 +8,7 @@ public class AddParticipantsToHearingRequestRefDataValidationV2 : RefDataInputVa
 {
     public AddParticipantsToHearingRequestRefDataValidationV2(IEnumerable<HearingRole> hearingRoles)
     {
-        var representativeRoles = hearingRoles.Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
+        var representativeRoles = hearingRoles.Where(x => x.UserRole.IsRepresentative).Select(x => x.Code).ToList();
         RuleForEach(request => request.Participants).Where(x => representativeRoles.Contains(x.HearingRoleCode))
             .SetValidator(new RepresentativeValidation());
     }
