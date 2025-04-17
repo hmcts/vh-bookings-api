@@ -5,12 +5,6 @@ namespace BookingsApi.Common.Logging
 
     public static partial class JusticeUserLogger
     {
-        // Debug log messages
-        [LoggerMessage(
-            EventId = 8000, 
-            Level = LogLevel.Debug,
-            Message = "Updating {Count} non-anonymised participants")]
-        public static partial void LogDebugUpdateNonAnonymised(this ILogger logger, int count);
 
         // Error log messages
         

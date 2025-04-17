@@ -20,6 +20,5 @@ namespace BookingsApi.Common.Logging
             Level = LogLevel.Error,
             Message = "Could not add or update external Judiciary user with Personal Code: {PersonalCode}")]
         public static partial void LogErrorCouldNotAddOrUpdate(this ILogger logger, Exception ex, string personalCode);
-
     }
 }

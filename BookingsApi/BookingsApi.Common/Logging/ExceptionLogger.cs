@@ -11,5 +11,12 @@ namespace BookingsApi.Common.Logging
             Message = "CreateUser validation failed: {errors}")]
         public static partial void LogErrorCreateUserValidation(this ILogger logger, string errors);
 
+        [LoggerMessage(
+            EventId = 5000, 
+            Level = LogLevel.Error,
+            Message = "Unexpected error")]
+        public static partial void LogErrorUnexpected(this ILogger logger, Exception ex);
+
+
     }
 }
