@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OpenTelemetry.Trace;
+using BookingsApi.Common.Logging;
 
 namespace BookingsApi.Extensions;
 
@@ -26,13 +27,13 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         }
         catch (EntityNotFoundException ex)
         {
-            logger.LogError(ex, "Unexpected error");
+            logger.LogErrorUnexpected(ex);
             await HandleExceptionAsync(httpContext, HttpStatusCode.NotFound, ex);
             TraceException("Entity Not Found", ex);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error");
+            logger.LogErrorUnexpected(ex);
             await HandleExceptionAsync(httpContext, HttpStatusCode.InternalServerError, ex);
             TraceException("API Exception", ex);
         }

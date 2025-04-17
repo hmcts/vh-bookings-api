@@ -4,6 +4,7 @@ using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V2;
 using Microsoft.AspNetCore.Authorization;
+using BookingsApi.Common.Logging;
 
 namespace BookingsApi.Controllers.V2
 {
@@ -134,7 +135,7 @@ namespace BookingsApi.Controllers.V2
             {
                 ModelState.AddModelError(nameof(request.HearingVenueCode),
                     $"Hearing venue code {request.HearingVenueCode} does not exist");
-                logger.LogTrace("HearingVenueCode {HearingVenueCode} does not exist", request.HearingVenueCode);
+                logger.LogTraceHearingVenueCodeDoesNotExist(request.HearingVenueCode);
                 return ValidationProblem(ModelState);
             }
 
