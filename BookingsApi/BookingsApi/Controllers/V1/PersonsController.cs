@@ -49,7 +49,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetPersonByClosedHearings")]
         [ProducesResponseType(typeof(UserWithClosedConferencesResponse), (int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
-        [Obsolete("Usage unclear, to be removed in future")]
+        [Obsolete("No usage detected, remove at earliest opportunity")]
         public async Task<IActionResult> GetPersonByClosedHearings()
         {
             var query = new GetPersonsByClosedHearingsQuery();
@@ -57,6 +57,10 @@ namespace BookingsApi.Controllers.V1
             return Ok(new UserWithClosedConferencesResponse { Usernames = person });
         }
 
+        /// <summary>
+        /// Get anonymisation data used by the scheduler to anonymise conferences in Video API
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("getanonymisationdata")]
         [OpenApiOperation("GetAnonymisationData")]
         [ProducesResponseType(typeof(AnonymisationDataResponse), (int)HttpStatusCode.OK)]

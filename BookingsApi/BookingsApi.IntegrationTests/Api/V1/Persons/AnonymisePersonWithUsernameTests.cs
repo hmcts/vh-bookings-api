@@ -2,6 +2,30 @@ using BookingsApi.Client;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Persons;
 
+public class GetHearingsByUsernameForDeletionTests : ApiTest
+{
+    [Test]
+    public async Task should_return_hearings_for_username()
+    {
+        var hearing1 = await Hooks.SeedVideoHearingV2();
+        var hearing2 = await Hooks.SeedVideoHearingV2();
+        var hearing3 = await Hooks.SeedVideoHearingV2();
+
+        var individual = hearing2.GetParticipants().First(x => x.HearingRole.UserRole.IsIndividual);
+        var username = individual.Person.Username;
+
+        // act
+        var client = GetBookingsApiClient();
+        var result = await client.GetHearingsByUsernameForDeletionAsync(username);
+
+        // assert
+        result.Should().NotBeNull();
+        var hearings = result.ToList();
+        hearings.Exists(x => x.HearingId == hearing2.Id).Should().BeTrue();
+        hearings.Exists(x => x.HearingId == hearing1.Id).Should().BeFalse();
+        hearings.Exists(x => x.HearingId == hearing3.Id).Should().BeFalse();
+    }
+}
 public class AnonymisePersonWithUsernameTests : ApiTest
 {
     [Test]
