@@ -48,7 +48,7 @@ namespace BookingsApi.IntegrationTests.Helper
         }
 
         public async Task<JusticeUser> SeedJusticeUser(string userName, string firstName, string lastName,
-            bool isTeamLead = false, bool isDeleted = false, bool initWorkHours = true)
+            bool isTeamLead = false, bool isDeleted = false, bool initWorkHours = true, bool initNonAvailabilities = false)
         {
             await using var db = new BookingsDbContext(dbContextOptions);
 
@@ -84,6 +84,14 @@ namespace BookingsApi.IntegrationTests.Helper
                     new() {DayOfWeekId = 7, StartTime = null, EndTime = null},
 
                 });
+            }
+
+            if (initNonAvailabilities)
+            {
+                var date = DateTime.UtcNow.Date;
+                var tomorrow = date.AddDays(1);
+                justiceUser.AddOrUpdateNonAvailability(date.AddHours(6), date.AddHours(8));
+                justiceUser.AddOrUpdateNonAvailability(tomorrow.AddHours(6), tomorrow.AddHours(8));
             }
 
             if (isDeleted)

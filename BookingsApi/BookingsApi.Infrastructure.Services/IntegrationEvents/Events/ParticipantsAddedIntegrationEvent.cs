@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
@@ -13,7 +12,6 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
         {
             Hearing = HearingDtoMapper.MapToDto(hearing);
             Participants = participants.Select(ParticipantDtoMapper.MapToDto).ToList();
-            Participants.SingleOrDefault(x => x.UserRole == "Judge")?.SetOtherFieldsForNonEJudJudgeUser(hearing.OtherInformation);
         }
         
         public ParticipantsAddedIntegrationEvent(Hearing hearing, IEnumerable<JudiciaryParticipant> judiciaryParticipants)

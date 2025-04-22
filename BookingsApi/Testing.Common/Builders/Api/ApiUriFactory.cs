@@ -125,6 +125,7 @@ namespace Testing.Common.Builders.Api
         {
             private const string ApiRoot = "work-hours";
             public static string SaveWorkHours => $"{ApiRoot}/SaveWorkHours";
+            public static string SaveNonWorkingHours => $"{ApiRoot}/SaveNonWorkingHours";
 
             public static string UpdateVhoNonAvailabilityHours(string username) => $"NonAvailability/VHO/{username}";
 

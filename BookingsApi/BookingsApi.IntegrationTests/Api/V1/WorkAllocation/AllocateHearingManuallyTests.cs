@@ -30,8 +30,6 @@ public class AllocateHearingManuallyTests : ApiTest
             options.ScheduledDate =
                 MoveHearingToWorkingDay(); // Needed as the seeded justice users do not work on weekends
         });
-        var judge = hearing.JudiciaryParticipants.First(x =>
-            x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
         var j1 = await Hooks.SeedJusticeUser($"{Guid.NewGuid():N}@test.com", "testfirstname1", "testsurname1",
             initWorkHours: true);
@@ -61,6 +59,8 @@ public class AllocateHearingManuallyTests : ApiTest
         var integrationEvent = message.IntegrationEvent as HearingsAllocatedIntegrationEvent;
         integrationEvent!.AllocatedCso.Username.Should().Be(j1.Username);
         integrationEvent!.AllocatedCso.FullName.Should().Be($"{j1.FirstName} {j1.Lastname}");
+        integrationEvent!.AllocatedCso.UserId.Should().Be(j1.Id.ToString());
+        integrationEvent!.AllocatedCso.UserRoles.Should().HaveCount(1);
         integrationEvent!.Hearings[0].HearingId.Should().Be(hearing.Id);
     }
 

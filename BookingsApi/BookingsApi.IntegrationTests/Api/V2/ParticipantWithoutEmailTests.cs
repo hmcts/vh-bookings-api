@@ -1,4 +1,3 @@
-using BookingsApi.Client;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Constants;

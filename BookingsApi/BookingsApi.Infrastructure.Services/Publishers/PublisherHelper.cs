@@ -48,17 +48,6 @@ namespace BookingsApi.Infrastructure.Services.Publishers
 
             return newParticipants;
         }
-
-        public static IEnumerable<Participant> GetAddedParticipantsSinceLastUpdate(VideoHearing videoHearing)
-        {
-            var newParticipants = videoHearing.Participants;
-            var areParticipantsAddedToExistingBooking = videoHearing.Participants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
-            if (areParticipantsAddedToExistingBooking)
-            {
-                newParticipants = videoHearing.Participants.Where(x => x.CreatedDate.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds()).ToList();
-            }
-            return newParticipants;
-        }
         
         public static IEnumerable<JudiciaryParticipant> GetAddedJudiciaryParticipantsSinceLastUpdate(VideoHearing videoHearing, DateTime videoHearingUpdateDate)
         {

@@ -152,6 +152,7 @@ public class HearingAllocationService(
         return await context.VideoHearings
             .Include(h => h.CaseType)
             .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoWorkHours)
+            .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.JusticeUserRoles).ThenInclude(ur => ur.UserRole)
             .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
             .Include(h => h.HearingVenue)
             .Include(h => h.Participants)
@@ -168,6 +169,7 @@ public class HearingAllocationService(
             .Include(h => h.CaseType)
             .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
             .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoWorkHours)
+            .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.JusticeUserRoles).ThenInclude(ur => ur.UserRole)
             .Include(h => h.Participants).ThenInclude(i => i.HearingRole).ThenInclude(aa => aa.UserRole)
             .Include(h => h.HearingVenue)
             .AsSplitQuery().SingleOrDefaultAsync(x => x.Id == hearingId);
