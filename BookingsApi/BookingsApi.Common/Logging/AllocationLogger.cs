@@ -6,12 +6,6 @@ namespace BookingsApi.Common.Logging
     public static partial class AllocationLogger
     {
         [LoggerMessage(
-            EventId = 5001, 
-            Level = LogLevel.Information,
-            Message = "[GetUnallocatedHearings] Could not find any unallocated hearings")]
-        public static partial void LogInformationCouldNotFindAnyUnallocatedHearings(this ILogger logger);
-
-        [LoggerMessage(
             EventId = 5002, 
             Level = LogLevel.Information,
             Message = "Allocated hearing {HearingId} to cso {Cso}")]

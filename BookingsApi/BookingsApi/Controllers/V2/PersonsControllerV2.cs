@@ -70,17 +70,6 @@ public class PersonsControllerV2(
             return NotFound($"Person with {contactEmail} does not exist");
         }
 
-        var hearingsQuery = new GetHearingsByUsernameQuery(person.Username);
-        var hearings = await queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(hearingsQuery);
-
-        var judicialHearings = hearings.SelectMany(v => v.Participants.Where(p => p.PersonId == person.Id))
-            .Any(x => x.HearingRole.IsJudge());
-
-        if (judicialHearings)
-        {
-            return Unauthorized("Only searches for non Judge persons are allowed");
-        }
-
         return Ok(PersonToResponseV2Mapper.MapPersonToResponse(person));
     }
 
