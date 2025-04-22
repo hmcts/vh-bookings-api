@@ -8,9 +8,7 @@ namespace BookingsApi.Controllers.V2;
 [Route(template: "v{version:apiVersion}/hearings")]
 [ApiVersion("2.0")]
 [ApiController]
-public class WorkAllocationsControllerV2(
-    IQueryHandler queryHandler,
-    ILogger<WorkAllocationsControllerV2> logger) : ControllerBase
+public class WorkAllocationsControllerV2(IQueryHandler queryHandler) : ControllerBase
 {
     /// <summary>
     /// Get all the unallocated hearings

@@ -3,8 +3,11 @@ using BookingsApi.Contract.V1.Requests;
 
 namespace BookingsApi.IntegrationTests.Api.V1.WorkHours;
 
-public class SaveNonWorkHoursTests : ApiTest
+public partial class SaveNonWorkHoursTests : ApiTest
 {
+    [GeneratedRegex(@"End time \d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2} is before start time \d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}\.")]
+    private static partial Regex EndTimeBeforeStartTimeRegex();
+    
     [Test]
     public async Task should_return_400_and_validation_problems_when_incorrect_payload_is_given()
     {
@@ -24,7 +27,7 @@ public class SaveNonWorkHoursTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         
-        var regex = new Regex(@"End time \d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2} is before start time \d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}\.");
+        var regex = EndTimeBeforeStartTimeRegex();
         validationProblemDetails.Errors[username][0].Should()
             .MatchRegex(regex);
     }
