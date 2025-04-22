@@ -1,6 +1,7 @@
 
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
+using BookingsApi.Common.Logging;
 
 namespace BookingsApi.Controllers.V2;
 
@@ -28,7 +29,7 @@ public class WorkAllocationsControllerV2(
         var results = await queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
 
         if (results.Count <= 0)
-            logger.LogInformation("[GetUnallocatedHearings] Could not find any unallocated hearings");
+            logger.LogInformationCouldNotFindAnyUnallocatedHearings();
         var response = results.Select(HearingToDetailsResponseV2Mapper.Map).ToList();
         return Ok(response);
     }
