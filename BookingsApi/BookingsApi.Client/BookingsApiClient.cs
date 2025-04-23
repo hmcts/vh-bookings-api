@@ -319,6 +319,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -327,6 +328,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
@@ -532,10 +534,16 @@ namespace BookingsApi.Client
         [System.Obsolete]
         System.Threading.Tasks.Task<UserWithClosedConferencesResponse> GetPersonByClosedHearingsAsync(System.Threading.CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Get anonymisation data used by the scheduler to anonymise conferences in Video API
+        /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<AnonymisationDataResponse> GetAnonymisationDataAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get anonymisation data used by the scheduler to anonymise conferences in Video API
+        /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<AnonymisationDataResponse> GetAnonymisationDataAsync(System.Threading.CancellationToken cancellationToken);
 
@@ -3203,6 +3211,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds)
         {
             return GetHearingVenuesByAllocatedCsoAsync(csoIds, System.Threading.CancellationToken.None);
@@ -3214,6 +3223,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
@@ -4895,6 +4905,9 @@ namespace BookingsApi.Client
             }
         }
 
+        /// <summary>
+        /// Get anonymisation data used by the scheduler to anonymise conferences in Video API
+        /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<AnonymisationDataResponse> GetAnonymisationDataAsync()
         {
@@ -4902,6 +4915,9 @@ namespace BookingsApi.Client
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get anonymisation data used by the scheduler to anonymise conferences in Video API
+        /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<AnonymisationDataResponse> GetAnonymisationDataAsync(System.Threading.CancellationToken cancellationToken)
         {

@@ -65,6 +65,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetHearingVenuesByAllocatedCso")]
         [ProducesResponseType(typeof(IList<string>), (int) HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
+        [Obsolete("No usage detected, remove at earliest opportunity")]
         public async Task<IActionResult> GetHearingVenueNamesByAllocatedCso([FromQuery] IEnumerable<Guid> csoIds)
         {
             var query = new GetAllocationHearingsBySearchQuery(cso: csoIds, fromDate: DateTime.Today);
