@@ -56,11 +56,11 @@ namespace BookingsApi.UnitTests.DAL.Commands
 
             await _command.Handle(command);
 
-            var participantsThatShouldBeAnonymised = _context.Participants
-                .Where(p => p.HearingId == _hearing1.Id || p.HearingId == _hearing2.Id).ToList();
+            var participantsThatShouldBeAnonymised = await _context.Participants
+                .Where(p => p.HearingId == _hearing1.Id || p.HearingId == _hearing2.Id).ToListAsync();
 
-            var participantsThatShouldNotBeAnonymised = _context.Participants
-                .Where(p => p.HearingId == _hearing3.Id).ToList();
+            var participantsThatShouldNotBeAnonymised = await _context.Participants
+                .Where(p => p.HearingId == _hearing3.Id).ToListAsync();
 
             foreach (var participant in participantsThatShouldBeAnonymised)
             {
@@ -93,8 +93,8 @@ namespace BookingsApi.UnitTests.DAL.Commands
 
             await _command.Handle(command);
 
-            var participantsThatShouldBeAnonymised = _context.Participants
-                .Where(p => p.HearingId == _hearing1.Id || p.HearingId == _hearing2.Id).ToList();
+            var participantsThatShouldBeAnonymised = await  _context.Participants
+                .Where(p => p.HearingId == _hearing1.Id || p.HearingId == _hearing2.Id).ToListAsync();
 
             foreach (var participant in participantsThatShouldBeAnonymised)
             {
@@ -133,7 +133,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
 
             await _command.Handle(command);
 
-            _context.Participants.FirstOrDefault(p => p.PersonId == _anonymisedParticipantPerson.Id).DisplayName
+            (await _context.Participants.FirstAsync(p => p.PersonId == _anonymisedParticipantPerson.Id)).DisplayName
                 .Should()
                 .Be(anonymisedParticipantDisplayName);
         }
@@ -158,9 +158,13 @@ namespace BookingsApi.UnitTests.DAL.Commands
 
             await _command.Handle(command);
 
-            var updatedHearing1 = _context.VideoHearings.FirstOrDefault(hearing => hearing.Id == _hearing1.Id);
-            var updatedHearing2 = _context.VideoHearings.FirstOrDefault(hearing => hearing.Id == _hearing2.Id);
-            var updatedHearing3 = _context.VideoHearings.FirstOrDefault(hearing => hearing.Id == _hearing3.Id);
+            var updatedHearing1 = await _context.VideoHearings.Include(hearing => hearing.HearingCases)
+                .ThenInclude(hearingCase => hearingCase.Case)
+                .FirstAsync(hearing => hearing.Id == _hearing1.Id);
+            var updatedHearing2 = await _context.VideoHearings.Include(hearing => hearing.HearingCases)
+                .ThenInclude(hearingCase => hearingCase.Case).FirstAsync(hearing => hearing.Id == _hearing2.Id);
+            var updatedHearing3 = await _context.VideoHearings.Include(hearing => hearing.HearingCases)
+                .ThenInclude(hearingCase => hearingCase.Case).FirstAsync(hearing => hearing.Id == _hearing3.Id);
 
             updatedHearing1.HearingCases.FirstOrDefault(hearing => hearing.HearingId == _hearing1.Id).Case.Name.Should()
                 .NotBe(caseName1).And.Contain(AnonymiseCaseAndParticipantCommandHandler.AnonymisedNameSuffix);
@@ -186,9 +190,10 @@ namespace BookingsApi.UnitTests.DAL.Commands
 
             await _command.Handle(command);
 
-            var updatedHearing1 = _context.VideoHearings.FirstOrDefault(hearing => hearing.Id == _hearing1.Id);
+            var updatedHearing1 = await _context.VideoHearings.Include(hearing => hearing.HearingCases)
+                .ThenInclude(hearingCase => hearingCase.Case).FirstAsync(hearing => hearing.Id == _hearing1.Id);
 
-            updatedHearing1.HearingCases.FirstOrDefault(hearing => hearing.HearingId == _hearing1.Id).Case.Name.Should()
+            updatedHearing1.HearingCases.First(hearing => hearing.HearingId == _hearing1.Id).Case.Name.Should()
                 .Be(caseName1);
         }
         

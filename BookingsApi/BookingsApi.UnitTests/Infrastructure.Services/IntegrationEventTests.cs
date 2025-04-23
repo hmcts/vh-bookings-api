@@ -142,7 +142,7 @@ public class IntegrationEventTests
     {
         var hearing = new VideoHearingBuilder().Build();
         hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "one", "sip", "1234"));
-        var endpointAddedIntegrationEvent = new EndpointAddedIntegrationEvent(hearing, hearing.GetEndpoints().First());
+        var endpointAddedIntegrationEvent = new EndpointAddedIntegrationEvent(hearing, hearing.GetEndpoints()[0]);
         await _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
 
         _serviceBusQueueClient.Count.Should().Be(1);
@@ -157,7 +157,7 @@ public class IntegrationEventTests
         var dA = hearing.GetParticipants().First(x => x is Representative);
         hearing.AddEndpoint(new Endpoint(Guid.NewGuid().ToString(), "one", "sip", "1234", dA));
         var endpointAddedIntegrationEvent =
-            new EndpointAddedIntegrationEvent(hearing, hearing.GetEndpoints().First());
+            new EndpointAddedIntegrationEvent(hearing, hearing.GetEndpoints()[0]);
         await _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
 
         _serviceBusQueueClient.Count.Should().Be(1);

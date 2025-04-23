@@ -33,7 +33,7 @@ public class CaseRequestValidationV2Tests
 
         result.IsValid.Should().BeFalse();
         result.Errors.Count.Should().Be(1);
-        result.Errors.Any(x => x.ErrorMessage == CaseRequestValidationV2.CaseNameMessage)
+        result.Errors.Exists(x => x.ErrorMessage == CaseRequestValidationV2.CaseNameMessage)
             .Should().BeTrue();
     }
         
@@ -47,7 +47,7 @@ public class CaseRequestValidationV2Tests
 
         result.IsValid.Should().BeFalse();
         result.Errors.Count.Should().Be(1);
-        result.Errors.Any(x => x.ErrorMessage == CaseRequestValidationV2.CaseNumberMessage)
+        result.Errors.Exists(x => x.ErrorMessage == CaseRequestValidationV2.CaseNumberMessage)
             .Should().BeTrue();
     }
 

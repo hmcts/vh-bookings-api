@@ -27,8 +27,10 @@ namespace BookingsApi.UnitTests.Mappings.V1
         [TestCase(null)]
         public void Should_map_all_properties(string caseNumber)
         {
-            var @case = string.IsNullOrEmpty(caseNumber) ? hearingsByCaseNumber[0].GetCases().First():
-                                                        hearingsByCaseNumber[0].GetCases().FirstOrDefault(c => c.Number.ToLower().Trim() == caseNumber.ToLower().Trim());
+            var @case = string.IsNullOrEmpty(caseNumber)
+                ? hearingsByCaseNumber[0].GetCases()[0]
+                : hearingsByCaseNumber[0].GetCases()
+                    .FirstOrDefault(c => c.Number.ToLower().Trim() == caseNumber.ToLower().Trim());
 
             var result = hearingMapper.MapHearingToDetailedResponse(hearingsByCaseNumber, caseNumber);
 
