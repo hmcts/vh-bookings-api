@@ -56,8 +56,8 @@ namespace BookingsApi.UnitTests.DAL.Services
         [TearDown]
         public async Task TearDown()
         {
-            _context.VideoHearings.RemoveRange(_context.Set<VideoHearing>().ToList());
-            _context.JusticeUsers.RemoveRange(_context.Set<JusticeUser>().ToList());
+            _context.VideoHearings.RemoveRange(await _context.Set<VideoHearing>().ToListAsync());
+            _context.JusticeUsers.RemoveRange(await _context.Set<JusticeUser>().ToListAsync());
             await _context.SaveChangesAsync();
         }
 

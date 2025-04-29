@@ -3,12 +3,7 @@ using System.Net;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
-using BookingsApi.Domain.Validations;
-using BookingsApi.Mappings;
-using BookingsApi.Mappings.V1;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
 {

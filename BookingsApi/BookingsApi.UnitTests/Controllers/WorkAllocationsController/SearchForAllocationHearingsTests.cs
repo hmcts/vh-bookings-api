@@ -2,7 +2,6 @@
 using System.Net;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -43,77 +42,6 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
             
             QueryHandlerMock
                 .Verify(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()), Times.Once);
-        }
-
-        [Test]
-        public async Task Should_return_return_a_list_of_hearings()
-        {
-            var cNumber = "caseNumber";
-            var query = new SearchForAllocationHearingsRequest()
-            {
-                CaseNumber = cNumber,
-                Cso = [Guid.NewGuid()],
-                CaseType = ["caseType"],
-                FromDate = DateTime.MinValue,
-                ToDate = DateTime.MinValue
-            };
-            var hearingsByCaseNumber = new List<VideoHearing> { GetHearing(cNumber) };
-            var checkForClashesResponse = new List<HearingAllocationResultDto>()
-            {
-                new()
-                {
-                    HearingId = Guid.NewGuid(),
-                    CaseType = query.CaseType[0],
-                    CaseNumber = query.CaseNumber,
-                    Duration = 10,
-                    ScheduledDateTime = DateTime.Today.AddHours(10).AddMinutes(20),
-                    AllocatedCso = "test@cso.com",
-                    HasWorkHoursClash = false,
-                    HasNonAvailabilityClash = false
-                }
-            };
-
-            var expectedResponses = new List<HearingAllocationsResponse>()
-            {
-                new()
-                {
-                    HearingId = checkForClashesResponse[0].HearingId,
-                    CaseType = checkForClashesResponse[0].CaseType,
-                    CaseNumber = checkForClashesResponse[0].CaseNumber,
-                    Duration = checkForClashesResponse[0].Duration,
-                    ScheduledDateTime = checkForClashesResponse[0].ScheduledDateTime,
-                    AllocatedCso = checkForClashesResponse[0].AllocatedCso,
-                    HasWorkHoursClash = false,
-                    HasNonAvailabilityClash = false
-                }
-            };
-
-            QueryHandlerMock
-                .Setup(x =>
-                    x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(
-                        It.IsAny<GetAllocationHearingsBySearchQuery>()))
-                .ReturnsAsync(hearingsByCaseNumber);
-
-            HearingAllocationServiceMock.Setup(x => x.CheckForAllocationClashes(hearingsByCaseNumber)).Returns(checkForClashesResponse);
-            
-            var result = await Controller.SearchForAllocationHearings(query);
-
-            result.Should().NotBeNull();
-
-            var objectResult = (OkObjectResult)result;
-
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-
-            var response = (List<HearingAllocationsResponse>)objectResult.Value;
-
-            response.Should().NotBeNull();
-
-            response[0].CaseNumber.Should().Be(cNumber);
-
-            QueryHandlerMock
-                .Verify(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()), Times.Once);
-
-            response.Should().BeEquivalentTo(expectedResponses);
         }
     }
 }

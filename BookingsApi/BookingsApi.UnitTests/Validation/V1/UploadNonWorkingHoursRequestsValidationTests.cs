@@ -18,8 +18,8 @@ namespace BookingsApi.UnitTests.Validation.V1
         public void Should_fail_validation_when_end_time_is_before_start_time()
         {
             // Arrange
-            var startTime = new DateTime(2022, 1, 7);
-            var endTime = new DateTime(2022, 1, 1);
+            var startTime = new DateTime(2022, 1, 7, 0, 0, 0, DateTimeKind.Utc);
+            var endTime = new DateTime(2022, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
             var requests = new List<UploadNonWorkingHoursRequest>
             {
@@ -41,15 +41,13 @@ namespace BookingsApi.UnitTests.Validation.V1
         public void Should_pass_validation_when_all_times_are_valid()
         {
             // Arrange
-            var startTime = new DateTime(2022, 1, 1);
-            var endTime = new DateTime(2022, 1, 7);
+            var startTime = new DateTime(2022, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var endTime = new DateTime(2022, 1, 7,0, 0, 0, DateTimeKind.Utc);
 
             var requests = new List<UploadNonWorkingHoursRequest>
             {
-                new UploadNonWorkingHoursRequest(_username, startTime, endTime)
+                new(_username, startTime, endTime)
             };
-
-            var validator = new UploadNonWorkingHoursRequestsValidation();
 
             // Act
             var result = UploadNonWorkingHoursRequestsValidation.ValidateRequests(requests);

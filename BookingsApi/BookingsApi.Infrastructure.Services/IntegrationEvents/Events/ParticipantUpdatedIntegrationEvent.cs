@@ -9,14 +9,15 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
     {
         public ParticipantUpdatedIntegrationEvent(Guid hearingId, Participant participant)
         {
-            if (participant?.Person.ContactEmail is null) return;
+            ArgumentNullException.ThrowIfNull(participant);
+            ArgumentNullException.ThrowIfNull(participant.Person.ContactEmail);
             HearingId = hearingId;
             Participant = ParticipantDtoMapper.MapToDto(participant);
         }
 
         public ParticipantUpdatedIntegrationEvent(Guid hearingId, JudiciaryParticipant judiciaryParticipant)
         {
-            if (judiciaryParticipant == null) return;
+            ArgumentNullException.ThrowIfNull(judiciaryParticipant);
             HearingId = hearingId;
             Participant = ParticipantDtoMapper.MapToDto(judiciaryParticipant);
         }

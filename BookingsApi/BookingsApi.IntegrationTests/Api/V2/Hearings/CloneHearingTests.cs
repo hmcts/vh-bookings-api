@@ -3,6 +3,7 @@ using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Validations.V2;
 using Testing.Common.Builders.Api.V2;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
@@ -12,6 +13,59 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
 /// </summary>
 public class CloneHearingTests : ApiTest
 {
+    [Test]
+    public async Task should_return_not_found_when_cloning_a_hearing_does_not_exist()
+    {
+        // arrange
+        using var client = Application.CreateClient();
+        var dates = new List<DateTime> {DateTime.Today.AddDays(2), DateTime.Today.AddDays(3)};
+        
+        // act
+        var request = new CloneHearingRequestV2 { Dates = dates };
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.CloneHearing(Guid.NewGuid()), RequestBody.Set(request));
+        
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.NotFound, result.Content.ReadAsStringAsync().Result);
+    }
+
+    [Test]
+    public async Task should_return_bad_request_when_duration_validation_fails()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearingV2();
+        using var client = Application.CreateClient();
+        
+        var dates = new List<DateTime> {DateTime.Today.AddDays(2), DateTime.Today.AddDays(3)};
+        
+        // act
+        var request = new CloneHearingRequestV2 { Dates = dates, ScheduledDuration = -1};
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.CloneHearing(hearing.Id), RequestBody.Set(request));
+        
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest, result.Content.ReadAsStringAsync().Result);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        validationProblemDetails.Errors["ScheduledDuration"][0].Should().Be(CloneHearingRequestValidationV2.InvalidScheduledDuration);
+    }
+
+    [Test]
+    public async Task should_return_bad_request_when_date_validation_fails()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearingV2();
+        using var client = Application.CreateClient();
+        
+        var dates = new List<DateTime> {DateTime.Today.AddDays(-2)};
+        
+        // act
+        var request = new CloneHearingRequestV2 { Dates = dates};
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.CloneHearing(hearing.Id), RequestBody.Set(request));
+        
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest, result.Content.ReadAsStringAsync().Result);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        validationProblemDetails.Errors["Dates"][0].Should().Be(CloneHearingRequestValidationV2.InvalidDateRangeErrorMessage);
+    }
+    
     [Test]
     public async Task should_clone_hearing_with_screening_requirements()
     {
