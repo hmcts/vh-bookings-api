@@ -85,6 +85,64 @@ public class UpdateEndpointV2Tests : ApiTest
         var bookingsApiException = exception.And.As<BookingsApiException>();
         bookingsApiException.Response.Should().Contain($"Endpoint {endpointId} does not exist");
     }
+
+    [Test]
+    public async Task should_publish_roles_for_all_endpoints_when_screening_is_added_for_only_one()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearingV2(options => { options.Case = new Case("Case1 Num", "Case1 Name"); },
+            BookingStatus.Created);
+
+        var endpoint1 = hearing.Endpoints[0]; // screening added - to have a role of guest
+        var endpoint2 = hearing.Endpoints[1]; // no screening - to have role of host
+        var screenFrom = hearing.GetParticipants().First(x=> x is Individual);
+        
+        // admin web will update the endpoint with screening
+        var request1 = new UpdateEndpointRequestV2()
+        {
+            DisplayName = endpoint1.DisplayName,
+            Screening = new ScreeningRequest()
+            {
+                Type = ScreeningType.Specific,
+                ProtectedFrom = [screenFrom.ExternalReferenceId]
+            }
+        };
+        
+        // admin web will invoke update as well despite no screening or changes
+        var request2 = new UpdateEndpointRequestV2()
+        {
+            DisplayName = endpoint1.DisplayName,
+        };
+        using var client = Application.CreateClient();
+        var bookingsApiClient = BookingsApiClient.GetClient(client);
+        
+        // act
+        await bookingsApiClient.UpdateEndpointV2Async(hearing.Id, endpoint1.Id, request1);
+        await bookingsApiClient.UpdateEndpointV2Async(hearing.Id, endpoint2.Id, request2);
+        
+        var response = await bookingsApiClient.GetHearingDetailsByIdV2Async(hearing.Id);
+        response.Should().NotBeNull();
+        
+        var updatedEndpoint = response.Endpoints.First(x => x.Id == endpoint1.Id);
+        updatedEndpoint.DisplayName.Should().Be(request1.DisplayName);
+        updatedEndpoint.Screening.Should().NotBeNull();
+        
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearing.Id);
+        Array.Exists(messages, x => x.IntegrationEvent is EndpointUpdatedIntegrationEvent).Should().BeTrue();
+
+
+        var updateEndpointEvents = messages.Where(x => x.IntegrationEvent is EndpointUpdatedIntegrationEvent)
+            .Select(x => x.IntegrationEvent.As<EndpointUpdatedIntegrationEvent>()).ToList();
+
+
+        var endpoint1UpdatedEvent = updateEndpointEvents.Find(x => x.Sip == endpoint1.Sip);
+        endpoint1UpdatedEvent.Role.Should().Be(ConferenceRole.Guest, "Endpoint is screened from a participant");
+        
+        var endpoint2UpdatedEvent = updateEndpointEvents.Find(x => x.Sip == endpoint2.Sip);
+        endpoint2UpdatedEvent.Role.Should().Be(ConferenceRole.Host, "Endpoint is not screened from any participant");
+    }
     
     [Test]
     public async Task should_update_endpoint_and_remove_screening()
