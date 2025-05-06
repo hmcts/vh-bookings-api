@@ -74,11 +74,9 @@ public class UpdateEndPointOfHearingCommandHandler(BookingsDbContext context, IH
         endpoint.UpdateExternalIds(command.ExternalReferenceId, command.MeasuresExternalId);
 
         var endpointHasChanged = endpoint.UpdatedDate != originalUpdatedDate;
-        if (!endpointHasChanged) return;
-            
-        await context.SaveChangesAsync();
-
         command.UpdatedEndpoint = endpoint;
+        if (!endpointHasChanged) return;
+        await context.SaveChangesAsync();
     }
 
     private static void UpdateEndpointParticipants(UpdateEndPointOfHearingCommand command, Endpoint endpoint, VideoHearing hearing)

@@ -175,7 +175,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Assert
             var updatedEndpoint = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             updatedEndpoint.UpdatedDate.Should().BeCloseTo(originalUpdatedDate, TimeSpan.FromMilliseconds(50)); // The two dates should be the same, but there is a small discrepancy with EF
-            command.UpdatedEndpoint.Should().BeNull();
         }
     }
 }
