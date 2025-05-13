@@ -80,12 +80,13 @@ public class BookNewHearingV2Tests : ApiTest
             "Endpoint should be a guest if there are no screening requirements");
     }
 
-    [Test]
-    public async Task should_book_a_hearing_with_with_conference_supplier_overriden()
+    [TestCase(BookingSupplier.Vodafone)]
+    [TestCase(BookingSupplier.Stub)]
+    public async Task should_book_a_hearing_with_with_conference_supplier_overriden(BookingSupplier bookingSupplier)
     {
         // arrange
         var request = await CreateBookingRequestWithServiceIdsAndCodes();
-        request.BookingSupplier = BookingSupplier.Vodafone;
+        request.BookingSupplier = bookingSupplier;
 
         // act
         using var client = Application.CreateClient();
@@ -100,7 +101,7 @@ public class BookNewHearingV2Tests : ApiTest
         var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
         var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
         _hearingIds.Add(hearingResponse.Id);
-        hearingResponse.BookingSupplier.Should().Be(BookingSupplier.Vodafone);
+        hearingResponse.BookingSupplier.Should().Be(bookingSupplier);
 
         createdResponse.Should().BeEquivalentTo(hearingResponse);
         var judiciaryJudgeRequest = request.JudicialOfficeHolders[0];
@@ -109,7 +110,7 @@ public class BookNewHearingV2Tests : ApiTest
             x.HearingRoleCode == judiciaryJudgeRequest.HearingRoleCode &&
             x.DisplayName == judiciaryJudgeRequest.DisplayName
         );
-        createdResponse.BookingSupplier.Should().Be(BookingSupplier.Vodafone);
+        createdResponse.BookingSupplier.Should().Be(bookingSupplier);
         
         var serviceBusStub =
             Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
@@ -118,7 +119,7 @@ public class BookNewHearingV2Tests : ApiTest
         
         var hearingReadyEvent = messages.First(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent);
         var integrationEvent = hearingReadyEvent.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
-        integrationEvent!.Hearing.VideoSupplier.Should().Be(VideoSupplier.Vodafone);
+        integrationEvent!.Hearing.VideoSupplier.Should().Be((VideoSupplier)bookingSupplier);
     }
     
     [Test]
