@@ -3,5 +3,6 @@ namespace BookingsApi.Contract.V2.Enums;
 public enum BookingSupplier
 {
     // Kinly = 1,
-    Vodafone = 2
+    Vodafone = 2,
+    Stub = 3
 }
