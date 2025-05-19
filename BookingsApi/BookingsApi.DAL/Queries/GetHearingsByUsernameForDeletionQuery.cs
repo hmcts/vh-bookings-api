@@ -1,5 +1,3 @@
-using BookingsApi.Domain.Participants;
-
 namespace BookingsApi.DAL.Queries;
 
 public class GetHearingsByUsernameForDeletionQuery(string username) : IQuery

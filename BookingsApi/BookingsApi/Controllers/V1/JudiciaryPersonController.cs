@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Mappings.V1;
+using BookingsApi.Common.Logging;
 using BookingsApi.Validations.V1;
 
 namespace BookingsApi.Controllers.V1
@@ -33,9 +34,7 @@ namespace BookingsApi.Controllers.V1
         {
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with Personal Code: {0}";
             var judiciaryPersonRequests = request.ToList();
-                _logger.LogInformation(
-                "Starting BulkJudiciaryPersons operation, processing {JudiciaryPersonRequestsCount} items",
-                judiciaryPersonRequests.Count);
+                _logger.LogInformationStartingBulkJudiciaryPersonsOperationProcessing(judiciaryPersonRequests.Count);
 
             var bulkResponse = new BulkJudiciaryPersonResponse();
 
@@ -80,7 +79,7 @@ namespace BookingsApi.Controllers.V1
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, bulkItemErrorMessage, item.PersonalCode);
+                    _logger.LogErrorCouldNotAddOrUpdate(ex, item.PersonalCode);
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
                         Message = bulkItemErrorMessage,
@@ -102,9 +101,7 @@ namespace BookingsApi.Controllers.V1
         {
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with Personal Code: {0}";
             var judiciaryLeaverRequests = request.ToList();
-            _logger.LogInformation(
-                "Starting BulkJudiciaryLeavers operation, processing {JudiciaryLeaversRequestsCount} items",
-                judiciaryLeaverRequests.Count);
+            _logger.LogInformationStartingBulkJudiciaryPersonsOperationProcessing(judiciaryLeaverRequests.Count);
 
             var bulkResponse = new BulkJudiciaryLeaverResponse();
 
@@ -145,7 +142,7 @@ namespace BookingsApi.Controllers.V1
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, bulkItemErrorMessage, item.PersonalCode);
+                    _logger.LogErrorCouldNotAddOrUpdate(ex, item.PersonalCode);
                     bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
                     {
                         Message = bulkItemErrorMessage,

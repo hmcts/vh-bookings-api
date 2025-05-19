@@ -3,6 +3,7 @@ using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations;
 using BookingsApi.Validations.V2;
+using BookingsApi.Common.Logging;
 
 namespace BookingsApi.Controllers.V2;
 
@@ -69,17 +70,6 @@ public class PersonsControllerV2(
             return NotFound($"Person with {contactEmail} does not exist");
         }
 
-        var hearingsQuery = new GetHearingsByUsernameQuery(person.Username);
-        var hearings = await queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(hearingsQuery);
-
-        var judicialHearings = hearings.SelectMany(v => v.Participants.Where(p => p.PersonId == person.Id))
-            .Any(x => x.HearingRole.IsJudge());
-
-        if (judicialHearings)
-        {
-            return Unauthorized("Only searches for non Judge persons are allowed");
-        }
-
         return Ok(PersonToResponseV2Mapper.MapPersonToResponse(person));
     }
 
@@ -118,7 +108,7 @@ public class PersonsControllerV2(
             .Where(x => x.Status == BookingStatus.Created &&
                         x.GetCases().Any(c => !c.Name.EndsWith(anonymisedText))).SelectMany(c => c.Participants)
             .Where(p => p.PersonId == personId && !p.DisplayName.EndsWith(anonymisedText)).ToList();
-        logger.LogDebug("Updating {Count} non-anonymised participants", nonAnonymisedParticipants.Count);
+        logger.LogDebugUpdateNonAnonymised(nonAnonymisedParticipants.Count);
 
         foreach (var participant in nonAnonymisedParticipants)
         {

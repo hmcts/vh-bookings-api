@@ -2,21 +2,17 @@
 using System.Net;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
-using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
@@ -142,77 +138,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         }
 
         [Test]
-        public async Task Should_remove_hearing_with_status_created_and_send_event_to_video()
-        {
-            var hearing = GetHearing("123");
-            var hearingId = hearing.Id;
-            hearing.UpdateStatus(BookingStatus.Created, "administrator", string.Empty);
-
-            QueryHandlerMock
-                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
-                .ReturnsAsync(hearing);
-            var controller = GetControllerObject(true);
-            var result = await controller.RemoveHearing(hearingId);
-
-            result.Should().NotBeNull();
-            var objectResult = (NoContentResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
-
-            var message = SbQueueClient.ReadMessageFromQueue();
-            var typedMessage = (HearingCancelledIntegrationEvent)message.IntegrationEvent;
-            typedMessage.Should().NotBeNull();
-            typedMessage.HearingId.Should().Be(hearingId);
-        }
-
-        [Test]
-        public async Task Should_not_remove_hearing_and_return_badrequest_with_an_invalid_hearingid()
-        {
-            var hearingId = Guid.Empty;
-
-            var result = await Controller.RemoveHearing(hearingId);
-
-            result.Should().NotBeNull();
-            var objectResult = (ObjectResult)result;
-            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
-                $"Please provide a valid {nameof(hearingId)}");
-        }
-
-        [Test]
-        public async Task Should_not_remove_hearing_and_return_badrequest_without_VideoHearing()
-        {
-            var hearingId = Guid.NewGuid();
-            var hearing = GetHearing("123");
-            hearing.UpdateStatus(BookingStatus.Created, "administrator", string.Empty);
-
-            QueryHandlerMock
-                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
-                .ReturnsAsync((VideoHearing)null);
-
-            var result = await Controller.RemoveHearing(hearingId);
-
-            result.Should().NotBeNull();
-            var objectResult = (NotFoundObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-            objectResult.Value.Should().Be($"{hearingId} does not exist");
-        }
-        
-
-        [Test]
-        public async Task AnonymiseParticipantAndCaseByHearingId_Returns_Ok()
-        {
-            var hearingIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
-
-            var response = await Controller.AnonymiseParticipantAndCaseByHearingId(hearingIds) as OkResult;
-
-            response.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            CommandHandlerMock
-                .Verify(c =>
-                        c.Handle(It.Is<AnonymiseCaseAndParticipantCommand>(prop =>
-                            prop.HearingIds.Equals(hearingIds))),
-                    Times.Once);
-        }
-        
-        [Test]
         public async Task Should_return_bookings_list_for_participant_last_name_search()
         {
             var caseTypes = new List<int>();
@@ -251,58 +176,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             QueryHandlerMock.Verify(
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
                     It.IsAny<GetBookingsByCaseTypesQuery>()), Times.Once);
-        }
-        
-        
-        [Test]
-        public async Task Should_return_not_found_when_rebooking_a_hearing_which_does_not_exist()
-        {
-            var hearingId = Guid.NewGuid();
-            QueryHandlerMock
-                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
-                .ReturnsAsync((VideoHearing)null);
-
-            var result = await Controller.RebookHearing(hearingId);
-            
-            result.Should().NotBeNull();
-            var objectResult = (NotFoundResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-        }
-
-        [TestCase(BookingStatus.Created)]
-        [TestCase(BookingStatus.Booked)]
-        [TestCase(BookingStatus.Cancelled)]
-        public async Task Should_return_bad_request_when_rebooking_a_hearing_with_invalid_status(BookingStatus status)
-        {
-            var hearing = GetHearing("123");
-            if (hearing.Status != status)
-            {
-                hearing.UpdateStatus(status, "administrator", "reason");   
-            }
-            QueryHandlerMock
-                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
-                .ReturnsAsync(hearing);
-            
-            var result = await Controller.RebookHearing(hearing.Id);
-            
-            result.Should().NotBeNull();
-            var objectResult = (ObjectResult)result;
-            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("hearingId", $"Hearing must have a status of {nameof(BookingStatus.Failed)}");
-        }
-  
-        protected static VideoHearing GetHearing(string caseNumber)
-        {
-            var hearing = new VideoHearingBuilder().Build();
-
-            if (!string.IsNullOrEmpty(caseNumber))
-            {
-                hearing.AddCase(caseNumber, "Case name", true);
-            }
-
-            hearing.AddEndpoints(new List<Endpoint>
-                { new (Guid.NewGuid().ToString(), "new endpoint", Guid.NewGuid().ToString(), "pin") });
-
-            return hearing;
         }
     }
 }

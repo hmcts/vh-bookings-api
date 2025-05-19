@@ -67,6 +67,7 @@ namespace BookingsApi.Controllers.V1
         [HttpPost("SaveNonWorkingHours")]
         [OpenApiOperation("SaveNonWorkingHours")]
         [ProducesResponseType(typeof(List<string>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int) HttpStatusCode.BadRequest)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> SaveNonWorkingHours(
             [FromBody] List<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests)
@@ -98,7 +99,8 @@ namespace BookingsApi.Controllers.V1
         [HttpGet("VHO")]
         [OpenApiOperation("GetVhoWorkAvailabilityHours")]
         [ProducesResponseType(typeof(List<VhoWorkHoursResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetVhoWorkAvailabilityHours(string username)
         {
@@ -109,9 +111,6 @@ namespace BookingsApi.Controllers.V1
             }
             
             var results = await _queryHandler.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(new GetVhoWorkHoursQuery(username));
-
-            if (results == null)
-                return NotFound("Vho user not found");
             
             return Ok(VhoWorkHoursToResponseMapper.Map(results));
         }
@@ -124,7 +123,8 @@ namespace BookingsApi.Controllers.V1
         [HttpGet("/NonAvailability/VHO")]
         [OpenApiOperation("GetVhoNonAvailabilityHours")]
         [ProducesResponseType(typeof(List<VhoNonAvailabilityWorkHoursResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetVhoNonAvailabilityHours(string username)
         {
@@ -135,9 +135,6 @@ namespace BookingsApi.Controllers.V1
             }
 
             var results = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(new GetVhoNonAvailableWorkHoursQuery(username));
-
-            if (results == null)
-                return NotFound("Vho user not found");
             
             return Ok(VhoNonAvailabilityWorkHoursResponseMapper.Map(results));
         }
@@ -174,10 +171,6 @@ namespace BookingsApi.Controllers.V1
             }
             var getNonWorkHoursQuery = new GetVhoNonAvailableWorkHoursQuery(username);
             var existingHours = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(getNonWorkHoursQuery);
-            if (existingHours == null)
-            {
-                return NotFound();
-            }
             
             var nonDeletedHours = existingHours.Where(x => !x.Deleted).ToList();
             var hourValidationResult = UpdateNonWorkingHoursRequestValidation.ValidateHours(request, nonDeletedHours);

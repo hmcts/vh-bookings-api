@@ -2,6 +2,7 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
+using BookingsApi.Common.Logging;
 
 namespace BookingsApi.Controllers.V1
 {
@@ -55,7 +56,7 @@ namespace BookingsApi.Controllers.V1
             }
             catch (JusticeUserAlreadyExistsException e)
             {
-                logger.LogError(e, "Detected an existing user for the username {Username}", request.Username);
+                logger.LogErrorDetectedAnExisting(e, request.Username);
                 return Conflict(e.Message);
             }
         }

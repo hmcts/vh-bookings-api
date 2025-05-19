@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common.Helpers;
@@ -8,6 +9,7 @@ using Newtonsoft.Json;
 
 namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
 {
+    [ExcludeFromCodeCoverage(Justification = "This is a fake class used for testing purposes only")]
     public class ServiceBusQueueClientFake : IServiceBusQueueClient
     {
         private JsonSerializerSettings SerializerSettings { get; set; } = DefaultSerializerSettings.DefaultNewtonsoftSerializerSettings();

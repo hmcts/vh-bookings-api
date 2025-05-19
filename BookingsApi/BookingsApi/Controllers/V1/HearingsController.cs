@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
@@ -316,6 +317,7 @@ public class HearingsController(
     [ProducesResponseType(typeof(List<AudioRecordedHearingsBySearchResponse>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [MapToApiVersion("1.0")]
+    [ExcludeFromCodeCoverage(Justification = "Deprecated feature but kept for internal testing")]
     public async Task<IActionResult> SearchForHearingsAsync([FromQuery] SearchForHearingsQuery searchQuery)
     {
         var caseNumber = WebUtility.UrlDecode(searchQuery.CaseNumber);

@@ -27,7 +27,6 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
             var judiciaryParticipants = hearing.JudiciaryParticipants.Select(ParticipantDtoMapper.MapToDto).ToList();
             Participants.AddRange(judiciaryParticipants);
 
-            Participants.SingleOrDefault(x => x.UserRole == "Judge")?.SetOtherFieldsForNonEJudJudgeUser(hearing.OtherInformation);
             var hearingEndpoints = hearing.GetEndpoints();
             Endpoints = hearingEndpoints.Select(he =>
                 EndpointDtoMapper.MapToDto(he, hearing.GetParticipants(), hearing.GetEndpoints())).ToList();
