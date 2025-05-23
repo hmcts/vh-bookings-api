@@ -3367,7 +3367,6 @@
           "AspNetCore.HealthChecks.AzureServiceBus": "[8.0.1, )",
           "Azure.Monitor.OpenTelemetry.AspNetCore": "[1.2.0, )",
           "BookingsApi.Common": "[1.0.0, )",
-          "BookingsApi.Common.DotNet6": "[1.0.0, )",
           "BookingsApi.Contract": "[1.0.0, )",
           "BookingsApi.DAL": "[1.0.0, )",
           "BookingsApi.Domain": "[1.0.0, )",
@@ -3389,7 +3388,7 @@
       "bookingsapi.client": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Common.DotNet6": "[1.0.0, )",
+          "BookingsApi.Common": "[1.0.0, )",
           "BookingsApi.Contract": "[1.0.0, )",
           "System.Text.Json": "[8.0.5, )"
         }
@@ -3403,12 +3402,6 @@
           "Microsoft.Extensions.Logging": "[8.0.1, )",
           "Microsoft.Identity.Client": "[4.60.4, )",
           "Newtonsoft.Json": "[13.0.3, )"
-        }
-      },
-      "bookingsapi.common.dotnet6": {
-        "type": "Project",
-        "dependencies": {
-          "System.Text.Json": "[8.0.5, )"
         }
       },
       "bookingsapi.contract": {

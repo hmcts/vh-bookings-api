@@ -2,7 +2,7 @@ using System;
 using System.Text.Json;
 using JsonException = System.Text.Json.JsonException;
 
-namespace BookingsApi.Common.DotNet6.Helpers;
+namespace BookingsApi.Common.Helpers;
 
 public class PascalCaseEnumConverter<T> : System.Text.Json.Serialization.JsonConverter<T> where T : struct, Enum
 {
