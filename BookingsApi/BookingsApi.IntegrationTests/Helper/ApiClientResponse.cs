@@ -1,5 +1,4 @@
 using System.Text.Json;
-using BookingsApi.Common.DotNet6.Helpers;
 using BookingsApi.Common.Helpers;
 
 namespace BookingsApi.IntegrationTests.Helper

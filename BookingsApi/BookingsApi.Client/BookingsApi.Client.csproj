@@ -9,12 +9,10 @@
         <License>https://github.com/hmcts/vh-bookings-api/blob/master/LICENSE</License>
         <RepositoryUrl>https://github.com/hmcts/vh-bookings-api</RepositoryUrl>
         <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-        <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
-        <TargetFramework />
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\BookingsApi.Common.DotNet6\BookingsApi.Common.DotNet6.csproj" />
+        <ProjectReference Include="..\BookingsApi.Common\BookingsApi.Common.csproj" />
         <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj">
             <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
             <IncludeAssets>BookingsApi.Contract.dll</IncludeAssets>

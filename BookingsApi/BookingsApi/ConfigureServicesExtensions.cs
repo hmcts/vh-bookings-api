@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using Asp.Versioning.ApiExplorer;
-using BookingsApi.Common.DotNet6.Helpers;
 using BookingsApi.DAL.Services;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.Publishers;
