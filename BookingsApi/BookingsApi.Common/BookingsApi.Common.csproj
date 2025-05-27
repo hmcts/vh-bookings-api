@@ -5,6 +5,7 @@
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
     <Title>VH Bookings API common</Title>
     <Description>.NET common library for Bookings API</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.4.0" />
